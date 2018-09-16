@@ -1,0 +1,111 @@
+###################################################################################
+### Web服务器配置
+###################################################################################
+server:
+  port: 28080
+  servlet:
+    context-path: /
+
+###################################################################################
+### logging(logback)
+###################################################################################
+logging:
+  config: classpath:logback.xml
+  level:
+    org.springframework: warn
+    org.clever: debug
+
+###################################################################################
+### Spring配置
+###################################################################################
+spring:
+  profiles.active: dev
+  application.name: clever-security-demo
+  aop.proxy-target-class: true
+
+  servlet: #------------------------------------------------------------ 文件上传配置
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 10MB
+
+  http: #------------------------------------------------------------------ http配置
+    converters:
+      preferred-json-mapper: jackson
+    encoding:
+      charset: UTF-8
+      force: true
+
+  jackson: #------------------------------------------------------------ jackson配置
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
+    time-zone: GMT+8
+
+  resources: #------------------------------------------------ html、js、css 静态资源
+    chain:
+      cache: true
+      gzipped: true
+    cache:
+      period: 31536000s
+    static-locations: ['classpath:/static/']
+
+  datasource: #----------------------------------------------------------- 数据库配置
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/clever-security-demo
+    username: root
+    password: lizhiwei
+    hikari:
+      data-source-properties:
+        serverTimezone: GMT+8
+        useUnicode: true
+        characterEncoding: utf-8
+        zeroDateTimeBehavior: convert_to_null
+        useSSL: false
+      auto-commit: false
+      maximum-pool-size: 100
+      minimum-idle: 5
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+###################################################################################
+### mybatis-plus配置
+###################################################################################
+mybatis-plus:
+  configuration:
+    auto-mapping-behavior: partial
+    auto-mapping-unknown-column-behavior: none
+    map-underscore-to-camel-case: true
+  mapper-locations: 'classpath*: **/*.xml'
+  check-config-location: true
+  executor-type: reuse
+  global-config:
+    banner: true
+    refresh: true
+    sql-parser-cache: true
+    db-config:
+      id-type: auto
+      field-strategy: not_empty
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
