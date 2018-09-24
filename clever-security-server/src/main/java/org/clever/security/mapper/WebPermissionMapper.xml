@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--suppress SqlNoDataSourceInspection -->
+<mapper namespace="org.clever.security.mapper.WebPermissionMapper">
+
+    <select id="getBySysNameAndController" resultType="org.clever.security.entity.model.WebPermissionModel">
+        SELECT
+            a.id AS web_permission_id,
+            a.need_authorization,
+            a.controller_class,
+            a.controller_method,
+            a.controller_method_params,
+            a.resources_url,
+            a.controller_exist,
+
+            b.id AS permission_id,
+            b.sys_name,
+            b.title,
+            b.permission_str,
+            b.resources_type,
+            b.description,
+            b.create_at,
+            b.update_at
+        FROM web_permission a LEFT JOIN permission b ON (a.permission_str = b.permission_str)
+        WHERE b.resources_type=1
+            AND b.sys_name=#{sysName}
+            AND a.controller_class=#{controllerClass}
+            AND a.controller_method=#{controllerMethod}
+            AND a.controller_method_params=#{controllerMethodParams}
+    </select>
+
+    <select id="findBySysName" resultType="org.clever.security.entity.model.WebPermissionModel">
+        SELECT
+            a.id AS web_permission_id,
+            a.need_authorization,
+            a.controller_class,
+            a.controller_method,
+            a.controller_method_params,
+            a.resources_url,
+            a.controller_exist,
+
+            b.id AS permission_id,
+            b.sys_name,
+            b.title,
+            b.permission_str,
+            b.resources_type,
+            b.description,
+            b.create_at,
+            b.update_at
+        FROM web_permission a LEFT JOIN permission b ON (a.permission_str = b.permission_str)
+        WHERE b.resources_type=1
+          and b.sys_name=#{sysName}
+    </select>
+</mapper>

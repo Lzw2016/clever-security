@@ -1,8 +1,9 @@
 package org.clever.security.entity;
 
-import java.util.Date;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 用户-系统(UserSys)实体类

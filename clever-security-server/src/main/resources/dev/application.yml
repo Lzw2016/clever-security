@@ -86,7 +86,7 @@ mybatis-plus:
     sql-parser-cache: true
     db-config:
       id-type: auto
-      field-strategy: not_empty
+      field-strategy: not_null
 
 
 

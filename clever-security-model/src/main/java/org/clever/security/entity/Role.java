@@ -1,8 +1,9 @@
 package org.clever.security.entity;
 
-import java.util.Date;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 角色表(Role)实体类

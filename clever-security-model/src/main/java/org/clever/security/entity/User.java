@@ -14,37 +14,64 @@ import java.util.Date;
 @Data
 public class User implements Serializable {
     private static final long serialVersionUID = -73828129880873228L;
-    /** 主键id */
+    /**
+     * 主键id
+     */
     private Long id;
 
-    /** 登录名 */
+    /**
+     * 登录名(一条记录的手机号不能当另一条记录的用户名用)
+     */
     private String username;
 
-    /** 密码 */
+    /**
+     * 密码
+     */
     private String password;
 
-    /** 用户类型，0：系统内建，1：外部系统用户 */
+    /**
+     * 用户类型，0：系统内建，1：外部系统用户
+     */
     private Integer userType;
 
-    /** 手机号 */
+    /**
+     * 手机号
+     */
     private String telephone;
 
-    /** 邮箱 */
+    /**
+     * 邮箱
+     */
     private String email;
 
-    /** 帐号是否锁定，0：未锁定；1：锁定 */
+    /**
+     * 帐号过期时间
+     */
+    private Date expiredTime;
+
+    /**
+     * 帐号是否锁定，0：未锁定；1：锁定
+     */
     private Integer locked;
 
-    /** 是否启用，0：禁用；1：启用 */
+    /**
+     * 是否启用，0：禁用；1：启用
+     */
     private Integer enabled;
 
-    /** 说明 */
+    /**
+     * 说明
+     */
     private String description;
 
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     private Date createAt;
 
-    /** 更新时间 */
+    /**
+     * 更新时间
+     */
     private Date updateAt;
 
 }
