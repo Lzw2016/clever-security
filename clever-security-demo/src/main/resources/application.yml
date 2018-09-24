@@ -2,7 +2,7 @@
 ### Web服务器配置
 ###################################################################################
 server:
-  port: 28080
+  port: 28081
   servlet:
     context-path: /
 
@@ -13,6 +13,8 @@ logging:
   config: classpath:logback.xml
   level:
     org.springframework: warn
+    org.springframework.security.web: warn
+    redis.clients: debug
     org.clever: debug
 
 ###################################################################################
@@ -86,26 +88,73 @@ mybatis-plus:
     sql-parser-cache: true
     db-config:
       id-type: auto
-      field-strategy: not_empty
+      field-strategy: not_null
 
+###################################################################################
+### clever security配置
+###################################################################################
+clever:
+  security:
+    enable-debug: false
+    sys-name: '测试权限系统'
+    default-need-authorization: true
+    ignore-urls:
+    - '/swagger-ui*/**'
+    - '/webjars/springfox*/**'
+    - '/swagger-resources*/**'
+    - '/v2/api-docs'
+    - '/favicon.ico'
+    - '/csrf'
+    - '/error'
 
+    - '/favicon.ico'
+    - '/login/captcha.png'
+    - '/dist/**'
+    - '/api/user'
+    hide-user-not-found-exceptions: true
+    notLoginNeedForward: false
+    forbidden-need-forward: false
+    forbidden-forward-page: '/403.html'
+    session-expired-redirect-url:
+    login:
+      login-page: '/login.html'
+      login-url: '/login.json'
+      username-parameter: 'username'
+      password-parameter: 'password'
+      captcha-parameter: 'captcha'
+      post-only: true
+      json-data-submit: true
+      login-success-need-redirect: false
+      login-success-redirect-page: '/index.html'
+      login-failure-need-redirect: false
+      login-failure-need-forward: false
+      login-failure-redirect-page: '/login.html'
+      need-captcha: true
+      need-captcha-by-login-fail-count: 3
+      captcha-effective-time: 60000
+      concurrent-login-count: 1
+      not-allow-after-login: false
+    logout:
+      logout-url: '/logout.json'
+      logout-success-need-redirect: false
+      logout-success-redirect-page: '/login.html'
+    remember-me:
+      enable: true
+      always-remember: false
+      validity-seconds: 2592000
+      remember-Me-Parameter-Name: 'remember-me'
+ribbon:
+  eager-load:
+    enabled: true
 
+clever-security-server:ribbon:list-of-servers: '127.0.0.1:2080'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#feign:
+#  client:
+#    config:
+#      clever-security-server:
+#        list-of-servers: ['127.0.0.1:2080']
+#
 
 
 

@@ -33,7 +33,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private LoginUserDetailsService userDetailsService;
-    // TODO 使用缓存
+    // 使用缓存
     private UserCache userCache = new NullUserCache();
     private UserDetailsChecker preAuthenticationChecks = new DefaultPreAuthenticationChecks();
     private UserDetailsChecker postAuthenticationChecks = new DefaultPostAuthenticationChecks();

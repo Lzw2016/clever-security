@@ -178,14 +178,13 @@ create table user_login_log (
     login_time          datetime(3)     not null                                        comment '登录时间',
     login_ip            varchar(63)     not null                                        comment '登录IP',
     authentication_info text            not null                                        comment '登录的用户信息',
-    session_id          varchar(63)     not null                                        comment '登录SessionID',
+    session_id          varchar(63)     not null    unique                              comment '登录SessionID',
     login_state         int(1)          not null    default 0                           comment '登录状态，0：未知；1：已登录；2：登录已过期',
     create_at           datetime(3)     not null    default current_timestamp(3)        comment '创建时间',
     update_at           datetime(3)                 on update current_timestamp(3)      comment '更新时间',
     primary key (id)
 ) comment = '用户登录日志';
 create index user_login_log_username on user_login_log (username);
-create index user_login_log_session_id on user_login_log (session_id);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/
