@@ -7,6 +7,7 @@ import org.clever.common.model.request.BaseRequest;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者： lzw<br/>
@@ -19,7 +20,7 @@ public class WebPermissionModelGetReq extends BaseRequest {
     @NotBlank
     @Length(max = 127)
     @ApiModelProperty("系统名称")
-    private  String sysName;
+    private String sysName;
 
     @NotBlank
     @Length(max = 255)
@@ -31,7 +32,7 @@ public class WebPermissionModelGetReq extends BaseRequest {
     @ApiModelProperty("Controller Method")
     private String controllerMethod;
 
-    @NotBlank
+    @NotNull
     @Length(max = 255)
     @ApiModelProperty("Controller Method Params")
     private String controllerMethodParams;
