@@ -12,7 +12,7 @@ import java.util.Map;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 18:45 <br/>
  */
-@FeignClient(name = "clever-security-server", path = "/api")
+@FeignClient(name = "clever-security-server", path = "/api", url = "http://localhost:28080")
 public interface RememberMeTokenClient {
 
     /**

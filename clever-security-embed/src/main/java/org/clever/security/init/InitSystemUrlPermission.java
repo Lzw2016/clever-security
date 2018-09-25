@@ -38,9 +38,9 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
     @Autowired
     private WebPermissionClient webPermissionClient;
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        // TODO 初始化了两次
         if (StringUtils.isBlank(securityConfig.getSysName())) {
             throw new RuntimeException("系统名称未配置");
         }

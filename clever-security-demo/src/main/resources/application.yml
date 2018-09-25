@@ -96,7 +96,7 @@ mybatis-plus:
 clever:
   security:
     enable-debug: false
-    sys-name: '测试权限系统'
+    sys-name: '权限系统Demo'
     default-need-authorization: true
     ignore-urls:
     - '/swagger-ui*/**'
@@ -143,18 +143,16 @@ clever:
       always-remember: false
       validity-seconds: 2592000
       remember-Me-Parameter-Name: 'remember-me'
-ribbon:
-  eager-load:
-    enabled: true
 
-clever-security-server:ribbon:list-of-servers: '127.0.0.1:2080'
-
+#clever-security-server:
+#  ribbon:
+#    eureka:
+#      enabled: false
+#    listOfServers: localhost:2080
+#    ServerListRefreshInterval: 15000
+#ribbon:
+#  eager-load:
+#    clients:
 #feign:
 #  client:
-#    config:
-#      clever-security-server:
-#        list-of-servers: ['127.0.0.1:2080']
-#
-
-
-
+#    clever-security-server:

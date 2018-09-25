@@ -30,6 +30,7 @@ public class UserLoginLogService {
         return userLoginLogMapper.getBySessionId(sessionId);
     }
 
+    @Transactional
     public UserLoginLog updateUserLoginLog(String sessionId, UserLoginLog update) {
         UserLoginLog old = userLoginLogMapper.getBySessionId(sessionId);
         if (old == null) {
