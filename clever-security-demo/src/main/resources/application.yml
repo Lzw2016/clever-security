@@ -144,15 +144,9 @@ clever:
       validity-seconds: 2592000
       remember-Me-Parameter-Name: 'remember-me'
 
-#clever-security-server:
-#  ribbon:
-#    eureka:
-#      enabled: false
-#    listOfServers: localhost:2080
-#    ServerListRefreshInterval: 15000
-#ribbon:
-#  eager-load:
-#    clients:
-#feign:
-#  client:
-#    clever-security-server:
+###################################################################################
+### Feign配置
+###################################################################################
+clever-security-server:
+  ribbon:
+    listOfServers: '127.0.0.1:28080'

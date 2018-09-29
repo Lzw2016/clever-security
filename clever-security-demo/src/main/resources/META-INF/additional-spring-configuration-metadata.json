@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "SpringOpenFeignProvider.ribbon.listOfServers",
+      "type": "java.lang.String",
+      "description": "Description for SpringOpenFeignProvider.ribbon.listOfServers."
+  }
+] }
