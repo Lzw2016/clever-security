@@ -43,11 +43,11 @@ public class WebPermissionService extends BaseService {
     }
 
     public WebPermissionModel getWebPermissionModel(WebPermissionModelGetReq req) {
-        return webPermissionMapper.getBySysNameAndController(
+        return webPermissionMapper.getBySysNameAndTarget(
                 req.getSysName(),
-                req.getControllerClass(),
-                req.getControllerMethod(),
-                req.getControllerMethodParams()
+                req.getTargetClass(),
+                req.getTargetMethod(),
+                req.getTargetMethodParams()
         );
     }
 
@@ -77,7 +77,7 @@ public class WebPermissionService extends BaseService {
     }
 
     /**
-     * 保存所有新增的权限 (module controllerClass controllerMethod resourcesUrl)
+     * 保存所有新增的权限 (module targetClass targetMethod resourcesUrl)
      *
      * @param allPermission       当前模块所有权限
      * @param moduleAllPermission 数据库中当前模块所有的权限信息
@@ -87,21 +87,21 @@ public class WebPermissionService extends BaseService {
     protected List<WebPermissionModel> addPermission(List<WebPermissionModel> allPermission, List<WebPermissionModel> moduleAllPermission) {
         List<WebPermissionModel> addPermission = new ArrayList<>();
         Set<String> setPermission = new HashSet<>();
-        // module controllerClass controllerMethod controllerMethodParams
+        // module targetClass targetMethod targetMethodParams
         String format = "%1$-128s|%2$-255s|%3$-255s|%4$-255s";
         for (WebPermissionModel permission : moduleAllPermission) {
             setPermission.add(String.format(format,
                     permission.getSysName(),
-                    permission.getControllerClass(),
-                    permission.getControllerMethod(),
-                    permission.getControllerMethodParams()));
+                    permission.getTargetClass(),
+                    permission.getTargetMethod(),
+                    permission.getTargetMethodParams()));
         }
         for (WebPermissionModel permission : allPermission) {
             String key = String.format(format,
                     permission.getSysName(),
-                    permission.getControllerClass(),
-                    permission.getControllerMethod(),
-                    permission.getControllerMethodParams());
+                    permission.getTargetClass(),
+                    permission.getTargetMethod(),
+                    permission.getTargetMethodParams());
             if (!setPermission.contains(key)) {
                 // 新增不存在的权限配置
                 this.saveWebPermission(permission);
@@ -122,28 +122,28 @@ public class WebPermissionService extends BaseService {
     protected List<WebPermissionModel> getNotExistPermission(List<WebPermissionModel> allPermission, List<WebPermissionModel> moduleAllPermission) {
         List<WebPermissionModel> notExistPermission = new ArrayList<>();
         Map<String, WebPermissionModel> mapPermission = new HashMap<>();
-        // module controllerClass controllerMethod controllerMethodParams
+        // module targetClass targetMethod targetMethodParams
         String format = "%1$-128s|%2$-255s|%3$-255s|%4$-255s";
         for (WebPermissionModel permission : allPermission) {
             mapPermission.put(String.format(format,
                     permission.getSysName(),
-                    permission.getControllerClass(),
-                    permission.getControllerMethod(),
-                    permission.getControllerMethodParams()), permission);
+                    permission.getTargetClass(),
+                    permission.getTargetMethod(),
+                    permission.getTargetMethodParams()), permission);
         }
         for (WebPermissionModel dbPermission : moduleAllPermission) {
             String key = String.format(format,
                     dbPermission.getSysName(),
-                    dbPermission.getControllerClass(),
-                    dbPermission.getControllerMethod(),
-                    dbPermission.getControllerMethodParams());
+                    dbPermission.getTargetClass(),
+                    dbPermission.getTargetMethod(),
+                    dbPermission.getTargetMethodParams());
             WebPermissionModel permission = mapPermission.get(key);
             if (permission == null) {
-                // 数据库里有 系统中没有 - 更新 controllerExist
-                if (!Objects.equals(dbPermission.getControllerExist(), EnumConstant.WebPermission_controllerExist_0)) {
+                // 数据库里有 系统中没有 - 更新 targetExist
+                if (!Objects.equals(dbPermission.getTargetExist(), EnumConstant.WebPermission_targetExist_0)) {
                     WebPermission update = new WebPermission();
                     update.setId(dbPermission.getWebPermissionId());
-                    update.setControllerExist(EnumConstant.WebPermission_controllerExist_0);
+                    update.setTargetExist(EnumConstant.WebPermission_targetExist_0);
                     update.setUpdateAt(new Date());
                     webPermissionMapper.updateById(update);
                 }

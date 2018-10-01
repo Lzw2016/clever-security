@@ -21,13 +21,13 @@ public class WebPermission implements Serializable {
     private String permissionStr;
     
     /** controller类名称 */    
-    private String controllerClass;
+    private String targetClass;
     
     /** controller类的方法名称 */    
-    private String controllerMethod;
+    private String targetMethod;
     
     /** controller类的方法参数签名 */    
-    private String controllerMethodParams;
+    private String targetMethodParams;
     
     /** 资源url地址(只用作显示使用) */    
     private String resourcesUrl;
@@ -36,7 +36,7 @@ public class WebPermission implements Serializable {
     private Integer needAuthorization;
     
     /** controller路由资源是否存在，0：不存在；1：存在 */    
-    private Integer controllerExist;
+    private Integer targetExist;
     
     /** 创建时间 */    
     private Date createAt;

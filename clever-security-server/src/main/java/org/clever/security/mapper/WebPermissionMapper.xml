@@ -3,15 +3,15 @@
 <!--suppress SqlNoDataSourceInspection -->
 <mapper namespace="org.clever.security.mapper.WebPermissionMapper">
 
-    <select id="getBySysNameAndController" resultType="org.clever.security.entity.model.WebPermissionModel">
+    <select id="getBySysNameAndTarget" resultType="org.clever.security.entity.model.WebPermissionModel">
         SELECT
             a.id AS web_permission_id,
             a.need_authorization,
-            a.controller_class,
-            a.controller_method,
-            a.controller_method_params,
+            a.target_class,
+            a.target_method,
+            a.target_method_params,
             a.resources_url,
-            a.controller_exist,
+            a.target_exist,
 
             b.id AS permission_id,
             b.sys_name,
@@ -24,20 +24,20 @@
         FROM web_permission a LEFT JOIN permission b ON (a.permission_str = b.permission_str)
         WHERE b.resources_type=1
             AND b.sys_name=#{sysName}
-            AND a.controller_class=#{controllerClass}
-            AND a.controller_method=#{controllerMethod}
-            AND a.controller_method_params=#{controllerMethodParams}
+            AND a.target_class=#{targetClass}
+            AND a.target_method=#{targetMethod}
+            AND a.target_method_params=#{targetMethodParams}
     </select>
 
     <select id="findBySysName" resultType="org.clever.security.entity.model.WebPermissionModel">
         SELECT
             a.id AS web_permission_id,
             a.need_authorization,
-            a.controller_class,
-            a.controller_method,
-            a.controller_method_params,
+            a.target_class,
+            a.target_method,
+            a.target_method_params,
             a.resources_url,
-            a.controller_exist,
+            a.target_exist,
 
             b.id AS permission_id,
             b.sys_name,

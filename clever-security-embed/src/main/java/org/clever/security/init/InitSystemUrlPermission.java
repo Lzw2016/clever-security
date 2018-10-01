@@ -109,8 +109,8 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
         return String.format("| %1$s | [%2$s] [%3$s#%4$s] -> [%5$s]",
                 permission.getSysName(),
                 permission.getTitle(),
-                permission.getControllerClass(),
-                permission.getControllerMethod(),
+                permission.getTargetClass(),
+                permission.getTargetMethod(),
                 permission.getResourcesUrl());
     }
 
@@ -189,11 +189,11 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
         }
         permission.setResourcesType(EnumConstant.Permission_ResourcesType_1);
         permission.setTitle(title);
-        permission.setControllerClass(beanType.getName());
-        permission.setControllerMethod(method.getName());
-        permission.setControllerMethodParams(methodParams.toString());
+        permission.setTargetClass(beanType.getName());
+        permission.setTargetMethod(method.getName());
+        permission.setTargetMethodParams(methodParams.toString());
         permission.setResourcesUrl(resourcesUrl.toString());
-        permission.setControllerExist(EnumConstant.WebPermission_controllerExist_1);
+        permission.setTargetExist(EnumConstant.WebPermission_targetExist_1);
         permission.setDescription(description);
         permission.setCreateAt(new Date());
         return permission;

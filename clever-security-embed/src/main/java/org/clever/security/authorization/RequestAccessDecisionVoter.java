@@ -82,8 +82,8 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
             return ACCESS_GRANTED;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handlerExecutionChain.getHandler();
-        String controllerClass = handlerMethod.getBeanType().getName();
-        String controllerMethod = handlerMethod.getMethod().getName();
+        String targetClass = handlerMethod.getBeanType().getName();
+        String targetMethod = handlerMethod.getMethod().getName();
         // 获取放签名
         StringBuilder methodParams = new StringBuilder();
         Class<?>[] paramTypes = handlerMethod.getMethod().getParameterTypes();
@@ -95,25 +95,25 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
         }
         WebPermissionModelGetReq req = new WebPermissionModelGetReq();
         req.setSysName(securityConfig.getSysName());
-        req.setControllerClass(controllerClass);
-        req.setControllerMethod(controllerMethod);
-        req.setControllerMethodParams(methodParams.toString());
+        req.setTargetClass(targetClass);
+        req.setTargetMethod(targetMethod);
+        req.setTargetMethodParams(methodParams.toString());
         WebPermissionModel webPermissionModel = webPermissionClient.getWebPermissionModel(req);
         if (webPermissionModel == null) {
-            log.info("### 授权通过(当前资源未配置权限) [{}#{}] -> [{}]", controllerClass, controllerMethod, filterInvocation.getRequestUrl());
+            log.info("### 授权通过(当前资源未配置权限) [{}#{}] -> [{}]", targetClass, targetMethod, filterInvocation.getRequestUrl());
             return ACCESS_GRANTED;
         }
         log.info("### 权限字符串 [{}] -> [{}]", webPermissionModel.getPermissionStr(), filterInvocation.getRequestUrl());
         if (Objects.equals(webPermissionModel.getNeedAuthorization(), EnumConstant.Permission_NeedAuthorization_2)) {
-            log.info("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", controllerClass, controllerMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+            log.info("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
             return ACCESS_GRANTED;
         }
         // 对比权限字符串 permission.getPermission()
         if (checkPermission(webPermissionModel.getPermissionStr(), loginUserDetails.getAuthorities())) {
-            log.info("### 授权通过(已授权) [{}#{}] [{}] -> [{}]", controllerClass, controllerMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+            log.info("### 授权通过(已授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
             return ACCESS_GRANTED;
         }
-        log.info("### 授权失败(未授权) [{}#{}] [{}] -> [{}]", controllerClass, controllerMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+        log.info("### 授权失败(未授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
         return ACCESS_DENIED;
     }
 

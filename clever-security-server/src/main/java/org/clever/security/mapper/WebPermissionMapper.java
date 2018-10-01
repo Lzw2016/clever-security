@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface WebPermissionMapper extends BaseMapper<WebPermission> {
 
-    WebPermissionModel getBySysNameAndController(
+    WebPermissionModel getBySysNameAndTarget(
             @Param("sysName") String sysName,
-            @Param("controllerClass") String controllerClass,
-            @Param("controllerMethod") String controllerMethod,
-            @Param("controllerMethodParams") String controllerMethodParams
+            @Param("targetClass") String targetClass,
+            @Param("targetMethod") String targetMethod,
+            @Param("targetMethodParams") String targetMethodParams
     );
 
     List<WebPermissionModel> findBySysName(@Param("sysName") String sysName);

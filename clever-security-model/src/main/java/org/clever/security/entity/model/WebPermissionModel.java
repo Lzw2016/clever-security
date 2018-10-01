@@ -60,17 +60,17 @@ public class WebPermissionModel implements Serializable, Comparable<WebPermissio
     /**
      * Spring Controller类名称
      */
-    private String controllerClass;
+    private String targetClass;
 
     /**
      * Spring Controller类的方法名称
      */
-    private String controllerMethod;
+    private String targetMethod;
 
     /**
      * Spring Controller类的方法参数签名
      */
-    private String controllerMethodParams;
+    private String targetMethodParams;
 
     /**
      * 资源URL地址
@@ -80,28 +80,28 @@ public class WebPermissionModel implements Serializable, Comparable<WebPermissio
     /**
      * Spring Controller路由资源是否存在，0：不存在；1：存在
      */
-    private Integer controllerExist;
+    private Integer targetExist;
 
     /**
      * 定义排序规则
      */
     @Override
     public int compareTo(WebPermissionModel permission) {
-        // module resourcesType controllerClass controllerMethod controllerMethodParams title
+        // module resourcesType targetClass targetMethod targetMethodParams title
         String format = "%1$-128s|%2$-20s|%3$-255s|%4$-255s|%5$-255s|%6$-255s";
         String strA = String.format(format,
                 this.getSysName(),
                 this.getResourcesType(),
-                this.getControllerClass(),
-                this.getControllerMethod(),
-                this.getControllerMethodParams(),
+                this.getTargetClass(),
+                this.getTargetMethod(),
+                this.getTargetMethodParams(),
                 this.getTitle());
         String strB = String.format(format,
                 permission.getSysName(),
                 permission.getResourcesType(),
-                permission.getControllerClass(),
-                permission.getControllerMethod(),
-                permission.getControllerMethodParams(),
+                permission.getTargetClass(),
+                permission.getTargetMethod(),
+                permission.getTargetMethodParams(),
                 permission.getTitle());
         return strA.compareTo(strB);
     }

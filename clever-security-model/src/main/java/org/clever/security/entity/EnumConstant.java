@@ -54,12 +54,12 @@ public class EnumConstant {
     /**
      * controller路由资源是否存在，0：不存在
      */
-    public static final Integer WebPermission_controllerExist_0 = 0;
+    public static final Integer WebPermission_targetExist_0 = 0;
 
     /**
      * controller路由资源是否存在，1：存在
      */
-    public static final Integer WebPermission_controllerExist_1 = 1;
+    public static final Integer WebPermission_targetExist_1 = 1;
 
     /**
      * 登录状态，0：未知

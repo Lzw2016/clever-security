@@ -25,15 +25,15 @@ public class WebPermissionModelGetReq extends BaseRequest {
     @NotBlank
     @Length(max = 255)
     @ApiModelProperty("Controller Class")
-    private String controllerClass;
+    private String targetClass;
 
     @NotBlank
     @Length(max = 255)
     @ApiModelProperty("Controller Method")
-    private String controllerMethod;
+    private String targetMethod;
 
     @NotNull
     @Length(max = 255)
     @ApiModelProperty("Controller Method Params")
-    private String controllerMethodParams;
+    private String targetMethodParams;
 }

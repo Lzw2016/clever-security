@@ -76,21 +76,21 @@ create table web_permission
 (
     id                          bigint              not null    auto_increment                  comment '主键id',
     permission_str              varchar(255)        not null    unique                          comment '权限标识字符串',
-    controller_class            varchar(255)        not null                                    comment 'controller类名称',
-    controller_method           varchar(255)        not null                                    comment 'controller类的方法名称',
-    controller_method_params    varchar(255)        not null                                    comment 'controller类的方法参数签名',
+    target_class                varchar(255)        not null                                    comment 'controller类名称',
+    target_method               varchar(255)        not null                                    comment 'controller类的方法名称',
+    target_method_params        varchar(255)        not null                                    comment 'controller类的方法参数签名',
     resources_url               varchar(255)        not null                                    comment '资源url地址(只用作显示使用)',
     need_authorization          int(1)              not null    default 1                       comment '需要授权才允许访问，1：需要；2：不需要',
-    controller_exist            int(1)              not null    default 1                       comment 'controller路由资源是否存在，0：不存在；1：存在',
+    target_exist                int(1)              not null    default 1                       comment 'controller路由资源是否存在，0：不存在；1：存在',
     create_at                   datetime(3)         not null    default current_timestamp(3)    comment '创建时间',
     update_at                   datetime(3)                     on update current_timestamp(3)  comment '更新时间',
     primary key (id)
 ) comment = 'web权限表(permission子表)';
 create index web_permission_permission_str on web_permission (permission_str);
-create index web_permission_controller_class on web_permission (controller_class);
-create index web_permission_controller_method on web_permission (controller_method);
-create index web_permission_controller_method_params on web_permission (controller_method_params);
-create index web_permission_controller_resources_url on web_permission (resources_url);
+create index web_permission_target_class on web_permission (target_class);
+create index web_permission_target_method on web_permission (target_method);
+create index web_permission_target_method_params on web_permission (target_method_params);
+create index web_permission_resources_url on web_permission (resources_url);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/
