@@ -155,6 +155,7 @@ create index user_sys_sys_name on user_sys (sys_name);
 ==================================================================================================================== */
 create table remember_me_token (
     id              bigint          not null    auto_increment                      comment '主键id',
+    sys_name        varchar(127)    not null                                        comment '系统(或服务)名称',
     series          varchar(63)     not null    unique                              comment 'token序列号',
     username        varchar(63)     not null                                        comment '用户登录名',
     token           varchar(63)     not null                                        comment 'token数据',
@@ -174,6 +175,7 @@ create index remember_me_token_username on remember_me_token (username);
 ==================================================================================================================== */
 create table user_login_log (
     id                  bigint          not null    auto_increment                      comment '主键id',
+    sys_name            varchar(127)    not null                                        comment '系统(或服务)名称',
     username            varchar(63)     not null                                        comment '用户登录名',
     login_time          datetime(3)     not null                                        comment '登录时间',
     login_ip            varchar(63)     not null                                        comment '登录IP',

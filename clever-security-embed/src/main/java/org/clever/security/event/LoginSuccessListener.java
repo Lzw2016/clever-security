@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.client.UserLoginLogClient;
+import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.UserLoginLogAddReq;
 import org.clever.security.entity.EnumConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import java.util.Date;
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
 
     @Autowired
+    private SecurityConfig securityConfig;
+    @Autowired
     private UserLoginLogClient userLoginLogClient;
 
     @Transactional
@@ -43,6 +46,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
             log.warn("### 登录成功未能得到SessionID [{}]", authentication.getName());
         }
         UserLoginLogAddReq userLoginLog = new UserLoginLogAddReq();
+        userLoginLog.setSysName(securityConfig.getSysName());
         userLoginLog.setUsername(authentication.getName());
         userLoginLog.setLoginTime(new Date());
         userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));

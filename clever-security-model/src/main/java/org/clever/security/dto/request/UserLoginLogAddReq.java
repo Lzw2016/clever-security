@@ -20,6 +20,11 @@ import java.util.Date;
 public class UserLoginLogAddReq extends BaseRequest {
 
     @NotBlank
+    @Length(max = 127)
+    @ApiModelProperty("系统(或服务)名称")
+    private String sysName;
+
+    @NotBlank
     @Length(max = 63)
     @ApiModelProperty("用户登录名")
     private String username;

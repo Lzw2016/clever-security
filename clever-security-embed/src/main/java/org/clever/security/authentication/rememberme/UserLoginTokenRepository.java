@@ -2,6 +2,7 @@ package org.clever.security.authentication.rememberme;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.RememberMeTokenClient;
+import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.RememberMeTokenAddReq;
 import org.clever.security.dto.request.RememberMeTokenUpdateReq;
 import org.clever.security.entity.RememberMeToken;
@@ -24,12 +25,15 @@ import java.util.Date;
 public class UserLoginTokenRepository implements PersistentTokenRepository {
 
     @Autowired
+    private SecurityConfig securityConfig;
+    @Autowired
     private RememberMeTokenClient rememberMeTokenClient;
 
     @Transactional
     @Override
     public void createNewToken(PersistentRememberMeToken token) {
         RememberMeTokenAddReq req = new RememberMeTokenAddReq();
+        req.setSysName(securityConfig.getSysName());
         req.setSeries(token.getSeries());
         req.setUsername(token.getUsername());
         req.setToken(token.getTokenValue());

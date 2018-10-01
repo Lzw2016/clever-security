@@ -16,7 +16,10 @@ public class RememberMeToken implements Serializable {
     private static final long serialVersionUID = -57228137236940071L;
     /** 主键id */    
     private Long id;
-    
+
+    /** 系统(或服务)名称 */
+    private String sysName;
+
     /** token序列号 */    
     private String series;
     

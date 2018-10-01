@@ -19,6 +19,11 @@ import java.util.Date;
 public class RememberMeTokenAddReq extends BaseRequest {
 
     @NotBlank
+    @Length(max = 127)
+    @ApiModelProperty("系统(或服务)名称")
+    private String sysName;
+
+    @NotBlank
     @Length(max = 63)
     @ApiModelProperty("token序列号")
     private String series;

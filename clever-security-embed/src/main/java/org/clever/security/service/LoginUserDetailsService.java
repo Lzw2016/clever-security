@@ -41,7 +41,7 @@ public class LoginUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在，usernameOrTelephone=" + username);
         }
         // 校验用户是否有权登录当前系统
-        Boolean canLogin = userClient.canLogin(username, securityConfig.getSysName());
+        Boolean canLogin = userClient.canLogin(user.getUsername(), securityConfig.getSysName());
         if (!canLogin) {
             throw new CanNotLoginSysException("您无权登录当前系统，请联系管理员授权");
         }

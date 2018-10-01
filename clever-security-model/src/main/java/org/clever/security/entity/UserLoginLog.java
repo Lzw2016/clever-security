@@ -20,6 +20,11 @@ public class UserLoginLog implements Serializable {
     private Long id;
 
     /**
+     * 系统(或服务)名称
+     */
+    private String sysName;
+
+    /**
      * 用户登录名
      */
     private String username;
