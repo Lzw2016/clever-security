@@ -17,5 +17,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     User getByTelephone(@Param("telephone") String telephone);
 
-    List<Permission> findByUsername(@Param("username") String username);
+    List<Permission> findByUsername(@Param("username") String username, @Param("sysName") String sysName);
+
+    int existsUserBySysName(@Param("username") String username, @Param("sysName") String sysName);
 }

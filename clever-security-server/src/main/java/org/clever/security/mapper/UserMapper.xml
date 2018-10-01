@@ -6,6 +6,10 @@
         select * from user where username=#{username}
     </select>
 
+    <select id="getByTelephone" resultType="org.clever.security.entity.User">
+        select * from user where telephone=#{telephone}
+    </select>
+
     <select id="findByUsername" resultType="org.clever.security.entity.Permission">
         select
             c.*
@@ -13,9 +17,10 @@
             left join role_permission b on (a.role_name=b.role_name)
             left join permission c on (b.permission_str=c.permission_str)
         where a.username=#{username}
+            and c.sys_name=#{sysName}
     </select>
 
-    <select id="getByTelephone" resultType="org.clever.security.entity.User">
-        select * from user where telephone=#{telephone}
+    <select id="existsUserBySysName" resultType="int">
+        select count(1) from user_sys where username=#{username} and sys_name=#{sysName}
     </select>
 </mapper>

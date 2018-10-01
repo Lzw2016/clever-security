@@ -45,7 +45,11 @@ public class UserService extends BaseService {
         return user;
     }
 
-    public List<Permission> findAllPermission(String username) {
-        return userMapper.findByUsername(username);
+    public List<Permission> findAllPermission(String username, String sysName) {
+        return userMapper.findByUsername(username, sysName);
+    }
+
+    public Boolean canLogin(String username, String sysName) {
+        return userMapper.existsUserBySysName(username, sysName) >= 1;
     }
 }

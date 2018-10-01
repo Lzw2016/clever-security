@@ -22,8 +22,14 @@ public interface UserClient {
     User getUser(@PathVariable("usernameOrTelephone") String usernameOrTelephone);
 
     /**
-     * 获取某个用户的所有权限
+     * 获取某个用户在某个系统下的所有权限
      */
-    @GetMapping("/user/{username}/permission")
-    List<Permission> findAllPermission(@PathVariable("username") String username);
+    @GetMapping("/user/{username}/{sysName}/permission")
+    List<Permission> findAllPermission(@PathVariable("username") String username, @PathVariable("sysName") String sysName);
+
+    /**
+     * 用户是否有权登录某个系统
+     */
+    @GetMapping("/user/{username}/{sysName}")
+    Boolean canLogin(@PathVariable("username") String username, @PathVariable("sysName") String sysName);
 }

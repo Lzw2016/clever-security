@@ -9,6 +9,7 @@ import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.response.LoginRes;
 import org.clever.security.exception.BadCaptchaException;
 import org.clever.security.exception.BadLoginTypeException;
+import org.clever.security.exception.CanNotLoginSysException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -54,6 +55,7 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
         failureMessageMap.put(CredentialsExpiredException.class.getName(), "密码已过期");
         failureMessageMap.put(BadCaptchaException.class.getName(), "验证码错误");
         failureMessageMap.put(BadLoginTypeException.class.getName(), "不支持的登录类型");
+        failureMessageMap.put(CanNotLoginSysException.class.getName(), "您无权登录当前系统，请联系管理员授权");
         if (securityConfig.getHideUserNotFoundExceptions() != null) {
             hideUserNotFoundExceptions = securityConfig.getHideUserNotFoundExceptions();
         }

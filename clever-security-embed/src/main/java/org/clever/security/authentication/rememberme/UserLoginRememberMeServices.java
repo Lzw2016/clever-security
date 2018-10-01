@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * "记住我"功能实现
+ * TODO 用户没有系统登录权限时RememberMe会报500错误
  * 作者： lzw<br/>
  * 创建时间：2018-09-20 20:23 <br/>
  */
