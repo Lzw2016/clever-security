@@ -46,7 +46,7 @@ public class AuthenticationUtils {
         return loginUserDetails.getUser();
     }
 
-    public static UserRes getUserRes(Authentication authentication){
+    public static UserRes getUserRes(Authentication authentication) {
         User user = getUser(authentication);
         if (user == null) {
             return null;

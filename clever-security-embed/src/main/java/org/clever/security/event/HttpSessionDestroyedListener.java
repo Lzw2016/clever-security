@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.session.Session;
 import org.springframework.session.events.SessionDestroyedEvent;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 创建时间：2018-09-23 19:33 <br/>
  */
 @Transactional(readOnly = true)
-@Service
+@Component
 @Slf4j
 public class HttpSessionDestroyedListener implements ApplicationListener<SessionDestroyedEvent> {
 

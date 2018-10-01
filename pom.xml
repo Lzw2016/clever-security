@@ -69,8 +69,8 @@
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <common.version>0.0.1-SNAPSHOT</common.version>
         <spring-cloud.version>Finchley.SR1</spring-cloud.version>
+        <common.version>0.0.1-SNAPSHOT</common.version>
     </properties>
 
     <dependencyManagement>
@@ -140,7 +140,7 @@
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
-                <version>8.0.11</version>
+                <version>8.0.12</version>
             </dependency>
             <dependency>
                 <groupId>com.zaxxer</groupId>
@@ -150,7 +150,7 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>3.0.3</version>
+                <version>3.0.4</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>

@@ -8,7 +8,7 @@ import org.clever.security.entity.RememberMeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -19,7 +19,7 @@ import java.util.Date;
  * 创建时间：2018-09-21 19:52 <br/>
  */
 @Transactional(readOnly = true)
-@Service
+@Component
 @Slf4j
 public class UserLoginTokenRepository implements PersistentTokenRepository {
 

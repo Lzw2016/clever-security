@@ -15,7 +15,7 @@
 // * 创建时间：2018-09-23 19:28 <br/>
 // */
 //@Transactional(readOnly = true)
-//@Service
+//@Component
 //@Slf4j
 //public class HttpSessionCreatedListener implements ApplicationListener<HttpSessionCreatedEvent> {
 //

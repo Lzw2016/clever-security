@@ -69,6 +69,45 @@ spring:
       max-lifetime: 1800000
       connection-test-query: SELECT 1
 
+  cloud: #------------------------------------------------------------ Spring Cloud
+    consul:
+      enabled: false
+      host: '127.0.0.1'
+      port: 8500
+      discovery:
+        enabled: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        instance-zone: wuhan
+        instance-group: svc
+        tags:
+        - serviceName=${spring.application.name}
+        health-check-path: '/actuator/health'
+        health-check-interval: 1s
+
+###################################################################################
+### management配置
+###################################################################################
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include:
+        - health
+        - info
+        - env
+        - metrics
+        - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 30s
+
 ###################################################################################
 ### mybatis-plus配置
 ###################################################################################

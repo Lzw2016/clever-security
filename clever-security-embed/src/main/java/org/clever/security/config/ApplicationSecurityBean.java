@@ -30,6 +30,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-09-17 9:49 <br/>
  */
+//@EnableFeignClients(basePackages = {"org.clever.security.client"})
 @Configuration
 @Slf4j
 public class ApplicationSecurityBean {

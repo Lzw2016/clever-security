@@ -52,43 +52,44 @@ spring:
       period: 31536000s
     static-locations: ['classpath:/static/']
 
-  datasource: #----------------------------------------------------------- 数据库配置
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/clever-security-demo
-    username: root
-    password: lizhiwei
-    hikari:
-      data-source-properties:
-        serverTimezone: GMT+8
-        useUnicode: true
-        characterEncoding: utf-8
-        zeroDateTimeBehavior: convert_to_null
-        useSSL: false
-      auto-commit: false
-      maximum-pool-size: 100
-      minimum-idle: 5
-      max-lifetime: 1800000
-      connection-test-query: SELECT 1
+  cloud: #------------------------------------------------------------ Spring Cloud
+    consul:
+      enabled: false
+      host: '127.0.0.1'
+      port: 8500
+      discovery:
+        enabled: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        instance-zone: wuhan
+        instance-group: svc
+        tags:
+        - serviceName=${spring.application.name}
+        health-check-path: '/actuator/health'
+        health-check-interval: 1s
 
 ###################################################################################
-### mybatis-plus配置
+### management配置
 ###################################################################################
-mybatis-plus:
-  configuration:
-    auto-mapping-behavior: partial
-    auto-mapping-unknown-column-behavior: none
-    map-underscore-to-camel-case: true
-  mapper-locations: 'classpath*: **/*.xml'
-  check-config-location: true
-  executor-type: reuse
-  global-config:
-    banner: true
-    refresh: true
-    sql-parser-cache: true
-    db-config:
-      id-type: auto
-      field-strategy: not_null
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include:
+        - health
+        - info
+        - env
+        - metrics
+        - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 30s
 
 ###################################################################################
 ### clever security配置
@@ -97,6 +98,7 @@ clever:
   security:
     enable-debug: false
     sys-name: '权限系统Demo'
+    wait-spring-context-init-count: 2
     default-need-authorization: true
     ignore-urls:
     - '/swagger-ui*/**'
@@ -111,6 +113,7 @@ clever:
     - '/login/captcha.png'
     - '/dist/**'
     - '/api/user'
+    - '/actuator/**'
     hide-user-not-found-exceptions: true
     notLoginNeedForward: false
     forbidden-need-forward: false
@@ -147,6 +150,7 @@ clever:
 ###################################################################################
 ### Feign配置
 ###################################################################################
+# CommonClientConfigKey 实现
 clever-security-server:
   ribbon:
     listOfServers: '127.0.0.1:28080'
