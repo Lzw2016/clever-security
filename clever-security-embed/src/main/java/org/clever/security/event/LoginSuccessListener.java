@@ -49,7 +49,11 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
         userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
         userLoginLog.setSessionId(StringUtils.trimToEmpty(sessionId));
         userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
-        userLoginLogClient.addUserLoginLog(userLoginLog);
-        log.info("### 写入登录成功日志 [{}]", authentication.getName());
+        try {
+            userLoginLogClient.addUserLoginLog(userLoginLog);
+            log.info("### 写入登录成功日志 [{}]", authentication.getName());
+        } catch (Exception e) {
+            log.error("写入登录成功日志失败 [{}]", authentication.getName(), e);
+        }
     }
 }

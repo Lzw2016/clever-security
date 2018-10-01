@@ -27,16 +27,20 @@ public class HttpSessionDestroyedListener implements ApplicationListener<Session
     @Transactional
     @Override
     public void onApplicationEvent(SessionDestroyedEvent event) {
-        Session session = event.getSession();
-        log.info("### 注销Session [{}]", session.getId());
-        UserLoginLog userLoginLog = userLoginLogClient.getUserLoginLog(session.getId());
-        if (userLoginLog == null) {
-            log.warn("### 注销Session未能找到对应的登录日志 [{}]", session.getId());
-            return;
+        try {
+            Session session = event.getSession();
+            log.info("### 注销Session [{}]", session.getId());
+            UserLoginLog userLoginLog = userLoginLogClient.getUserLoginLog(session.getId());
+            if (userLoginLog == null) {
+                log.warn("### 注销Session未能找到对应的登录日志 [{}]", session.getId());
+                return;
+            }
+            // 设置登录过期
+            UserLoginLogUpdateReq req = new UserLoginLogUpdateReq();
+            req.setLoginState(EnumConstant.UserLoginLog_LoginState_2);
+            userLoginLogClient.updateUserLoginLog(session.getId(), req);
+        } catch (Exception e) {
+            log.error("更新Session注销信息失败", e);
         }
-        // 设置登录过期
-        UserLoginLogUpdateReq req = new UserLoginLogUpdateReq();
-        req.setLoginState(EnumConstant.UserLoginLog_LoginState_2);
-        userLoginLogClient.updateUserLoginLog(session.getId(), req);
     }
 }
