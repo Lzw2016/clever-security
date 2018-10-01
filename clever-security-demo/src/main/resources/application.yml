@@ -14,7 +14,7 @@ logging:
   level:
     org.springframework: warn
     org.springframework.security.web: warn
-    redis.clients: debug
+    org.springframework.data.redis: warn
     org.clever: debug
 
 ###################################################################################
@@ -51,6 +51,20 @@ spring:
     cache:
       period: 31536000s
     static-locations: ['classpath:/static/']
+
+  redis: #---------------------------------------------------------------- Redis配置
+    ssl: false
+    host: '127.0.0.1'
+    port: 6379
+    timeout: 1s
+    database: 0
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 1
+        max-wait: 1s
+      shutdown-timeout: 100ms
 
   cloud: #------------------------------------------------------------ Spring Cloud
     consul:
