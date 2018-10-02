@@ -1,7 +1,9 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
+import org.clever.security.dto.request.RoleQueryPageReq;
 import org.clever.security.entity.Role;
 
 import java.util.List;
@@ -13,4 +15,6 @@ import java.util.List;
 public interface RoleMapper extends BaseMapper<Role> {
 
     List<Role> findByUsername(@Param("username") String username);
+
+    List<Role> findByPage(@Param("query") RoleQueryPageReq query, IPage page);
 }
