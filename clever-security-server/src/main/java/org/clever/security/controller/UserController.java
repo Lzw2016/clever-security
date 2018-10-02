@@ -26,14 +26,6 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
-//    @ApiOperation("新增用户")
-//    @PostMapping("/user")
-//    public UserAddRes addUser(@RequestBody @Validated UserAddReq userAddReq) {
-//        User user = BeanMapper.mapper(userAddReq, User.class);
-//        user = userService.addUser(user);
-//        return BeanMapper.mapper(user, UserAddRes.class);
-//    }
-
     @ApiOperation("获取用户")
     @GetMapping("/user/{usernameOrTelephone}")
     public User getUser(@PathVariable("usernameOrTelephone") String usernameOrTelephone) {
@@ -51,14 +43,4 @@ public class UserController extends BaseController {
     public Boolean canLogin(@PathVariable("username") String username, @PathVariable("sysName") String sysName) {
         return userService.canLogin(username, sysName);
     }
-
-    // 更新用户
-
-    // 删除用户
-
-    // 查询单个用户-仅用户信息
-
-    // 查询单个用户-所有信息
-
-    // 查询用户列表
 }

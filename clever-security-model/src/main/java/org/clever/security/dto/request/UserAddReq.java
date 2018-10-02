@@ -30,8 +30,8 @@ public class UserAddReq extends BaseRequest {
     @Length(min = 6, max = 16)
     private String password;
 
-//    @ApiModelProperty("用户类型，0：系统内建，1：外部系统用户")
-    @Range(min = 0,max = 1)
+    @ApiModelProperty("用户类型，0：系统内建，1：外部系统用户")
+    @Range(min = 0, max = 1)
     private Integer userType;
 
     @ApiModelProperty("手机号")
@@ -45,12 +45,12 @@ public class UserAddReq extends BaseRequest {
     @ApiModelProperty("帐号过期时间")
     private Date expiredTime;
 
-//    @ApiModelProperty("帐号是否锁定，0：未锁定；1：锁定")
-    @Range(min = 0,max = 1)
+    @ApiModelProperty("帐号是否锁定，0：未锁定；1：锁定")
+    @Range(min = 0, max = 1)
     private Integer locked;
 
-//    @ApiModelProperty("是否启用，0：禁用；1：启用")
-    @Range(min = 0,max = 1)
+    @ApiModelProperty("是否启用，0：禁用；1：启用")
+    @Range(min = 0, max = 1)
     private Integer enabled;
 
     @ApiModelProperty("说明")

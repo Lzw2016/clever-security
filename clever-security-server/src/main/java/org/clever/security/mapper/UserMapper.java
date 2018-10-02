@@ -1,7 +1,9 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
+import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
 
@@ -20,4 +22,8 @@ public interface UserMapper extends BaseMapper<User> {
     List<Permission> findByUsername(@Param("username") String username, @Param("sysName") String sysName);
 
     int existsUserBySysName(@Param("username") String username, @Param("sysName") String sysName);
+
+    List<User> findByPage(@Param("query") UserQueryPageReq query, IPage page);
+
+    List<String> findSysNameByUsername(@Param("username") String username);
 }
