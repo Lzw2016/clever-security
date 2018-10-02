@@ -43,4 +43,6 @@ public class UserController extends BaseController {
     public Boolean canLogin(@PathVariable("username") String username, @PathVariable("sysName") String sysName) {
         return userService.canLogin(username, sysName);
     }
+
+    // TODO 用户认证
 }

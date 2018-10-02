@@ -7,6 +7,7 @@ import org.clever.common.server.controller.BaseController;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.UserAddReq;
 import org.clever.security.dto.request.UserQueryPageReq;
+import org.clever.security.dto.request.UserUpdateReq;
 import org.clever.security.dto.response.UserAddRes;
 import org.clever.security.dto.response.UserInfoRes;
 import org.clever.security.entity.User;
@@ -47,13 +48,15 @@ public class ManageByUserController extends BaseController {
         return BeanMapper.mapper(user, UserAddRes.class);
     }
 
-    // 更新用户
+    @ApiOperation("更新用户")
+    @PutMapping("/user")
+    public UserAddRes updateUser(@RequestBody @Validated UserUpdateReq req) {
+        return BeanMapper.mapper(manageByUserService.updateUser(req), UserAddRes.class);
+    }
 
-    // 删除用户
-
-    // 查询单个用户-仅用户信息
-
-    // 查询单个用户-所有信息
-
-    // 重置密码
+    @ApiOperation("删除用户")
+    @DeleteMapping("/user/{username}")
+    public UserAddRes deleteUser(@PathVariable("username") String username) {
+        return BeanMapper.mapper(manageByUserService.deleteUser(username), UserAddRes.class);
+    }
 }

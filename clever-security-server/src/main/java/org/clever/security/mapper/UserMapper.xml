@@ -32,6 +32,7 @@
 
     <select id="findByPage" resultType="org.clever.security.entity.User" parameterType="org.clever.security.dto.request.UserQueryPageReq">
         select
+        id,
         username,
         user_type,
         telephone,

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.UserQueryPageReq;
+import org.clever.security.dto.request.UserUpdateReq;
 import org.clever.security.dto.response.UserInfoRes;
 import org.clever.security.entity.User;
 import org.clever.security.mapper.PermissionMapper;
@@ -65,4 +66,15 @@ public class ManageByUserService {
         return userMapper.selectById(user.getId());
     }
 
+    @Transactional
+    public User updateUser(UserUpdateReq req) {
+        // TODO 更新用户信息
+        return null;
+    }
+
+    @Transactional
+    public User deleteUser(String username) {
+        // TODO 删除用户
+        return null;
+    }
 }
