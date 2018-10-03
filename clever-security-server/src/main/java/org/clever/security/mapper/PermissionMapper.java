@@ -20,4 +20,8 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     List<Permission> findByRoleName(@Param("roleName") String roleName);
 
     List<WebPermissionModel> findByPage(@Param("query") RolePermissionQueryReq query, IPage page);
+
+    int existsPermission(@Param("permissionStr") String permissionStr);
+
+    WebPermissionModel getByPermissionStr(@Param("permissionStr") String permissionStr);
 }

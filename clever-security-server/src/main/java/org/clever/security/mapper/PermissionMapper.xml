@@ -68,4 +68,30 @@
         </where>
         order by a.id
     </select>
+
+    <select id="existsPermission" resultType="int">
+        select count(1) from permission where permission_str=#{permissionStr}
+    </select>
+
+    <select id="getByPermissionStr" resultType="org.clever.security.entity.model.WebPermissionModel">
+        SELECT
+               a.id AS permission_id,
+               a.sys_name,
+               a.title,
+               a.permission_str,
+               a.resources_type,
+               a.description,
+               a.create_at,
+               a.update_at,
+
+               b.id AS web_permission_id,
+               b.need_authorization,
+               b.target_class,
+               b.target_method,
+               b.target_method_params,
+               b.resources_url,
+               b.target_exist
+        FROM permission a LEFT JOIN web_permission b ON (a.permission_str = b.permission_str)
+        WHERE a.permission_str=#{permissionStr}
+    </select>
 </mapper>
