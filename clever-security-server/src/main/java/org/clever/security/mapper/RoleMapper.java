@@ -14,6 +14,8 @@ import java.util.List;
  */
 public interface RoleMapper extends BaseMapper<Role> {
 
+    Role getByName(@Param("name") String name);
+
     List<Role> findByUsername(@Param("username") String username);
 
     List<Role> findByPage(@Param("query") RoleQueryPageReq query, IPage page);

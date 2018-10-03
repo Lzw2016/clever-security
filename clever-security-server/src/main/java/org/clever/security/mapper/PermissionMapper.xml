@@ -9,4 +9,63 @@
                  left join permission c on (b.permission_str = c.permission_str)
         where a.username = #{username}
     </select>
+
+    <select id="findByRoleName" resultType="org.clever.security.entity.Permission">
+        select b.*
+        from role_permission a
+                 left join permission b on (a.permission_str = b.permission_str)
+        where a.role_name = #{roleName}
+        order by b.id
+    </select>
+
+    <select id="findByPage" resultType="org.clever.security.entity.model.WebPermissionModel">
+        select
+            a.id AS permission_id,
+            a.sys_name,
+            a.title,
+            a.permission_str,
+            a.resources_type,
+            a.description,
+            a.create_at,
+            a.update_at,
+
+            b.id AS web_permission_id,
+            b.need_authorization,
+            b.target_class,
+            b.target_method,
+            b.target_method_params,
+            b.resources_url,
+            b.target_exist
+        from permission a left join web_permission b on (a.permission_str=b.permission_str)
+        <where>
+            <if test="query.sysName!=null and query.sysName!=null">
+                and a.sys_name=#{query.sysName}
+            </if>
+            <if test="query.title!=null and query.title!=null">
+                and a.title like concat('%', #{query.title}, '%')
+            </if>
+            <if test="query.permissionStr!=null and query.permissionStr!=null">
+                and a.permission_str like concat('%', #{query.permissionStr}, '%')
+            </if>
+            <if test="query.resourcesType!=null">
+                and a.resources_type=#{query.resourcesType}
+            </if>
+            <if test="query.targetClass!=null and query.targetClass!=null">
+                and b.target_class like concat('%', #{query.targetClass}, '%')
+            </if>
+            <if test="query.targetMethod!=null and query.targetMethod!=null">
+                and b.target_method like concat('%', #{query.targetMethod}, '%')
+            </if>
+            <if test="query.resourcesUrl!=null and query.resourcesUrl!=null">
+                and b.resources_url like concat('%', #{query.resourcesUrl}, '%')
+            </if>
+            <if test="query.needAuthorization!=null">
+                and b.need_authorization=#{query.needAuthorization}
+            </if>
+            <if test="query.targetExist!=null">
+                and b.target_exist=#{query.targetExist}
+            </if>
+        </where>
+        order by a.id
+    </select>
 </mapper>

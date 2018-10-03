@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--suppress SqlNoDataSourceInspection -->
 <mapper namespace="org.clever.security.mapper.RoleMapper">
+    <select id="getByName" resultType="org.clever.security.entity.Role">
+        select * from role where name=#{name}
+    </select>
+
     <select id="findByUsername" resultType="org.clever.security.entity.Role">
         select a.*
         from role a

@@ -1,8 +1,11 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
+import org.clever.security.dto.request.RolePermissionQueryReq;
 import org.clever.security.entity.Permission;
+import org.clever.security.entity.model.WebPermissionModel;
 
 import java.util.List;
 
@@ -13,4 +16,8 @@ import java.util.List;
 public interface PermissionMapper extends BaseMapper<Permission> {
 
     List<Permission> findByUsername(@Param("username") String username);
+
+    List<Permission> findByRoleName(@Param("roleName") String roleName);
+
+    List<WebPermissionModel> findByPage(@Param("query") RolePermissionQueryReq query, IPage page);
 }
