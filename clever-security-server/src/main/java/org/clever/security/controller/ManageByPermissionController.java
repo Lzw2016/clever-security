@@ -7,7 +7,7 @@ import org.clever.common.server.controller.BaseController;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.PermissionAddReq;
 import org.clever.security.dto.request.PermissionUpdateReq;
-import org.clever.security.dto.request.RolePermissionQueryReq;
+import org.clever.security.dto.request.PermissionQueryReq;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.service.ManageByPermissionService;
@@ -29,7 +29,7 @@ public class ManageByPermissionController extends BaseController {
 
     @ApiOperation("查询权限列表")
     @GetMapping("/permission")
-    public IPage<WebPermissionModel> findByPage(RolePermissionQueryReq queryReq) {
+    public IPage<WebPermissionModel> findByPage(PermissionQueryReq queryReq) {
         return manageByPermissionService.findByPage(queryReq);
     }
 

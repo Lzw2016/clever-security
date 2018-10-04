@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
 import org.clever.security.dto.request.PermissionUpdateReq;
-import org.clever.security.dto.request.RolePermissionQueryReq;
+import org.clever.security.dto.request.PermissionQueryReq;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.mapper.PermissionMapper;
@@ -25,7 +25,7 @@ public class ManageByPermissionService {
     @Autowired
     private PermissionMapper permissionMapper;
 
-    public IPage<WebPermissionModel> findByPage(RolePermissionQueryReq queryReq) {
+    public IPage<WebPermissionModel> findByPage(PermissionQueryReq queryReq) {
         Page<WebPermissionModel> page = new Page<>(queryReq.getPageNo(), queryReq.getPageSize());
         page.setRecords(permissionMapper.findByPage(queryReq, page));
         return page;

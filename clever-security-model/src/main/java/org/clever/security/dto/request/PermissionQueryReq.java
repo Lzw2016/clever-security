@@ -11,7 +11,7 @@ import org.clever.common.model.request.QueryByPage;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class RolePermissionQueryReq extends QueryByPage {
+public class PermissionQueryReq extends QueryByPage {
 
     @ApiModelProperty("系统(或服务)名称")
     private String sysName;

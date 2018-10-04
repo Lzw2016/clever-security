@@ -4,21 +4,21 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.response.BaseResponse;
-import org.clever.security.entity.Role;
+import org.clever.security.entity.Permission;
 
 import java.util.List;
 
 /**
  * 作者： lzw<br/>
- * 创建时间：2018-10-03 21:54 <br/>
+ * 创建时间：2018-10-04 12:56 <br/>
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UserBindRoleRes extends BaseResponse {
+public class RoleBindPermissionRes extends BaseResponse {
 
-    @ApiModelProperty("用户名")
-    private String username;
+    @ApiModelProperty("角色名称")
+    private String roleName;
 
-    @ApiModelProperty("角色集合")
-    private List<Role> roleList;
+    @ApiModelProperty("权限列表")
+    private List<Permission> permissionList;
 }
