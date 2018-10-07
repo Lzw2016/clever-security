@@ -26,4 +26,12 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> findByPage(@Param("query") UserQueryPageReq query, IPage page);
 
     List<String> findSysNameByUsername(@Param("username") String username);
+
+    int addUserSys(@Param("username") String username, @Param("sysName") String sysName);
+
+    int existsByUserName(@Param("username") String username);
+
+    int existsByTelephone(@Param("telephone") String telephone);
+
+    int existsByEmail(@Param("email") String email);
 }

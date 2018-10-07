@@ -3,8 +3,10 @@ package org.clever.security.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.mapper.BeanMapper;
+import org.clever.security.dto.request.UserAddReq;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.dto.request.UserUpdateReq;
 import org.clever.security.dto.response.UserInfoRes;
@@ -36,6 +38,8 @@ public class ManageByUserService {
     private RoleMapper roleMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+//    @Autowired
+//    private QueryMapper queryMapper;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
@@ -56,13 +60,28 @@ public class ManageByUserService {
     }
 
     @Transactional
-    public User addUser(User user) {
+    public User addUser(UserAddReq userAddReq) {
+        User user = BeanMapper.mapper(userAddReq, User.class);
         final Date now = new Date();
         if (user.getExpiredTime() != null && now.compareTo(user.getExpiredTime()) >= 0) {
             throw new BusinessException("设置过期时间小于当前时间");
         }
+        if (userMapper.existsByUserName(user.getUsername()) > 0) {
+            throw new BusinessException("用户名已经存在");
+        }
+        if (StringUtils.isNotBlank(user.getTelephone()) && userMapper.existsByTelephone(user.getTelephone()) > 0) {
+            throw new BusinessException("手机号已经被绑定");
+        }
+        if (StringUtils.isNotBlank(user.getEmail()) && userMapper.existsByEmail(user.getEmail()) > 0) {
+            throw new BusinessException("邮箱已经被绑定");
+        }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
+        if (userAddReq.getSysNameList() != null) {
+            for (String sysName : userAddReq.getSysNameList()) {
+                userMapper.addUserSys(user.getUsername(), sysName);
+            }
+        }
         return userMapper.selectById(user.getId());
     }
 

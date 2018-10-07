@@ -10,7 +10,9 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * 作者： lzw<br/>
@@ -56,4 +58,8 @@ public class UserAddReq extends BaseRequest {
     @ApiModelProperty("说明")
     @Length(max = 511)
     private String description;
+
+    @ApiModelProperty("系统名称列表")
+    @Size(max = 100)
+    private Set<String> sysNameList;
 }

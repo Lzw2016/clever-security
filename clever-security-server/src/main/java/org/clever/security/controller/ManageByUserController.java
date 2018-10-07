@@ -43,8 +43,7 @@ public class ManageByUserController extends BaseController {
     @ApiOperation("新增用户")
     @PostMapping("/user")
     public UserAddRes addUser(@RequestBody @Validated UserAddReq userAddReq) {
-        User user = BeanMapper.mapper(userAddReq, User.class);
-        user = manageByUserService.addUser(user);
+        User user = manageByUserService.addUser(userAddReq);
         return BeanMapper.mapper(user, UserAddRes.class);
     }
 
