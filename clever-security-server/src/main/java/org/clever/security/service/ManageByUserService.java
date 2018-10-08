@@ -75,6 +75,15 @@ public class ManageByUserService {
         if (StringUtils.isNotBlank(user.getEmail()) && userMapper.existsByEmail(user.getEmail()) > 0) {
             throw new BusinessException("邮箱已经被绑定");
         }
+        // 登录名(一条记录的手机号不能当另一条记录的用户名用)
+        if (StringUtils.isNotBlank(user.getTelephone()) && userMapper.existsByUserName(user.getTelephone()) > 0) {
+            // 手机号不能是已存在用户的登录名
+            throw new BusinessException("手机号已经被绑定");
+        }
+        if (user.getUsername().matches("1[0-9]{10}") && userMapper.existsByTelephone(user.getUsername()) > 0) {
+            // 登录名符合手机号格式，而且该手机号已经存在
+            throw new BusinessException("手机号已经被绑定");
+        }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
         if (userAddReq.getSysNameList() != null) {
