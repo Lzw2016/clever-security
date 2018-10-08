@@ -14,11 +14,17 @@ public class CryptoUtilsTest {
 
     @Test
     public void t01() {
+        log.info("{}",EncodeDecodeUtils.encodeHex("clever-security-server李志伟".getBytes()));
+
+
         String str = "李志伟123abc!@#$";
-        String key = "1234567890123456";
-        byte[] iv = CryptoUtils.generateIV();
-        String str2 = EncodeDecodeUtils.encodeHex(CryptoUtils.aesEncrypt(str.getBytes(), key.getBytes(), iv));
+        byte[] key = EncodeDecodeUtils.decodeHex("636c657665722d73656375726974792d");
+        byte[] iv = EncodeDecodeUtils.decodeHex("f0021ea5a06d5a7bade961afe47e9ad9");
+
+        byte[] data = CryptoUtils.aesEncrypt(str.getBytes(), key, iv);
+
+        String str2 = EncodeDecodeUtils.encodeBase64(data);
         log.info("加密 {}", str2);
-        log.info("解密 {}", CryptoUtils.aesDecrypt(EncodeDecodeUtils.decodeHex(str2), key.getBytes(), iv));
+        log.info("解密 {}", CryptoUtils.aesDecrypt(data, key, iv));
     }
 }

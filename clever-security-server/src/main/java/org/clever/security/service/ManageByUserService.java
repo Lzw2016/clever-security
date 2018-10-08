@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.codec.CryptoUtils;
+import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.BeanMapper;
+import org.clever.security.config.GlobalConfig;
 import org.clever.security.dto.request.UserAddReq;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.dto.request.UserUpdateReq;
@@ -31,6 +34,8 @@ import java.util.Date;
 public class ManageByUserService {
 
     @Autowired
+    private GlobalConfig globalConfig;
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private UserMapper userMapper;
@@ -38,8 +43,6 @@ public class ManageByUserService {
     private RoleMapper roleMapper;
     @Autowired
     private PermissionMapper permissionMapper;
-//    @Autowired
-//    private QueryMapper queryMapper;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
@@ -84,6 +87,11 @@ public class ManageByUserService {
             // 登录名符合手机号格式，而且该手机号已经存在
             throw new BusinessException("手机号已经被绑定");
         }
+        // 密码先解密再加密
+        byte[] passwordData = EncodeDecodeUtils.decodeBase64(user.getPassword());
+        byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesKey());
+        byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
+        user.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userMapper.insert(user);
         if (userAddReq.getSysNameList() != null) {
