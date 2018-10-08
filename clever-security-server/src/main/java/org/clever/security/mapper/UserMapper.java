@@ -29,6 +29,8 @@ public interface UserMapper extends BaseMapper<User> {
 
     int addUserSys(@Param("username") String username, @Param("sysName") String sysName);
 
+    int delUserSys(@Param("username") String username, @Param("sysName") String sysName);
+
     int existsByUserName(@Param("username") String username);
 
     int existsByTelephone(@Param("telephone") String telephone);

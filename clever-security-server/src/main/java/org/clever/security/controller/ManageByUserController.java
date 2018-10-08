@@ -48,9 +48,9 @@ public class ManageByUserController extends BaseController {
     }
 
     @ApiOperation("更新用户")
-    @PutMapping("/user")
-    public UserAddRes updateUser(@RequestBody @Validated UserUpdateReq req) {
-        return BeanMapper.mapper(manageByUserService.updateUser(req), UserAddRes.class);
+    @PutMapping("/user/{username}")
+    public UserAddRes updateUser(@PathVariable("username") String username, @RequestBody @Validated UserUpdateReq req) {
+        return BeanMapper.mapper(manageByUserService.updateUser(username, req), UserAddRes.class);
     }
 
     @ApiOperation("删除用户")

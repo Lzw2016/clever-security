@@ -23,6 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 作者： lzw<br/>
@@ -103,16 +106,68 @@ public class ManageByUserService {
     }
 
     @Transactional
-    public User updateUser(UserUpdateReq req) {
-        // TODO 更新用户信息
-        return null;
+    public User updateUser(String username, UserUpdateReq req) {
+        User oldUser = userMapper.getByUsername(username);
+        if (oldUser == null) {
+            throw new BusinessException("用户不存在");
+        }
+        // 修改了密码
+        if (StringUtils.isNotBlank(req.getPassword())) {
+            // 密码先解密再加密
+            byte[] passwordData = EncodeDecodeUtils.decodeBase64(req.getPassword());
+            byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesKey());
+            byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
+            req.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
+            req.setPassword(bCryptPasswordEncoder.encode(req.getPassword()));
+        } else {
+            req.setPassword(null);
+        }
+        // 修改了手机号
+        if (StringUtils.isNotBlank(req.getTelephone()) && !req.getTelephone().equals(oldUser.getTelephone())) {
+
+        } else {
+            req.setTelephone(null);
+        }
+        // 修改了邮箱
+        if (StringUtils.isNotBlank(req.getEmail()) && !req.getEmail().equals(oldUser.getEmail())) {
+
+        } else {
+            req.setEmail(null);
+        }
+        User user = BeanMapper.mapper(req, User.class);
+        user.setId(oldUser.getId());
+        userMapper.updateById(user);
+        user = userMapper.selectById(oldUser.getId());
+        // 更新关联系统
+        if (req.getSysNameList() == null) {
+            req.setSysNameList(new HashSet<>());
+        }
+        // 获取关联系统列表
+        List<String> sysNameList = userMapper.findSysNameByUsername(user.getUsername());
+        Set<String> addSysName = new HashSet<>(req.getSysNameList());
+        addSysName.removeAll(sysNameList);
+        Set<String> delSysName = new HashSet<>(sysNameList);
+        delSysName.removeAll(req.getSysNameList());
+        // 新增
+        for (String sysName : addSysName) {
+            userMapper.addUserSys(user.getUsername(), sysName);
+        }
+        // 删除
+        for (String sysName : delSysName) {
+            userMapper.delUserSys(user.getUsername(), sysName);
+            // TODO 删除Session
+        }
+        // TODO 1.更新Session 2.失效remember_me_token
+        return user;
     }
 
     @Transactional
     public User deleteUser(String username) {
         User user = userMapper.getByUsername(username);
-
-        // TODO 删除用户
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        // TODO 1.删除用户信息 2.删除关联数据 user_role、user_sys 3.失效remember_me_token、Session
         return user;
     }
 }

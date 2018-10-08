@@ -8,6 +8,10 @@
         VALUES(#{username}, #{sysName})
     </insert>
 
+    <delete id="delUserSys">
+        delete from user_sys where username=#{username} and sys_name=#{sysName}
+    </delete>
+
     <select id="getByUsername" resultType="org.clever.security.entity.User">
         select *
         from user

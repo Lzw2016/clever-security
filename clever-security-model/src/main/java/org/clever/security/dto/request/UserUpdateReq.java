@@ -9,7 +9,9 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * 作者： lzw<br/>
@@ -18,10 +20,6 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UserUpdateReq extends BaseRequest {
-
-    @ApiModelProperty("登录名")
-    @Pattern(regexp = "[a-zA-Z0-9_-]{3,16}")
-    private String username;
 
     @ApiModelProperty("密码")
     @Length(min = 6, max = 16)
@@ -53,4 +51,8 @@ public class UserUpdateReq extends BaseRequest {
     @ApiModelProperty("说明")
     @Length(max = 511)
     private String description;
+
+    @ApiModelProperty("系统名称列表")
+    @Size(max = 100)
+    private Set<String> sysNameList;
 }
