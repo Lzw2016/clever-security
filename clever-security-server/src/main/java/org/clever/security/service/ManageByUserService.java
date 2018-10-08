@@ -110,7 +110,9 @@ public class ManageByUserService {
 
     @Transactional
     public User deleteUser(String username) {
+        User user = userMapper.getByUsername(username);
+
         // TODO 删除用户
-        return null;
+        return user;
     }
 }
