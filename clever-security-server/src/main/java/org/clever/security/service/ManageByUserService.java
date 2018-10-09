@@ -13,6 +13,7 @@ import org.clever.security.dto.request.UserAddReq;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.dto.request.UserUpdateReq;
 import org.clever.security.dto.response.UserInfoRes;
+import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.RoleMapper;
@@ -22,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 作者： lzw<br/>
@@ -138,8 +136,10 @@ public class ManageByUserService {
         } else {
             req.setEmail(null);
         }
-        // 设置了过期
-        if (req.getExpiredTime() != null && req.getExpiredTime().compareTo(new Date()) <= 0) {
+        // 设置了过期、锁定、禁用
+        if ((req.getExpiredTime() != null && req.getExpiredTime().compareTo(new Date()) <= 0)
+                || Objects.equals(req.getLocked(), EnumConstant.User_Locked_1)
+                || Objects.equals(req.getEnabled(), EnumConstant.User_Enabled_0)) {
             // TODO 1.删除Session 2.失效remember_me_token
         }
         User user = BeanMapper.mapper(req, User.class);
