@@ -138,6 +138,10 @@ public class ManageByUserService {
         } else {
             req.setEmail(null);
         }
+        // 设置了过期
+        if (req.getExpiredTime() != null && req.getExpiredTime().compareTo(new Date()) <= 0) {
+            // TODO 1.删除Session 2.失效remember_me_token
+        }
         User user = BeanMapper.mapper(req, User.class);
         user.setId(oldUser.getId());
         userMapper.updateById(user);
