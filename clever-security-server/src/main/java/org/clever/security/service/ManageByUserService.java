@@ -124,13 +124,17 @@ public class ManageByUserService {
         }
         // 修改了手机号
         if (StringUtils.isNotBlank(req.getTelephone()) && !req.getTelephone().equals(oldUser.getTelephone())) {
-
+            if (userMapper.existsByTelephone(req.getTelephone()) > 0 || userMapper.existsByUserName(req.getTelephone()) > 0) {
+                throw new BusinessException("手机号已经被绑定");
+            }
         } else {
             req.setTelephone(null);
         }
         // 修改了邮箱
         if (StringUtils.isNotBlank(req.getEmail()) && !req.getEmail().equals(oldUser.getEmail())) {
-
+            if (userMapper.existsByEmail(req.getEmail()) > 0) {
+                throw new BusinessException("邮箱已经被绑定");
+            }
         } else {
             req.setEmail(null);
         }
