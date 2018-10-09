@@ -38,4 +38,8 @@ public class ManageByQueryService {
     public List<String> allSysName() {
         return queryMapper.allSysName();
     }
+
+    public List<String> findSysNameByUser(String username) {
+        return userMapper.findSysNameByUsername(username);
+    }
 }

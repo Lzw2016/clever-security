@@ -48,4 +48,10 @@ public class ManageByQueryController extends BaseController {
     public List<String> allSysName() {
         return manageByQueryService.allSysName();
     }
+
+    @ApiOperation("查询用户绑定的系统")
+    @GetMapping("/sys_name/{username}")
+    public List<String> findSysNameByUser(@PathVariable("username") String username) {
+        return manageByQueryService.findSysNameByUser(username);
+    }
 }
