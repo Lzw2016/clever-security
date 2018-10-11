@@ -18,12 +18,15 @@ import org.clever.security.entity.User;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.UserBindSysNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * 作者： lzw<br/>
@@ -44,6 +47,8 @@ public class ManageByUserService {
     private RoleMapper roleMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private UserBindSysNameService userBindSysNameService;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
@@ -150,21 +155,7 @@ public class ManageByUserService {
         if (req.getSysNameList() == null) {
             req.setSysNameList(new HashSet<>());
         }
-        // 获取关联系统列表
-        List<String> sysNameList = userMapper.findSysNameByUsername(user.getUsername());
-        Set<String> addSysName = new HashSet<>(req.getSysNameList());
-        addSysName.removeAll(sysNameList);
-        Set<String> delSysName = new HashSet<>(sysNameList);
-        delSysName.removeAll(req.getSysNameList());
-        // 新增
-        for (String sysName : addSysName) {
-            userMapper.addUserSys(user.getUsername(), sysName);
-        }
-        // 删除
-        for (String sysName : delSysName) {
-            userMapper.delUserSys(user.getUsername(), sysName);
-            // TODO 删除Session
-        }
+        userBindSysNameService.resetUserBindSys(user.getUsername(), req.getSysNameList());
         // TODO 1.更新Session 2.失效remember_me_token
         return user;
     }

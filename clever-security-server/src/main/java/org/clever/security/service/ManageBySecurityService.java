@@ -1,13 +1,18 @@
 package org.clever.security.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.exception.BusinessException;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.RoleBindPermissionRes;
 import org.clever.security.dto.response.UserBindRoleRes;
 import org.clever.security.dto.response.UserBindSysRes;
+import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.UserBindSysNameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,10 +24,31 @@ import java.util.List;
 @Slf4j
 public class ManageBySecurityService {
 
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private UserBindSysNameService userBindSysNameService;
+
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
-        // TODO 用户系统绑定
-        return null;
+        // 校验用户时候存在
+        for (String username : userBindSysReq.getUsernameList()) {
+            int count = userMapper.existsByUserName(username);
+            if (count <= 0) {
+                throw new BusinessException("用户[" + username + "]不存在");
+            }
+        }
+        List<UserBindSysRes> result = new ArrayList<>();
+        // 设置用户绑定的系统
+        for (String username : userBindSysReq.getUsernameList()) {
+            userBindSysNameService.resetUserBindSys(username, userBindSysReq.getSysNameList());
+            List<String> sysNameList = userMapper.findSysNameByUsername(username);
+            UserBindSysRes userBindSysRes = new UserBindSysRes();
+            userBindSysRes.setUsername(username);
+            userBindSysRes.setSysNameList(sysNameList);
+            result.add(userBindSysRes);
+        }
+        return result;
     }
 
     @Transactional
