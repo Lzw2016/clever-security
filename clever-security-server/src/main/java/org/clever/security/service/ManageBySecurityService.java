@@ -6,7 +6,9 @@ import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.RoleBindPermissionRes;
 import org.clever.security.dto.response.UserBindRoleRes;
 import org.clever.security.dto.response.UserBindSysRes;
+import org.clever.security.entity.Role;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.UserBindRoleService;
 import org.clever.security.service.internal.UserBindSysNameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ public class ManageBySecurityService {
     private UserMapper userMapper;
     @Autowired
     private UserBindSysNameService userBindSysNameService;
+    @Autowired
+    private UserBindRoleService userBindRoleService;
 
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
@@ -53,8 +57,24 @@ public class ManageBySecurityService {
 
     @Transactional
     public List<UserBindRoleRes> userBindRole(UserBindRoleReq userBindSysReq) {
-        // TODO 用户角色绑定
-        return null;
+        // 校验用户时候存在
+        for (String username : userBindSysReq.getUsernameList()) {
+            int count = userMapper.existsByUserName(username);
+            if (count <= 0) {
+                throw new BusinessException("用户[" + username + "]不存在");
+            }
+        }
+        List<UserBindRoleRes> result = new ArrayList<>();
+        // 设置用户绑定的系统
+        for (String username : userBindSysReq.getUsernameList()) {
+            userBindRoleService.resetUserBindRole(username, userBindSysReq.getRoleNameList());
+            List<Role> roleList = userMapper.findRoleByUsername(username);
+            UserBindRoleRes userBindRoleRes = new UserBindRoleRes();
+            userBindRoleRes.setUsername(username);
+            userBindRoleRes.setRoleList(roleList);
+            result.add(userBindRoleRes);
+        }
+        return result;
     }
 
     @Transactional

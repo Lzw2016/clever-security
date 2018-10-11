@@ -1,6 +1,7 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import org.clever.security.entity.User;
 
 import java.util.List;
@@ -12,4 +13,8 @@ import java.util.List;
 public interface QueryMapper extends BaseMapper<User> {
 
     List<String> allSysName();
+
+    List<String> allRoleName();
+
+    List<String> findRoleNameByUser(@Param("username") String username);
 }

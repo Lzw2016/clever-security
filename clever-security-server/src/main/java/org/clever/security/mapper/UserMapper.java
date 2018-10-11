@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.entity.Permission;
+import org.clever.security.entity.Role;
 import org.clever.security.entity.User;
 
 import java.util.List;
@@ -36,4 +37,10 @@ public interface UserMapper extends BaseMapper<User> {
     int existsByTelephone(@Param("telephone") String telephone);
 
     int existsByEmail(@Param("email") String email);
+
+    int addRole(@Param("username") String username, @Param("roleName") String roleName);
+
+    int delRole(@Param("username") String username, @Param("roleName") String roleName);
+
+    List<Role> findRoleByUsername(@Param("username") String username);
 }

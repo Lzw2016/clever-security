@@ -54,4 +54,16 @@ public class ManageByQueryController extends BaseController {
     public List<String> findSysNameByUser(@PathVariable("username") String username) {
         return manageByQueryService.findSysNameByUser(username);
     }
+
+    @ApiOperation("查询所有角色名称")
+    @GetMapping("/role_name")
+    public List<String> allRoleName() {
+        return manageByQueryService.allRoleName();
+    }
+
+    @ApiOperation("查询用户拥有的角色")
+    @GetMapping("/role_name/{username}")
+    public List<String> findRoleNameByUser(@PathVariable("username") String username) {
+        return manageByQueryService.findRoleNameByUser(username);
+    }
 }
