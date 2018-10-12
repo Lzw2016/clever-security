@@ -24,4 +24,6 @@ public interface PermissionMapper extends BaseMapper<Permission> {
     int existsPermission(@Param("permissionStr") String permissionStr);
 
     WebPermissionModel getByPermissionStr(@Param("permissionStr") String permissionStr);
+
+    int delRolePermission(@Param("permissionStr") String permissionStr);
 }

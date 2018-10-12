@@ -6,14 +6,17 @@ import io.swagger.annotations.ApiOperation;
 import org.clever.common.server.controller.BaseController;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.PermissionAddReq;
-import org.clever.security.dto.request.PermissionUpdateReq;
 import org.clever.security.dto.request.PermissionQueryReq;
+import org.clever.security.dto.request.PermissionUpdateReq;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.service.ManageByPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 作者： lzw<br/>
@@ -56,5 +59,14 @@ public class ManageByPermissionController extends BaseController {
     @DeleteMapping("/permission/{permissionStr}")
     public WebPermissionModel delPermissionModel(@PathVariable("permissionStr") String permissionStr) {
         return manageByPermissionService.delPermissionModel(permissionStr);
+    }
+
+    @ApiOperation("删除权限信息(批量)")
+    @DeleteMapping("/permission/batch")
+    public List<WebPermissionModel> delPermissionModels(@RequestParam("permissionSet") Set<String> permissionSet) {
+        if (permissionSet == null) {
+            return null;
+        }
+        return manageByPermissionService.delPermissionModels(permissionSet);
     }
 }
