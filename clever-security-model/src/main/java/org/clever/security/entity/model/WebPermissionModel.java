@@ -85,6 +85,7 @@ public class WebPermissionModel implements Serializable, Comparable<WebPermissio
     /**
      * 定义排序规则
      */
+    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(WebPermissionModel permission) {
         // module resourcesType targetClass targetMethod targetMethodParams title
