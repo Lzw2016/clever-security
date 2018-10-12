@@ -35,7 +35,7 @@
     </select>
 
     <select id="findByUsername" resultType="org.clever.security.entity.Permission">
-        select c.*
+        select distinct c.*
         from user_role a
                  left join role_permission b on (a.role_name = b.role_name)
                  left join permission c on (b.permission_str = c.permission_str)
