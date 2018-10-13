@@ -6,9 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.IDCreateUtils;
+import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.PermissionQueryReq;
 import org.clever.security.dto.request.PermissionUpdateReq;
+import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.Permission;
+import org.clever.security.entity.WebPermission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.WebPermissionMapper;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -54,9 +58,37 @@ public class ManageByPermissionService {
     }
 
     @Transactional
-    public WebPermissionModel updatePermission(PermissionUpdateReq permissionUpdateReq) {
-        // TODO 更新权限
-        return null;
+    public WebPermissionModel updatePermission(String permissionStr, PermissionUpdateReq permissionUpdateReq) {
+        WebPermissionModel webPermissionModel = permissionMapper.getByPermissionStr(permissionStr);
+        if (webPermissionModel == null) {
+            throw new BusinessException("权限[" + permissionStr + "]不存在");
+        }
+        if (StringUtils.isBlank(permissionUpdateReq.getPermissionStr())) {
+            permissionUpdateReq.setPermissionStr(null);
+        }
+        if (StringUtils.isNotBlank(permissionUpdateReq.getPermissionStr())
+                && permissionUpdateReq.getPermissionStr().startsWith("[auto]")
+                && !webPermissionModel.getPermissionStr().equals(permissionUpdateReq.getPermissionStr())) {
+            throw new BusinessException("权限标识不能以“[auto]”开始");
+        }
+        // 更新权限
+        if (Objects.equals(webPermissionModel.getResourcesType(), EnumConstant.Permission_ResourcesType_1)
+                && permissionUpdateReq.getNeedAuthorization() != null
+                && !Objects.equals(webPermissionModel.getNeedAuthorization(), permissionUpdateReq.getNeedAuthorization())) {
+            // 更新WEB权限
+            WebPermission webPermission = new WebPermission();
+            webPermission.setId(webPermissionModel.getWebPermissionId());
+            webPermission.setPermissionStr(permissionUpdateReq.getPermissionStr());
+            webPermission.setNeedAuthorization(permissionUpdateReq.getNeedAuthorization());
+            webPermissionMapper.updateById(webPermission);
+        }
+        Permission permission = BeanMapper.mapper(permissionUpdateReq, Permission.class);
+        permission.setId(webPermissionModel.getPermissionId());
+        permissionMapper.updateById(permission);
+        if (permissionUpdateReq.getPermissionStr() != null && !Objects.equals(permissionStr, permissionUpdateReq.getPermissionStr())) {
+            // TODO 更新Session
+        }
+        return permissionMapper.getByPermissionStr(permissionStr);
     }
 
     public WebPermissionModel getPermissionModel(String permissionStr) {

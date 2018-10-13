@@ -44,9 +44,11 @@ public class ManageByPermissionController extends BaseController {
     }
 
     @ApiOperation("更新权限")
-    @PutMapping("/permission")
-    public WebPermissionModel updatePermission(@RequestBody @Validated PermissionUpdateReq permissionUpdateReq) {
-        return manageByPermissionService.updatePermission(permissionUpdateReq);
+    @PutMapping("/permission/{permissionStr}")
+    public WebPermissionModel updatePermission(
+            @PathVariable("permissionStr") String permissionStr,
+            @RequestBody @Validated PermissionUpdateReq permissionUpdateReq) {
+        return manageByPermissionService.updatePermission(permissionStr, permissionUpdateReq);
     }
 
     @ApiOperation("获取权限信息")
