@@ -5,6 +5,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.clever.common.utils.IDCreateUtils;
 import org.clever.security.annotation.UrlAuthorization;
 import org.clever.security.client.WebPermissionClient;
 import org.clever.security.config.SecurityConfig;
@@ -148,7 +149,7 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
             description = apiOperation.notes();
         }
         // 获取资源字符串
-        String permissionStr = "[auto]:" + UUID.randomUUID().toString();
+        String permissionStr = "[auto]:" + IDCreateUtils.shortUuid();
         String permissionStrPrefix = "";
         if (urlAuthorizationForClass != null && StringUtils.isNotBlank(urlAuthorizationForClass.permissionStr())) {
             permissionStrPrefix = urlAuthorizationForClass.permissionStr();

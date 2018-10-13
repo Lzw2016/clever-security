@@ -3,7 +3,9 @@ package org.clever.security.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.IDCreateUtils;
 import org.clever.security.dto.request.PermissionQueryReq;
 import org.clever.security.dto.request.PermissionUpdateReq;
 import org.clever.security.entity.Permission;
@@ -40,6 +42,9 @@ public class ManageByPermissionService {
 
     @Transactional
     public WebPermissionModel addPermission(Permission permission) {
+        if (StringUtils.isBlank(permission.getPermissionStr())) {
+            permission.setPermissionStr(IDCreateUtils.shortUuid());
+        }
         int count = permissionMapper.existsPermission(permission.getPermissionStr());
         if (count > 0) {
             throw new BusinessException("权限已存在");
