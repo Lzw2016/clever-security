@@ -3,6 +3,7 @@ package org.clever.security.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.RoleQueryPageReq;
 import org.clever.security.dto.request.RoleUpdateReq;
@@ -36,6 +37,10 @@ public class ManageByRoleService {
 
     @Transactional
     public Role addRole(Role role) {
+        Role oldRole = roleMapper.getByName(role.getName());
+        if (oldRole == null) {
+            throw new BusinessException("角色[" + role.getName() + "]已经存在");
+        }
         roleMapper.insert(role);
         return roleMapper.selectById(role.getId());
     }
