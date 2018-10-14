@@ -38,7 +38,7 @@ public class ManageByRoleService {
     @Transactional
     public Role addRole(Role role) {
         Role oldRole = roleMapper.getByName(role.getName());
-        if (oldRole == null) {
+        if (oldRole != null) {
             throw new BusinessException("角色[" + role.getName() + "]已经存在");
         }
         roleMapper.insert(role);
