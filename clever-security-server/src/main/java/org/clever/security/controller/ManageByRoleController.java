@@ -41,9 +41,9 @@ public class ManageByRoleController extends BaseController {
     }
 
     @ApiOperation("更新权限")
-    @PutMapping("/role")
-    public Role updateRole(@RequestBody @Validated RoleUpdateReq roleUpdateReq) {
-        return manageByRoleService.updateRole(roleUpdateReq);
+    @PutMapping("/role/{name}")
+    public Role updateRole(@PathVariable("name") String name, @RequestBody @Validated RoleUpdateReq roleUpdateReq) {
+        return manageByRoleService.updateRole(name, roleUpdateReq);
     }
 
     @ApiOperation("删除权限")

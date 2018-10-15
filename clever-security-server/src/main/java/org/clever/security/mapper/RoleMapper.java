@@ -19,4 +19,8 @@ public interface RoleMapper extends BaseMapper<Role> {
     List<Role> findByUsername(@Param("username") String username);
 
     List<Role> findByPage(@Param("query") RoleQueryPageReq query, IPage page);
+
+    int updateUserRoleByRoleName(@Param("oldName") String oldName, @Param("newName") String newName);
+
+    int updateRolePermissionByRoleName(@Param("oldName") String oldName, @Param("newName") String newName);
 }

@@ -3,6 +3,7 @@ package org.clever.security.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.RoleQueryPageReq;
@@ -14,6 +15,8 @@ import org.clever.security.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 /**
  * 作者： lzw<br/>
@@ -46,9 +49,24 @@ public class ManageByRoleService {
     }
 
     @Transactional
-    public Role updateRole(RoleUpdateReq roleUpdateReq) {
-        // TODO 更新权限
-        return null;
+    public Role updateRole(String name, RoleUpdateReq roleUpdateReq) {
+        Role oldRole = roleMapper.getByName(name);
+        if (oldRole == null) {
+            throw new BusinessException("角色[" + roleUpdateReq.getName() + "]不存在");
+        }
+        Role update = new Role();
+        update.setId(oldRole.getId());
+        if (StringUtils.isNotBlank(roleUpdateReq.getName()) && !Objects.equals(roleUpdateReq.getName(), oldRole.getName())) {
+            update.setName(roleUpdateReq.getName());
+        }
+        update.setDescription(roleUpdateReq.getDescription());
+        roleMapper.updateById(update);
+        if (update.getName() != null) {
+            roleMapper.updateUserRoleByRoleName(oldRole.getName(), roleUpdateReq.getName());
+            roleMapper.updateRolePermissionByRoleName(oldRole.getName(), roleUpdateReq.getName());
+            //TODO 更新受影响用户的Session
+        }
+        return roleMapper.getByName(roleUpdateReq.getName());
     }
 
     @Transactional
