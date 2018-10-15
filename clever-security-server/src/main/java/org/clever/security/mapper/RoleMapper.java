@@ -23,4 +23,8 @@ public interface RoleMapper extends BaseMapper<Role> {
     int updateUserRoleByRoleName(@Param("oldName") String oldName, @Param("newName") String newName);
 
     int updateRolePermissionByRoleName(@Param("oldName") String oldName, @Param("newName") String newName);
+
+    int delUserRoleByRoleName(@Param("name") String name);
+
+    int delRolePermissionByRoleName(@Param("name") String name);
 }

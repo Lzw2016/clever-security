@@ -71,8 +71,17 @@ public class ManageByRoleService {
 
     @Transactional
     public Role delRole(String name) {
-        // TODO 删除权限
-        return null;
+        Role oldRole = roleMapper.getByName(name);
+        if (oldRole == null) {
+            throw new BusinessException("角色[" + name + "]不存在");
+        }
+        int count = roleMapper.deleteById(oldRole.getId());
+        if (count > 0) {
+            roleMapper.delUserRoleByRoleName(oldRole.getName());
+            roleMapper.delRolePermissionByRoleName(oldRole.getName());
+            // TODO 更新受影响用户的Session
+        }
+        return oldRole;
     }
 
     public RoleInfoRes getRoleInfo(String name) {

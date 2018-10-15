@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<!--suppress SqlNoDataSourceInspection -->
+<!--suppress SqlNoDataSourceInspection, SqlResolve -->
 <mapper namespace="org.clever.security.mapper.RoleMapper">
     <update id="updateUserRoleByRoleName">
         update user_role
@@ -13,6 +13,18 @@
         set role_name = #{newName}
         where role_name = #{oldName}
     </update>
+
+    <delete id="delUserRoleByRoleName">
+        delete
+        from user_role
+        where role_name = #{name}
+    </delete>
+
+    <delete id="delRolePermissionByRoleName">
+        delete
+        from role_permission
+        where role_name = #{name}
+    </delete>
 
     <select id="getByName" resultType="org.clever.security.entity.Role">
         select *
