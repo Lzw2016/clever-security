@@ -17,4 +17,6 @@ public interface QueryMapper extends BaseMapper<User> {
     List<String> allRoleName();
 
     List<String> findRoleNameByUser(@Param("username") String username);
+
+    List<String> findPermissionStrByUser(@Param("roleName") String roleName);
 }

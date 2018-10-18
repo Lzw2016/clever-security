@@ -66,4 +66,10 @@ public class ManageByQueryController extends BaseController {
     public List<String> findRoleNameByUser(@PathVariable("username") String username) {
         return manageByQueryService.findRoleNameByUser(username);
     }
+
+    @ApiOperation("查询用户拥有的权限字符串")
+    @GetMapping("/permission_str/{roleName}")
+    public List<String> findPermissionStrByUser(@PathVariable("roleName") String roleName) {
+        return manageByQueryService.findPermissionStrByUser(roleName);
+    }
 }

@@ -50,4 +50,8 @@ public class ManageByQueryService {
     public List<String> findRoleNameByUser(String username) {
         return queryMapper.findRoleNameByUser(username);
     }
+
+    public List<String> findPermissionStrByUser(String roleName) {
+        return queryMapper.findPermissionStrByUser(roleName);
+    }
 }

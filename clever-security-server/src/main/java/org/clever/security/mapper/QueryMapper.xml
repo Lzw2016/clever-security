@@ -18,4 +18,7 @@
         where a.username=#{username}
     </select>
 
+    <select id="findPermissionStrByUser" resultType="string">
+        select permission_str from role_permission where role_name=#{roleName} order by permission_str asc
+    </select>
 </mapper>
