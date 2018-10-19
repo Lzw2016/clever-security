@@ -23,7 +23,7 @@ public class Swagger2Config {
     @Bean
     public Docket createActuatorApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("clever-security-server服务")
+                .title("clever-security-server")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
                 .version("0.0.1-SNAPSHOT")
@@ -35,7 +35,7 @@ public class Swagger2Config {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-server服务")
+                .groupName("clever-security-server")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
                 .paths(PathSelectors.any())

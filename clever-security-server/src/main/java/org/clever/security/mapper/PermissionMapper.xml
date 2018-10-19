@@ -64,10 +64,10 @@
                 and b.resources_url like concat('%', #{query.resourcesUrl}, '%')
             </if>
             <if test="query.needAuthorization!=null">
-                and b.need_authorization=#{query.needAuthorization}
+                and ( b.need_authorization=#{query.needAuthorization} or b.need_authorization is null )
             </if>
             <if test="query.targetExist!=null">
-                and b.target_exist=#{query.targetExist}
+                and ( b.target_exist=#{query.targetExist} or b.target_exist is null )
             </if>
         </where>
         order by a.id

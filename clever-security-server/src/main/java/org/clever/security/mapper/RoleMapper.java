@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.RoleQueryPageReq;
+import org.clever.security.entity.Permission;
 import org.clever.security.entity.Role;
 
 import java.util.List;
@@ -27,4 +28,12 @@ public interface RoleMapper extends BaseMapper<Role> {
     int delUserRoleByRoleName(@Param("name") String name);
 
     int delRolePermissionByRoleName(@Param("name") String name);
+
+    int addPermission(@Param("roleName") String roleName, @Param("permissionStr") String permissionStr);
+
+    int delPermission(@Param("roleName") String roleName, @Param("permissionStr") String permissionStr);
+
+    int existsByRole(@Param("roleName") String roleName);
+
+    List<Permission> findPermissionByRoleName(@Param("roleName") String roleName);
 }

@@ -27,14 +27,14 @@ public class UserBindRoleService {
      * 重新为用户分配角色
      *
      * @param userName     用户登录名
-     * @param roleNameList 权限名称集合
+     * @param roleNameList 角色名称集合
      */
     @Transactional
     public void resetUserBindRole(String userName, Collection<String> roleNameList) {
         if (roleNameList == null) {
             roleNameList = new ArrayList<>();
         }
-        // 获取关联系统列表
+        // 获取关联角色列表
         List<String> oldRoleNameList = queryMapper.findRoleNameByUser(userName);
         Set<String> addRoleName = new HashSet<>(roleNameList);
         addRoleName.removeAll(oldRoleNameList);

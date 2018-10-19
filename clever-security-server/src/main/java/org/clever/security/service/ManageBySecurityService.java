@@ -6,8 +6,11 @@ import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.RoleBindPermissionRes;
 import org.clever.security.dto.response.UserBindRoleRes;
 import org.clever.security.dto.response.UserBindSysRes;
+import org.clever.security.entity.Permission;
 import org.clever.security.entity.Role;
+import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.RoleBindPermissionService;
 import org.clever.security.service.internal.UserBindRoleService;
 import org.clever.security.service.internal.UserBindSysNameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +32,17 @@ public class ManageBySecurityService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
+    private RoleMapper roleMapper;
+    @Autowired
     private UserBindSysNameService userBindSysNameService;
     @Autowired
     private UserBindRoleService userBindRoleService;
+    @Autowired
+    private RoleBindPermissionService resetRoleBindPermission;
 
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
-        // 校验用户时候存在
+        // 校验用户全部存在
         for (String username : userBindSysReq.getUsernameList()) {
             int count = userMapper.existsByUserName(username);
             if (count <= 0) {
@@ -57,7 +64,7 @@ public class ManageBySecurityService {
 
     @Transactional
     public List<UserBindRoleRes> userBindRole(UserBindRoleReq userBindSysReq) {
-        // 校验用户时候存在
+        // 校验用户全部存在
         for (String username : userBindSysReq.getUsernameList()) {
             int count = userMapper.existsByUserName(username);
             if (count <= 0) {
@@ -79,8 +86,24 @@ public class ManageBySecurityService {
 
     @Transactional
     public List<RoleBindPermissionRes> roleBindPermission(RoleBindPermissionReq roleBindPermissionReq) {
-        // TODO 角色权限绑定
-        return null;
+        // 校验角色全部存在
+        for (String roleName : roleBindPermissionReq.getRoleNameList()) {
+            int count = roleMapper.existsByRole(roleName);
+            if (count <= 0) {
+                throw new BusinessException("角色[" + roleName + "]不存在");
+            }
+        }
+        List<RoleBindPermissionRes> result = new ArrayList<>();
+        // 设置用户绑定的系统
+        for (String roleName : roleBindPermissionReq.getRoleNameList()) {
+            resetRoleBindPermission.resetRoleBindPermission(roleName, roleBindPermissionReq.getPermissionStrList());
+            List<Permission> permissionList = roleMapper.findPermissionByRoleName(roleName);
+            RoleBindPermissionRes roleBindPermissionRes = new RoleBindPermissionRes();
+            roleBindPermissionRes.setRoleName(roleName);
+            roleBindPermissionRes.setPermissionList(permissionList);
+            result.add(roleBindPermissionRes);
+        }
+        return result;
     }
 
     @Transactional

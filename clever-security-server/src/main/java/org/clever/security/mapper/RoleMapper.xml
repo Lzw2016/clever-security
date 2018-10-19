@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<!--suppress SqlNoDataSourceInspection, SqlResolve -->
+<!--suppress SqlNoDataSourceInspection, SqlResolve, SqlDialectInspection -->
 <mapper namespace="org.clever.security.mapper.RoleMapper">
+    <insert id="addPermission">
+        insert into role_permission (role_name, permission_str) value (#{roleName}, #{permissionStr})
+    </insert>
+
     <update id="updateUserRoleByRoleName">
         update user_role
         set role_name = #{newName}
@@ -24,6 +28,12 @@
         delete
         from role_permission
         where role_name = #{name}
+    </delete>
+
+    <delete id="delPermission">
+        delete
+        from role_permission
+        where role_name = #{roleName} and permission_str = #{permissionStr}
     </delete>
 
     <select id="getByName" resultType="org.clever.security.entity.Role">
@@ -49,5 +59,18 @@
             </if>
         </where>
         order by name
+    </select>
+
+    <select id="existsByRole" resultType="int">
+        select count(1) from role where name = #{roleName}
+    </select>
+
+    <select id="findPermissionByRoleName" resultType="org.clever.security.entity.Permission">
+        select
+          b.*
+        from role_permission a
+          left join permission b on (a.permission_str=b.permission_str)
+        where a.role_name = #{roleName}
+        order by b.title
     </select>
 </mapper>
