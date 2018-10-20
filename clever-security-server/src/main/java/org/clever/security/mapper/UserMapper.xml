@@ -89,6 +89,13 @@
             <if test="query.enabled!=null">
                 and enabled = #{query.enabled}
             </if>
+            <if test="query.search!=null and query.search!=''">
+                and (
+                username like concat('%', #{query.search}, '%')
+                or telephone like concat('%', #{query.search}, '%')
+                or email like concat('%', #{query.search}, '%')
+                )
+            </if>
         </where>
         order by create_at DESC
     </select>

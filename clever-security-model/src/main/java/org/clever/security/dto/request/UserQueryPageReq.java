@@ -38,4 +38,7 @@ public class UserQueryPageReq extends QueryByPage {
 
     @ApiModelProperty("是否启用，0：禁用；1：启用")
     private Integer enabled;
+
+    @ApiModelProperty("登录名、手机号、邮箱(模糊匹配)")
+    private String search;
 }
