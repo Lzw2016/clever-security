@@ -120,25 +120,57 @@ public class ManageBySecurityService {
 
     @Transactional
     public UserBindRoleRes userBindRole(UserRoleReq userRoleReq) {
-        // TODO 为用户添加角色
-        return null;
+        int count = userMapper.existsUserRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        if (count >= 1) {
+            throw new BusinessException("用户[" + userRoleReq.getUsername() + "]已经拥有角色[" + userRoleReq.getRoleName() + "]");
+        }
+        userMapper.addRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        UserBindRoleRes res = new UserBindRoleRes();
+        res.setUsername(userRoleReq.getUsername());
+        res.setRoleList(userMapper.findRoleByUsername(userRoleReq.getUsername()));
+        // TODO 更新Session
+        return res;
     }
 
     @Transactional
     public UserBindRoleRes userUnBindRole(UserRoleReq userRoleReq) {
-        // TODO 为用户删除角色
-        return null;
+        int count = userMapper.existsUserRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        if (count <= 0) {
+            throw new BusinessException("用户[" + userRoleReq.getUsername() + "]未拥有角色[" + userRoleReq.getRoleName() + "]");
+        }
+        userMapper.delRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        UserBindRoleRes res = new UserBindRoleRes();
+        res.setUsername(userRoleReq.getUsername());
+        res.setRoleList(userMapper.findRoleByUsername(userRoleReq.getUsername()));
+        // TODO 更新Session
+        return res;
     }
 
     @Transactional
     public RoleBindPermissionRes roleBindPermission(RolePermissionReq rolePermissionReq) {
-        // TODO 为角色添加权限
-        return null;
+        int count = roleMapper.existsRolePermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        if (count >= 1) {
+            throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]已经拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
+        }
+        roleMapper.addPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        RoleBindPermissionRes res = new RoleBindPermissionRes();
+        res.setRoleName(rolePermissionReq.getRoleName());
+        res.setPermissionList(roleMapper.findPermissionByRoleName(rolePermissionReq.getRoleName()));
+        // TODO 更新Session
+        return res;
     }
 
     @Transactional
     public RoleBindPermissionRes roleUnBindPermission(RolePermissionReq rolePermissionReq) {
-        // TODO 为角色删除权限
-        return null;
+        int count = roleMapper.existsRolePermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        if (count <= 0) {
+            throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]未拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
+        }
+        roleMapper.delPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        RoleBindPermissionRes res = new RoleBindPermissionRes();
+        res.setRoleName(rolePermissionReq.getRoleName());
+        res.setPermissionList(roleMapper.findPermissionByRoleName(rolePermissionReq.getRoleName()));
+        // TODO 更新Session
+        return res;
     }
 }

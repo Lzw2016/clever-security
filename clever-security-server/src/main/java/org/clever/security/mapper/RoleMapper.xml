@@ -73,4 +73,8 @@
         where a.role_name = #{roleName}
         order by b.title
     </select>
+
+    <select id="existsRolePermission" resultType="int">
+        select count(1) from role_permission where role_name=#{roleName} and permission_str=#{permissionStr}
+    </select>
 </mapper>

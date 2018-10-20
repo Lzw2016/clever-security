@@ -36,4 +36,6 @@ public interface RoleMapper extends BaseMapper<Role> {
     int existsByRole(@Param("roleName") String roleName);
 
     List<Permission> findPermissionByRoleName(@Param("roleName") String roleName);
+
+    int existsRolePermission(@Param("roleName") String roleName, @Param("permissionStr") String permissionStr);
 }

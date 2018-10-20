@@ -80,6 +80,6 @@ public class ManageBySecurityController extends BaseController {
     @ApiOperation("为角色删除权限(单个)")
     @PostMapping("/role_permission/un_bind")
     public RoleBindPermissionRes roleUnBindPermission(@RequestBody @Validated RolePermissionReq rolePermissionReq) {
-        return manageBySecurityService.roleBindPermission(rolePermissionReq);
+        return manageBySecurityService.roleUnBindPermission(rolePermissionReq);
     }
 }

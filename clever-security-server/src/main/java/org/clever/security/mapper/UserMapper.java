@@ -43,4 +43,6 @@ public interface UserMapper extends BaseMapper<User> {
     int delRole(@Param("username") String username, @Param("roleName") String roleName);
 
     List<Role> findRoleByUsername(@Param("username") String username);
+
+    int existsUserRole(@Param("username") String username, @Param("roleName") String roleName);
 }
