@@ -72,4 +72,6 @@ public class ManageByQueryController extends BaseController {
     public List<String> findPermissionStrByRole(@PathVariable("roleName") String roleName) {
         return manageByQueryService.findPermissionStrByRole(roleName);
     }
+
+
 }
