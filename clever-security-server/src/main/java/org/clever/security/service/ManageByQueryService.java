@@ -1,6 +1,8 @@
 package org.clever.security.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.dto.request.RememberMeTokenQueryReq;
+import org.clever.security.entity.model.UserRememberMeToken;
 import org.clever.security.mapper.QueryMapper;
 import org.clever.security.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +55,9 @@ public class ManageByQueryService {
 
     public List<String> findPermissionStrByRole(String roleName) {
         return queryMapper.findPermissionStrByRole(roleName);
+    }
+
+    public List<UserRememberMeToken> findRememberMeToken(RememberMeTokenQueryReq req) {
+        return queryMapper.findRememberMeToken(req);
     }
 }

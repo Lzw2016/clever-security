@@ -21,4 +21,26 @@
     <select id="findPermissionStrByRole" resultType="string">
         select permission_str from role_permission where role_name=#{roleName} order by permission_str asc
     </select>
+
+    <select id="findRememberMeToken" resultType="org.clever.security.entity.model.UserRememberMeToken">
+        select
+            a.*,
+            b.id as user_id,
+            b.user_type,
+            b.telephone,
+            b.email,
+            b.expired_time,
+            b.locked,
+            b.enabled,
+            b.description
+        from remember_me_token a
+            left join user b on (a.username = b.username)
+        where a.username = ''
+            and a.sys_name = ''
+            and a.last_used >= ''
+            <![CDATA[ and a.last_used <= '' ]]>
+            and b.telephone = ''
+            and b.email = ''
+        order by a.update_at DESC, a.last_used DESC
+    </select>
 </mapper>

@@ -4,12 +4,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.clever.common.model.response.AjaxMessage;
 import org.clever.common.server.controller.BaseController;
+import org.clever.security.dto.request.RememberMeTokenQueryReq;
+import org.clever.security.dto.request.UserLoginLogQueryReq;
+import org.clever.security.entity.model.UserLoginLogModel;
+import org.clever.security.entity.model.UserRememberMeToken;
 import org.clever.security.service.ManageByQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -73,5 +74,15 @@ public class ManageByQueryController extends BaseController {
         return manageByQueryService.findPermissionStrByRole(roleName);
     }
 
+    @ApiOperation("分页查询“记住我”功能的Token")
+    @GetMapping("/remember_me_token")
+    public List<UserRememberMeToken> findRememberMeToken(@RequestBody RememberMeTokenQueryReq req) {
+        return manageByQueryService.findRememberMeToken(req);
+    }
 
+//    @ApiOperation("分页查询用户登录日志")
+//    @GetMapping("/user_login_log")
+//    public List<UserLoginLogModel> findRememberMeToken(@RequestBody UserLoginLogQueryReq req) {
+//        return manageByQueryService.findRememberMeToken(req);
+//    }
 }
