@@ -24,8 +24,8 @@ public interface RememberMeTokenClient {
     /**
      * 读取RememberMeToken
      */
-    @GetMapping("/remember_me_token/{series}")
-    RememberMeToken getRememberMeToken(@PathVariable("series") String series);
+    @GetMapping("/remember_me_token/series")
+    RememberMeToken getRememberMeToken(@RequestParam("series") String series);
 
     /**
      * 删除RememberMeToken
@@ -36,6 +36,6 @@ public interface RememberMeTokenClient {
     /**
      * 修改RememberMeToken
      */
-    @PutMapping("/remember_me_token/{series}")
-    RememberMeToken updateRememberMeToken(@PathVariable("series") String series, @RequestBody RememberMeTokenUpdateReq req);
+    @PutMapping("/remember_me_token/series")
+    RememberMeToken updateRememberMeToken(@RequestParam("series") String series, @RequestBody RememberMeTokenUpdateReq req);
 }
