@@ -52,6 +52,8 @@ public class UserRememberMeToken implements Serializable {
      */
     private Date updateAt;
 
+    // ----------------------------------------------------------------------------- User
+
     /**
      * 主键id
      */

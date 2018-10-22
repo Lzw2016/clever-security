@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
+<!--suppress SqlNoDataSourceInspection, SqlDialectInspection, SqlResolve -->
 <mapper namespace="org.clever.security.mapper.QueryMapper">
 
     <select id="allSysName" resultType="string">
-        select distinct sys_name from user_sys
+        select distinct sys_name
+        from user_sys
     </select>
 
     <select id="allRoleName" resultType="string">
-        select distinct name from role
+        select distinct name
+        from role
     </select>
 
     <select id="findRoleNameByUser" resultType="string">
-        select
-            b.name
-        from user_role a left join role b on (a.role_name=b.name)
-        where a.username=#{username}
+        select b.name
+        from user_role a
+                 left join role b on (a.role_name = b.name)
+        where a.username = #{username}
     </select>
 
     <select id="findPermissionStrByRole" resultType="string">
-        select permission_str from role_permission where role_name=#{roleName} order by permission_str asc
+        select permission_str
+        from role_permission
+        where role_name = #{roleName}
+        order by permission_str asc
     </select>
 
     <select id="findRememberMeToken" resultType="org.clever.security.entity.model.UserRememberMeToken">
@@ -35,12 +40,64 @@
             b.description
         from remember_me_token a
             left join user b on (a.username = b.username)
-        where a.username = ''
-            and a.sys_name = ''
-            and a.last_used >= ''
-            <![CDATA[ and a.last_used <= '' ]]>
-            and b.telephone = ''
-            and b.email = ''
+        <where>
+            <if test="query.username!=null and query.username!=''">
+                and a.username = #{query.username}
+            </if>
+            <if test="query.sysName!=null and query.sysName!=''">
+                and a.sys_name = #{query.sysName}
+            </if>
+            <if test="query.lastUsedStart!=null">
+                and a.last_used >= #{query.lastUsedStart}
+            </if>
+            <if test="query.lastUsedEnd!=null">
+                <![CDATA[ and a.last_used <= #{query.lastUsedEnd} ]]>
+            </if>
+            <if test="query.telephone!=null and query.telephone!=''">
+                and b.telephone = #{query.telephone}
+            </if>
+            <if test="query.email!=null and query.email!=''">
+                and b.email = #{query.email}
+            </if>
+        </where>
         order by a.update_at DESC, a.last_used DESC
+    </select>
+
+    <select id="findUserLoginLog" resultType="org.clever.security.entity.model.UserLoginLogModel">
+        select a.*,
+               b.id as user_id,
+               b.user_type,
+               b.telephone,
+               b.email,
+               b.expired_time,
+               b.locked,
+               b.enabled,
+               b.description
+        from user_login_log a
+            left join user b on (a.username = b.username)
+        <where>
+            <if test="query.username!=null and query.username!=''">
+                and a.username = #{query.username}
+            </if>
+            <if test="query.sysName!=null and query.sysName!=''">
+                and a.sys_name = #{query.sysName}
+            </if>
+            <if test="query.loginTimeStart!=null">
+                and a.login_time >= #{query.loginTimeStart}
+            </if>
+            <if test="query.loginTimeEnd!=null">
+                <![CDATA[ and a.login_time <= #{query.loginTimeEnd} ]]>
+            </if>
+            <if test="query.loginState!=null">
+                and a.login_state >= #{query.loginState}
+            </if>
+            <if test="query.telephone!=null and query.telephone!=''">
+                and b.telephone = #{query.telephone}
+            </if>
+            <if test="query.email!=null and query.email!=''">
+                and b.email = #{query.email}
+            </if>
+        </where>
+        order by a.update_at DESC, a.login_time DESC
     </select>
 </mapper>
