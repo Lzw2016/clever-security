@@ -41,7 +41,9 @@ public class SecurityConfig {
      */
     private List<String> ignoreUrls = new ArrayList<>();
 
-    // TODO 不需要授权的URL - 待实现
+    /**
+     * 不需要授权的URL
+     */
     private List<String> ignoreAuthorizationUrls = new ArrayList<>();
 
     /**

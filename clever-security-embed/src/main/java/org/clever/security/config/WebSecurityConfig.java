@@ -149,7 +149,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 StringBuilder strTmp = new StringBuilder();
                 strTmp.append("\r\n");
                 strTmp.append("#=======================================================================================================================#\r\n");
-                strTmp.append("不需要权限校验的资源配置:\r\n");
+                strTmp.append("不需要登录认证的资源:\r\n");
                 for (String url : securityConfig.getIgnoreUrls()) {
                     strTmp.append("\t").append(url).append("\r\n");
                 }

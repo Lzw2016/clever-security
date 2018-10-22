@@ -128,6 +128,8 @@ clever:
     - '/dist/**'
     - '/api/user'
     - '/actuator/**'
+    ignore-authorization-urls:
+    - '/test/config'
     hide-user-not-found-exceptions: true
     notLoginNeedForward: false
     forbidden-need-forward: false

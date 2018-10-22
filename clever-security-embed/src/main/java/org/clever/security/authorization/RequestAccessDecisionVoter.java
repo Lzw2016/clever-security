@@ -15,12 +15,16 @@ import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -39,6 +43,29 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
     private WebPermissionClient webPermissionClient;
     @Autowired
     private RequestMappingHandlerMapping requestMappingHandlerMapping;
+    // 不去需要授权就能访问的Url
+    private List<AntPathRequestMatcher> antPathRequestMatcherList = new ArrayList<>();
+
+    @PostConstruct
+    public void init() {
+        if (securityConfig.getIgnoreAuthorizationUrls() != null) {
+            for (String url : securityConfig.getIgnoreAuthorizationUrls()) {
+                antPathRequestMatcherList.add(new AntPathRequestMatcher(url));
+            }
+            // 打印相应的日志
+            if (log.isInfoEnabled()) {
+                StringBuilder strTmp = new StringBuilder();
+                strTmp.append("\r\n");
+                strTmp.append("#=======================================================================================================================#\r\n");
+                strTmp.append("不需要授权检查的资源:\r\n");
+                for (String url : securityConfig.getIgnoreAuthorizationUrls()) {
+                    strTmp.append("\t").append(url).append("\r\n");
+                }
+                strTmp.append("#=======================================================================================================================#");
+                log.info(strTmp.toString());
+            }
+        }
+    }
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -80,6 +107,13 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
         if (handlerExecutionChain == null) {
             log.info("### 授权通过(未知的资源404) -> [{}]", filterInvocation.getRequestUrl());
             return ACCESS_GRANTED;
+        }
+        // 匹配是否是不需要授权就能访问的Url
+        for (AntPathRequestMatcher antPathRequestMatcher : antPathRequestMatcherList) {
+            if (antPathRequestMatcher.matches(filterInvocation.getRequest())) {
+                log.info("### 授权通过(不需要授权的URL) [{}] -> [{}]", antPathRequestMatcher.getPattern(), filterInvocation.getRequestUrl());
+                return ACCESS_GRANTED;
+            }
         }
         HandlerMethod handlerMethod = (HandlerMethod) handlerExecutionChain.getHandler();
         String targetClass = handlerMethod.getBeanType().getName();
