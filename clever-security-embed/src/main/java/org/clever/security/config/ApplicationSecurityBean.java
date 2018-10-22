@@ -107,14 +107,14 @@ public class ApplicationSecurityBean {
             return new NullRememberMeServices();
         }
         UserLoginRememberMeServices rememberMeServices = new UserLoginRememberMeServices(
-                "remember-me-key",
+                UserLoginRememberMeServices.REMEMBER_ME_KEY,
                 userDetailsService,
                 userLoginTokenRepository,
                 rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
         rememberMeServices.setParameter(rememberMe.getRememberMeParameterName());
         rememberMeServices.setTokenValiditySeconds(rememberMe.getValiditySeconds());
-        rememberMeServices.setCookieName("remember-me");
+        rememberMeServices.setCookieName(UserLoginRememberMeServices.REMEMBER_ME);
 //        rememberMeServices.setTokenLength();
 //        rememberMeServices.setSeriesLength();
 //        rememberMeServices.setUserDetailsChecker();

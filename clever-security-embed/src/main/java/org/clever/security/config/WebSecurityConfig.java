@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.authentication.UserLoginEntryPoint;
 import org.clever.security.authentication.UserLoginTokenAuthenticationProvider;
+import org.clever.security.authentication.rememberme.UserLoginRememberMeServices;
 import org.clever.security.filter.UserLoginFilter;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;
@@ -202,8 +203,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .alwaysRemember(rememberMe.getAlwaysRemember())
                     .tokenValiditySeconds(rememberMe.getValiditySeconds())
                     .rememberMeParameter(rememberMe.getRememberMeParameterName())
-                    .rememberMeCookieName("remember-me")
-                    .key("remember-me-key")
+                    .rememberMeCookieName(UserLoginRememberMeServices.REMEMBER_ME)
+                    .key(UserLoginRememberMeServices.REMEMBER_ME_KEY)
             ;
         }
         // 登录并发控制
