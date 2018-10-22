@@ -33,6 +33,9 @@ public class UserLoginEntryPoint implements AuthenticationEntryPoint {
         log.info("### 未登录访问拦截，访问地址[{}] {}", request.getMethod(), request.getRequestURL().toString());
         if (!securityConfig.getNotLoginNeedForward() || HttpRequestUtils.isJsonResponse(request)) {
             // 返回401错误
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader("Content-Type", "application/json;charset=utf-8");
             // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
             ErrorResponse errorResponse = new ErrorResponse("您还未登录，请先登录", authException, HttpServletResponse.SC_UNAUTHORIZED, request.getRequestURI());
             response.getWriter().print(JacksonMapper.nonEmptyMapper().toJson(errorResponse));

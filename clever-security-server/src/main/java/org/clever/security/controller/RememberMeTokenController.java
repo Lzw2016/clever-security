@@ -35,7 +35,7 @@ public class RememberMeTokenController extends BaseController {
     }
 
     @ApiOperation("读取RememberMeToken")
-    @GetMapping("/remember_me_token/{series}")
+    @GetMapping("/remember_me_token/{series:.+}")
     public RememberMeToken getRememberMeToken(@PathVariable("series") String series) {
         return rememberMeTokenService.getRememberMeToken(series);
     }
@@ -50,8 +50,8 @@ public class RememberMeTokenController extends BaseController {
     }
 
     @ApiOperation("修改RememberMeToken")
-    @PutMapping("/remember_me_token/{series}")
-    public RememberMeToken updateRememberMeToken(@PathVariable("series") String series,@RequestBody @Validated RememberMeTokenUpdateReq req) {
+    @PutMapping("/remember_me_token/{series:.+}")
+    public RememberMeToken updateRememberMeToken(@PathVariable("series") String series, @RequestBody @Validated RememberMeTokenUpdateReq req) {
         return rememberMeTokenService.updateRememberMeToken(series, req.getToken(), req.getLastUsed());
     }
 }

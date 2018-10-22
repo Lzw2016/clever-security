@@ -7,6 +7,7 @@ import org.clever.security.model.UserLoginToken;
 import org.clever.security.service.LoginUserDetailsService;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,10 +34,16 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private LoginUserDetailsService userDetailsService;
-    // 使用缓存
+    // 帐号校验
+    @Autowired
+    @Qualifier("DefaultPreAuthenticationChecks")
+    private UserDetailsChecker preAuthenticationChecks;
+    @Autowired
+    @Qualifier("DefaultPostAuthenticationChecks")
+    private UserDetailsChecker postAuthenticationChecks;
+    // TODO 使用缓存
     private UserCache userCache = new NullUserCache();
-    private UserDetailsChecker preAuthenticationChecks = new DefaultPreAuthenticationChecks();
-    private UserDetailsChecker postAuthenticationChecks = new DefaultPostAuthenticationChecks();
+    // 解析授权信息
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
     public UserLoginTokenAuthenticationProvider() {

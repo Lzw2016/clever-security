@@ -21,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Config {
 
     @Bean
-    public Docket createActuatorApi() {
+    public Docket createApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("clever-security-server")
                 // .description("description")

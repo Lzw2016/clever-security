@@ -21,7 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Config {
 
     @Bean
-    public Docket createActuatorApi() {
+    public Docket createApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
                 .title("clever-security-demo服务")
                 // .description("description")
@@ -38,6 +38,28 @@ public class Swagger2Config {
                 .groupName("clever-security-demo服务")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.demo.controller"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    @Bean
+    public Docket createSecurityEmbedApi() {
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("clever-security-embed服务")
+                // .description("description")
+                // .termsOfServiceUrl("termsOfServiceUrl")
+                .version("0.0.1-SNAPSHOT")
+                // .license("license")
+                // .licenseUrl("licenseUrl")
+                // .termsOfServiceUrl("termsOfServiceUrl")
+                // .contact(contact)
+                // .extensions()
+                .build();
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo)
+                .groupName("clever-security-embed服务")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

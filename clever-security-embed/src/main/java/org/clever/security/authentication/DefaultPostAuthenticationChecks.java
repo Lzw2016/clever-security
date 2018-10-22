@@ -4,11 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.stereotype.Component;
 
 /**
+ * 验证帐号信息成功之后的校验
+ *
  * 作者： lzw<br/>
  * 创建时间：2018-09-19 16:33 <br/>
  */
+@Component("DefaultPostAuthenticationChecks")
 @Slf4j
 public class DefaultPostAuthenticationChecks implements UserDetailsChecker {
 

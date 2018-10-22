@@ -2,6 +2,7 @@ package org.clever.security.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.clever.security.authentication.rememberme.RememberMeUserDetailsChecker;
 import org.clever.security.authentication.rememberme.UserLoginRememberMeServices;
 import org.clever.security.authentication.rememberme.UserLoginTokenRepository;
 import org.clever.security.authorization.RequestAccessDecisionVoter;
@@ -41,6 +42,8 @@ public class ApplicationSecurityBean {
     private RequestAccessDecisionVoter requestAccessDecisionVoter;
     @Autowired
     private SessionRegistry sessionRegistry;
+    @Autowired
+    private RememberMeUserDetailsChecker rememberMeUserDetailsChecker;
 
     /**
      * 授权校验
@@ -106,7 +109,8 @@ public class ApplicationSecurityBean {
         UserLoginRememberMeServices rememberMeServices = new UserLoginRememberMeServices(
                 "remember-me-key",
                 userDetailsService,
-                userLoginTokenRepository);
+                userLoginTokenRepository,
+                rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
         rememberMeServices.setParameter(rememberMe.getRememberMeParameterName());
         rememberMeServices.setTokenValiditySeconds(rememberMe.getValiditySeconds());

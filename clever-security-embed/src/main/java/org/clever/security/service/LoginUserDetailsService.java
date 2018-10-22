@@ -5,7 +5,6 @@ import org.clever.security.client.UserClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
-import org.clever.security.exception.CanNotLoginSysException;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +38,6 @@ public class LoginUserDetailsService implements UserDetailsService {
         if (user == null) {
             log.info("### 用户不存在 [usernameOrTelephone={}]", username);
             throw new UsernameNotFoundException("用户不存在，usernameOrTelephone=" + username);
-        }
-        // 校验用户是否有权登录当前系统
-        Boolean canLogin = userClient.canLogin(user.getUsername(), securityConfig.getSysName());
-        if (!canLogin) {
-            throw new CanNotLoginSysException("您无权登录当前系统，请联系管理员授权");
         }
         // 获取用户所有权限
         List<Permission> permissionList = userClient.findAllPermission(user.getUsername(), securityConfig.getSysName());

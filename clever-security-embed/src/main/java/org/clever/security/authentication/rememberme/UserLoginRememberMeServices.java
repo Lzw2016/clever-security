@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -24,8 +25,13 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeServices {
 
-    public UserLoginRememberMeServices(String key, UserDetailsService userDetailsService, PersistentTokenRepository tokenRepository) {
+    public UserLoginRememberMeServices(
+            String key,
+            UserDetailsService userDetailsService,
+            PersistentTokenRepository tokenRepository,
+            UserDetailsChecker userDetailsChecker) {
         super(key, userDetailsService, tokenRepository);
+        this.setUserDetailsChecker(userDetailsChecker);
     }
 
     /**
