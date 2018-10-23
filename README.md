@@ -23,6 +23,7 @@ clever-security是一个多系统的权限管理方案，主要解决两个问�
         - [ ] OAuth2.0服务端
         - [ ] OAuth2.0客户端
             - [ ] 微信、QQ、微博、淘宝、京东、钉钉、阿里云、GitHub、Gitee、CSND、WindowsLive
+    - [ ] 扫码登录
 
 ### 系统截图
 
