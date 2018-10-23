@@ -3,7 +3,7 @@
 
 clever-security是一个多系统的权限管理方案，主要解决两个问题：“用户认证”、“权限授权”，基于SpringBoot开发整合SpringSecurity和SpringSession，仅依赖mysql和redis。支持全局Session和分布式部署。
 
-#### 计划支持功能
+### 计划支持功能
 
 - [x] 权限系统
     - [x] 服务端支持集群多节点部署
@@ -24,6 +24,7 @@ clever-security是一个多系统的权限管理方案，主要解决两个问�
         - [ ] OAuth2.0客户端
             - [ ] 微信、QQ、微博、淘宝、京东、钉钉、阿里云、GitHub、Gitee、CSND、WindowsLive
 
+### 系统截图
 
 ![API](image/api.png)
 
