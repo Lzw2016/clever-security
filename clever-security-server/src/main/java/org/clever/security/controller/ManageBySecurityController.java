@@ -29,7 +29,7 @@ public class ManageBySecurityController extends BaseController {
     @Autowired
     private ManageBySecurityService manageBySecurityService;
 
-    @ApiOperation("为用户设置登录的系统(批量)")// TODO 修改
+    @ApiOperation("为用户设置登录的系统(批量)")
     @PostMapping("/user_sys")
     public List<UserBindSysRes> userBindSys(@RequestBody @Validated UserBindSysReq userBindSysReq) {
         return manageBySecurityService.userBindSys(userBindSysReq);
@@ -47,13 +47,13 @@ public class ManageBySecurityController extends BaseController {
         return manageBySecurityService.roleBindPermission(roleBindPermissionReq);
     }
 
-    @ApiOperation("为用户添加登录的系统(单个)")// TODO 修改
+    @ApiOperation("为用户添加登录的系统(单个)")
     @PostMapping("/user_sys/bind")
     public UserBindSysRes userBindSys(@RequestBody @Validated UserSysReq userSysReq) {
         return manageBySecurityService.userBindSys(userSysReq);
     }
 
-    @ApiOperation("为用户删除登录的系统(单个)")// TODO 修改
+    @ApiOperation("为用户删除登录的系统(单个)")
     @PostMapping("/user_sys/un_bind")
     public UserBindSysRes userUnBindSys(@RequestBody @Validated UserSysReq userSysReq) {
         return manageBySecurityService.userUnBindSys(userSysReq);

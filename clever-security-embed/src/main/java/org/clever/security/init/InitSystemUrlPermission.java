@@ -6,16 +6,21 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.IDCreateUtils;
+import org.clever.common.utils.reflection.ReflectionsUtils;
 import org.clever.security.annotation.UrlAuthorization;
+import org.clever.security.client.ServiceSysClient;
 import org.clever.security.client.WebPermissionClient;
 import org.clever.security.config.SecurityConfig;
+import org.clever.security.dto.request.ServiceSysAddReq;
 import org.clever.security.dto.request.WebPermissionInitReq;
 import org.clever.security.dto.response.WebPermissionInitRes;
 import org.clever.security.entity.EnumConstant;
+import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -46,6 +51,10 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
     @Autowired
     private RequestMappingHandlerMapping handlerMapping;
     @Autowired
+    private RedisHttpSessionConfiguration redisHttpSessionConfiguration;
+    @Autowired
+    private ServiceSysClient serviceSysClient;
+    @Autowired
     private WebPermissionClient webPermissionClient;
 
     @Override
@@ -65,6 +74,12 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
         }
         initFinish = true;
         log.info("### [系统权限初始化] 开始初始化...");
+        // 注册系统信息
+        ServiceSysAddReq serviceSysAddReq = new ServiceSysAddReq();
+        serviceSysAddReq.setSysName(securityConfig.getSysName());
+        serviceSysAddReq.setRedisNameSpace(ReflectionsUtils.getFieldValue(redisHttpSessionConfiguration, "redisNamespace").toString());
+        ServiceSys serviceSys = serviceSysClient.registerSys(serviceSysAddReq);
+        log.info("### 注册系统成功: {}", serviceSys);
         // 获取系统中所有的资源,并排序 - allPermission
         List<WebPermissionModel> allPermission = new ArrayList<>();
         Map<RequestMappingInfo, HandlerMethod> handlerMap = handlerMapping.getHandlerMethods();
@@ -85,6 +100,7 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
             strTmp.append("\r\n");
             strTmp.append("#=======================================================================================================================#\r\n");
             strTmp
+                    .append("# 系统注册信息：").append(serviceSys.toString()).append("\n")
                     .append("# 新增的权限配置如下(")
                     .append(res.getAddPermission().size())
                     .append("条):")

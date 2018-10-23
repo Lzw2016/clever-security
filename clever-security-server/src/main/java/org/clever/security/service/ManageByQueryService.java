@@ -6,6 +6,7 @@ import org.clever.security.dto.request.UserLoginLogQueryReq;
 import org.clever.security.entity.model.UserLoginLogModel;
 import org.clever.security.entity.model.UserRememberMeToken;
 import org.clever.security.mapper.QueryMapper;
+import org.clever.security.mapper.ServiceSysMapper;
 import org.clever.security.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class ManageByQueryService {
     private UserMapper userMapper;
     @Autowired
     private QueryMapper queryMapper;
+    @Autowired
+    private ServiceSysMapper serviceSysMapper;
 
     public Boolean existsUserByUsername(String username) {
         return userMapper.existsByUserName(username) > 0;
@@ -40,7 +43,14 @@ public class ManageByQueryService {
     }
 
     public List<String> allSysName() {
-        return queryMapper.allSysName();
+        List<String> sysNameList = serviceSysMapper.allSysName();
+        List<String> tmp = queryMapper.allSysName();
+        for (String sysName : tmp) {
+            if (!sysNameList.contains(sysName)) {
+                sysNameList.add(sysName);
+            }
+        }
+        return sysNameList;
     }
 
     public List<String> findSysNameByUser(String username) {

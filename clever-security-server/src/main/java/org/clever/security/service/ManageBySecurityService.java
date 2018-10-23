@@ -39,6 +39,8 @@ public class ManageBySecurityService {
     private UserBindRoleService userBindRoleService;
     @Autowired
     private RoleBindPermissionService resetRoleBindPermission;
+    @Autowired
+    private ManageByQueryService manageByQueryService;
 
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
@@ -47,6 +49,13 @@ public class ManageBySecurityService {
             int count = userMapper.existsByUserName(username);
             if (count <= 0) {
                 throw new BusinessException("用户[" + username + "]不存在");
+            }
+        }
+        // 校验系统全部存在
+        List<String> allSysName = manageByQueryService.allSysName();
+        for (String sysName : userBindSysReq.getSysNameList()) {
+            if (!allSysName.contains(sysName)) {
+                throw new BusinessException("系统[" + sysName + "]不存在");
             }
         }
         List<UserBindSysRes> result = new ArrayList<>();
@@ -108,6 +117,13 @@ public class ManageBySecurityService {
 
     @Transactional
     public UserBindSysRes userBindSys(UserSysReq userSysReq) {
+//        // 校验系统全部存在
+//        List<String> allSysName = manageByQueryService.allSysName();
+//        for (String sysName : userBindSysReq.getSysNameList()) {
+//            if (!allSysName.contains(sysName)) {
+//                throw new BusinessException("系统[" + sysName + "]不存在");
+//            }
+//        }
         // TODO 为用户添加登录的系统
         return null;
     }

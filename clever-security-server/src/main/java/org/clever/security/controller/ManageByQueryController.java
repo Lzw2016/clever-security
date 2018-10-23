@@ -47,7 +47,7 @@ public class ManageByQueryController extends BaseController {
         return new AjaxMessage<>(manageByQueryService.existsUserByEmail(email), "查询成功");
     }
 
-    @ApiOperation("查询所有系统名称")// TODO 修改
+    @ApiOperation("查询所有系统名称")
     @GetMapping("/sys_name")
     public List<String> allSysName() {
         return manageByQueryService.allSysName();

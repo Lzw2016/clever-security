@@ -29,10 +29,11 @@ public class ServiceSysService {
 
     @Transactional
     public ServiceSys registerSys(ServiceSys serviceSys) {
-        ServiceSys existsSys = serviceSysMapper.getBySysName(serviceSys.getSysName());
+        ServiceSys existsSys = serviceSysMapper.getByUnique(serviceSys.getSysName(), serviceSys.getRedisNameSpace());
         if (existsSys != null) {
-            if (!Objects.equals(existsSys.getRedisNameSpace(), serviceSys.getRedisNameSpace())) {
-                throw new BusinessException("全局的Session Redis前缀配置错误，正确配置：" + existsSys.getRedisNameSpace());
+            if (!Objects.equals(existsSys.getSysName(), serviceSys.getSysName())
+                    || !Objects.equals(existsSys.getRedisNameSpace(), serviceSys.getRedisNameSpace())) {
+                throw new BusinessException("服务系统注册失败，存在冲突(SysName: " + existsSys.getSysName() + ", redisNameSpace: " + existsSys.getRedisNameSpace() + ")");
             }
             return existsSys;
         }
@@ -48,7 +49,6 @@ public class ServiceSysService {
             throw new BusinessException("系统不存在：" + sysName);
         }
         serviceSysMapper.deleteById(existsSys.getId());
-        // TODO 删除系统用户绑定关系
         return existsSys;
     }
 }
