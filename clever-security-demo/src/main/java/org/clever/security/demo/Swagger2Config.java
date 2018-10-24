@@ -23,7 +23,7 @@ public class Swagger2Config {
     @Bean
     public Docket createApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("clever-security-demo服务")
+                .title("clever-security-demo")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
                 .version("0.0.1-SNAPSHOT")
@@ -35,7 +35,7 @@ public class Swagger2Config {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-demo服务")
+                .groupName("clever-security-demo")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.demo.controller"))
                 .paths(PathSelectors.any())
@@ -45,7 +45,7 @@ public class Swagger2Config {
     @Bean
     public Docket createSecurityEmbedApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("clever-security-embed服务")
+                .title("clever-security-embed")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
                 .version("0.0.1-SNAPSHOT")
@@ -57,7 +57,7 @@ public class Swagger2Config {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-embed服务")
+                .groupName("clever-security-embed")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
                 .paths(PathSelectors.any())
