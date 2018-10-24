@@ -150,6 +150,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             throw new BadCredentialsException("用户名不能为空");
         }
         if (UserLoginToken.LoginType_Username.equals(userLoginToken.getLoginType())) {
+            // TODO 用户密码需要AES对称加解密 网络密文传输
             // 用户名、密码校验
             if (!userLoginToken.getUsername().equals(loadedUser.getUsername())
                     || !bCryptPasswordEncoder.matches(userLoginToken.getPassword(), loadedUser.getPassword())) {
