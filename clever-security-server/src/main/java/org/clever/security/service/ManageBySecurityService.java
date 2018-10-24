@@ -8,6 +8,7 @@ import org.clever.security.dto.response.UserBindRoleRes;
 import org.clever.security.dto.response.UserBindSysRes;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.Role;
+import org.clever.security.entity.User;
 import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.service.internal.RoleBindPermissionService;
@@ -117,21 +118,41 @@ public class ManageBySecurityService {
 
     @Transactional
     public UserBindSysRes userBindSys(UserSysReq userSysReq) {
-//        // 校验系统全部存在
-//        List<String> allSysName = manageByQueryService.allSysName();
-//        for (String sysName : userBindSysReq.getSysNameList()) {
-//            if (!allSysName.contains(sysName)) {
-//                throw new BusinessException("系统[" + sysName + "]不存在");
-//            }
-//        }
-        // TODO 为用户添加登录的系统
-        return null;
+        // 校验用户存在
+        User user = userMapper.getByUsername(userSysReq.getUsername());
+        if (user == null) {
+            throw new BusinessException("用户[" + userSysReq.getUsername() + "]不存在");
+        }
+        // 校验系统存在
+        List<String> allSysName = manageByQueryService.allSysName();
+        if (!allSysName.contains(userSysReq.getSysName())) {
+            throw new BusinessException("系统[" + userSysReq.getSysName() + "]不存在");
+        }
+        userMapper.addUserSys(userSysReq.getUsername(), userSysReq.getSysName());
+        UserBindSysRes userBindSysRes = new UserBindSysRes();
+        userBindSysRes.setUsername(user.getUsername());
+        userBindSysRes.setSysNameList(userMapper.findSysNameByUsername(user.getUsername()));
+        return userBindSysRes;
     }
 
     @Transactional
     public UserBindSysRes userUnBindSys(UserSysReq userSysReq) {
-        // TODO 为用户删除登录的系统
-        return null;
+        // 校验用户存在
+        User user = userMapper.getByUsername(userSysReq.getUsername());
+        if (user == null) {
+            throw new BusinessException("用户[" + userSysReq.getUsername() + "]不存在");
+        }
+        // 校验系统存在
+        List<String> allSysName = manageByQueryService.allSysName();
+        if (!allSysName.contains(userSysReq.getSysName())) {
+            throw new BusinessException("系统[" + userSysReq.getSysName() + "]不存在");
+        }
+        userMapper.delUserSys(userSysReq.getUsername(), userSysReq.getSysName());
+        // TODO 删除 Session
+        UserBindSysRes userBindSysRes = new UserBindSysRes();
+        userBindSysRes.setUsername(user.getUsername());
+        userBindSysRes.setSysNameList(userMapper.findSysNameByUsername(user.getUsername()));
+        return userBindSysRes;
     }
 
     @Transactional

@@ -16,6 +16,7 @@ import org.clever.security.dto.response.UserInfoRes;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
 import org.clever.security.mapper.PermissionMapper;
+import org.clever.security.mapper.RememberMeTokenMapper;
 import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.service.internal.UserBindSysNameService;
@@ -47,6 +48,8 @@ public class ManageByUserService {
     private RoleMapper roleMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private RememberMeTokenMapper rememberMeTokenMapper;
     @Autowired
     private UserBindSysNameService userBindSysNameService;
 
@@ -114,6 +117,9 @@ public class ManageByUserService {
         if (oldUser == null) {
             throw new BusinessException("用户不存在");
         }
+        boolean delRememberMeToken = false;
+        // Session 操作标识，0 不操作；1 更新；2 删除
+        int sessionFlag = 0;
         // 修改了密码
         if (StringUtils.isNotBlank(req.getPassword())) {
             // 密码先解密再加密
@@ -122,6 +128,10 @@ public class ManageByUserService {
             byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
             req.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
             req.setPassword(bCryptPasswordEncoder.encode(req.getPassword()));
+            // 设置删除 RememberMeToken
+            delRememberMeToken = true;
+            // 更新Session
+            sessionFlag = 1;
         } else {
             req.setPassword(null);
         }
@@ -145,7 +155,10 @@ public class ManageByUserService {
         if ((req.getExpiredTime() != null && req.getExpiredTime().compareTo(new Date()) <= 0)
                 || Objects.equals(req.getLocked(), EnumConstant.User_Locked_1)
                 || Objects.equals(req.getEnabled(), EnumConstant.User_Enabled_0)) {
-            // TODO 1.删除Session 2.失效remember_me_token
+            // 设置删除 RememberMeToken
+            delRememberMeToken = true;
+            // 删除Session
+            sessionFlag = 2;
         }
         User user = BeanMapper.mapper(req, User.class);
         user.setId(oldUser.getId());
@@ -156,7 +169,15 @@ public class ManageByUserService {
             req.setSysNameList(new HashSet<>());
         }
         userBindSysNameService.resetUserBindSys(user.getUsername(), req.getSysNameList());
-        // TODO 1.更新Session 2.失效remember_me_token
+        if (delRememberMeToken) {
+            rememberMeTokenMapper.deleteByUsername(user.getUsername());
+        }
+        if (sessionFlag == 1) {
+            // TODO 更新Session
+        }
+        if (sessionFlag == 2) {
+            // TODO 删除Session
+        }
         return user;
     }
 
@@ -166,7 +187,11 @@ public class ManageByUserService {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
-        // TODO 1.删除用户信息 2.删除关联数据 user_role、user_sys 3.失效remember_me_token、Session
+        userMapper.deleteById(user.getId());
+        userMapper.delUserRole(user.getUsername());
+        userMapper.delAllUserSys(user.getUsername());
+        rememberMeTokenMapper.deleteByUsername(user.getUsername());
+        // TODO 删除Session
         return user;
     }
 }

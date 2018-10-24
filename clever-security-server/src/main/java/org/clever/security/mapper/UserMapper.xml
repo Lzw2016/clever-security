@@ -22,6 +22,14 @@
         delete from user_role where username=#{username} and role_name=#{roleName}
     </delete>
 
+    <delete id="delUserRole">
+        delete from user_role where username=#{username}
+    </delete>
+
+    <delete id="delAllUserSys">
+        delete from user_sys where username=#{username}
+    </delete>
+
     <select id="getByUnique" resultType="org.clever.security.entity.User">
         select *
         from user
