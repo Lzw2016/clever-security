@@ -157,9 +157,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
                 throw new BadCredentialsException("用户名密码验证失败");
             }
             log.info("### 用户名密码验证成功 [{}]", userLoginToken.toString());
-            return;
-        }
-        if (UserLoginToken.LoginType_Telephone.equals(userLoginToken.getLoginType())) {
+        } else if (UserLoginToken.LoginType_Telephone.equals(userLoginToken.getLoginType())) {
             // TODO 手机号、验证码校验 (模拟)
             if (!userLoginToken.getUsername().equals(AuthenticationUtils.getLoginUserDetails(loadedUser).getUser().getTelephone())
                     || !"123456".equals(userLoginToken.getPassword())) {
@@ -167,6 +165,8 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
                 throw new BadCredentialsException("短信验证码验证失败");
             }
             log.info("### 短信验证码验证成功 [{}]", userLoginToken.toString());
+        } else {
+            throw new BadCredentialsException("不支持的登录类型");
         }
     }
 

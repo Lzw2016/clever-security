@@ -16,6 +16,8 @@ import java.util.List;
  */
 public interface UserMapper extends BaseMapper<User> {
 
+    User getByUnique(@Param("unique") String unique);
+
     User getByUsername(@Param("username") String username);
 
     User getByTelephone(@Param("telephone") String telephone);

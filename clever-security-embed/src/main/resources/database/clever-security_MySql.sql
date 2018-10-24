@@ -32,7 +32,7 @@ create table user
     password        varchar(127)                                                            comment '密码',
     user_type       int(1)          not null        default 0                               comment '用户类型，0：系统内建，1：外部系统用户',
     telephone       varchar(31)                     unique                                  comment '手机号',
-    email           varchar(63)                                                             comment '邮箱',
+    email           varchar(63)                     unique                                  comment '邮箱',
     expired_time    datetime(3)                                                             comment '帐号过期时间',
     locked          int(1)          not null        default 0                               comment '帐号是否锁定，0：未锁定；1：锁定',
     enabled         int(1)          not null        default 1                               comment '是否启用，0：禁用；1：启用',

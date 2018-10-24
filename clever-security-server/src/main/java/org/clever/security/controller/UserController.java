@@ -2,15 +2,16 @@ package org.clever.security.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.server.controller.BaseController;
+import org.clever.security.dto.request.UserAuthenticationReq;
+import org.clever.security.dto.response.UserAuthenticationRes;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
 import org.clever.security.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,10 +27,10 @@ public class UserController extends BaseController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation("获取用户")
-    @GetMapping("/user/{usernameOrTelephone}")
-    public User getUser(@PathVariable("usernameOrTelephone") String usernameOrTelephone) {
-        return userService.getUser(usernameOrTelephone);
+    @ApiOperation("获取用户(登录名、手机、邮箱)")
+    @GetMapping("/user/{unique}")
+    public User getUser(@PathVariable("unique") String unique) {
+        return userService.getUser(unique);
     }
 
     @ApiOperation("获取某个用户在某个系统下的所有权限")
@@ -44,5 +45,19 @@ public class UserController extends BaseController {
         return userService.canLogin(username, sysName);
     }
 
-    // TODO 用户认证
+    @ApiOperation("用户登录认证")
+    @PostMapping("/user/authentication")
+    public UserAuthenticationRes authentication(@RequestBody @Validated UserAuthenticationReq req) {
+        UserAuthenticationRes userAuthenticationRes = new UserAuthenticationRes();
+        if (StringUtils.isBlank(req.getLoginType())) {
+            req.setLoginType("username");
+        }
+        try {
+            userAuthenticationRes.setSuccess(userService.authentication(req));
+        } catch (Exception e) {
+            userAuthenticationRes.setSuccess(false);
+            userAuthenticationRes.setFailMessage(e.getMessage());
+        }
+        return userAuthenticationRes;
+    }
 }

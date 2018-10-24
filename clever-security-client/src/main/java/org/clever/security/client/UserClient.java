@@ -18,8 +18,8 @@ public interface UserClient {
     /**
      * 获取用户
      */
-    @GetMapping("/user/{usernameOrTelephone}")
-    User getUser(@PathVariable("usernameOrTelephone") String usernameOrTelephone);
+    @GetMapping("/user/{unique}")
+    User getUser(@PathVariable("unique") String unique);
 
     /**
      * 获取某个用户在某个系统下的所有权限

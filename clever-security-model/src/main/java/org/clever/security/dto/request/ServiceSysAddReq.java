@@ -2,17 +2,19 @@ package org.clever.security.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.clever.common.model.request.BaseRequest;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 
 /**
  * 作者： lzw<br/>
  * 创建时间：2018-10-22 20:41 <br/>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class ServiceSysAddReq implements Serializable {
+public class ServiceSysAddReq extends BaseRequest {
 
     @ApiModelProperty("系统(或服务)名称")
     @NotBlank

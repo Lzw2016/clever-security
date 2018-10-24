@@ -2,6 +2,8 @@ package org.clever.security.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.clever.common.model.request.BaseRequest;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,8 +12,9 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-10-21 22:12 <br/>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class UserLoginLogQueryReq implements Serializable {
+public class UserLoginLogQueryReq extends BaseRequest {
 
     @ApiModelProperty("用户登录名")
     private String username;

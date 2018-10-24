@@ -22,6 +22,19 @@
         delete from user_role where username=#{username} and role_name=#{roleName}
     </delete>
 
+    <select id="getByUnique" resultType="org.clever.security.entity.User">
+        select *
+        from user
+        <where>
+            <if test="unique!=null and unique!=''">
+                username = #{unique} or telephone = #{unique} or email = #{unique}
+            </if>
+            <if test="unique==null or unique==''">
+              1=2
+            </if>
+        </where>
+    </select>
+
     <select id="getByUsername" resultType="org.clever.security.entity.User">
         select *
         from user
