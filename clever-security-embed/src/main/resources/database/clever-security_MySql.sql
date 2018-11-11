@@ -1,6 +1,5 @@
-
--- create database `clever-security`;
--- use `clever-security`;
+create database if not exists `clever-security` default character set = utf8mb4;
+use `clever-security`;
 
 
 /* ====================================================================================================================

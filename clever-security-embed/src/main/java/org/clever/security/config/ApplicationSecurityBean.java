@@ -54,6 +54,7 @@ public class ApplicationSecurityBean {
         List<AccessDecisionVoter<?>> decisionVoters = Collections.singletonList(requestAccessDecisionVoter);
         AccessDecisionManager accessDecisionManager = new AffirmativeBased(decisionVoters);
         // accessDecisionManager.
+        // TODO 支持注解权限校验
         return accessDecisionManager;
     }
 

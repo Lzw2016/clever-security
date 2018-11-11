@@ -1,10 +1,14 @@
 package org.clever.security.client;
 
+import org.clever.security.dto.request.UserAuthenticationReq;
+import org.clever.security.dto.response.UserAuthenticationRes;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -32,4 +36,10 @@ public interface UserClient {
      */
     @GetMapping("/user/{username}/{sysName}")
     Boolean canLogin(@PathVariable("username") String username, @PathVariable("sysName") String sysName);
+
+    /**
+     * 用户登录认证
+     */
+    @PostMapping("/user/authentication")
+    UserAuthenticationRes authentication(@RequestBody UserAuthenticationReq req);
 }

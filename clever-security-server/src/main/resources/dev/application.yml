@@ -50,6 +50,20 @@ spring:
       period: 31536000s
     static-locations: ['classpath:/static/']
 
+  redis: #---------------------------------------------------------------- Redis配置
+    ssl: false
+    host: '127.0.0.1'
+    port: 6379
+    timeout: 1s
+    database: 0
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 1
+        max-wait: 1s
+      shutdown-timeout: 100ms
+
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -102,11 +116,20 @@ management:
     prometheus:
       enabled: true
   metrics:
+    enable:
+      root: true
     export:
       prometheus:
         enabled: true
         descriptions: true
-        step: 30s
+        step: 5s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.75, 0.9, 0.95, 0.99
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s, 2s, 3s, 4s, 5s, 10s, 15s, 20s, 30s, 50s
 
 ###################################################################################
 ### mybatis-plus配置
@@ -128,14 +151,79 @@ mybatis-plus:
       field-strategy: not_null
 
 ###################################################################################
-### 自定义配置
+### clever security配置
 ###################################################################################
 clever:
+  security:
+    enable-debug: false
+    sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 1
+    default-need-authorization: true
+    ignore-urls:
+    - '/swagger-ui*/**'
+    - '/webjars/springfox*/**'
+    - '/swagger-resources*/**'
+    - '/v2/api-docs'
+    - '/favicon.ico'
+    - '/csrf'
+    - '/error'
+    - '/login/captcha.png'
+    - '/dist/**'
+    - '/static/**'
+    - '/'
+    - '/*.png'
+    - '/*.js'
+    - '/*.css'
+    - '/*.html'
+    - '/actuator/**'
+    ignore-authorization-urls:
+    - '/api/**'
+    hide-user-not-found-exceptions: true
+    notLoginNeedForward: false
+    forbidden-need-forward: false
+    forbidden-forward-page: '/403.html'
+    session-expired-redirect-url:
+    login:
+      login-page: '/login.html'
+      login-url: '/login.json'
+      username-parameter: 'username'
+      password-parameter: 'password'
+      captcha-parameter: 'captcha'
+      post-only: true
+      json-data-submit: true
+      login-success-need-redirect: false
+      login-success-redirect-page: '/index.html'
+      login-failure-need-redirect: false
+      login-failure-need-forward: false
+      login-failure-redirect-page: '/login.html'
+      need-captcha: false
+      need-captcha-by-login-fail-count: 3
+      captcha-effective-time: 60000
+      concurrent-login-count: 1
+      not-allow-after-login: false
+    remember-me:
+      enable: true
+      always-remember: false
+      validity-seconds: 2592000
+      remember-Me-Parameter-Name: 'remember-me'
+    logout:
+      logout-url: '/logout.json'
+      logout-success-need-redirect: false
+      logout-success-redirect-page: '/login.html'
+    login-req-aes-key:
+      req-password-aes-key: '636c657665722d736563757288888888'
+      req-password-aes-iv: '636c657665722d736563757266666666'
   config:
     password-aes-key: '636c657665722d73656375726974792d'
     password-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'
 
-
+###################################################################################
+### Feign配置
+###################################################################################
+# CommonClientConfigKey 实现
+#clever-security-server:
+#  ribbon:
+#    listOfServers: '127.0.0.1:${server.port}'
 
 
 

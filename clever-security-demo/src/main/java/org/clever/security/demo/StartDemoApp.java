@@ -25,10 +25,10 @@ import java.util.TimeZone;
         redisFlushMode = RedisFlushMode.ON_SAVE
 )
 @SpringBootApplication(scanBasePackages = {"org.clever"})
-public class DemoStartApp {
+public class StartDemoApp {
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
-        ApplicationContext ctx = SpringApplication.run(DemoStartApp.class, args);
+        ApplicationContext ctx = SpringApplication.run(StartDemoApp.class, args);
         log.info("### 服务启动完成 === " + ctx);
     }
 }

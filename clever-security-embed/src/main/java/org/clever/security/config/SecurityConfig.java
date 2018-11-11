@@ -86,6 +86,11 @@ public class SecurityConfig {
      */
     private final Logout logout = new Logout();
 
+    /**
+     * 用户登录请求Aes Key
+     */
+    private final AesKey loginReqAesKey = new AesKey();
+
     @Data
     public static class Login {
         /**
@@ -195,7 +200,7 @@ public class SecurityConfig {
     }
 
     @Data
-    public static class RememberMe {
+    static class RememberMe {
         /**
          * 启用"记住我"功能
          */
@@ -217,4 +222,16 @@ public class SecurityConfig {
         private String rememberMeParameterName = "remember-me";
     }
 
+    @Data
+    public static class AesKey {
+        /**
+         * 密码AES加密 key(Hex编码) -- 请求数据，与前端一致
+         */
+        private String reqPasswordAesKey;
+
+        /**
+         * 密码AES加密 iv(Hex编码) -- 请求数据，与前端一致
+         */
+        private String reqPasswordAesIv;
+    }
 }
