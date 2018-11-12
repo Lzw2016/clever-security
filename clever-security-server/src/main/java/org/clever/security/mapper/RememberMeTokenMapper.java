@@ -19,4 +19,6 @@ public interface RememberMeTokenMapper extends BaseMapper<RememberMeToken> {
     RememberMeToken getBySeries(@Param("series") String series);
 
     int deleteByUsername(@Param("username") String username);
+
+    int deleteBySysNameAndUsername(@Param("sysName") String sysName, @Param("username") String username);
 }

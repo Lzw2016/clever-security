@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.User;
+import org.clever.security.entity.UserLoginLog;
+import org.clever.security.mapper.RememberMeTokenMapper;
 import org.clever.security.mapper.ServiceSysMapper;
+import org.clever.security.mapper.UserLoginLogMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
@@ -15,8 +18,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +30,8 @@ import java.util.Set;
  * 作者： lzw<br/>
  * 创建时间：2018-11-12 10:16 <br/>
  */
-@Component
+@Transactional(readOnly = true)
+@Service
 @Slf4j
 public class SessionService {
 
@@ -38,9 +42,13 @@ public class SessionService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private RedisOperationsSessionRepository sessionRepository;
+    private UserLoginLogMapper userLoginLogMapper;
     @Autowired
-    private SpringSessionBackedSessionRegistry sessionRegistry;
+    private RememberMeTokenMapper rememberMeTokenMapper;
+    @Autowired
+    private RedisOperationsSessionRepository sessionRepository;
+//    @Autowired
+//    private SpringSessionBackedSessionRegistry sessionRegistry;
 
     /**
      * 参考 RedisOperationsSessionRepository#getPrincipalKey
@@ -196,5 +204,96 @@ public class SessionService {
             result.put(sysName, securityContext);
         }
         return result;
+    }
+
+    /**
+     * 读取用户SessionSecurityContext
+     *
+     * @param sysName  系统名
+     * @param userName 用户名
+     * @return 不存在返回null
+     */
+    public Map<String, SecurityContext> getSessionSecurityContext(String sysName, String userName) {
+        Map<String, SecurityContext> map = new HashMap<>();
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
+        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+            return null;
+        }
+        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
+        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
+        if (sessionIds == null) {
+            return null;
+        }
+        for (Object sessionId : sessionIds) {
+            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
+                continue;
+            }
+            String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId.toString());
+            Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
+            SecurityContext securityContext = null;
+            if (securityObject instanceof SecurityContext) {
+                securityContext = (SecurityContext) securityObject;
+            }
+            map.put(sessionId.toString(), securityContext);
+        }
+        return map;
+    }
+
+    /**
+     * 读取用户SessionSecurityContext
+     *
+     * @param sessionId Session ID
+     */
+    public SecurityContext getSessionSecurityContext(String sessionId) {
+        if (sessionId == null || StringUtils.isBlank(sessionId)) {
+            return null;
+        }
+        UserLoginLog userLoginLog = userLoginLogMapper.getBySessionId(sessionId);
+        if (userLoginLog == null || StringUtils.isBlank(userLoginLog.getSysName())) {
+            return null;
+        }
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(userLoginLog.getSysName());
+        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+            return null;
+        }
+        String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId);
+        Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
+        if (securityObject instanceof SecurityContext) {
+            return (SecurityContext) securityObject;
+        }
+        return null;
+    }
+
+
+    /**
+     * 踢出用户(强制下线)
+     *
+     * @param sysName  系统名
+     * @param userName 用户名
+     * @return 下线Session数量
+     */
+    @Transactional
+    public int forcedOffline(String sysName, String userName) {
+        int count = 0;
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
+        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+            return 0;
+        }
+        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
+        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
+        if (sessionIds == null) {
+            return 0;
+        }
+        // 删除 RememberMe Token
+        rememberMeTokenMapper.deleteBySysNameAndUsername(sysName, userName);
+        // 删除Session
+        for (Object sessionId : sessionIds) {
+            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
+                continue;
+            }
+            count++;
+            sessionRepository.deleteById(sessionId.toString());
+        }
+        return count;
     }
 }

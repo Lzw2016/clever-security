@@ -10,7 +10,12 @@
         delete from remember_me_token where username = #{username}
     </delete>
 
+    <delete id="deleteBySysNameAndUsername">
+        delete from remember_me_token where sys_name = #{sysName} and username = #{username}
+    </delete>
+
     <select id="getBySeries" resultType="org.clever.security.entity.RememberMeToken">
         select * from remember_me_token where series = #{series}
     </select>
+
 </mapper>
