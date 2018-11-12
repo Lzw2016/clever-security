@@ -22,7 +22,7 @@ import java.util.Set;
 public class UserUpdateReq extends BaseRequest {
 
     @ApiModelProperty("密码")
-    @Length(min = 6, max = 16)
+    @Length(min = 6, max = 127)
     private String password;
 
     @ApiModelProperty("用户类型，0：系统内建，1：外部系统用户")

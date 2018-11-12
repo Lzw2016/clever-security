@@ -47,6 +47,8 @@ public class ManageByUserService {
     private RememberMeTokenMapper rememberMeTokenMapper;
     @Autowired
     private UserBindSysNameService userBindSysNameService;
+    @Autowired
+    private SessionService sessionService;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
@@ -159,13 +161,16 @@ public class ManageByUserService {
         }
         userBindSysNameService.resetUserBindSys(user.getUsername(), req.getSysNameList());
         if (delRememberMeToken) {
+            // 删除RememberMe Token
             rememberMeTokenMapper.deleteByUsername(user.getUsername());
         }
         if (sessionFlag == 1) {
-            // TODO 更新Session
+            // 更新Session
+            sessionService.reloadSessionSecurityContext(user.getUsername());
         }
         if (sessionFlag == 2) {
-            // TODO 删除Session
+            // 删除Session
+            sessionService.delSession(user.getUsername());
         }
         return user;
     }
@@ -180,7 +185,8 @@ public class ManageByUserService {
         userMapper.delUserRole(user.getUsername());
         userMapper.delAllUserSys(user.getUsername());
         rememberMeTokenMapper.deleteByUsername(user.getUsername());
-        // TODO 删除Session
+        // 删除Session
+        sessionService.delSession(user.getUsername());
         return user;
     }
 }

@@ -42,6 +42,8 @@ public class ManageBySecurityService {
     private RoleBindPermissionService resetRoleBindPermission;
     @Autowired
     private ManageByQueryService manageByQueryService;
+    @Autowired
+    private SessionService sessionService;
 
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
@@ -148,7 +150,9 @@ public class ManageBySecurityService {
             throw new BusinessException("系统[" + userSysReq.getSysName() + "]不存在");
         }
         userMapper.delUserSys(userSysReq.getUsername(), userSysReq.getSysName());
-        // TODO 删除 Session
+        // 删除 Session
+        sessionService.delSession(userSysReq.getSysName(), userSysReq.getUsername());
+        // 构造返回数据
         UserBindSysRes userBindSysRes = new UserBindSysRes();
         userBindSysRes.setUsername(user.getUsername());
         userBindSysRes.setSysNameList(userMapper.findSysNameByUsername(user.getUsername()));
@@ -162,10 +166,12 @@ public class ManageBySecurityService {
             throw new BusinessException("用户[" + userRoleReq.getUsername() + "]已经拥有角色[" + userRoleReq.getRoleName() + "]");
         }
         userMapper.addRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        // 更新Session
+        sessionService.reloadSessionSecurityContext(userRoleReq.getUsername());
+        // 构造返回数据
         UserBindRoleRes res = new UserBindRoleRes();
         res.setUsername(userRoleReq.getUsername());
         res.setRoleList(userMapper.findRoleByUsername(userRoleReq.getUsername()));
-        // TODO 更新Session
         return res;
     }
 
@@ -176,10 +182,12 @@ public class ManageBySecurityService {
             throw new BusinessException("用户[" + userRoleReq.getUsername() + "]未拥有角色[" + userRoleReq.getRoleName() + "]");
         }
         userMapper.delRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
+        // 更新Session
+        sessionService.reloadSessionSecurityContext(userRoleReq.getUsername());
+        // 构造返回数据
         UserBindRoleRes res = new UserBindRoleRes();
         res.setUsername(userRoleReq.getUsername());
         res.setRoleList(userMapper.findRoleByUsername(userRoleReq.getUsername()));
-        // TODO 更新Session
         return res;
     }
 
@@ -190,10 +198,11 @@ public class ManageBySecurityService {
             throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]已经拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
         }
         roleMapper.addPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        // TODO 计算受影响的用户 更新Session
+        // 构造返回数据
         RoleBindPermissionRes res = new RoleBindPermissionRes();
         res.setRoleName(rolePermissionReq.getRoleName());
         res.setPermissionList(roleMapper.findPermissionByRoleName(rolePermissionReq.getRoleName()));
-        // TODO 更新Session
         return res;
     }
 
@@ -204,10 +213,11 @@ public class ManageBySecurityService {
             throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]未拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
         }
         roleMapper.delPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
+        // TODO 计算受影响的用户 更新Session
+        // 构造返回数据
         RoleBindPermissionRes res = new RoleBindPermissionRes();
         res.setRoleName(rolePermissionReq.getRoleName());
         res.setPermissionList(roleMapper.findPermissionByRoleName(rolePermissionReq.getRoleName()));
-        // TODO 更新Session
         return res;
     }
 }

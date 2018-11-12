@@ -2,6 +2,7 @@ package org.clever.security.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,8 @@ public class UserBindSysNameService {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SessionService sessionService;
 
     /**
      * 重置用户系统绑定
@@ -46,7 +49,8 @@ public class UserBindSysNameService {
         // 删除
         for (String sysName : delSysName) {
             userMapper.delUserSys(userName, sysName);
-            // TODO 删除Session
+            // 删除Session
+            sessionService.delSession(sysName, userName);
         }
     }
 }

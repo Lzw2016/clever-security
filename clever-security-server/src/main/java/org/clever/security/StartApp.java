@@ -20,7 +20,7 @@ import java.util.TimeZone;
 @EnableDiscoveryClient
 //@EnableFeignClients(basePackages = {"org.clever.security.client"})
 @EnableRedisHttpSession(
-        cleanupCron = "0/30 * * * * *",
+        cleanupCron = "0/5 * * * * *",
         maxInactiveIntervalInSeconds = 60 * 60,
         redisNamespace = "spring:session:clever-security",
         redisFlushMode = RedisFlushMode.ON_SAVE

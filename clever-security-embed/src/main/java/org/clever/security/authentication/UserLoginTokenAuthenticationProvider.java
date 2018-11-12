@@ -44,7 +44,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     private UserDetailsChecker postAuthenticationChecks;
     @Autowired
     private LoginPasswordCryptoService loginPasswordCryptoService;
-    // TODO 使用缓存
+    // 使用缓存?
     private UserCache userCache = new NullUserCache();
     // 解析授权信息
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();

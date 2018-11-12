@@ -37,6 +37,8 @@ public class ManageByPermissionService {
     private PermissionMapper permissionMapper;
     @Autowired
     private WebPermissionMapper webPermissionMapper;
+    @Autowired
+    private SessionService sessionService;
 
     public IPage<WebPermissionModel> findByPage(PermissionQueryReq queryReq) {
         Page<WebPermissionModel> page = new Page<>(queryReq.getPageNo(), queryReq.getPageSize());
@@ -86,7 +88,8 @@ public class ManageByPermissionService {
         permission.setId(webPermissionModel.getPermissionId());
         permissionMapper.updateById(permission);
         if (permissionUpdateReq.getPermissionStr() != null && !Objects.equals(permissionStr, permissionUpdateReq.getPermissionStr())) {
-            // TODO 更新Session
+            // TODO 计算影响的用户 更新Session
+            // sessionService.reloadSessionSecurityContext()
         }
         return permissionMapper.getByPermissionStr(permissionStr);
     }
