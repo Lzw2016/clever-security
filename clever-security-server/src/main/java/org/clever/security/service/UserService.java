@@ -4,16 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.server.service.BaseService;
-import org.clever.common.utils.codec.CryptoUtils;
-import org.clever.common.utils.codec.EncodeDecodeUtils;
-import org.clever.security.config.GlobalConfig;
 import org.clever.security.dto.request.UserAuthenticationReq;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.ManageCryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +30,7 @@ public class UserService extends BaseService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
-    private GlobalConfig globalConfig;
+    private ManageCryptoService manageCryptoService;
 
     public User getUser(String unique) {
         return userMapper.getByUnique(unique);
@@ -79,13 +74,10 @@ public class UserService extends BaseService {
         // 校验密码
         if (UserAuthenticationReq.LoginType_Username.equals(req.getLoginType())) {
             // 密码先解密再加密
-            byte[] passwordData = EncodeDecodeUtils.decodeBase64(req.getPassword());
-            byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesKey());
-            byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
-            req.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
-            req.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            req.setPassword(manageCryptoService.reqAesDecrypt(req.getPassword()));
+            req.setPassword(manageCryptoService.dbEncode(req.getPassword()));
             // 用户名、密码校验
-            if (!req.getLoginName().equals(user.getUsername()) || !bCryptPasswordEncoder.matches(req.getPassword(), user.getPassword())) {
+            if (!req.getLoginName().equals(user.getUsername()) || !manageCryptoService.dbMatches(req.getPassword(), user.getPassword())) {
                 log.info("### 用户名密码验证失败 [{}]", req.toString());
                 throw new BusinessException("用户名密码验证失败");
             }

@@ -32,11 +32,11 @@
         </repository>
         <repository>
             <id>my-maven-snapshots</id>
-            <url>http://39.108.68.132:8081/repository/maven-snapshots/</url>
+            <url>http://47.98.40.187:8081/repository/maven-snapshots/</url>
         </repository>
         <repository>
             <id>my-maven-releases</id>
-            <url>http://39.108.68.132:8081/repository/maven-releases/</url>
+            <url>http://47.98.40.187:8081/repository/maven-releases/</url>
         </repository>
     </repositories>
 
@@ -44,11 +44,11 @@
         <snapshotRepository>
             <id>my-maven-snapshots</id>
             <uniqueVersion>true</uniqueVersion>
-            <url>http://39.108.68.132:8081/repository/maven-snapshots/</url>
+            <url>http://47.98.40.187:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>my-maven-releases</id>
-            <url>http://39.108.68.132:8081/repository/maven-releases/</url>
+            <url>http://47.98.40.187:8081/repository/maven-releases/</url>
         </repository>
     </distributionManagement>
 

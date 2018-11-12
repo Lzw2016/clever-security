@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
-import org.clever.common.utils.codec.CryptoUtils;
-import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.BeanMapper;
-import org.clever.security.config.GlobalConfig;
 import org.clever.security.dto.request.UserAddReq;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.dto.request.UserUpdateReq;
@@ -19,9 +16,9 @@ import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.RememberMeTokenMapper;
 import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.ManageCryptoService;
 import org.clever.security.service.internal.UserBindSysNameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,9 +36,7 @@ import java.util.Objects;
 public class ManageByUserService {
 
     @Autowired
-    private GlobalConfig globalConfig;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private ManageCryptoService manageCryptoService;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -97,11 +92,8 @@ public class ManageByUserService {
             throw new BusinessException("手机号已经被绑定");
         }
         // 密码先解密再加密
-        byte[] passwordData = EncodeDecodeUtils.decodeBase64(user.getPassword());
-        byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesKey());
-        byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
-        user.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassword(manageCryptoService.reqAesDecrypt(user.getPassword()));
+        user.setPassword(manageCryptoService.dbEncode(user.getPassword()));
         userMapper.insert(user);
         if (userAddReq.getSysNameList() != null) {
             for (String sysName : userAddReq.getSysNameList()) {
@@ -123,11 +115,8 @@ public class ManageByUserService {
         // 修改了密码
         if (StringUtils.isNotBlank(req.getPassword())) {
             // 密码先解密再加密
-            byte[] passwordData = EncodeDecodeUtils.decodeBase64(req.getPassword());
-            byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesKey());
-            byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getPasswordAesIv());
-            req.setPassword(CryptoUtils.aesDecrypt(passwordData, key, iv));
-            req.setPassword(bCryptPasswordEncoder.encode(req.getPassword()));
+            req.setPassword(manageCryptoService.reqAesDecrypt(req.getPassword()));
+            req.setPassword(manageCryptoService.dbEncode(req.getPassword()));
             // 设置删除 RememberMeToken
             delRememberMeToken = true;
             // 更新Session

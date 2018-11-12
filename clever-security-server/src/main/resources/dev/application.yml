@@ -214,17 +214,8 @@ clever:
       req-password-aes-key: '636c657665722d736563757288888888'
       req-password-aes-iv: '636c657665722d736563757266666666'
   config:
-    password-aes-key: '636c657665722d73656375726974792d'
-    password-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'
-
-###################################################################################
-### Feign配置
-###################################################################################
-# CommonClientConfigKey 实现
-#clever-security-server:
-#  ribbon:
-#    listOfServers: '127.0.0.1:${server.port}'
-
+    req-aes-key: '636c657665722d73656375726974792d'
+    req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'
 
 
 
