@@ -177,6 +177,7 @@ clever:
     - '/*.html'
     - '/actuator/**'
     ignore-authorization-urls:
+    - '/login/user_info.json'
     - '/api/**'
     hide-user-not-found-exceptions: true
     notLoginNeedForward: false

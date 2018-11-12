@@ -1,7 +1,6 @@
 package org.clever.security.jackson2;
 
 import com.fasterxml.jackson.annotation.*;
-import org.clever.security.entity.Permission;
 
 /**
  * 作者： lzw<br/>
@@ -13,6 +12,6 @@ import org.clever.security.entity.Permission;
 class UserAuthorityMixin {
 
     @JsonCreator
-    public UserAuthorityMixin(@JsonProperty("permission") Permission permission) {
+    public UserAuthorityMixin(@JsonProperty("authority") String authority, @JsonProperty("title") String title) {
     }
 }

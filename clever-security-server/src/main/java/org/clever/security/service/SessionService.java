@@ -123,7 +123,7 @@ public class SessionService {
         List<Permission> permissionList = userMapper.findByUsername(userName, sysName);
         LoginUserDetails userDetails = new LoginUserDetails(user);
         for (Permission permission : permissionList) {
-            userDetails.getAuthorities().add(new UserAuthority(permission));
+            userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
         }
         // 组装 UserLoginToken
         return new UserLoginToken(userDetails);

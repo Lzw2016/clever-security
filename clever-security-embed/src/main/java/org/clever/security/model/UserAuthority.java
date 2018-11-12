@@ -1,7 +1,6 @@
 package org.clever.security.model;
 
 import lombok.Getter;
-import org.clever.security.entity.Permission;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -13,14 +12,18 @@ import org.springframework.security.core.GrantedAuthority;
 @Getter
 public final class UserAuthority implements GrantedAuthority {
 
-    private final Permission permission;
+    // private final Permission permission;
 
-    public UserAuthority(Permission permission) {
-        this.permission = permission;
+    private final String authority;
+    private final String title;
+
+    public UserAuthority(String authority, String title) {
+        this.authority = authority;
+        this.title = title;
     }
 
     @Override
     public String getAuthority() {
-        return permission == null ? null : permission.getPermissionStr();
+        return authority;
     }
 }

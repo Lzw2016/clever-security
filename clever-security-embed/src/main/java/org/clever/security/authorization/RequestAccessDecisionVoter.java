@@ -5,7 +5,6 @@ import org.clever.security.client.WebPermissionClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.WebPermissionModelGetReq;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.Permission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
@@ -160,8 +159,7 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
         }
         for (UserAuthority userAuthority : authorities) {
             if (Objects.equals(permissionStr, userAuthority.getAuthority())) {
-                Permission permission = userAuthority.getPermission();
-                log.info("### 权限字符串匹配成功 [{}] [{}]", permission.getPermissionStr(), permission.getTitle());
+                log.info("### 权限字符串匹配成功 [{}] [{}]", userAuthority.getAuthority(), userAuthority.getTitle());
                 return true;
             }
         }

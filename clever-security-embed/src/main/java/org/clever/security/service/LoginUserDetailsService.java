@@ -44,7 +44,7 @@ public class LoginUserDetailsService implements UserDetailsService {
         // 获取用所有权限
         LoginUserDetails userDetails = new LoginUserDetails(user);
         for (Permission permission : permissionList) {
-            userDetails.getAuthorities().add(new UserAuthority(permission));
+            userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
         }
         return userDetails;
     }

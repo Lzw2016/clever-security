@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**

@@ -5,6 +5,7 @@ import org.clever.security.entity.User;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserLoginToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -56,6 +57,14 @@ public class AuthenticationUtils {
         userRes.setTelephone(user.getTelephone());
         userRes.setEmail(user.getEmail());
         userRes.setUserType(user.getUserType());
+        // TODO 读取角色信息
+        // userRes.getRoleNames().add();
+        // 读取权限信息
+        if (authentication.getAuthorities() != null) {
+            for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
+                userRes.getAuthorities().add(grantedAuthority.getAuthority());
+            }
+        }
         return userRes;
     }
 }
