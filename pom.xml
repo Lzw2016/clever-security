@@ -58,6 +58,8 @@
         <module>clever-security-server</module>
         <module>clever-security-embed</module>
         <module>clever-security-demo</module>
+        <module>clever-security-jwt</module>
+        <module>clever-security-jwt-demo</module>
     </modules>
 
     <properties>
@@ -117,6 +119,11 @@
                 <artifactId>clever-common-client</artifactId>
                 <version>${common.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.clever</groupId>
+                <artifactId>clever-security-jwt</artifactId>
+                <version>${common.version}</version>
+            </dependency>
             <!--spring-cloud-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -147,6 +154,21 @@
                 <version>1.5.21</version>
             </dependency>
             <!--依赖包-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.10.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.10.5</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.10.5</version>
+            </dependency>
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>

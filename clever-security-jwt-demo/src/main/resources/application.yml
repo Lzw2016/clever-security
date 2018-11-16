@@ -1,0 +1,172 @@
+###################################################################################
+### Web服务器配置
+###################################################################################
+server:
+  port: 28081
+  servlet:
+    context-path: /
+
+###################################################################################
+### logging(logback)
+###################################################################################
+logging:
+  config: classpath:logback.xml
+  level:
+    org.springframework: warn
+    org.springframework.security.web: warn
+    org.springframework.data.redis: warn
+    org.clever: debug
+
+###################################################################################
+### Spring配置
+###################################################################################
+spring:
+  profiles.active: dev
+  application.name: clever-security-jwt-demo
+  aop.proxy-target-class: true
+
+  servlet: #------------------------------------------------------------ 文件上传配置
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 10MB
+
+  http: #------------------------------------------------------------------ http配置
+    converters:
+      preferred-json-mapper: jackson
+    encoding:
+      charset: UTF-8
+      force: true
+
+  jackson: #------------------------------------------------------------ jackson配置
+    date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
+    locale: zh_CN
+    time-zone: GMT+8
+
+  resources: #------------------------------------------------ html、js、css 静态资源
+    chain:
+      cache: true
+      gzipped: true
+    cache:
+      period: 31536000s
+    static-locations: ['classpath:/static/']
+
+  redis: #---------------------------------------------------------------- Redis配置
+    ssl: false
+    host: '127.0.0.1'
+    port: 6379
+    timeout: 1s
+    database: 0
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 1
+        max-wait: 1s
+      shutdown-timeout: 100ms
+
+  cloud: #------------------------------------------------------------ Spring Cloud
+    consul:
+      enabled: false
+      host: '127.0.0.1'
+      port: 8500
+      discovery:
+        enabled: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        instance-zone: wuhan
+        instance-group: svc
+        tags:
+        - serviceName=${spring.application.name}
+        health-check-path: '/actuator/health'
+        health-check-interval: 1s
+
+###################################################################################
+### management配置
+###################################################################################
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include:
+        - health
+        - info
+        - env
+        - metrics
+        - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 30s
+
+###################################################################################
+### clever security配置
+###################################################################################
+clever:
+  security:
+    enable-debug: false
+    sys-name: '权限系统Demo'
+    wait-spring-context-init-count: 2
+    default-need-authorization: true
+    ignore-urls:
+    - '/swagger-ui*/**'
+    - '/webjars/springfox*/**'
+    - '/swagger-resources*/**'
+    - '/v2/api-docs'
+    - '/favicon.ico'
+    - '/csrf'
+    - '/error'
+
+    - '/favicon.ico'
+    - '/login/captcha.png'
+    - '/dist/**'
+    - '/api/user'
+    - '/actuator/**'
+    ignore-authorization-urls:
+    - '/test/config'
+    hide-user-not-found-exceptions: true
+    notLoginNeedForward: false
+    forbidden-need-forward: false
+    forbidden-forward-page: '/403.html'
+    session-expired-redirect-url:
+    login:
+      login-page: '/login.html'
+      login-url: '/login.json'
+      username-parameter: 'username'
+      password-parameter: 'password'
+      captcha-parameter: 'captcha'
+      post-only: true
+      json-data-submit: true
+      login-success-need-redirect: false
+      login-success-redirect-page: '/index.html'
+      login-failure-need-redirect: false
+      login-failure-need-forward: false
+      login-failure-redirect-page: '/login.html'
+      need-captcha: true
+      need-captcha-by-login-fail-count: 3
+      captcha-effective-time: 60000
+      concurrent-login-count: 1
+      not-allow-after-login: false
+    logout:
+      logout-url: '/logout.json'
+      logout-success-need-redirect: false
+      logout-success-redirect-page: '/login.html'
+    remember-me:
+      enable: true
+      always-remember: false
+      validity-seconds: 2592000
+      remember-Me-Parameter-Name: 'remember-me'
+
+###################################################################################
+### Feign配置
+###################################################################################
+# CommonClientConfigKey 实现
+clever-security-server:
+  ribbon:
+    listOfServers: '127.0.0.1:28080'
