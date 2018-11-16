@@ -83,7 +83,7 @@
     </select>
 
     <select id="findUsernameByRoleName" resultType="string">
-        select role_name from user_role where username=#{roleName}
+        select username from user_role where role_name=#{roleName}
     </select>
 
     <select id="findRoleNameByPermissionStr" resultType="string">

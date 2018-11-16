@@ -93,12 +93,13 @@ public class ManageByPermissionService {
         permissionMapper.updateById(permission);
         if (permissionUpdateReq.getPermissionStr() != null && !Objects.equals(permissionStr, permissionUpdateReq.getPermissionStr())) {
             // 更新 role_permission 表 - 先查询受影响的角色
-            List<String> roleNameList = roleMapper.findRoleNameByPermissionStr(permissionUpdateReq.getPermissionStr());
+            List<String> roleNameList = roleMapper.findRoleNameByPermissionStr(permissionStr);
             roleMapper.updateRolePermissionByPermissionStr(permissionStr, permissionUpdateReq.getPermissionStr());
             // 计算影响的用户 更新Session
             reLoadSessionService.onChangeRole(roleNameList);
         }
-        return permissionMapper.getByPermissionStr(permissionStr);
+        String newPermissionStr = StringUtils.isBlank(permissionUpdateReq.getPermissionStr()) ? permissionStr : permissionUpdateReq.getPermissionStr();
+        return permissionMapper.getByPermissionStr(newPermissionStr);
     }
 
     public WebPermissionModel getPermissionModel(String permissionStr) {

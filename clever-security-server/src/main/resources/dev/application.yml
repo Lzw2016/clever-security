@@ -54,7 +54,7 @@ spring:
     ssl: false
     host: '127.0.0.1'
     port: 6379
-    timeout: 1s
+    timeout: 10s
     database: 0
     lettuce:
       pool:
@@ -62,7 +62,7 @@ spring:
         max-idle: 8
         min-idle: 1
         max-wait: 1s
-      shutdown-timeout: 100ms
+      shutdown-timeout: 1000ms
 
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
