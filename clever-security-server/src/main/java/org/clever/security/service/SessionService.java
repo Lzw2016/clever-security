@@ -145,7 +145,6 @@ public class SessionService {
         return new SecurityContextImpl(newUserLoginToken);
     }
 
-
     /**
      * 重新加载所有系统用户权限信息(sessionAttr:SPRING_SECURITY_CONTEXT)
      *
@@ -263,7 +262,6 @@ public class SessionService {
         }
         return null;
     }
-
 
     /**
      * 踢出用户(强制下线)

@@ -11,6 +11,7 @@ import org.clever.security.entity.Role;
 import org.clever.security.entity.User;
 import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.service.internal.ReLoadSessionService;
 import org.clever.security.service.internal.RoleBindPermissionService;
 import org.clever.security.service.internal.UserBindRoleService;
 import org.clever.security.service.internal.UserBindSysNameService;
@@ -44,6 +45,8 @@ public class ManageBySecurityService {
     private ManageByQueryService manageByQueryService;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private ReLoadSessionService reLoadSessionService;
 
     @Transactional
     public List<UserBindSysRes> userBindSys(UserBindSysReq userBindSysReq) {
@@ -198,7 +201,8 @@ public class ManageBySecurityService {
             throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]已经拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
         }
         roleMapper.addPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
-        // TODO 计算受影响的用户 更新Session
+        // 计算受影响的用户 更新Session
+        reLoadSessionService.onChangeRole(rolePermissionReq.getRoleName());
         // 构造返回数据
         RoleBindPermissionRes res = new RoleBindPermissionRes();
         res.setRoleName(rolePermissionReq.getRoleName());
@@ -213,7 +217,8 @@ public class ManageBySecurityService {
             throw new BusinessException("角色[" + rolePermissionReq.getRoleName() + "]未拥有权限[" + rolePermissionReq.getPermissionStr() + "]");
         }
         roleMapper.delPermission(rolePermissionReq.getRoleName(), rolePermissionReq.getPermissionStr());
-        // TODO 计算受影响的用户 更新Session
+        // 计算受影响的用户 更新Session
+        reLoadSessionService.onChangeRole(rolePermissionReq.getRoleName());
         // 构造返回数据
         RoleBindPermissionRes res = new RoleBindPermissionRes();
         res.setRoleName(rolePermissionReq.getRoleName());

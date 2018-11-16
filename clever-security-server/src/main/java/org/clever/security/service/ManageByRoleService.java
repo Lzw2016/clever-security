@@ -12,6 +12,7 @@ import org.clever.security.dto.response.RoleInfoRes;
 import org.clever.security.entity.Role;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.RoleMapper;
+import org.clever.security.service.internal.ReLoadSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ public class ManageByRoleService {
     private RoleMapper roleMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private ReLoadSessionService reLoadSessionService;
 
     public IPage<Role> findByPage(RoleQueryPageReq roleQueryPageReq) {
         Page<Role> page = new Page<>(roleQueryPageReq.getPageNo(), roleQueryPageReq.getPageSize());
@@ -64,7 +67,8 @@ public class ManageByRoleService {
         if (update.getName() != null) {
             roleMapper.updateUserRoleByRoleName(oldRole.getName(), roleUpdateReq.getName());
             roleMapper.updateRolePermissionByRoleName(oldRole.getName(), roleUpdateReq.getName());
-            //TODO 更新受影响用户的Session
+            // 更新受影响用户的Session
+            reLoadSessionService.onChangeRole(update.getName());
         }
         return roleMapper.getByName(roleUpdateReq.getName());
     }
@@ -79,7 +83,8 @@ public class ManageByRoleService {
         if (count > 0) {
             roleMapper.delUserRoleByRoleName(oldRole.getName());
             roleMapper.delRolePermissionByRoleName(oldRole.getName());
-            // TODO 更新受影响用户的Session
+            // 更新受影响用户的Session
+            reLoadSessionService.onChangeRole(name);
         }
         return oldRole;
     }

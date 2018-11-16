@@ -14,7 +14,7 @@ public class CheckUserLoginLogJob extends GlobalJob {
 
     @Override
     protected void internalExecute() {
-        // TODO 检查登录状态
+        // TODO 检查登录状态-校正Session状态
     }
 
     @Override

@@ -22,6 +22,8 @@ public class RoleBindPermissionService {
     private RoleMapper roleMapper;
     @Autowired
     private QueryMapper queryMapper;
+    @Autowired
+    private ReLoadSessionService reLoadSessionService;
 
     /**
      * 重新为角色分配权限
@@ -29,6 +31,7 @@ public class RoleBindPermissionService {
      * @param roleName          角色名称
      * @param permissionStrList 权限名称集合
      */
+    @Transactional
     public void resetRoleBindPermission(String roleName, Collection<String> permissionStrList) {
         if (permissionStrList == null) {
             permissionStrList = new ArrayList<>();
@@ -47,6 +50,7 @@ public class RoleBindPermissionService {
         for (String permissionStr : delPermissionStr) {
             roleMapper.delPermission(roleName, permissionStr);
         }
-        // TODO 分析受影响的用户并更新对应的Session
+        // 分析受影响的用户并更新对应的Session
+        reLoadSessionService.onChangeRole(roleName);
     }
 }

@@ -14,7 +14,9 @@ import org.clever.security.entity.Permission;
 import org.clever.security.entity.WebPermission;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.mapper.PermissionMapper;
+import org.clever.security.mapper.RoleMapper;
 import org.clever.security.mapper.WebPermissionMapper;
+import org.clever.security.service.internal.ReLoadSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,9 @@ public class ManageByPermissionService {
     @Autowired
     private WebPermissionMapper webPermissionMapper;
     @Autowired
-    private SessionService sessionService;
+    private RoleMapper roleMapper;
+    @Autowired
+    private ReLoadSessionService reLoadSessionService;
 
     public IPage<WebPermissionModel> findByPage(PermissionQueryReq queryReq) {
         Page<WebPermissionModel> page = new Page<>(queryReq.getPageNo(), queryReq.getPageSize());
@@ -88,8 +92,11 @@ public class ManageByPermissionService {
         permission.setId(webPermissionModel.getPermissionId());
         permissionMapper.updateById(permission);
         if (permissionUpdateReq.getPermissionStr() != null && !Objects.equals(permissionStr, permissionUpdateReq.getPermissionStr())) {
-            // TODO 计算影响的用户 更新Session
-            // sessionService.reloadSessionSecurityContext()
+            // 更新 role_permission 表 - 先查询受影响的角色
+            List<String> roleNameList = roleMapper.findRoleNameByPermissionStr(permissionUpdateReq.getPermissionStr());
+            roleMapper.updateRolePermissionByPermissionStr(permissionStr, permissionUpdateReq.getPermissionStr());
+            // 计算影响的用户 更新Session
+            reLoadSessionService.onChangeRole(roleNameList);
         }
         return permissionMapper.getByPermissionStr(permissionStr);
     }
@@ -106,8 +113,11 @@ public class ManageByPermissionService {
         }
         permissionMapper.deleteById(webPermissionModel.getPermissionId());
         webPermissionMapper.deleteById(webPermissionModel.getWebPermissionId());
+        // 删除 role_permission 表 - 先查询受影响的角色
+        List<String> roleNameList = roleMapper.findRoleNameByPermissionStr(permissionStr);
         permissionMapper.delRolePermission(permissionStr);
-        // TODO 计算影响的用户 更新Session
+        // 计算影响的用户 更新Session
+        reLoadSessionService.onChangeRole(roleNameList);
         return webPermissionModel;
     }
 
@@ -121,12 +131,15 @@ public class ManageByPermissionService {
             }
             list.add(webPermissionModel);
         }
+        // 删除 - 先查询受影响的角色
+        List<String> roleNameList = roleMapper.findRoleNameByPermissionStrList(permissionSet);
         for (WebPermissionModel webPermissionModel : list) {
             permissionMapper.deleteById(webPermissionModel.getPermissionId());
             webPermissionMapper.deleteById(webPermissionModel.getWebPermissionId());
             permissionMapper.delRolePermission(webPermissionModel.getPermissionStr());
         }
-        // TODO 计算影响的用户 更新Session
+        // 计算影响的用户 更新Session
+        reLoadSessionService.onChangeRole(roleNameList);
         return list;
     }
 }

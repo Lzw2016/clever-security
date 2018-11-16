@@ -8,6 +8,7 @@ import org.clever.security.entity.Permission;
 import org.clever.security.entity.Role;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 作者： lzw<br/>
@@ -25,6 +26,8 @@ public interface RoleMapper extends BaseMapper<Role> {
 
     int updateRolePermissionByRoleName(@Param("oldName") String oldName, @Param("newName") String newName);
 
+    int updateRolePermissionByPermissionStr(@Param("oldPermissionStr") String oldPermissionStr, @Param("newPermissionStr") String newPermissionStr);
+
     int delUserRoleByRoleName(@Param("name") String name);
 
     int delRolePermissionByRoleName(@Param("name") String name);
@@ -38,4 +41,10 @@ public interface RoleMapper extends BaseMapper<Role> {
     List<Permission> findPermissionByRoleName(@Param("roleName") String roleName);
 
     int existsRolePermission(@Param("roleName") String roleName, @Param("permissionStr") String permissionStr);
+
+    List<String> findUsernameByRoleName(@Param("roleName") String roleName);
+
+    List<String> findRoleNameByPermissionStr(@Param("permissionStr") String permissionStr);
+
+    List<String> findRoleNameByPermissionStrList(@Param("permissionStrList") Set<String> permissionStrList);
 }

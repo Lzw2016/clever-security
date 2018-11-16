@@ -18,6 +18,10 @@
         where role_name = #{oldName}
     </update>
 
+    <update id="updateRolePermissionByPermissionStr">
+        update role_permission set permission_str=#{newPermissionStr} where permission_str=#{oldPermissionStr}
+    </update>
+
     <delete id="delUserRoleByRoleName">
         delete
         from user_role
@@ -76,5 +80,20 @@
 
     <select id="existsRolePermission" resultType="int">
         select count(1) from role_permission where role_name=#{roleName} and permission_str=#{permissionStr}
+    </select>
+
+    <select id="findUsernameByRoleName" resultType="string">
+        select role_name from user_role where username=#{roleName}
+    </select>
+
+    <select id="findRoleNameByPermissionStr" resultType="string">
+        select role_name from role_permission where permission_str=#{permissionStr}
+    </select>
+
+    <select id="findRoleNameByPermissionStrList" resultType="string">
+        select role_name from role_permission where permission_str in
+        <foreach collection="permissionStrList" item="permissionStr" open="(" close=")" separator=",">
+            #{permissionStr}
+        </foreach>
     </select>
 </mapper>
