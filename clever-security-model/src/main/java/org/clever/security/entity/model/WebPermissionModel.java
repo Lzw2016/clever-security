@@ -1,9 +1,13 @@
 package org.clever.security.entity.model;
 
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+import org.clever.common.exception.BusinessException;
+import org.clever.security.entity.EnumConstant;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 作者： lzw<br/>
@@ -105,5 +109,40 @@ public class WebPermissionModel implements Serializable, Comparable<WebPermissio
                 permission.getTargetMethodParams(),
                 permission.getTitle());
         return strA.compareTo(strB);
+    }
+
+    /**
+     * 校验数据是否正确
+     */
+    public void check() {
+        if (StringUtils.isBlank(sysName)) {
+            throw new BusinessException("系统(或服务)名称不能为空");
+        }
+        if (StringUtils.isBlank(title)) {
+            throw new BusinessException("资源标题不能为空");
+        }
+        if (StringUtils.isBlank(permissionStr)) {
+            throw new BusinessException("权限标识不能为空");
+        }
+        if (resourcesType == null) {
+            throw new BusinessException("系统(或服务)名称不能为空");
+        }
+        if (needAuthorization == null) {
+            throw new BusinessException("需要授权才允许访问不能为空");
+        }
+        if (Objects.equals(resourcesType, EnumConstant.Permission_ResourcesType_1)) {
+            if (StringUtils.isBlank(targetClass)) {
+                throw new BusinessException("目标类名不能为空");
+            }
+            if (StringUtils.isBlank(targetMethod)) {
+                throw new BusinessException("目标方法名不能为空");
+            }
+            if (StringUtils.isBlank(resourcesUrl)) {
+                throw new BusinessException("目标Url不能为空");
+            }
+        }
+        if (targetExist == null) {
+            throw new BusinessException("资源是否存在不能为空");
+        }
     }
 }

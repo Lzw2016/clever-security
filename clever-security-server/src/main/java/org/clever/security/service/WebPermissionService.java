@@ -61,6 +61,11 @@ public class WebPermissionService extends BaseService {
     @Transactional
     public WebPermissionInitRes initWebPermission(String sysName, WebPermissionInitReq req) {
         List<WebPermissionModel> allPermission = req.getAllPermission();
+        // 校验数据正确
+        for (WebPermissionModel webPermissionModel : allPermission) {
+            webPermissionModel.check();
+        }
+        // 排序
         Collections.sort(allPermission);
         // 加载当前模块所有的权限信息 - moduleAllPermission
         List<WebPermissionModel> moduleAllPermission = webPermissionMapper.findBySysName(sysName);
