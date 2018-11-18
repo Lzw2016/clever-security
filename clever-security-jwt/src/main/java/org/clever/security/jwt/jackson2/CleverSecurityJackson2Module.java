@@ -2,9 +2,9 @@ package org.clever.security.jwt.jackson2;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.clever.security.model.LoginUserDetails;
-import org.clever.security.model.UserAuthority;
-import org.clever.security.model.UserLoginToken;
+import org.clever.security.jwt.model.LoginUserDetails;
+import org.clever.security.jwt.model.UserAuthority;
+import org.clever.security.jwt.model.UserLoginToken;
 
 /**
  * 作者： lzw<br/>
