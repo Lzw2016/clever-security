@@ -2,7 +2,7 @@
 ### Web服务器配置
 ###################################################################################
 server:
-  port: 28081
+  port: 28082
   servlet:
     context-path: /
 
@@ -110,58 +110,63 @@ management:
 ###################################################################################
 clever:
   security:
-    enable-debug: false
-    sys-name: '权限系统Demo'
-    wait-spring-context-init-count: 2
-    default-need-authorization: true
-    ignore-urls:
-    - '/swagger-ui*/**'
-    - '/webjars/springfox*/**'
-    - '/swagger-resources*/**'
-    - '/v2/api-docs'
-    - '/favicon.ico'
-    - '/csrf'
-    - '/error'
+    jwt:
+      enable-debug: true
+      sys-name: '权限系统Demo'
+      wait-spring-context-init-count: 2
+      default-need-authorization: true
+      ignore-urls:
+      - '/swagger-ui*/**'
+      - '/webjars/springfox*/**'
+      - '/swagger-resources*/**'
+      - '/v2/api-docs'
+      - '/favicon.ico'
+      - '/csrf'
+      - '/error'
 
-    - '/favicon.ico'
-    - '/login/captcha.png'
-    - '/dist/**'
-    - '/api/user'
-    - '/actuator/**'
-    ignore-authorization-urls:
-    - '/test/config'
-    hide-user-not-found-exceptions: true
-    notLoginNeedForward: false
-    forbidden-need-forward: false
-    forbidden-forward-page: '/403.html'
-    session-expired-redirect-url:
-    login:
-      login-page: '/login.html'
-      login-url: '/login.json'
-      username-parameter: 'username'
-      password-parameter: 'password'
-      captcha-parameter: 'captcha'
-      post-only: true
-      json-data-submit: true
-      login-success-need-redirect: false
-      login-success-redirect-page: '/index.html'
-      login-failure-need-redirect: false
-      login-failure-need-forward: false
-      login-failure-redirect-page: '/login.html'
-      need-captcha: true
-      need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 60000
-      concurrent-login-count: 1
-      not-allow-after-login: false
-    logout:
-      logout-url: '/logout.json'
-      logout-success-need-redirect: false
-      logout-success-redirect-page: '/login.html'
-    remember-me:
-      enable: true
-      always-remember: false
-      validity-seconds: 2592000
-      remember-Me-Parameter-Name: 'remember-me'
+      - '/favicon.ico'
+      - '/login/captcha.png'
+      - '/dist/**'
+      - '/api/user'
+      - '/actuator/**'
+      - '/test/**'
+      ignore-authorization-urls:
+      - '/test/**'
+      hide-user-not-found-exceptions: true
+      not-login-need-forward: false
+      forbidden-need-forward: false
+      forbidden-forward-page: '/403.html'
+      session-expired-redirect-url:
+      login:
+        login-page: '/login.html'
+        login-url: '/login.json'
+        username-parameter: 'username'
+        password-parameter: 'password'
+        captcha-parameter: 'captcha'
+        post-only: true
+        json-data-submit: true
+        login-success-need-redirect: false
+        login-success-redirect-page: '/index.html'
+        login-failure-need-redirect: false
+        login-failure-need-forward: false
+        login-failure-redirect-page: '/login.html'
+        need-captcha: false
+        need-captcha-by-login-fail-count: 3
+        captcha-effective-time: 60000
+        concurrent-login-count: 1
+        not-allow-after-login: false
+      remember-me:
+        enable: true
+        always-remember: false
+        validity-seconds: 2592000
+        remember-me-parameter-name: 'remember-me'
+      login-req-aes-key:
+        req-password-aes-key: '636c657665722d736563757288888888'
+        req-password-aes-iv: '636c657665722d736563757266666666'
+      logout:
+        logout-url: '/logout.json'
+        logout-success-need-redirect: false
+        logout-success-redirect-page: '/login.html'
 
 ###################################################################################
 ### Feign配置

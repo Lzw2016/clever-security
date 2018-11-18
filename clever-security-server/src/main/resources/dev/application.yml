@@ -176,11 +176,12 @@ clever:
     - '/*.css'
     - '/*.html'
     - '/actuator/**'
+    - '/api/**'
     ignore-authorization-urls:
     - '/login/user_info.json'
     - '/api/**'
     hide-user-not-found-exceptions: true
-    notLoginNeedForward: false
+    not-login-need-forward: false
     forbidden-need-forward: false
     forbidden-forward-page: '/403.html'
     session-expired-redirect-url:
@@ -206,14 +207,15 @@ clever:
       enable: true
       always-remember: false
       validity-seconds: 2592000
-      remember-Me-Parameter-Name: 'remember-me'
+      remember-me-parameter-name: 'remember-me'
+    login-req-aes-key:
+      req-password-aes-key: '636c657665722d736563757288888888'
+      req-password-aes-iv: '636c657665722d736563757266666666'
     logout:
       logout-url: '/logout.json'
       logout-success-need-redirect: false
       logout-success-redirect-page: '/login.html'
-    login-req-aes-key:
-      req-password-aes-key: '636c657665722d736563757288888888'
-      req-password-aes-iv: '636c657665722d736563757266666666'
+
   config:
     req-aes-key: '636c657665722d73656375726974792d'
     req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'

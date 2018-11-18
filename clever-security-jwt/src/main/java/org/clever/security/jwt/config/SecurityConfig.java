@@ -1,9 +1,10 @@
-package org.clever.security.config;
+package org.clever.security.jwt.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-03-15 14:31 <br/>
  */
-@ConfigurationProperties(prefix = "clever.security")
+@ConfigurationProperties(prefix = "clever.security.jwt")
 @Component
 @Data
 public class SecurityConfig {
@@ -90,6 +91,11 @@ public class SecurityConfig {
      * 用户登录请求Aes Key
      */
     private final AesKey loginReqAesKey = new AesKey();
+
+    /**
+     * token配置
+     */
+    private final TokenConfig tokenConfig = new TokenConfig();
 
     @Data
     public static class Login {
@@ -238,5 +244,24 @@ public class SecurityConfig {
     @Data
     public static class TokenConfig {
 
+        /**
+         * Token Redis前缀
+         */
+        private String redisNamespace = "jwt-token";
+
+        /**
+         * Token签名密钥
+         */
+        private String secretKey = "clever-security-jwt";
+
+        /**
+         * Token有效时间(默认：7天)
+         */
+        private Duration tokenValidity = Duration.ofDays(7);
+
+        /**
+         * Token记住我有效时间(默认：30天)
+         */
+        private Duration tokenValidityForRememberMe = Duration.ofDays(30);
     }
 }

@@ -7,11 +7,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.mapper.JacksonMapper;
 import org.junit.Test;
 
 import java.security.Key;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -49,6 +53,7 @@ public class JwtTest {
         String jws = Jwts.builder()
                 .setHeader(map)
                 .setClaims(claims)
+                .claim("claim-name", "claim-value")
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
         log.info("### {}", jws);
@@ -65,5 +70,42 @@ public class JwtTest {
         Key key = Keys.hmacShaKeyFor(str.getBytes());
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(jws);
         log.info("### {}", claimsJws);
+    }
+
+    @Test
+    public void t03() {
+        //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）
+        DefaultClaims claims = new DefaultClaims();
+        claims.setIssuer("clever-security-jwt");
+        claims.setAudience("clever-*");
+        claims.setSubject("lizhiwei");
+        claims.setExpiration(new Date(System.currentTimeMillis() + 1000000000000L));
+        claims.setIssuedAt(new Date());
+        // 设置角色和权限
+        claims.put("PermissionKey", new HashSet<String>() {{
+            add("a01");
+            add("a02");
+        }});
+        claims.put("RoleKey", new HashSet<String>(0));
+        // 签名私钥
+        Key key = Keys.hmacShaKeyFor(("lizhiwei" + str).getBytes());
+        String jws = Jwts.builder()
+                .setClaims(claims)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+        log.info("### {}", jws);
+
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(jws);
+        log.info("### {}", claimsJws);
+
+        String[] strArray = jws.split("\\.");
+        if (strArray.length != 3) {
+            throw new BusinessException("Token格式不正确");
+        }
+        String payload = strArray[1];
+        payload = new String(EncodeDecodeUtils.decodeBase64(payload));
+        log.info("### {}", payload);
+        claims = JacksonMapper.nonEmptyMapper().fromJson(payload, DefaultClaims.class);
+        log.info("### {}", claims.getSubject());
     }
 }
