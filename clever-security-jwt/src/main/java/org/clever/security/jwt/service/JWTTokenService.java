@@ -9,6 +9,7 @@ import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.jwt.config.SecurityConfig;
+import org.clever.security.jwt.model.JwtToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ public class JWTTokenService {
      * @param authentication 授权信息
      * @param rememberMe     使用记住我
      */
-    public String createToken(Authentication authentication, boolean rememberMe) {
+    public JwtToken createToken(Authentication authentication, boolean rememberMe) {
         // 用户权限信息
         Set<String> authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -89,37 +90,23 @@ public class JWTTokenService {
         claims.put(RoleKey, new HashSet<String>(0));
         // 签名私钥
         Key key = Keys.hmacShaKeyFor((authentication.getName() + secretKey).getBytes());
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
-        // TODO 把Token写入Redis
+        // 构建返回数据
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+        JwtToken jwtToken = new JwtToken();
+        jwtToken.setToken(token);
+        jwtToken.setClaimsJws(claimsJws);
+        return jwtToken;
     }
-
-//    /**
-//     * 根据Token得到Authentication
-//     */
-//    public Authentication getAuthentication(String token) {
-//        System.out.println("token:" + token);
-//        Claims claims = Jwts.parser()                           //解析Token的payload
-//                .setSigningKey(secretKey)
-//                .parseClaimsJws(token)
-//                .getBody();
-//
-//        Collection<? extends GrantedAuthority> authorities =
-//                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))         //获取用户权限字符串
-//                        .map(SimpleGrantedAuthority::new)
-//                        .collect(Collectors.toList());                                                  //将元素转换为GrantedAuthority接口集合
-//
-//        User principal = new User(claims.getSubject(), "", authorities);
-//        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
-//    }
 
     /**
      * 校验Token，校验失败抛出异常
      */
     @SuppressWarnings("TryWithIdenticalCatches")
-    public void validateToken(String token) {
+    public Jws<Claims> getClaimsJws(String token) {
         String[] strArray = token.split("\\.");
         if (strArray.length != 3) {
             throw new MalformedJwtException("Token格式不正确");
@@ -131,7 +118,7 @@ public class JWTTokenService {
         Key key = Keys.hmacShaKeyFor((claims.getSubject() + secretKey).getBytes());
         try {
             //通过密钥验证Token
-            Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            return Jwts.parser().setSigningKey(key).parseClaimsJws(token);
             // TODO 异常处理
         } catch (SignatureException e) {
             // 签名异常
@@ -144,5 +131,6 @@ public class JWTTokenService {
         } catch (IllegalArgumentException e) {
             //参数错误异常
         }
+        return null;
     }
 }

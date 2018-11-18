@@ -97,6 +97,7 @@ public class JwtTest {
 
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(jws);
         log.info("### {}", claimsJws);
+        log.info("### json -> {}", JacksonMapper.nonEmptyMapper().toJson(claimsJws));
 
         String[] strArray = jws.split("\\.");
         if (strArray.length != 3) {
