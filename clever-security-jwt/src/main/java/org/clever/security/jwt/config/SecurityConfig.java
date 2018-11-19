@@ -248,5 +248,10 @@ public class SecurityConfig {
          * Token记住我有效时间(默认：30天)
          */
         private Duration tokenValidityForRememberMe = Duration.ofDays(30);
+
+        /**
+         * 刷新令牌有效时间
+         */
+        private Duration refreshTokenValidity = Duration.ofDays(30);
     }
 }

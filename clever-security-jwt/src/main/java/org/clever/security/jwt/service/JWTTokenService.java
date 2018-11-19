@@ -87,8 +87,6 @@ public class JWTTokenService {
         claims.setExpiration(expiration);
         claims.setIssuedAt(new Date());
         claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
-        // 设置刷新令牌
-        claims.put(GenerateKeyService.JwtTokenRefreshKey, IDCreateUtils.shortUuid());
         // 设置角色和权限
         claims.put(PermissionKey, authorities);
         // TODO 设置权限
@@ -105,6 +103,7 @@ public class JWTTokenService {
         jwtToken.setToken(token);
         jwtToken.setHeader(claimsJws.getHeader());
         jwtToken.setClaims(claimsJws.getBody());
+        jwtToken.setRefreshToken(createRefreshToken(authentication.getName()));
         return jwtToken;
     }
 
@@ -142,6 +141,9 @@ public class JWTTokenService {
         }
     }
 
+    /**
+     * 验证令牌 (不会抛出异常)
+     */
     public boolean validationToken(String token) {
         try {
             Jws<Claims> claimsJws = getClaimsJws(token);
@@ -152,4 +154,18 @@ public class JWTTokenService {
         }
         return false;
     }
+
+    /**
+     * 生成刷新令牌
+     */
+    private String createRefreshToken(String username) {
+        return username + ":" + IDCreateUtils.shortUuid();
+    }
+
+//    /**
+//     * 通过刷新令牌得到用户名
+//     */
+//    public String getUsernameByRefreshToken(String refreshToken) {
+//        return refreshToken.substring(0, refreshToken.lastIndexOf(':'));
+//    }
 }

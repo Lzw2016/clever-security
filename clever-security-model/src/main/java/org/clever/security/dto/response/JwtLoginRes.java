@@ -16,13 +16,20 @@ public class JwtLoginRes extends LoginRes {
      */
     private String token;
 
-    public JwtLoginRes(Boolean success, String message, String token) {
+    /**
+     * JWT 刷新 Token 字符串
+     */
+    private String refreshToken;
+
+    public JwtLoginRes(Boolean success, String message, String token, String refreshToken) {
         super(success, message);
         this.token = token;
+        this.refreshToken = refreshToken;
     }
 
-    public JwtLoginRes(Boolean success, String message, UserRes user, String token) {
+    public JwtLoginRes(Boolean success, String message, UserRes user, String token, String refreshToken) {
         super(success, message, user);
         this.token = token;
+        this.refreshToken = refreshToken;
     }
 }

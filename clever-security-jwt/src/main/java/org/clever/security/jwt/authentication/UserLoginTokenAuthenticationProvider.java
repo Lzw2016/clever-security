@@ -6,9 +6,9 @@ import org.clever.common.exception.BusinessException;
 import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.exception.BadLoginTypeException;
 import org.clever.security.jwt.exception.ConcurrentLoginException;
+import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.model.UserLoginToken;
 import org.clever.security.jwt.service.GenerateKeyService;
-import org.clever.security.jwt.service.JWTTokenService;
 import org.clever.security.jwt.service.LoginPasswordCryptoService;
 import org.clever.security.jwt.service.LoginUserDetailsService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
@@ -55,8 +55,6 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     private UserDetailsChecker postAuthenticationChecks;
     @Autowired
     private LoginPasswordCryptoService loginPasswordCryptoService;
-    @Autowired
-    private JWTTokenService jwtTokenService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -234,12 +232,18 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             if (notAllowAfterLogin) {
                 throw new ConcurrentLoginException("并发登录数量超限");
             }
-            // 删除之前登录的用户
+            // 删除之前登录的Token 和 刷新令牌
             List<String> list = ketSet.stream().sorted().collect(Collectors.toList());
             int delCount = list.size() - concurrentLoginCount + 1;
             for (int i = 0; i < delCount; i++) {
                 String jwtTokenKey = list.get(i);
+                JwtToken jwtToken = (JwtToken) redisTemplate.opsForValue().get(jwtTokenKey);
                 redisTemplate.delete(jwtTokenKey);
+                if (jwtToken == null) {
+                    continue;
+                }
+                String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
+                redisTemplate.delete(jwtRefreshTokenKey);
             }
         }
     }

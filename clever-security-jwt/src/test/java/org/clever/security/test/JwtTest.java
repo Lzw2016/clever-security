@@ -12,6 +12,8 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.IDCreateUtils;
+import org.clever.common.utils.codec.DigestUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.jwt.jackson2.CleverSecurityJackson2Module;
@@ -165,5 +167,14 @@ public class JwtTest {
         log.info("### json -> {}", json);
         Object object = genericJackson2JsonRedisSerializer.deserialize(json.getBytes());
         log.info("### object -> {}", object);
+    }
+
+    @Test
+    public void t05() {
+        String str = "lizhiwei" + IDCreateUtils.shortUuid();
+        byte[] key = Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded();
+        str = EncodeDecodeUtils.encodeHex(DigestUtils.sha1(str.getBytes(), key));
+        log.info("### str -> {}", str);
+        log.info("### str -> {}", IDCreateUtils.shortUuid());
     }
 }

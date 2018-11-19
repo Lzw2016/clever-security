@@ -18,14 +18,18 @@ public class GenerateKeyService {
      * JWT Token请求头Key
      */
     public static final String JwtTokenHeaderKey = "Authorization";
-
+    /**
+     * SecurityContext Key
+     */
+    private static final String SecurityContextKey = "security-context";
+    /**
+     * JWT Token 令牌Key
+     */
+    private static final String JwtTokenKey = "jwt-token";
     /**
      * JWT Token 刷新令牌Key
      */
-    public static final String JwtTokenRefreshKey = "refreshToken";
-
-    private static final String SecurityContextKey = "security-context";
-    private static final String JwtTokenKey = "jwt-token";
+    private static final String JwtTokenRefreshKey = "refresh-token";
 
     /**
      * Token Redis前缀
@@ -56,8 +60,15 @@ public class GenerateKeyService {
      * 生成 Redis 存储 JwtTokenKey
      */
     public String getJwtTokenKey(Claims claims) {
+        return getJwtTokenKey(claims.getSubject(), claims.getId());
+    }
+
+    /**
+     * 生成 Redis 存储 JwtTokenKey
+     */
+    public String getJwtTokenKey(String username, String tokenId) {
         // {redisNamespace}:{JwtTokenKey}:{username}:{JWT ID}
-        return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, claims.getSubject(), claims.getId());
+        return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, username, tokenId);
     }
 
     /**
@@ -67,4 +78,20 @@ public class GenerateKeyService {
         // {redisNamespace}:{JwtTokenKey}:{username}:{*}
         return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, username, "*");
     }
+
+    /**
+     * 生成 Redis 存储 JwtTokenRefreshKey
+     */
+    public String getJwtRefreshTokenKey(String refreshToken) {
+        // {redisNamespace}:{JwtTokenRefreshKey}:{refreshToken}
+        return String.format("%s:%s:%s", redisNamespace, JwtTokenRefreshKey, refreshToken);
+    }
+
+//    /**
+//     * 生成 Redis 存储 JwtTokenRefreshKey Pattern
+//     */
+//    public String getJwtRefreshTokenPatternKey(String username) {
+//        // {redisNamespace}:{JwtTokenRefreshKey}:{username}:{*}
+//        return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenRefreshKey, username, "*");
+//    }
 }

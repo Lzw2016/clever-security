@@ -19,6 +19,11 @@ public class JwtToken implements Serializable {
     private String token;
 
     /**
+     * JWT 刷新 Token 字符串
+     */
+    private String refreshToken;
+
+    /**
      * JWT Token Header
      */
     private JwsHeader header;

@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.exception.BusinessException;
+import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.service.GenerateKeyService;
 import org.clever.security.jwt.service.JWTTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +42,13 @@ public class UserLogoutHandler implements LogoutHandler {
             String jwtTokenKey = generateKeyService.getJwtTokenKey(claimsJws.getBody());
             Boolean flag = redisTemplate.hasKey(jwtTokenKey);
             if (flag != null && flag) {
-                flag = redisTemplate.delete(jwtTokenKey);
-                if (flag == null || !flag) {
-                    throw new BusinessException("登出失败");
-                } else {
-                    log.info("### 删除 JWT Token成功");
+                JwtToken jwtToken = (JwtToken) redisTemplate.opsForValue().get(jwtTokenKey);
+                redisTemplate.delete(jwtTokenKey);
+                if (jwtToken != null) {
+                    String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
+                    redisTemplate.delete(jwtRefreshTokenKey);
                 }
+                log.info("### 删除 JWT Token成功");
             }
             Set<String> ketSet = redisTemplate.keys(generateKeyService.getJwtTokenPatternKey(claimsJws.getBody().getSubject()));
             String securityContextKey = generateKeyService.getSecurityContextKey(claimsJws.getBody().getSubject());
