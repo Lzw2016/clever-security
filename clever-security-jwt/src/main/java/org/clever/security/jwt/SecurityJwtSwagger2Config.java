@@ -22,7 +22,7 @@
 //    @Bean
 //    public Docket createSecurityEmbedApi() {
 //        ApiInfo apiInfo = new ApiInfoBuilder()
-//                .title("clever-security-embed")
+//                .title("clever-security-jwt")
 //                // .description("description")
 //                // .termsOfServiceUrl("termsOfServiceUrl")
 //                .version("0.0.1-SNAPSHOT")
@@ -34,9 +34,9 @@
 //                .build();
 //        return new Docket(DocumentationType.SWAGGER_2)
 //                .apiInfo(apiInfo)
-//                .groupName("clever-security-embed")
+//                .groupName("clever-security-jwt")
 //                .select()
-//                .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
+//                .apis(RequestHandlerSelectors.basePackage("org.clever.security.jwt.controller"))
 //                .paths(PathSelectors.any())
 //                .build();
 //    }

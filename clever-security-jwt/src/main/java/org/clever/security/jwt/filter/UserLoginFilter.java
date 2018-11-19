@@ -5,7 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
-import org.clever.security.dto.response.LoginRes;
+import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.config.SecurityConfig;
@@ -14,6 +14,7 @@ import org.clever.security.jwt.handler.UserLoginFailureHandler;
 import org.clever.security.jwt.handler.UserLoginSuccessHandler;
 import org.clever.security.jwt.model.CaptchaInfo;
 import org.clever.security.jwt.model.UserLoginToken;
+import org.clever.security.jwt.service.GenerateKeyService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,9 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            String json = JacksonMapper.nonEmptyMapper().toJson(new LoginRes(true, "您已经登录成功了无须多次登录", userRes));
+            String json = JacksonMapper.nonEmptyMapper().toJson(
+                    new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, request.getHeader(GenerateKeyService.JwtTokenHeaderKey))
+            );
             if (!response.isCommitted()) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setCharacterEncoding("UTF-8");
@@ -134,7 +137,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                     throw new InternalAuthenticationServiceException("返回数据写入响应流失败", e);
                 }
             }
-            log.info("### 当前Session已登录 [{}]", authentication.toString());
+            log.info("### 当前用户已登录 [{}]", authentication.toString());
             return null;
         }
         // 获取用户登录信息

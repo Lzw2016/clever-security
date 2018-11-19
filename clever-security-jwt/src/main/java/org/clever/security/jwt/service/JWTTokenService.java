@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
@@ -86,6 +87,8 @@ public class JWTTokenService {
         claims.setExpiration(expiration);
         claims.setIssuedAt(new Date());
         claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
+        // 设置刷新令牌
+        claims.put(GenerateKeyService.JwtTokenRefreshKey, IDCreateUtils.shortUuid());
         // 设置角色和权限
         claims.put(PermissionKey, authorities);
         // TODO 设置权限
@@ -108,7 +111,6 @@ public class JWTTokenService {
     /**
      * 校验Token，校验失败抛出异常
      */
-    @SuppressWarnings("TryWithIdenticalCatches")
     public Jws<Claims> getClaimsJws(String token) {
         String[] strArray = token.split("\\.");
         if (strArray.length != 3) {
@@ -122,18 +124,21 @@ public class JWTTokenService {
         try {
             //通过密钥验证Token
             return Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-            // TODO 异常处理
         } catch (SignatureException e) {
             // 签名异常
+            throw new BusinessException("Token签名异常", e);
         } catch (MalformedJwtException e) {
             // JWT格式错误
+            throw new BusinessException("Token格式错误", e);
         } catch (ExpiredJwtException e) {
-            //JWT过期
+            // JWT过期
+            throw new BusinessException("TokenJWT过期", e);
         } catch (UnsupportedJwtException e) {
-            //不支持该JWT
+            // 不支持该JWT
+            throw new BusinessException("不支持该Token", e);
         } catch (IllegalArgumentException e) {
-            //参数错误异常
+            // 参数错误异常
+            throw new BusinessException("Token参数错误异常", e);
         }
-        return null;
     }
 }

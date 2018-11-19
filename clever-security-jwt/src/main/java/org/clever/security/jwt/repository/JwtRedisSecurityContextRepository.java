@@ -29,9 +29,6 @@ import java.util.Objects;
 @Component
 @Slf4j
 public class JwtRedisSecurityContextRepository implements SecurityContextRepository {
-
-    private static final String JwtTokenHeaderKey = "Authorization";
-
     private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
     @Autowired
@@ -48,7 +45,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
         // 验证 JWT Token
-        String token = request.getHeader(JwtTokenHeaderKey);
+        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
         if (StringUtils.isBlank(token)) {
             // token 为空
             return SecurityContextHolder.createEmptyContext();
@@ -90,7 +87,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
             return;
         }
         // 判断当前请求 JWT Token
-        String token = request.getHeader(JwtTokenHeaderKey);
+        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
         if (StringUtils.isNotBlank(token)) {
             try {
                 Jws<Claims> claimsJws = jwtTokenService.getClaimsJws(token);

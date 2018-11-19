@@ -68,11 +68,6 @@ public class SecurityConfig {
     private String forbiddenForwardPage = "/403.html";
 
     /**
-     * Session 过期需要跳转的地址，值为空就不跳转
-     */
-    private String sessionExpiredRedirectUrl = null;
-
-    /**
      * 用户登录相关配置
      */
     private final Login login = new Login();
@@ -133,16 +128,6 @@ public class SecurityConfig {
          * Json 数据提交方式
          */
         private Boolean jsonDataSubmit = true;
-
-        /**
-         * 登录成功 - 是否需要跳转(重定向)
-         */
-        private Boolean loginSuccessNeedRedirect = false;
-
-        /**
-         * 登录成功默认跳转的页面
-         */
-        private String loginSuccessRedirectPage = "/home.html";
 
         /**
          * 登录失败 - 是否需要跳转(重定向)
