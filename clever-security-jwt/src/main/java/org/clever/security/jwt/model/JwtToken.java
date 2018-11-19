@@ -1,7 +1,7 @@
 package org.clever.security.jwt.model;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwsHeader;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -19,7 +19,12 @@ public class JwtToken implements Serializable {
     private String token;
 
     /**
-     * JWT Token 对象
+     * JWT Token Header
      */
-    private Jws<Claims> claimsJws;
+    private JwsHeader header;
+
+    /**
+     * JWT Token Body
+     */
+    private Claims claims;
 }

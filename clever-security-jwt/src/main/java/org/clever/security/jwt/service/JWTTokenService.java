@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.jwt.config.SecurityConfig;
@@ -73,17 +74,18 @@ public class JWTTokenService {
         //存放过期时间
         Date expiration;
         if (rememberMe) {
-            expiration = new Date(now + this.tokenValidityInMilliseconds);
-        } else {
             expiration = new Date(now + this.tokenValidityInMillisecondsForRememberMe);
+        } else {
+            expiration = new Date(now + this.tokenValidityInMilliseconds);
         }
-        //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）
+        //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）, jti（JWT ID）
         DefaultClaims claims = new DefaultClaims();
         claims.setIssuer("clever-security-jwt");
         claims.setAudience("clever-*");
         claims.setSubject(authentication.getName());
         claims.setExpiration(expiration);
         claims.setIssuedAt(new Date());
+        claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
         // 设置角色和权限
         claims.put(PermissionKey, authorities);
         // TODO 设置权限
@@ -98,7 +100,8 @@ public class JWTTokenService {
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
         JwtToken jwtToken = new JwtToken();
         jwtToken.setToken(token);
-        jwtToken.setClaimsJws(claimsJws);
+        jwtToken.setHeader(claimsJws.getHeader());
+        jwtToken.setClaims(claimsJws.getBody());
         return jwtToken;
     }
 

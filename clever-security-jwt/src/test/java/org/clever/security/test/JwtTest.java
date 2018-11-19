@@ -1,5 +1,9 @@
 package org.clever.security.test;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -10,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.jwt.jackson2.CleverSecurityJackson2Module;
+import org.clever.security.jwt.model.JwtToken;
 import org.junit.Test;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 
 import java.security.Key;
 import java.util.Date;
@@ -108,5 +115,55 @@ public class JwtTest {
         log.info("### {}", payload);
         claims = JacksonMapper.nonEmptyMapper().fromJson(payload, DefaultClaims.class);
         log.info("### {}", claims.getSubject());
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
+    public void t04() {
+        DefaultClaims claims = new DefaultClaims();
+        claims.setIssuer("clever-security-jwt");
+        claims.setAudience("clever-*");
+        claims.setSubject("lizhiwei");
+        claims.setExpiration(new Date(System.currentTimeMillis() + 1000000000000L));
+        claims.setIssuedAt(new Date());
+        // 设置角色和权限
+        claims.put("PermissionKey", new HashSet<String>() {{
+            add("a01");
+            add("a02");
+        }});
+        claims.put("RoleKey", new HashSet<String>(0));
+        // 签名私钥
+        Key key = Keys.hmacShaKeyFor(("lizhiwei" + str).getBytes());
+        String jws = Jwts.builder()
+                .setClaims(claims)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+        log.info("### {}", jws);
+
+        Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(jws);
+
+        JwtToken jwtToken = new JwtToken();
+        jwtToken.setToken(jws);
+        jwtToken.setHeader(claimsJws.getHeader());
+        jwtToken.setClaims(claimsJws.getBody());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+//        objectMapper.setDateFormat();
+//        objectMapper.setDefaultMergeable()
+//        objectMapper.setDefaultPropertyInclusion()
+//        objectMapper.setDefaultSetterInfo()
+//        objectMapper.setDefaultVisibility()
+        // 查看Spring的实现 SecurityJackson2Modules
+//        List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
+        objectMapper.findAndRegisterModules();
+//        objectMapper.registerModules(modules);
+        objectMapper.registerModule(new CleverSecurityJackson2Module());
+        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+        String json = new String(genericJackson2JsonRedisSerializer.serialize(jwtToken));
+        log.info("### json -> {}", json);
+        Object object = genericJackson2JsonRedisSerializer.deserialize(json.getBytes());
+        log.info("### object -> {}", object);
     }
 }
