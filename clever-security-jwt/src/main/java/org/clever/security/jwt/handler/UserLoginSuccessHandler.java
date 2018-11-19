@@ -7,9 +7,13 @@ import org.clever.security.dto.response.LoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.config.SecurityConfig;
+import org.clever.security.jwt.model.JwtToken;
+import org.clever.security.jwt.service.GenerateKeyService;
+import org.clever.security.jwt.service.JWTTokenService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.clever.security.jwt.utils.HttpRequestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
@@ -25,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 自定义登录成功处理类
@@ -38,16 +43,32 @@ import java.util.List;
 public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final String defaultRedirectUrl = "/home.html";
-    @Autowired
-    private SecurityConfig securityConfig;
     private RequestCache requestCache = new HttpSessionRequestCache();
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    @Autowired
+    private SecurityConfig securityConfig;
+    @Autowired
+    private JWTTokenService jwtTokenService;
+    @Autowired
+    private GenerateKeyService generateKeyService;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
         requestCache.removeRequest(request, response);
         clearAuthenticationAttributes(request);
+        // 登录成功保存 JWT Token
+        JwtToken jwtToken = jwtTokenService.createToken(authentication, false);
+        String jwtTokenKey = generateKeyService.getJwtTokenKey(jwtToken.getClaims());
+        if (jwtToken.getClaims().getExpiration() == null) {
+            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken);
+        } else {
+            long timeout = jwtToken.getClaims().getExpiration().getTime() - System.currentTimeMillis();
+            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken, timeout, TimeUnit.MILLISECONDS);
+        }
+        log.info("### 已保存 JWT Token");
         // 登录成功 - 是否需要跳转
         SecurityConfig.Login login = securityConfig.getLogin();
         if (login.getLoginSuccessNeedRedirect() != null) {

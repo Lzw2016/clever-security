@@ -51,8 +51,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Autowired
     private UserLoginFailureHandler userLoginFailureHandler;
     //    @Autowired
-//    private SessionAuthenticationStrategy sessionAuthenticationStrategy;
-//    @Autowired
 //    private RememberMeServices rememberMeServices;
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
@@ -163,7 +161,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         // 设置登录类型
         userLoginToken.setLoginType(loginType);
         // 设置用户 "details" 属性(设置请求IP和SessionID) -- 需要提前创建Session
-//        request.getSession();
+        // request.getSession();
         userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
         log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
         // 读取验证码 - 验证

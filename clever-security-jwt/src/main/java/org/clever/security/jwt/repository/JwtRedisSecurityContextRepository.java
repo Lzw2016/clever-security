@@ -4,9 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.exception.BusinessException;
-import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.model.JwtToken;
+import org.clever.security.jwt.service.GenerateKeyService;
 import org.clever.security.jwt.service.JWTTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 作者： lzw<br/>
@@ -32,35 +30,16 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class JwtRedisSecurityContextRepository implements SecurityContextRepository {
 
-    private static final String SecurityContextKey = "security-context";
-    private static final String JwtTokenKey = "jwt-token";
     private static final String JwtTokenHeaderKey = "Authorization";
 
-    /**
-     * Token Redis前缀
-     */
-    private final String redisNamespace;
-
-    //    private final Object contextObject = SecurityContextHolder.createEmptyContext();
-//    private boolean disableUrlRewriting = false;
     private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
     @Autowired
     private JWTTokenService jwtTokenService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-
-    protected JwtRedisSecurityContextRepository(SecurityConfig securityConfig) {
-        SecurityConfig.TokenConfig tokenConfig = securityConfig.getTokenConfig();
-        if (tokenConfig == null || StringUtils.isBlank(tokenConfig.getRedisNamespace())) {
-            throw new BusinessException("TokenConfig 的 RedisNamespace 属性未配置");
-        }
-        String tmp = tokenConfig.getRedisNamespace();
-        if (tmp.endsWith(":")) {
-            tmp = tmp.substring(0, tmp.length() - 1);
-        }
-        redisNamespace = tmp;
-    }
+    @Autowired
+    private GenerateKeyService generateKeyService;
 
     /**
      * 从Redis读取Jwt Token
@@ -68,7 +47,6 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
-//        HttpServletResponse response = requestResponseHolder.getResponse();
         // 验证 JWT Token
         String token = request.getHeader(JwtTokenHeaderKey);
         if (StringUtils.isBlank(token)) {
@@ -80,7 +58,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
             // token 不正确
             return SecurityContextHolder.createEmptyContext();
         }
-        String jwtTokenKey = getJwtTokenKey(claimsJws.getBody());
+        String jwtTokenKey = generateKeyService.getJwtTokenKey(claimsJws.getBody());
         Object object = redisTemplate.opsForValue().get(jwtTokenKey);
         if (!(object instanceof JwtToken)) {
             // token 类型不同
@@ -93,7 +71,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         }
         log.info("### JWTToken 验证成功");
         // 读取 context
-        String securityContextKey = getSecurityContextKey(claimsJws.getBody().getSubject());
+        String securityContextKey = generateKeyService.getSecurityContextKey(claimsJws.getBody().getSubject());
         object = redisTemplate.opsForValue().get(securityContextKey);
         if (!(object instanceof SecurityContext)) {
             return SecurityContextHolder.createEmptyContext();
@@ -123,18 +101,9 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
             }
         }
         // 保存 context
-        String securityContextKey = getSecurityContextKey(authentication.getName());
+        String securityContextKey = generateKeyService.getSecurityContextKey(authentication.getName());
         redisTemplate.opsForValue().set(securityContextKey, context);
-        // 保存 JWT Token
-        JwtToken jwtToken = jwtTokenService.createToken(authentication, false);
-        String jwtTokenKey = getJwtTokenKey(jwtToken.getClaims());
-        if (jwtToken.getClaims().getExpiration() == null) {
-            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken);
-        } else {
-            long timeout = jwtToken.getClaims().getExpiration().getTime() - System.currentTimeMillis();
-            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken, timeout, TimeUnit.MILLISECONDS);
-        }
-        log.info("### 已保存SecurityContext 和 JWTToken");
+        log.info("### 已保存SecurityContext");
     }
 
     @Override
@@ -142,13 +111,5 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         return false;
     }
 
-    private String getSecurityContextKey(String username) {
-        // {redisNamespace}:{SecurityContextKey}:{username}
-        return String.format("%s:%s:%s", redisNamespace, SecurityContextKey, username);
-    }
 
-    private String getJwtTokenKey(Claims claims) {
-        // {redisNamespace}:{JwtTokenKey}:{username}:{JWT ID}
-        return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, claims.getSubject(), claims.getId());
-    }
 }
