@@ -4,9 +4,9 @@
 //import org.apache.commons.lang3.StringUtils;
 //import org.clever.common.utils.mapper.JacksonMapper;
 //import org.clever.security.client.UserLoginLogClient;
-//import org.clever.security.config.SecurityConfig;
 //import org.clever.security.dto.request.UserLoginLogAddReq;
 //import org.clever.security.entity.EnumConstant;
+//import org.clever.security.jwt.config.SecurityConfig;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.ApplicationListener;
 //import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
@@ -22,6 +22,7 @@
 // * 作者： lzw<br/>
 // * 创建时间：2018-09-18 13:55 <br/>
 // */
+//@SuppressWarnings("Duplicates")
 //@Transactional(readOnly = true)
 //@Component
 //@Slf4j

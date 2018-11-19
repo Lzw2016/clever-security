@@ -13,7 +13,6 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -22,7 +21,6 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-18 13:55 <br/>
  */
-@Transactional(readOnly = true)
 @Component
 @Slf4j
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
@@ -32,7 +30,6 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
     @Autowired
     private UserLoginLogClient userLoginLogClient;
 
-    @Transactional
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
         Authentication authentication = event.getAuthentication();

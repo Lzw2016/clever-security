@@ -2,6 +2,7 @@ package org.clever.security.jwt.demo.controller;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,5 +27,10 @@ public class TestController {
             return null;
         }
         return httpSession.getAttributeNames();
+    }
+
+    @GetMapping("/02")
+    public Object test2() {
+        return SecurityContextHolder.getContext();
     }
 }

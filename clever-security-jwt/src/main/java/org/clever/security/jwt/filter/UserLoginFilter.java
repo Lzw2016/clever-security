@@ -51,8 +51,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private UserLoginSuccessHandler userLoginSuccessHandler;
     @Autowired
     private UserLoginFailureHandler userLoginFailureHandler;
-    //    @Autowired
-//    private RememberMeServices rememberMeServices;
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
     private String loginTypeParameter = LOGIN_TYPE_KEY;
@@ -107,8 +105,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         }
         this.setAuthenticationSuccessHandler(userLoginSuccessHandler);
         this.setAuthenticationFailureHandler(userLoginFailureHandler);
-//        this.setSessionAuthenticationStrategy(sessionAuthenticationStrategy);
-//        this.setRememberMeServices(rememberMeServices);
     }
 
     /**
@@ -163,11 +159,10 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         }
         // 设置登录类型
         userLoginToken.setLoginType(loginType);
-        // 设置用户 "details" 属性(设置请求IP和SessionID) -- 需要提前创建Session
-        // request.getSession();
+        // 设置用户 "details" 属性(设置请求IP和SessionID)
         userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
         log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-        // 读取验证码 - 验证
+        // TODO  读取验证码 - 验证
         if (needCaptcha) {
             Object loginFailCountStr = request.getSession().getAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
             int loginFailCount = 0;

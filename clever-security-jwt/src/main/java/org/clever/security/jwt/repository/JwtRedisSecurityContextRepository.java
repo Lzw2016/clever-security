@@ -90,8 +90,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
         if (StringUtils.isNotBlank(token)) {
             try {
-                Jws<Claims> claimsJws = jwtTokenService.getClaimsJws(token);
-                if (claimsJws != null) {
+                if (jwtTokenService.validationToken(token)) {
                     return;
                 }
             } catch (Throwable ignored) {
@@ -105,8 +104,12 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
 
     @Override
     public boolean containsContext(HttpServletRequest request) {
-        return false;
+        // 验证 JWT Token
+        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
+        if (StringUtils.isBlank(token)) {
+            // token 为空
+            return false;
+        }
+        return jwtTokenService.validationToken(token);
     }
-
-
 }

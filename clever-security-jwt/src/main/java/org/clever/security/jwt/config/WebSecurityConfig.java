@@ -6,6 +6,7 @@ import org.clever.security.jwt.authentication.UserLoginEntryPoint;
 import org.clever.security.jwt.authentication.UserLoginTokenAuthenticationProvider;
 import org.clever.security.jwt.filter.UserLoginFilter;
 import org.clever.security.jwt.handler.UserAccessDeniedHandler;
+import org.clever.security.jwt.handler.UserLogoutHandler;
 import org.clever.security.jwt.handler.UserLogoutSuccessHandler;
 import org.clever.security.jwt.repository.JwtRedisSecurityContextRepository;
 import org.clever.security.jwt.service.LoginUserDetailsService;
@@ -51,6 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserLoginEntryPoint userLoginEntryPoint;
     @Autowired
+    private UserLogoutHandler userLogoutHandler;
+    @Autowired
     private UserLogoutSuccessHandler userLogoutSuccessHandler;
     @Autowired
     private UserAccessDeniedHandler userAccessDeniedHandler;
@@ -60,12 +63,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private JwtRedisSecurityContextRepository jwtRedisSecurityContextRepository;
-//    @Autowired
-//    private SpringSessionBackedSessionRegistry sessionRegistry;
-//    @Autowired
-//    private SessionInformationExpiredStrategy sessionInformationExpiredStrategy;
-//    @Autowired
-//    private RememberMeServices rememberMeServices;
 
     public WebSecurityConfig() {
         super(false);
@@ -200,35 +197,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().anyRequest().authenticated()//.accessDecisionManager(accessDecisionManager)
                 .and()
                 .formLogin().disable()
-                .logout().logoutUrl(securityConfig.getLogout().getLogoutUrl()).logoutSuccessHandler(userLogoutSuccessHandler).permitAll()
+                .logout().logoutUrl(securityConfig.getLogout().getLogoutUrl()).addLogoutHandler(userLogoutHandler).logoutSuccessHandler(userLogoutSuccessHandler).permitAll()
         ;
-//        // 设置"记住我功能配置"
-//        SecurityConfig.RememberMe rememberMe = securityConfig.getRememberMe();
-//        if (rememberMe != null && rememberMe.getEnable()) {
-//            http.rememberMe()
-//                    .rememberMeServices(rememberMeServices)
-//                    .alwaysRemember(rememberMe.getAlwaysRemember())
-//                    .tokenValiditySeconds(rememberMe.getValiditySeconds())
-//                    .rememberMeParameter(rememberMe.getRememberMeParameterName())
-//                    .rememberMeCookieName(UserLoginRememberMeServices.REMEMBER_ME)
-//                    .key(UserLoginRememberMeServices.REMEMBER_ME_KEY)
-//            ;
-//        }
-//        // 登录并发控制
-//        SecurityConfig.Login login = securityConfig.getLogin();
-//        if (login.getConcurrentLoginCount() != null) {
-//            int concurrentLoginCount = login.getConcurrentLoginCount() <= 0 ? -1 : login.getConcurrentLoginCount();
-//            boolean notAllowAfterLogin = false;
-//            if (login.getNotAllowAfterLogin() != null) {
-//                notAllowAfterLogin = login.getNotAllowAfterLogin();
-//            }
-//            http.sessionManagement()
-//                    .maximumSessions(concurrentLoginCount)
-//                    .maxSessionsPreventsLogin(notAllowAfterLogin)
-//                    .sessionRegistry(sessionRegistry)
-//                    .expiredSessionStrategy(sessionInformationExpiredStrategy)
-//            ;
-//        }
+        // 禁用"记住我功能配置"(Token的记住我功能仅仅只是Token过期时间加长)
+        http.rememberMe().disable();
         log.info("### HttpSecurity 配置完成!");
     }
 }

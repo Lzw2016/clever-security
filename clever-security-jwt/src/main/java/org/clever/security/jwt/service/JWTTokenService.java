@@ -141,4 +141,15 @@ public class JWTTokenService {
             throw new BusinessException("Token参数错误异常", e);
         }
     }
+
+    public boolean validationToken(String token) {
+        try {
+            Jws<Claims> claimsJws = getClaimsJws(token);
+            if (claimsJws != null) {
+                return true;
+            }
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
 }

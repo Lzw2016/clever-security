@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -19,7 +18,6 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-21 19:52 <br/>
  */
-@Transactional(readOnly = true)
 @Component
 @Slf4j
 public class UserLoginTokenRepository implements PersistentTokenRepository {
@@ -29,7 +27,6 @@ public class UserLoginTokenRepository implements PersistentTokenRepository {
     @Autowired
     private RememberMeTokenClient rememberMeTokenClient;
 
-    @Transactional
     @Override
     public void createNewToken(PersistentRememberMeToken token) {
         RememberMeTokenAddReq req = new RememberMeTokenAddReq();
@@ -41,7 +38,6 @@ public class UserLoginTokenRepository implements PersistentTokenRepository {
         rememberMeTokenClient.addRememberMeToken(req);
     }
 
-    @Transactional
     @Override
     public void updateToken(String series, String tokenValue, Date lastUsed) {
         RememberMeTokenUpdateReq req = new RememberMeTokenUpdateReq();
@@ -64,7 +60,6 @@ public class UserLoginTokenRepository implements PersistentTokenRepository {
         );
     }
 
-    @Transactional
     @Override
     public void removeUserTokens(String username) {
         rememberMeTokenClient.delRememberMeToken(username);

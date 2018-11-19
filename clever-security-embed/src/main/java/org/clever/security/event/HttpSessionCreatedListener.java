@@ -14,12 +14,10 @@
 // * 作者： lzw<br/>
 // * 创建时间：2018-09-23 19:28 <br/>
 // */
-//@Transactional(readOnly = true)
 //@Component
 //@Slf4j
 //public class HttpSessionCreatedListener implements ApplicationListener<HttpSessionCreatedEvent> {
 //
-//    @Transactional
 //    @Override
 //    public void onApplicationEvent(HttpSessionCreatedEvent event) {
 //        HttpSession session = event.getSession();

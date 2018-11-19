@@ -36,6 +36,7 @@ public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+
         if (authentication == null) {
             log.info("### 登出无效(还未登录)");
         } else {

@@ -27,13 +27,19 @@ public class CaptchaInfo implements Serializable {
      */
     private Long effectiveTime;
 
+    /**
+     * 验证码文件图片签名
+     */
+    private String imageDigest;
+
     public CaptchaInfo() {
         createTime = System.currentTimeMillis();
     }
 
-    public CaptchaInfo(String code, Long effectiveTime) {
+    public CaptchaInfo(String code, Long effectiveTime, String imageDigest) {
         this.code = code;
         this.createTime = System.currentTimeMillis();
         this.effectiveTime = effectiveTime;
+        this.imageDigest = imageDigest;
     }
 }

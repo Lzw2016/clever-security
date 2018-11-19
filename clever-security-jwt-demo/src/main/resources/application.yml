@@ -129,7 +129,6 @@ clever:
       - '/dist/**'
       - '/api/user'
       - '/actuator/**'
-      - '/test/**'
       ignore-authorization-urls:
       - '/test/**'
       hide-user-not-found-exceptions: true

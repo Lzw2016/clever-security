@@ -10,13 +10,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.session.Session;
 import org.springframework.session.events.SessionDestroyedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 作者： lzw<br/>
  * 创建时间：2018-09-23 19:33 <br/>
  */
-@Transactional(readOnly = true)
 @Component
 @Slf4j
 public class HttpSessionDestroyedListener implements ApplicationListener<SessionDestroyedEvent> {
@@ -24,7 +22,6 @@ public class HttpSessionDestroyedListener implements ApplicationListener<Session
     @Autowired
     private UserLoginLogClient userLoginLogClient;
 
-    @Transactional
     @Override
     public void onApplicationEvent(SessionDestroyedEvent event) {
         try {

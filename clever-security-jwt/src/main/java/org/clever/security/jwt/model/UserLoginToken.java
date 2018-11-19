@@ -16,6 +16,9 @@ public class UserLoginToken extends AbstractAuthenticationToken {
 
     public static final String LoginType_Username = "username";
     public static final String LoginType_Telephone = "telephone";
+    /**
+     * 使用RememberMeToken(浏览器Cookie)登录时系统自动赋值loginType=RememberMeToken
+     */
     public static final String LoginType_RememberMeToken = "rememberMeToken";
 
     /**
