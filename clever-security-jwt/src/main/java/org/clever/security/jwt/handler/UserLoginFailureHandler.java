@@ -10,6 +10,7 @@ import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.exception.BadCaptchaException;
 import org.clever.security.jwt.exception.BadLoginTypeException;
 import org.clever.security.jwt.exception.CanNotLoginSysException;
+import org.clever.security.jwt.exception.ConcurrentLoginException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -57,6 +58,7 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
         failureMessageMap.put(BadCaptchaException.class.getName(), "验证码错误");
         failureMessageMap.put(BadLoginTypeException.class.getName(), "不支持的登录类型");
         failureMessageMap.put(CanNotLoginSysException.class.getName(), "您无权登录当前系统，请联系管理员授权");
+        failureMessageMap.put(ConcurrentLoginException.class.getName(), "并发登录数量超限");
         if (securityConfig.getHideUserNotFoundExceptions() != null) {
             hideUserNotFoundExceptions = securityConfig.getHideUserNotFoundExceptions();
         }
@@ -64,7 +66,7 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        // Session记录登录次数
+        // Session记录登录次数 TODO 不能使用Session
         Object loginFailCountStr = request.getSession().getAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
         int loginFailCount = 1;
         if (loginFailCountStr != null) {

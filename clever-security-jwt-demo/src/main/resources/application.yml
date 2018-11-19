@@ -152,7 +152,7 @@ clever:
         need-captcha: false
         need-captcha-by-login-fail-count: 3
         captcha-effective-time: 60000
-        concurrent-login-count: 1
+        concurrent-login-count: 3
         not-allow-after-login: false
       remember-me:
         enable: true

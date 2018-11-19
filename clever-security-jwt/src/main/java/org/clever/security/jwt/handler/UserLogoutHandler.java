@@ -49,11 +49,11 @@ public class UserLogoutHandler implements LogoutHandler {
                     log.info("### 删除 JWT Token成功");
                 }
             }
-            Set<String> ketSet = redisTemplate.keys(jwtTokenKey.substring(0, jwtTokenKey.lastIndexOf(':')) + ":*");
+            Set<String> ketSet = redisTemplate.keys(generateKeyService.getJwtTokenPatternKey(claimsJws.getBody().getSubject()));
             String securityContextKey = generateKeyService.getSecurityContextKey(claimsJws.getBody().getSubject());
             flag = redisTemplate.hasKey(securityContextKey);
-            if (ketSet!=null && ketSet.size() <= 0 && flag != null && flag) {
-                flag =  redisTemplate.delete(securityContextKey);
+            if (ketSet != null && ketSet.size() <= 0 && flag != null && flag) {
+                flag = redisTemplate.delete(securityContextKey);
                 if (flag != null && flag) {
                     log.info("### 删除 SecurityContext 成功");
                 }

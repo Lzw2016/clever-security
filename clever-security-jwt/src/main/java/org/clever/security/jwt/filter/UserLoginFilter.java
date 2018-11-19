@@ -162,7 +162,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         // 设置用户 "details" 属性(设置请求IP和SessionID)
         userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
         log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-        // TODO  读取验证码 - 验证
+        // TODO  读取验证码 - 验证 不能使用Session
         if (needCaptcha) {
             Object loginFailCountStr = request.getSession().getAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
             int loginFailCount = 0;

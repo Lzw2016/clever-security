@@ -59,4 +59,12 @@ public class GenerateKeyService {
         // {redisNamespace}:{JwtTokenKey}:{username}:{JWT ID}
         return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, claims.getSubject(), claims.getId());
     }
+
+    /**
+     * 生成 Redis 存储 JwtTokenKey Pattern
+     */
+    public String getJwtTokenPatternKey(String username) {
+        // {redisNamespace}:{JwtTokenKey}:{username}:{*}
+        return String.format("%s:%s:%s:%s", redisNamespace, JwtTokenKey, username, "*");
+    }
 }

@@ -2,13 +2,19 @@ package org.clever.security.jwt.authentication;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.clever.common.exception.BusinessException;
+import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.exception.BadLoginTypeException;
+import org.clever.security.jwt.exception.ConcurrentLoginException;
 import org.clever.security.jwt.model.UserLoginToken;
+import org.clever.security.jwt.service.GenerateKeyService;
+import org.clever.security.jwt.service.JWTTokenService;
 import org.clever.security.jwt.service.LoginPasswordCryptoService;
 import org.clever.security.jwt.service.LoginUserDetailsService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -20,6 +26,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.cache.NullUserCache;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 自定义认证 UserLoginToken
@@ -45,12 +55,33 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     private UserDetailsChecker postAuthenticationChecks;
     @Autowired
     private LoginPasswordCryptoService loginPasswordCryptoService;
+    @Autowired
+    private JWTTokenService jwtTokenService;
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private GenerateKeyService generateKeyService;
     // 使用缓存?
     private UserCache userCache = new NullUserCache();
     // 解析授权信息
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
+    /**
+     * 同一个用户并发登录次数限制(-1表示不限制)
+     */
+    private final int concurrentLoginCount;
 
-    public UserLoginTokenAuthenticationProvider() {
+    /**
+     * 同一个用户并发登录次数达到最大值之后，是否不允许之后的登录(false 之后登录的把之前登录的挤下来)
+     */
+    private final boolean notAllowAfterLogin;
+
+    public UserLoginTokenAuthenticationProvider(SecurityConfig securityConfig) {
+        SecurityConfig.Login login = securityConfig.getLogin();
+        if (login == null) {
+            throw new BusinessException("未配置Login配置");
+        }
+        concurrentLoginCount = login.getConcurrentLoginCount();
+        notAllowAfterLogin = login.getNotAllowAfterLogin();
     }
 
     /**
@@ -114,7 +145,10 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             this.userCache.putUserInCache(loadedUser);
         }
         // 返回认证成功的 Authentication
-        return createSuccessAuthentication(userLoginToken, loadedUser);
+        Authentication successAuthentication = createSuccessAuthentication(userLoginToken, loadedUser);
+        // 登录并发控制
+        concurrentLogin(loadedUser.getUsername());
+        return successAuthentication;
     }
 
     /**
@@ -186,5 +220,27 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
         result.setPassword(userLoginToken.getPassword());
         result.setDetails(userLoginToken.getDetails());
         return result;
+    }
+
+    /**
+     * 并发登录处理
+     */
+    private void concurrentLogin(String username) {
+        if (concurrentLoginCount <= 0) {
+            return;
+        }
+        Set<String> ketSet = redisTemplate.keys(generateKeyService.getJwtTokenPatternKey(username));
+        if (ketSet != null && ketSet.size() >= concurrentLoginCount) {
+            if (notAllowAfterLogin) {
+                throw new ConcurrentLoginException("并发登录数量超限");
+            }
+            // 删除之前登录的用户
+            List<String> list = ketSet.stream().sorted().collect(Collectors.toList());
+            int delCount = list.size() - concurrentLoginCount + 1;
+            for (int i = 0; i < delCount; i++) {
+                String jwtTokenKey = list.get(i);
+                redisTemplate.delete(jwtTokenKey);
+            }
+        }
     }
 }
