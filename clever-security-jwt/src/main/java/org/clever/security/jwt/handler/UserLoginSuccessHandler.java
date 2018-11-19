@@ -12,6 +12,7 @@ import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -56,7 +57,10 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
             long timeout = jwtToken.getClaims().getExpiration().getTime() - System.currentTimeMillis();
             redisTemplate.opsForValue().set(jwtTokenKey, jwtToken, timeout, TimeUnit.MILLISECONDS);
         }
-        log.info("### 已保存 JWT Token");
+        // 保存 SecurityContext
+        String securityContextKey = generateKeyService.getSecurityContextKey(authentication.getName());
+        redisTemplate.opsForValue().set(securityContextKey, new SecurityContextImpl(authentication));
+        log.info("### 已保存 JWT Token 和 SecurityContext");
         // 登录成功 - 返回JSon数据
         sendJsonData(response, authentication, jwtToken);
     }
