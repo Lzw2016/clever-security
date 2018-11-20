@@ -144,7 +144,6 @@ mybatis-plus:
   executor-type: reuse
   global-config:
     banner: true
-    refresh: true
     sql-parser-cache: true
     db-config:
       id-type: auto
