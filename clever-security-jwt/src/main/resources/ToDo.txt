@@ -1,8 +1,6 @@
 
 TODO list
 
-刷新令牌
-
 “记住我功能”
 
 登录验证码
@@ -11,3 +9,6 @@ TODO list
 
 整合clever-security-server
 
+优化------------------
+封装 JwtToken RefreshToken SecurityContext 数据库层 repository 统一调用
+JwtToken 过期时间自能调整到凌晨3点(用户不使用的时间)

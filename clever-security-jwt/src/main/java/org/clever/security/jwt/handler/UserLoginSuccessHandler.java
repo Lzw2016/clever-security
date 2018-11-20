@@ -7,6 +7,7 @@ import org.clever.security.dto.response.UserRes;
 import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.model.JwtToken;
+import org.clever.security.jwt.model.RefreshToken;
 import org.clever.security.jwt.service.GenerateKeyService;
 import org.clever.security.jwt.service.JWTTokenService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
@@ -74,10 +75,11 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         }
         // 保存刷新令牌 JWT Token
         String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
+        RefreshToken refreshToken = new RefreshToken(authentication.getName(), jwtToken.getClaims().getId());
         if (refreshTokenValidity.getSeconds() <= 0) {
-            redisTemplate.opsForValue().set(jwtRefreshTokenKey, jwtToken.getToken());
+            redisTemplate.opsForValue().set(jwtRefreshTokenKey, refreshToken);
         } else {
-            redisTemplate.opsForValue().set(jwtRefreshTokenKey, jwtToken.getToken(), refreshTokenValidity.getSeconds(), TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(jwtRefreshTokenKey, refreshToken, refreshTokenValidity.getSeconds(), TimeUnit.SECONDS);
         }
         // 保存 SecurityContext
         String securityContextKey = generateKeyService.getSecurityContextKey(authentication.getName());

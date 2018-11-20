@@ -126,6 +126,7 @@ clever:
 
       - '/favicon.ico'
       - '/login/captcha.png'
+      - '/login/refresh_token.json'
       - '/dist/**'
       - '/api/user'
       - '/actuator/**'
