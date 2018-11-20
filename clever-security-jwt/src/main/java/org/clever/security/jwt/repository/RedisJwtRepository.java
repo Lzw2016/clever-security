@@ -100,7 +100,7 @@ public class RedisJwtRepository {
     public JwtToken getJwtToken(HttpServletRequest request) {
         String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
         if (StringUtils.isBlank(token)) {
-            throw new BusinessException("Token已过期");
+            throw new BusinessException("Token不存在");
         }
         return getJwtToken(token);
     }

@@ -30,6 +30,10 @@ public class GenerateKeyService {
      * JWT Token 刷新令牌Key
      */
     private static final String JwtTokenRefreshKey = "refresh-token";
+    /**
+     * 验证码 Key
+     */
+    private static final String CaptchaInfoKey = "captcha-info";
 
     /**
      * Token Redis前缀
@@ -85,6 +89,14 @@ public class GenerateKeyService {
     public String getJwtRefreshTokenKey(String refreshToken) {
         // {redisNamespace}:{JwtTokenRefreshKey}:{refreshToken}
         return String.format("%s:%s:%s", redisNamespace, JwtTokenRefreshKey, refreshToken);
+    }
+
+    /**
+     * 生成 Redis 存储 CaptchaInfoKey
+     */
+    public String getCaptchaInfoKey(String code, String imageDigest) {
+        // {redisNamespace}:{CaptchaInfoKey}:{code}:{imageDigest}
+        return String.format("%s:%s:%s:%s", redisNamespace, CaptchaInfoKey, code, imageDigest);
     }
 
 //    /**

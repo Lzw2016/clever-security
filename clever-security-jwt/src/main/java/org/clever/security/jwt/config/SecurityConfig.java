@@ -100,11 +100,15 @@ public class SecurityConfig {
          * 登录验证码参数名
          */
         private String captchaParameter = "captcha";
+        /**
+         * 登录验证码参数名
+         */
+        private String captchaDigestParameter = "captchaDigest";
 
         /**
          * "记住我"参数名
          */
-        private String rememberMeParameterName = "remember-me";
+        private String rememberMeParameter = "remember-me";
 
         /**
          * 登录只支持POST请求

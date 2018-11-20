@@ -9,6 +9,7 @@ import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
 import org.clever.security.jwt.config.SecurityConfig;
 import org.clever.security.jwt.model.CaptchaInfo;
+import org.clever.security.jwt.repository.CaptchaInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,8 @@ public class CaptchaController {
 
     @Autowired
     private SecurityConfig securityConfig;
+    @Autowired
+    private CaptchaInfoRepository captchaInfoRepository;
 
     @ApiOperation("获取登录验证码(请求头包含文件SHA1签名)")
     @GetMapping("/login/captcha.png")
@@ -40,8 +43,8 @@ public class CaptchaController {
         }
         String imageDigest = EncodeDecodeUtils.encodeHex(DigestUtils.sha1(image));
         CaptchaInfo captchaInfo = new CaptchaInfo(code, captchaEffectiveTime, imageDigest);
-        // TODO 验证码放在Redis
-        // request.getSession().setAttribute(AttributeKeyConstant.Login_Captcha_Session_Key, captchaInfo);
+        // 验证码放在Redis
+        captchaInfoRepository.saveCaptchaInfo(captchaInfo);
         // 写入图片数据
         response.setHeader("ImageDigest", imageDigest);
         response.getOutputStream().write(image);

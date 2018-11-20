@@ -143,6 +143,8 @@ clever:
         username-parameter: 'username'
         password-parameter: 'password'
         captcha-parameter: 'captcha'
+        captcha-digest-parameter: 'captchaDigest'
+        remember-me-parameter: 'remember-me'
         post-only: true
         json-data-submit: true
         login-success-need-redirect: false
@@ -150,16 +152,11 @@ clever:
         login-failure-need-redirect: false
         login-failure-need-forward: false
         login-failure-redirect-page: '/login.html'
-        need-captcha: false
-        need-captcha-by-login-fail-count: 3
-        captcha-effective-time: 60000
+        need-captcha: true
+        need-captcha-by-login-fail-count: -1
+        captcha-effective-time: 300000
         concurrent-login-count: 3
         not-allow-after-login: false
-      remember-me:
-        enable: true
-        always-remember: false
-        validity-seconds: 2592000
-        remember-me-parameter-name: 'remember-me'
       login-req-aes-key:
         req-password-aes-key: '636c657665722d736563757288888888'
         req-password-aes-iv: '636c657665722d736563757266666666'

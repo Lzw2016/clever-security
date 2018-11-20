@@ -25,6 +25,7 @@ public class UserLoginToken extends AbstractAuthenticationToken {
     private String username;
     private String password;
     private String captcha;
+    private String captchaDigest;
     @Setter
     private String rememberMe;
     private UserDetails userDetails;
@@ -32,11 +33,12 @@ public class UserLoginToken extends AbstractAuthenticationToken {
     /**
      * 用于创建登录的凭证信息
      */
-    public UserLoginToken(String username, String password, String captcha, String rememberMe) {
+    public UserLoginToken(String username, String password, String captcha, String captchaDigest, String rememberMe) {
         super(null);
         this.username = username;
         this.password = password;
         this.captcha = captcha;
+        this.captchaDigest = captchaDigest;
         this.rememberMe = rememberMe;
         setAuthenticated(false);
     }

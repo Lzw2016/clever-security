@@ -15,6 +15,7 @@ import org.clever.security.jwt.handler.UserLoginSuccessHandler;
 import org.clever.security.jwt.model.CaptchaInfo;
 import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.model.UserLoginToken;
+import org.clever.security.jwt.repository.CaptchaInfoRepository;
 import org.clever.security.jwt.repository.RedisJwtRepository;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.json.JSONObject;
@@ -45,6 +46,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final String USERNAME_KEY = "username";
     private static final String PASSWORD_KEY = "password";
     private static final String CAPTCHA_KEY = "captcha";
+    private static final String CAPTCHA_DIGEST_KEY = "captchaDigest";
     private static final String REMEMBER_ME_KEY = "remember-me";
 
     @Autowired
@@ -55,13 +57,16 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private UserLoginFailureHandler userLoginFailureHandler;
     @Autowired
     private RedisJwtRepository redisJwtRepository;
+    @Autowired
+    private CaptchaInfoRepository captchaInfoRepository;
 
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
     private String loginTypeParameter = LOGIN_TYPE_KEY;
     private String usernameParameter = USERNAME_KEY;
     private String passwordParameter = PASSWORD_KEY;
     private String captchaParameter = CAPTCHA_KEY;
-    private String rememberMeParameterName = REMEMBER_ME_KEY;
+    private String captchaDigestParameter = CAPTCHA_DIGEST_KEY;
+    private String rememberMeParameter = REMEMBER_ME_KEY;
     private boolean postOnly = true;
     /**
      * 登录是否需呀验证码
@@ -98,8 +103,11 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             if (StringUtils.isNotBlank(login.getCaptchaParameter())) {
                 captchaParameter = login.getCaptchaParameter();
             }
-            if (StringUtils.isNotBlank(login.getRememberMeParameterName())) {
-                rememberMeParameterName = login.getRememberMeParameterName();
+            if (StringUtils.isNotBlank(login.getCaptchaDigestParameter())) {
+                captchaDigestParameter = login.getCaptchaDigestParameter();
+            }
+            if (StringUtils.isNotBlank(login.getRememberMeParameter())) {
+                rememberMeParameter = login.getRememberMeParameter();
             }
             if (login.getPostOnly() != null) {
                 postOnly = login.getPostOnly();
@@ -163,7 +171,8 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                     object.optString(usernameParameter),
                     object.optString(passwordParameter),
                     object.optString(captchaParameter),
-                    object.optString(rememberMeParameterName)
+                    object.optString(captchaDigestParameter),
+                    object.optString(rememberMeParameter)
             );
             loginType = object.optString(loginTypeParameter);
         } else {
@@ -172,15 +181,16 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             String username = StringUtils.trimToEmpty(request.getParameter(usernameParameter));
             String password = StringUtils.trimToEmpty(request.getParameter(passwordParameter));
             String captcha = StringUtils.trimToEmpty(request.getParameter(captchaParameter));
-            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameterName));
-            userLoginToken = new UserLoginToken(username, password, captcha, rememberMe);
+            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(captchaDigestParameter));
+            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameter));
+            userLoginToken = new UserLoginToken(username, password, captcha, captchaDigest, rememberMe);
         }
         // 设置登录类型
         userLoginToken.setLoginType(loginType);
         // 设置用户 "details" 属性(设置请求IP和SessionID)
         userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
         log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-        // TODO  读取验证码 - 验证 不能使用Session
+        //  读取验证码 - 验证 TODO 不能使用Session
         if (needCaptcha) {
             Object loginFailCountStr = request.getSession().getAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
             int loginFailCount = 0;
@@ -188,16 +198,17 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                 loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0);
             }
             if (loginFailCount > needCaptchaByLoginFailCount) {
-                CaptchaInfo captchaInfo = (CaptchaInfo) request.getSession().getAttribute(AttributeKeyConstant.Login_Captcha_Session_Key);
+                CaptchaInfo captchaInfo = captchaInfoRepository.getCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
                 if (captchaInfo == null) {
                     throw new BadCaptchaException("验证码不存在");
                 }
                 if (captchaInfo.getEffectiveTime() > 0 && System.currentTimeMillis() - captchaInfo.getCreateTime() >= captchaInfo.getEffectiveTime()) {
                     throw new BadCaptchaException("验证码已过期");
                 }
-                if (!captchaInfo.getCode().equals(userLoginToken.getCaptcha())) {
+                if (!captchaInfo.getCode().equalsIgnoreCase(userLoginToken.getCaptcha())) {
                     throw new BadCaptchaException("验证码不匹配");
                 }
+                captchaInfoRepository.deleteCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
                 log.info("### 验证码校验通过");
             }
         }
