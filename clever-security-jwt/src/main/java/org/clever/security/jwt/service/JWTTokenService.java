@@ -5,7 +5,9 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.DateTimeUtils;
 import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
@@ -49,6 +51,11 @@ public class JWTTokenService {
      */
     private final long tokenValidityInMillisecondsForRememberMe;
 
+    /**
+     * 设置密钥过期时间 (格式 HH:mm:ss)
+     */
+    private final String hoursInDay;
+
     protected JWTTokenService(SecurityConfig securityConfig) {
         SecurityConfig.TokenConfig tokenConfig = securityConfig.getTokenConfig();
         if (tokenConfig == null) {
@@ -57,6 +64,7 @@ public class JWTTokenService {
         this.secretKey = tokenConfig.getSecretKey() + SecretKeySuffix;
         this.tokenValidityInMilliseconds = tokenConfig.getTokenValidity().toMillis();
         this.tokenValidityInMillisecondsForRememberMe = tokenConfig.getTokenValidityForRememberMe().toMillis();
+        this.hoursInDay = tokenConfig.getHoursInDay();
     }
 
     /**
@@ -78,6 +86,18 @@ public class JWTTokenService {
             expiration = new Date(now + this.tokenValidityInMillisecondsForRememberMe);
         } else {
             expiration = new Date(now + this.tokenValidityInMilliseconds);
+        }
+        // 优化过期时间
+        if (StringUtils.isNotBlank(hoursInDay)) {
+            String tmp = DateTimeUtils.formatToString(expiration, DateTimeUtils.yyyy_MM_dd);
+            try {
+                expiration = DateTimeUtils.parseDate(tmp.trim() + " " + hoursInDay.trim(), DateTimeUtils.yyyy_MM_dd_HH_mm_ss);
+            } catch (Throwable e) {
+                log.warn("### TokenConfig.hoursInDay配置错误", e);
+            }
+            if (expiration.getTime() <= now) {
+                expiration = DateTimeUtils.addDays(expiration, 1);
+            }
         }
         //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）, jti（JWT ID）
         DefaultClaims claims = new DefaultClaims();

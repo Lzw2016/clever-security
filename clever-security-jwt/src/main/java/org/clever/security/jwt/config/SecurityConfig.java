@@ -196,7 +196,7 @@ public class SecurityConfig {
         /**
          * Token Redis前缀
          */
-        private String redisNamespace = "jwt-token";
+        private String redisNamespace = "jwt";
 
         /**
          * Token签名密钥
@@ -217,5 +217,10 @@ public class SecurityConfig {
          * 刷新令牌有效时间
          */
         private Duration refreshTokenValidity = Duration.ofDays(30);
+
+        /**
+         * 设置密钥过期时间 (格式 HH:mm:ss)
+         */
+        private String hoursInDay = "03:45:00";
     }
 }

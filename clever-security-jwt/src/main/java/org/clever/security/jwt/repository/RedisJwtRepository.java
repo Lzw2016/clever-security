@@ -91,7 +91,7 @@ public class RedisJwtRepository {
     public JwtToken getJwtToken(HttpServletRequest request) {
         String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
         if (StringUtils.isBlank(token)) {
-            throw new BusinessException("Token不存在");
+            throw new BusinessException("Token已过期");
         }
         return getJwtToken(token);
     }
@@ -113,7 +113,7 @@ public class RedisJwtRepository {
     public JwtToken getJwtTokenByKey(String jwtTokenKey) {
         Object object = redisTemplate.opsForValue().get(jwtTokenKey);
         if (object == null) {
-            throw new BusinessException("JwtToken不存在");
+            throw new BusinessException("JwtToken已过期");
         }
         if (!(object instanceof JwtToken)) {
             throw new BusinessException("JwtToken类型错误");
@@ -135,7 +135,7 @@ public class RedisJwtRepository {
         String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(refreshToken);
         Object object = redisTemplate.opsForValue().get(jwtRefreshTokenKey);
         if (object == null) {
-            throw new BusinessException("刷新令牌不存在");
+            throw new BusinessException("刷新令牌已过期");
         }
         if (!(object instanceof RefreshToken)) {
             throw new BusinessException("刷新令牌类型错误");
