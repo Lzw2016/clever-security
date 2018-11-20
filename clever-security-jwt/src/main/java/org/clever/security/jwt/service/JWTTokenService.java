@@ -109,7 +109,7 @@ public class JWTTokenService {
         claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
         // 设置角色和权限
         claims.put(PermissionKey, authorities);
-        // TODO 设置权限
+        // TODO 设置角色
         claims.put(RoleKey, new HashSet<String>(0));
         // 签名私钥
         Key key = Keys.hmacShaKeyFor((authentication.getName() + secretKey).getBytes());
