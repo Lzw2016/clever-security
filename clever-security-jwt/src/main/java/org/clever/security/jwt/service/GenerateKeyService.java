@@ -34,6 +34,10 @@ public class GenerateKeyService {
      * 验证码 Key
      */
     private static final String CaptchaInfoKey = "captcha-info";
+    /**
+     * 登录失败次数 Key
+     */
+    private static final String LoginFailCountKey = "login-fail-count";
 
     /**
      * Token Redis前缀
@@ -97,6 +101,11 @@ public class GenerateKeyService {
     public String getCaptchaInfoKey(String code, String imageDigest) {
         // {redisNamespace}:{CaptchaInfoKey}:{code}:{imageDigest}
         return String.format("%s:%s:%s:%s", redisNamespace, CaptchaInfoKey, code, imageDigest);
+    }
+
+    public String getLoginFailCountKey(String username) {
+        // {redisNamespace}:{LoginFailCountKey}:{username}
+        return String.format("%s:%s:%s", redisNamespace, LoginFailCountKey, username);
     }
 
 //    /**

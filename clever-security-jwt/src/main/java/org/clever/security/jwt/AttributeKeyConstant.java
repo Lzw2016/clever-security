@@ -7,17 +7,12 @@ package org.clever.security.jwt;
  */
 public class AttributeKeyConstant {
     /**
-     * 登录验证码KEY
-     */
-    public static final String Login_Captcha_Session_Key = "Login_Captcha_Session_Key";
-
-    /**
-     * 登录失败次数KEY
-     */
-    public static final String Login_Fail_Count_Session_Key = "Login_Fail_Count_Session_Key";
-
-    /**
      * 登录请求数据Session Key
      */
     public static final String Login_Data_Body_Request_Key = "Login_Data_Body_Request_Key";
+
+    /**
+     * 请求登录用户名 Key
+     */
+    public static final String Login_Username_Request_Key = "Login_Username_Request_Key";
 }

@@ -153,7 +153,7 @@ clever:
         login-failure-need-forward: false
         login-failure-redirect-page: '/login.html'
         need-captcha: true
-        need-captcha-by-login-fail-count: -1
+        need-captcha-by-login-fail-count: 3
         captcha-effective-time: 300000
         concurrent-login-count: 3
         not-allow-after-login: false

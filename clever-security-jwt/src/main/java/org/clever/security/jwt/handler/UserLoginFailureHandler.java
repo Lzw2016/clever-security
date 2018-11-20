@@ -2,7 +2,6 @@ package org.clever.security.jwt.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.dto.response.LoginRes;
 import org.clever.security.jwt.AttributeKeyConstant;
@@ -11,6 +10,7 @@ import org.clever.security.jwt.exception.BadCaptchaException;
 import org.clever.security.jwt.exception.BadLoginTypeException;
 import org.clever.security.jwt.exception.CanNotLoginSysException;
 import org.clever.security.jwt.exception.ConcurrentLoginException;
+import org.clever.security.jwt.repository.LoginFailCountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -44,6 +44,8 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
     private final Map<String, String> failureMessageMap = new HashMap<>();
     @Autowired
     private SecurityConfig securityConfig;
+    @Autowired
+    private LoginFailCountRepository loginFailCountRepository;
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private boolean hideUserNotFoundExceptions = true;
 
@@ -66,13 +68,11 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        // Session记录登录次数 TODO 不能使用Session
-        Object loginFailCountStr = request.getSession().getAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
-        int loginFailCount = 1;
-        if (loginFailCountStr != null) {
-            loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0) + 1;
+        // Session记录登录次数
+        Object object = request.getAttribute(AttributeKeyConstant.Login_Username_Request_Key);
+        if (object != null && StringUtils.isNotBlank(object.toString())) {
+            loginFailCountRepository.incrLoginFailCount(object.toString());
         }
-        request.getSession().setAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key, loginFailCount);
         // 登录失败 - 是否需要跳转
         SecurityConfig.Login login = securityConfig.getLogin();
         if (login.getLoginFailureNeedRedirect() != null && login.getLoginFailureNeedRedirect()) {

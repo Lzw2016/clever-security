@@ -6,6 +6,7 @@ import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.model.JwtToken;
+import org.clever.security.jwt.repository.LoginFailCountRepository;
 import org.clever.security.jwt.repository.RedisJwtRepository;
 import org.clever.security.jwt.service.GenerateKeyService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
@@ -38,11 +39,13 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
     private RedisJwtRepository redisJwtRepository;
+    @Autowired
+    private LoginFailCountRepository loginFailCountRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         requestCache.removeRequest(request, response);
-        clearAuthenticationAttributes(request);
+        clearAuthenticationAttributes(request, authentication.getName());
         // 登录成功保存 JwtToken RefreshToken
         JwtToken jwtToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
         redisJwtRepository.saveSecurityContext(new SecurityContextImpl(authentication));
@@ -77,13 +80,12 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
     /**
      * 清除Session中的异常信息
      */
-    private void clearAuthenticationAttributes(HttpServletRequest request) {
+    private void clearAuthenticationAttributes(HttpServletRequest request, String username) {
+        loginFailCountRepository.deleteLoginFailCount(username);
         HttpSession session = request.getSession(false);
         if (session == null) {
             return;
         }
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        session.removeAttribute(AttributeKeyConstant.Login_Captcha_Session_Key);
-        session.removeAttribute(AttributeKeyConstant.Login_Fail_Count_Session_Key);
     }
 }
