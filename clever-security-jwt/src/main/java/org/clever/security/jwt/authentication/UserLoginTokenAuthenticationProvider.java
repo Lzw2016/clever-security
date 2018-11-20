@@ -212,6 +212,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
         result.setLoginType(userLoginToken.getLoginType());
         result.setUsername(userLoginToken.getUsername());
         result.setPassword(userLoginToken.getPassword());
+        result.setRememberMe(userLoginToken.getRememberMe());
         result.setDetails(userLoginToken.getDetails());
         return result;
     }

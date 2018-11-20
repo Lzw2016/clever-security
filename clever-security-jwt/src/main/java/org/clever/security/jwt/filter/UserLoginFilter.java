@@ -45,6 +45,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final String USERNAME_KEY = "username";
     private static final String PASSWORD_KEY = "password";
     private static final String CAPTCHA_KEY = "captcha";
+    private static final String REMEMBER_ME_KEY = "remember-me";
 
     @Autowired
     private SecurityConfig securityConfig;
@@ -60,6 +61,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private String usernameParameter = USERNAME_KEY;
     private String passwordParameter = PASSWORD_KEY;
     private String captchaParameter = CAPTCHA_KEY;
+    private String rememberMeParameterName = REMEMBER_ME_KEY;
     private boolean postOnly = true;
     /**
      * 登录是否需呀验证码
@@ -95,6 +97,9 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             }
             if (StringUtils.isNotBlank(login.getCaptchaParameter())) {
                 captchaParameter = login.getCaptchaParameter();
+            }
+            if (StringUtils.isNotBlank(login.getRememberMeParameterName())) {
+                rememberMeParameterName = login.getRememberMeParameterName();
             }
             if (login.getPostOnly() != null) {
                 postOnly = login.getPostOnly();
@@ -157,7 +162,9 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             userLoginToken = new UserLoginToken(
                     object.optString(usernameParameter),
                     object.optString(passwordParameter),
-                    object.optString(captchaParameter));
+                    object.optString(captchaParameter),
+                    object.optString(rememberMeParameterName)
+            );
             loginType = object.optString(loginTypeParameter);
         } else {
             // 使用Parameter提交数据
@@ -165,7 +172,8 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             String username = StringUtils.trimToEmpty(request.getParameter(usernameParameter));
             String password = StringUtils.trimToEmpty(request.getParameter(passwordParameter));
             String captcha = StringUtils.trimToEmpty(request.getParameter(captchaParameter));
-            userLoginToken = new UserLoginToken(username, password, captcha);
+            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameterName));
+            userLoginToken = new UserLoginToken(username, password, captcha, rememberMe);
         }
         // 设置登录类型
         userLoginToken.setLoginType(loginType);

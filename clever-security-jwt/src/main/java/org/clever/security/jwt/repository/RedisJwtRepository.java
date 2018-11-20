@@ -54,8 +54,17 @@ public class RedisJwtRepository {
     // -------------------------------------------------------------------------------------------------------------------------------------- JwtToken
 
     public JwtToken saveJwtToken(UserLoginToken userLoginToken) {
+        boolean rememberMe = false;
+        if (StringUtils.isNotBlank(userLoginToken.getRememberMe())) {
+            if (userLoginToken.getRememberMe().equalsIgnoreCase("true")
+                    || userLoginToken.getRememberMe().equalsIgnoreCase("on")
+                    || userLoginToken.getRememberMe().equalsIgnoreCase("yes")
+                    || userLoginToken.getRememberMe().equals("1")) {
+                rememberMe = true;
+            }
+        }
         // 保存 JwtToken
-        JwtToken jwtToken = jwtTokenService.createToken(userLoginToken, false);
+        JwtToken jwtToken = jwtTokenService.createToken(userLoginToken, rememberMe);
         String jwtTokenKey = generateKeyService.getJwtTokenKey(jwtToken.getClaims());
         if (jwtToken.getClaims().getExpiration() == null) {
             redisTemplate.opsForValue().set(jwtTokenKey, jwtToken);

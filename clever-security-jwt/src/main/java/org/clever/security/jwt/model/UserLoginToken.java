@@ -1,6 +1,7 @@
 package org.clever.security.jwt.model;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,28 +17,27 @@ public class UserLoginToken extends AbstractAuthenticationToken {
 
     public static final String LoginType_Username = "username";
     public static final String LoginType_Telephone = "telephone";
-    /**
-     * 使用RememberMeToken(浏览器Cookie)登录时系统自动赋值loginType=RememberMeToken
-     */
-    public static final String LoginType_RememberMeToken = "rememberMeToken";
 
     /**
-     * 登录类型取值 “username” “telephone” “rememberMeToken”
+     * 登录类型取值 “username” “telephone”
      */
     private String loginType = LoginType_Username;
     private String username;
     private String password;
     private String captcha;
+    @Setter
+    private String rememberMe;
     private UserDetails userDetails;
 
     /**
      * 用于创建登录的凭证信息
      */
-    public UserLoginToken(String username, String password, String captcha) {
+    public UserLoginToken(String username, String password, String captcha, String rememberMe) {
         super(null);
         this.username = username;
         this.password = password;
         this.captcha = captcha;
+        this.rememberMe = rememberMe;
         setAuthenticated(false);
     }
 
@@ -92,8 +92,7 @@ public class UserLoginToken extends AbstractAuthenticationToken {
 
     public void setLoginType(String loginType) {
         if (LoginType_Username.equals(loginType)
-                || LoginType_Telephone.equals(loginType)
-                || LoginType_RememberMeToken.equals(loginType)) {
+                || LoginType_Telephone.equals(loginType)) {
             this.loginType = loginType;
         }
     }

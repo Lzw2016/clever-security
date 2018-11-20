@@ -101,10 +101,10 @@ public class SecurityConfig {
          */
         private String captchaParameter = "captcha";
 
-//        /**
-//         * "记住我"参数名
-//         */
-//        private String rememberMeParameterName = "remember-me";
+        /**
+         * "记住我"参数名
+         */
+        private String rememberMeParameterName = "remember-me";
 
         /**
          * 登录只支持POST请求
@@ -209,9 +209,9 @@ public class SecurityConfig {
         private Duration tokenValidity = Duration.ofDays(7);
 
         /**
-         * Token记住我有效时间(默认：30天)
+         * Token记住我有效时间(默认：15天)
          */
-        private Duration tokenValidityForRememberMe = Duration.ofDays(30);
+        private Duration tokenValidityForRememberMe = Duration.ofDays(15);
 
         /**
          * 刷新令牌有效时间
