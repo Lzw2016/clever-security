@@ -18,7 +18,6 @@ import java.util.*;
 public class LoginUserDetails implements UserDetails, CredentialsContainer {
 
     private final String username;
-    private String password;
     /**
      * 帐号锁定标识
      */
@@ -35,9 +34,9 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
      * 是否启用
      */
     private final boolean enabled;
-
-    private User user;
     private final Set<UserAuthority> authorities;
+    private String password;
+    private User user;
 
     public LoginUserDetails(User user) {
         this.username = user.getUsername();

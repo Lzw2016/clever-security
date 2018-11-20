@@ -1,14 +1,9 @@
 package org.clever.security.jwt.handler;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.security.jwt.model.JwtToken;
-import org.clever.security.jwt.service.GenerateKeyService;
-import org.clever.security.jwt.service.JWTTokenService;
+import org.clever.security.jwt.repository.RedisJwtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
@@ -27,37 +22,23 @@ import java.util.Set;
 public class UserLogoutHandler implements LogoutHandler {
 
     @Autowired
-    private JWTTokenService jwtTokenService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private GenerateKeyService generateKeyService;
+    private RedisJwtRepository redisJwtRepository;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         // UserLoginToken userLoginToken = AuthenticationUtils.getUserLoginToken(authentication);
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
-        if (StringUtils.isNotBlank(token)) {
-            Jws<Claims> claimsJws = jwtTokenService.getClaimsJws(token);
-            String jwtTokenKey = generateKeyService.getJwtTokenKey(claimsJws.getBody());
-            Boolean flag = redisTemplate.hasKey(jwtTokenKey);
-            if (flag != null && flag) {
-                JwtToken jwtToken = (JwtToken) redisTemplate.opsForValue().get(jwtTokenKey);
-                redisTemplate.delete(jwtTokenKey);
-                if (jwtToken != null) {
-                    String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
-                    redisTemplate.delete(jwtRefreshTokenKey);
-                }
-                log.info("### 删除 JWT Token成功");
-            }
-            Set<String> ketSet = redisTemplate.keys(generateKeyService.getJwtTokenPatternKey(claimsJws.getBody().getSubject()));
-            String securityContextKey = generateKeyService.getSecurityContextKey(claimsJws.getBody().getSubject());
-            flag = redisTemplate.hasKey(securityContextKey);
-            if (ketSet != null && ketSet.size() <= 0 && flag != null && flag) {
-                flag = redisTemplate.delete(securityContextKey);
-                if (flag != null && flag) {
-                    log.info("### 删除 SecurityContext 成功");
-                }
+        JwtToken jwtToken = null;
+        try {
+            jwtToken = redisJwtRepository.getJwtToken(request);
+        } catch (Throwable ignored) {
+        }
+        if (jwtToken != null) {
+            redisJwtRepository.deleteJwtToken(jwtToken);
+            log.info("### 删除 JWT Token成功");
+            Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(jwtToken.getClaims().getSubject());
+            if (ketSet != null && ketSet.size() <= 0) {
+                redisJwtRepository.deleteSecurityContext(jwtToken.getClaims().getSubject());
+                log.info("### 删除 SecurityContext 成功");
             }
         }
     }

@@ -142,20 +142,6 @@ public class JWTTokenService {
     }
 
     /**
-     * 验证令牌 (不会抛出异常)
-     */
-    public boolean validationToken(String token) {
-        try {
-            Jws<Claims> claimsJws = getClaimsJws(token);
-            if (claimsJws != null) {
-                return true;
-            }
-        } catch (Throwable ignored) {
-        }
-        return false;
-    }
-
-    /**
      * 生成刷新令牌
      */
     private String createRefreshToken(String username) {

@@ -1,7 +1,5 @@
 package org.clever.security.jwt.filter;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,12 +15,10 @@ import org.clever.security.jwt.handler.UserLoginSuccessHandler;
 import org.clever.security.jwt.model.CaptchaInfo;
 import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.model.UserLoginToken;
-import org.clever.security.jwt.service.GenerateKeyService;
-import org.clever.security.jwt.service.JWTTokenService;
+import org.clever.security.jwt.repository.RedisJwtRepository;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -57,11 +53,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Autowired
     private UserLoginFailureHandler userLoginFailureHandler;
     @Autowired
-    private JWTTokenService jwtTokenService;
-    @Autowired
-    private GenerateKeyService generateKeyService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisJwtRepository redisJwtRepository;
 
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
     private String loginTypeParameter = LOGIN_TYPE_KEY;
@@ -131,17 +123,13 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
-            Jws<Claims> claimsJws = jwtTokenService.getClaimsJws(token);
-            String jwtTokenKey = generateKeyService.getJwtTokenKey(claimsJws.getBody());
-            JwtToken jwtToken = (JwtToken) redisTemplate.opsForValue().get(jwtTokenKey);
-            assert jwtToken != null;
+            JwtToken jwtToken = redisJwtRepository.getJwtToken(request);
             String json = JacksonMapper.nonEmptyMapper().toJson(
                     new JwtLoginRes(
                             true,
                             "您已经登录成功了无须多次登录",
                             userRes,
-                            token,
+                            jwtToken.getToken(),
                             jwtToken.getRefreshToken()
                     )
             );

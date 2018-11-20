@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.web.session.HttpSessionCreatedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 
@@ -18,8 +17,6 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 public class HttpSessionCreatedListener implements ApplicationListener<HttpSessionCreatedEvent> {
 
-    @SuppressWarnings("NullableProblems")
-    @Transactional
     @Override
     public void onApplicationEvent(HttpSessionCreatedEvent event) {
         HttpSession session = event.getSession();

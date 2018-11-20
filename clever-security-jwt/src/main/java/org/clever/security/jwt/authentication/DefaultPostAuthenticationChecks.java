@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 验证帐号信息成功之后的校验
- *
+ * <p>
  * 作者： lzw<br/>
  * 创建时间：2018-09-19 16:33 <br/>
  */

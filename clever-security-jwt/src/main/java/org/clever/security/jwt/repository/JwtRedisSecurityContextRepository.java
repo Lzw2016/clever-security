@@ -1,14 +1,8 @@
 package org.clever.security.jwt.repository;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.security.jwt.model.JwtToken;
-import org.clever.security.jwt.service.GenerateKeyService;
-import org.clever.security.jwt.service.JWTTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
@@ -20,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 /**
  * 作者： lzw<br/>
@@ -32,11 +25,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
     @Autowired
-    private JWTTokenService jwtTokenService;
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private GenerateKeyService generateKeyService;
+    private RedisJwtRepository redisJwtRepository;
 
     /**
      * 从Redis读取Jwt Token
@@ -44,36 +33,24 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
-        // 验证 JWT Token
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
-        if (StringUtils.isBlank(token)) {
-            // token 为空
+        JwtToken jwtToken;
+        try {
+            jwtToken = redisJwtRepository.getJwtToken(request);
+            log.info("### JWTToken 验证成功");
+        } catch (Throwable e) {
+            log.warn("### JWTToken 验证失败");
             return SecurityContextHolder.createEmptyContext();
         }
-        Jws<Claims> claimsJws = jwtTokenService.getClaimsJws(token);
-        if (claimsJws == null) {
-            // token 不正确
-            return SecurityContextHolder.createEmptyContext();
-        }
-        String jwtTokenKey = generateKeyService.getJwtTokenKey(claimsJws.getBody());
-        Object object = redisTemplate.opsForValue().get(jwtTokenKey);
-        if (!(object instanceof JwtToken)) {
-            // token 类型不同
-            return SecurityContextHolder.createEmptyContext();
-        }
-        JwtToken jwtToken = (JwtToken) object;
-        if (!Objects.equals(token, jwtToken.getToken())) {
-            // token 不相同
-            return SecurityContextHolder.createEmptyContext();
-        }
-        log.info("### JWTToken 验证成功");
         // 读取 context
-        String securityContextKey = generateKeyService.getSecurityContextKey(claimsJws.getBody().getSubject());
-        object = redisTemplate.opsForValue().get(securityContextKey);
-        if (!(object instanceof SecurityContext)) {
+        SecurityContext securityContext;
+        try {
+            securityContext = redisJwtRepository.getSecurityContext(jwtToken);
+            log.info("### 读取SecurityContext成功");
+        } catch (Throwable e) {
+            log.warn("### 读取SecurityContext失败");
             return SecurityContextHolder.createEmptyContext();
         }
-        return (SecurityContext) object;
+        return securityContext;
     }
 
     /**
@@ -86,30 +63,18 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         if (authentication == null || trustResolver.isAnonymous(authentication)) {
             return;
         }
-        // 判断当前请求 JWT Token
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
-        if (StringUtils.isNotBlank(token)) {
-            try {
-                if (jwtTokenService.validationToken(token)) {
-                    return;
-                }
-            } catch (Throwable ignored) {
-            }
+        // 验证当前请求 JWT Token
+        if (redisJwtRepository.validationToken(request)) {
+            return;
         }
         // 保存 context
-        String securityContextKey = generateKeyService.getSecurityContextKey(authentication.getName());
-        redisTemplate.opsForValue().set(securityContextKey, context);
+        redisJwtRepository.saveSecurityContext(context);
         log.info("### 已保存SecurityContext");
     }
 
     @Override
     public boolean containsContext(HttpServletRequest request) {
         // 验证 JWT Token
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
-        if (StringUtils.isBlank(token)) {
-            // token 为空
-            return false;
-        }
-        return jwtTokenService.validationToken(token);
+        return redisJwtRepository.validationToken(request);
     }
 }

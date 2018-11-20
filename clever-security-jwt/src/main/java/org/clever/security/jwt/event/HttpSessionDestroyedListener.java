@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.core.session.SessionDestroyedEvent;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 作者： lzw<br/>
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class HttpSessionDestroyedListener implements ApplicationListener<SessionDestroyedEvent> {
 
-    @Transactional
     @Override
     public void onApplicationEvent(SessionDestroyedEvent event) {
         log.error("### 注销Session [{}] -> 不应该创建HttpSession", event.getId());

@@ -8,13 +8,12 @@ import org.clever.security.jwt.exception.BadLoginTypeException;
 import org.clever.security.jwt.exception.ConcurrentLoginException;
 import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.model.UserLoginToken;
-import org.clever.security.jwt.service.GenerateKeyService;
+import org.clever.security.jwt.repository.RedisJwtRepository;
 import org.clever.security.jwt.service.LoginPasswordCryptoService;
 import org.clever.security.jwt.service.LoginUserDetailsService;
 import org.clever.security.jwt.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -42,6 +41,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserLoginTokenAuthenticationProvider implements AuthenticationProvider {
 
+    /**
+     * 同一个用户并发登录次数限制(-1表示不限制)
+     */
+    private final int concurrentLoginCount;
+    /**
+     * 同一个用户并发登录次数达到最大值之后，是否不允许之后的登录(false 之后登录的把之前登录的挤下来)
+     */
+    private final boolean notAllowAfterLogin;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -56,22 +63,11 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
     @Autowired
     private LoginPasswordCryptoService loginPasswordCryptoService;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-    @Autowired
-    private GenerateKeyService generateKeyService;
+    private RedisJwtRepository redisJwtRepository;
     // 使用缓存?
     private UserCache userCache = new NullUserCache();
     // 解析授权信息
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
-    /**
-     * 同一个用户并发登录次数限制(-1表示不限制)
-     */
-    private final int concurrentLoginCount;
-
-    /**
-     * 同一个用户并发登录次数达到最大值之后，是否不允许之后的登录(false 之后登录的把之前登录的挤下来)
-     */
-    private final boolean notAllowAfterLogin;
 
     public UserLoginTokenAuthenticationProvider(SecurityConfig securityConfig) {
         SecurityConfig.Login login = securityConfig.getLogin();
@@ -227,7 +223,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
         if (concurrentLoginCount <= 0) {
             return;
         }
-        Set<String> ketSet = redisTemplate.keys(generateKeyService.getJwtTokenPatternKey(username));
+        Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(username);
         if (ketSet != null && ketSet.size() >= concurrentLoginCount) {
             if (notAllowAfterLogin) {
                 throw new ConcurrentLoginException("并发登录数量超限");
@@ -237,13 +233,12 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             int delCount = list.size() - concurrentLoginCount + 1;
             for (int i = 0; i < delCount; i++) {
                 String jwtTokenKey = list.get(i);
-                JwtToken jwtToken = (JwtToken) redisTemplate.opsForValue().get(jwtTokenKey);
-                redisTemplate.delete(jwtTokenKey);
-                if (jwtToken == null) {
-                    continue;
+                JwtToken jwtToken = null;
+                try {
+                    jwtToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
+                } catch (Throwable ignored) {
                 }
-                String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
-                redisTemplate.delete(jwtRefreshTokenKey);
+                redisJwtRepository.deleteJwtToken(jwtToken);
             }
         }
     }

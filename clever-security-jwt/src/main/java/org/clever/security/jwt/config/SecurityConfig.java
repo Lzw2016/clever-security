@@ -18,79 +18,61 @@ import java.util.List;
 public class SecurityConfig {
 
     /**
-     * 启用Spring Security调试功能
-     */
-    private Boolean enableDebug = false;
-
-    /**
-     * 系统名称
-     */
-    private String sysName;
-
-    /**
-     * 等待spring容器初始化次数(用于系统启动之后初始化系统权限)
-     */
-    private Integer waitSpringContextInitCount = 2;
-
-    /**
-     * 是否需要控制Web资源权限，默认true(true 需要；false 不要)
-     */
-    private Boolean defaultNeedAuthorization = true;
-
-    /**
-     * 不需要认证的URL
-     */
-    private List<String> ignoreUrls = new ArrayList<>();
-
-    /**
-     * 不需要授权的URL
-     */
-    private List<String> ignoreAuthorizationUrls = new ArrayList<>();
-
-    /**
-     * 隐藏登录用户找不到的异常
-     */
-    private Boolean hideUserNotFoundExceptions = true;
-
-    /**
-     * 未登录时是否需要跳转
-     */
-    private Boolean notLoginNeedForward = false;
-
-    /**
-     * 无权访问时是否需要跳转
-     */
-    private Boolean forbiddenNeedForward = false;
-
-    /**
-     * 无权访问时跳转页面(请求转发)
-     */
-    private String forbiddenForwardPage = "/403.html";
-
-    /**
      * 用户登录相关配置
      */
     private final Login login = new Login();
-
-    /**
-     * "记住我"相关配置
-     */
-    private final RememberMe rememberMe = new RememberMe();
-
     /**
      * 用户登出相关配置
      */
     private final Logout logout = new Logout();
-
     /**
      * 用户登录请求Aes Key
      */
     private final AesKey loginReqAesKey = new AesKey();
-
     /**
      * token配置
      */
     private final TokenConfig tokenConfig = new TokenConfig();
+    /**
+     * 启用Spring Security调试功能
+     */
+    private Boolean enableDebug = false;
+    /**
+     * 系统名称
+     */
+    private String sysName;
+    /**
+     * 等待spring容器初始化次数(用于系统启动之后初始化系统权限)
+     */
+    private Integer waitSpringContextInitCount = 2;
+    /**
+     * 是否需要控制Web资源权限，默认true(true 需要；false 不要)
+     */
+    private Boolean defaultNeedAuthorization = true;
+    /**
+     * 不需要认证的URL
+     */
+    private List<String> ignoreUrls = new ArrayList<>();
+    /**
+     * 不需要授权的URL
+     */
+    private List<String> ignoreAuthorizationUrls = new ArrayList<>();
+    /**
+     * 隐藏登录用户找不到的异常
+     */
+    private Boolean hideUserNotFoundExceptions = true;
+    /**
+     * 未登录时是否需要跳转
+     */
+    private Boolean notLoginNeedForward = false;
+    /**
+     * 无权访问时是否需要跳转
+     */
+    private Boolean forbiddenNeedForward = false;
+    /**
+     * 无权访问时跳转页面(请求转发)
+     */
+    private String forbiddenForwardPage = "/403.html";
 
     @Data
     public static class Login {
@@ -118,6 +100,11 @@ public class SecurityConfig {
          * 登录验证码参数名
          */
         private String captchaParameter = "captcha";
+
+//        /**
+//         * "记住我"参数名
+//         */
+//        private String rememberMeParameterName = "remember-me";
 
         /**
          * 登录只支持POST请求
@@ -188,29 +175,6 @@ public class SecurityConfig {
          */
         private String logoutSuccessRedirectPage = "/index.html";
 
-    }
-
-    @Data
-    static class RememberMe {
-        /**
-         * 启用"记住我"功能
-         */
-        private Boolean enable = true;
-
-        /**
-         * 总是"记住我"
-         */
-        private Boolean alwaysRemember = false;
-
-        /**
-         * "记住我"有效时间(单位秒，默认一个月)
-         */
-        private Integer validitySeconds = 2592000;
-
-        /**
-         * "记住我"参数名
-         */
-        private String rememberMeParameterName = "remember-me";
     }
 
     @Data

@@ -23,7 +23,6 @@
 // * 创建时间：2018-09-18 13:55 <br/>
 // */
 //@SuppressWarnings("Duplicates")
-//@Transactional(readOnly = true)
 //@Component
 //@Slf4j
 //public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
@@ -33,7 +32,6 @@
 //    @Autowired
 //    private UserLoginLogClient userLoginLogClient;
 //
-//    @Transactional
 //    @Override
 //    public void onApplicationEvent(AuthenticationSuccessEvent event) {
 //        Authentication authentication = event.getAuthentication();

@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,7 +20,6 @@ import java.util.List;
  * 创建时间：2018-03-16 10:54 <br/>
  */
 @SuppressWarnings("Duplicates")
-@Transactional(readOnly = true)
 @Component
 @Slf4j
 public class LoginUserDetailsService implements UserDetailsService {
