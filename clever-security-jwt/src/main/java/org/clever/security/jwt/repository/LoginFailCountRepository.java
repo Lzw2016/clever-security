@@ -36,6 +36,10 @@ public class LoginFailCountRepository {
 
     public long getLoginFailCount(String username) {
         String loginFailCountKey = generateKeyService.getLoginFailCountKey(username);
+        Boolean exists = redisTemplate.hasKey(loginFailCountKey);
+        if (exists != null && !exists) {
+            return 0L;
+        }
         Long count = redisTemplate.boundValueOps(loginFailCountKey).increment(0);
         return count == null ? 0 : count;
     }
