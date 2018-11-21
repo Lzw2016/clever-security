@@ -1,8 +1,9 @@
 package org.clever.security.entity;
 
-import java.util.Date;
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 服务系统(ServiceSys)实体类
@@ -13,22 +14,38 @@ import lombok.Data;
 @Data
 public class ServiceSys implements Serializable {
     private static final long serialVersionUID = 178234483743559404L;
-    /** 主键id */    
+    /**
+     * 主键id
+     */
     private Long id;
-    
-    /** 系统(或服务)名称 */    
+
+    /**
+     * 系统(或服务)名称
+     */
     private String sysName;
-    
-    /** 全局的Session Redis前缀 */    
+
+    /**
+     * 全局的Session Redis前缀
+     */
     private String redisNameSpace;
-    
-    /** 说明 */    
+
+    /**
+     * 登录类型，0：sesion-cookie，1：jwt-token
+     */
+    private Integer loginModel;
+
+    /**
+     * 说明
+     */
     private String description;
-    
-    /** 创建时间 */    
+
+    /**
+     * 创建时间
+     */
     private Date createAt;
-    
-    /** 更新时间 */    
+
+    /**
+     * 更新时间
+     */
     private Date updateAt;
-    
 }

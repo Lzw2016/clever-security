@@ -21,7 +21,7 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-18 13:55 <br/>
  */
-@SuppressWarnings("NullableProblems")
+@SuppressWarnings({"NullableProblems", "Duplicates"})
 @Component
 @Slf4j
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
@@ -49,6 +49,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
         userLoginLog.setLoginTime(new Date());
         userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));
         userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
+        userLoginLog.setLoginModel(EnumConstant.ServiceSys_LoginModel_0);
         userLoginLog.setSessionId(StringUtils.trimToEmpty(sessionId));
         userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
         try {

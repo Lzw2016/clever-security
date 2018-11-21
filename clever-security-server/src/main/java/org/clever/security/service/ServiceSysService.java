@@ -32,8 +32,17 @@ public class ServiceSysService {
         ServiceSys existsSys = serviceSysMapper.getByUnique(serviceSys.getSysName(), serviceSys.getRedisNameSpace());
         if (existsSys != null) {
             if (!Objects.equals(existsSys.getSysName(), serviceSys.getSysName())
-                    || !Objects.equals(existsSys.getRedisNameSpace(), serviceSys.getRedisNameSpace())) {
-                throw new BusinessException("服务系统注册失败，存在冲突(SysName: " + existsSys.getSysName() + ", redisNameSpace: " + existsSys.getRedisNameSpace() + ")");
+                    || !Objects.equals(existsSys.getRedisNameSpace(), serviceSys.getRedisNameSpace())
+                    || !Objects.equals(existsSys.getLoginModel(), serviceSys.getLoginModel())) {
+                throw new BusinessException(
+                        "服务系统注册失败，存在冲突(SysName: "
+                                + existsSys.getSysName()
+                                + ", redisNameSpace: "
+                                + existsSys.getRedisNameSpace()
+                                + ", loginModel: "
+                                + existsSys.getLoginModel()
+                                + ")"
+                );
             }
             return existsSys;
         }

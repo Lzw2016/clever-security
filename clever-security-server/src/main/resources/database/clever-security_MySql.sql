@@ -10,6 +10,7 @@ create table service_sys
     id                  bigint          not null        auto_increment                          comment '主键id',
     sys_name            varchar(127)    not null        unique                                  comment '系统(或服务)名称',
     redis_name_space    varchar(127)    not null        unique                                  comment '全局的Session Redis前缀',
+    login_model         int(1)          not null        default 0                               comment '登录类型，0：sesion-cookie，1：jwt-token',
     description         varchar(511)                                                            comment '说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
@@ -17,7 +18,7 @@ create table service_sys
 ) comment = '服务系统';
 create index service_sys_sys_name on service_sys (sys_name);
 /*------------------------------------------------------------------------------------------------------------------------
-登录类型 Token SessionID
+
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -199,7 +200,8 @@ create table user_login_log (
     login_time          datetime(3)     not null                                        comment '登录时间',
     login_ip            varchar(63)     not null                                        comment '登录IP',
     authentication_info text            not null                                        comment '登录的用户信息',
-    session_id          varchar(63)     not null    unique                              comment '登录SessionID',
+    login_model         int(1)          not null    default 0                           comment '登录类型，0：sesion-cookie，1：jwt-token',
+    session_id          varchar(63)     not null    unique                              comment '登录SessionID 或者 JwtTokenID',
     login_state         int(1)          not null    default 0                           comment '登录状态，0：未知；1：已登录；2：登录已过期',
     create_at           datetime(3)     not null    default current_timestamp(3)        comment '创建时间',
     update_at           datetime(3)                 on update current_timestamp(3)      comment '更新时间',

@@ -45,6 +45,11 @@ public class UserLoginLog implements Serializable {
     private String authenticationInfo;
 
     /**
+     * 登录类型，0：sesion-cookie，1：jwt-token
+     */
+    private Integer loginModel;
+
+    /**
      * 登录SessionID
      */
     private String sessionId;

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
+import org.clever.common.validation.ValidIntegerStatus;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
@@ -41,6 +42,11 @@ public class UserLoginLogAddReq extends BaseRequest {
     @NotBlank
     @ApiModelProperty("登录的用户信息")
     private String authenticationInfo;
+
+    @ApiModelProperty("登录类型，0：sesion-cookie，1：jwt-token")
+    @NotNull
+    @ValidIntegerStatus({0, 1})
+    private Integer loginModel;
 
     @NotBlank
     @Length(max = 63)

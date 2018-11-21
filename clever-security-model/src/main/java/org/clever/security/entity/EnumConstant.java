@@ -75,4 +75,14 @@ public class EnumConstant {
      * 登录状态，2：登录已过期
      */
     public static final Integer UserLoginLog_LoginState_2 = 2;
+
+    /**
+     * 登录类型，0：sesion-cookie
+     */
+    public static final Integer ServiceSys_LoginModel_0 = 0;
+
+    /**
+     * 登录类型，1：jwt-token
+     */
+    public static final Integer ServiceSys_LoginModel_1 = 1;
 }

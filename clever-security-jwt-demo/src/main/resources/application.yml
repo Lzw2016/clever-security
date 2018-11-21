@@ -112,7 +112,7 @@ clever:
   security:
     jwt:
       enable-debug: true
-      sys-name: '权限系统Demo'
+      sys-name: 'clever-security-jwt-demo'
       wait-spring-context-init-count: 2
       default-need-authorization: true
       ignore-urls:

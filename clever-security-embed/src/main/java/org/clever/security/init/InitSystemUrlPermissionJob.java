@@ -32,6 +32,7 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-11 14:42 <br/>
  */
+@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class InitSystemUrlPermissionJob extends GlobalJob {
@@ -59,6 +60,7 @@ public class InitSystemUrlPermissionJob extends GlobalJob {
         ServiceSysAddReq serviceSysAddReq = new ServiceSysAddReq();
         serviceSysAddReq.setSysName(securityConfig.getSysName());
         serviceSysAddReq.setRedisNameSpace(ReflectionsUtils.getFieldValue(redisHttpSessionConfiguration, "redisNamespace").toString());
+        serviceSysAddReq.setLoginModel(EnumConstant.ServiceSys_LoginModel_0);
         ServiceSys serviceSys = serviceSysClient.registerSys(serviceSysAddReq);
         log.info("### 注册系统成功: {}", serviceSys);
         // 获取系统中所有的资源,并排序 - allPermission
