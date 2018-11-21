@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.UserRes;
-import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.repository.LoginFailCountRepository;
 import org.clever.security.jwt.repository.RedisJwtRepository;

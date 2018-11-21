@@ -5,6 +5,7 @@ import org.clever.common.utils.codec.CryptoUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.security.config.GlobalConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-11-12 9:29 <br/>
  */
+@SuppressWarnings("unused")
 @Component
 @Slf4j
 public class ManageCryptoService {
@@ -28,10 +30,14 @@ public class ManageCryptoService {
      * @return Base64编码密码
      */
     public String reqAesEncrypt(String input) {
-        byte[] passwordData = input.getBytes();
-        byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesKey());
-        byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesIv());
-        return EncodeDecodeUtils.encodeBase64(CryptoUtils.aesEncrypt(passwordData, key, iv));
+        try {
+            byte[] passwordData = input.getBytes();
+            byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesKey());
+            byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesIv());
+            return EncodeDecodeUtils.encodeBase64(CryptoUtils.aesEncrypt(passwordData, key, iv));
+        } catch (Exception e) {
+            throw new BadCredentialsException("请求密码加密失败");
+        }
     }
 
     /**
@@ -40,23 +46,35 @@ public class ManageCryptoService {
      * @param input Base64编码密码
      */
     public String reqAesDecrypt(String input) {
-        byte[] passwordData = EncodeDecodeUtils.decodeBase64(input);
-        byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesKey());
-        byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesIv());
-        return CryptoUtils.aesDecrypt(passwordData, key, iv);
+        try {
+            byte[] passwordData = EncodeDecodeUtils.decodeBase64(input);
+            byte[] key = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesKey());
+            byte[] iv = EncodeDecodeUtils.decodeHex(globalConfig.getReqAesIv());
+            return CryptoUtils.aesDecrypt(passwordData, key, iv);
+        } catch (Exception e) {
+            throw new BadCredentialsException("请求密码解密失败");
+        }
     }
 
     /**
      * 存储数据 加密
      */
     public String dbEncode(String input) {
-        return bCryptPasswordEncoder.encode(input);
+        try {
+            return bCryptPasswordEncoder.encode(input);
+        } catch (Exception e) {
+            throw new BadCredentialsException("存储密码加密失败");
+        }
     }
 
     /**
      * 数据库加密数据匹配
      */
     public boolean dbMatches(String str1, String str2) {
-        return bCryptPasswordEncoder.matches(str1, str2);
+        try {
+            return bCryptPasswordEncoder.matches(str1, str2);
+        } catch (Exception e) {
+            throw new BadCredentialsException("存储密码解密失败");
+        }
     }
 }

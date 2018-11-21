@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-09-19 16:32 <br/>
  */
+@SuppressWarnings("Duplicates")
 @Component("DefaultPreAuthenticationChecks")
 @Slf4j
 public class DefaultPreAuthenticationChecks implements UserDetailsChecker {

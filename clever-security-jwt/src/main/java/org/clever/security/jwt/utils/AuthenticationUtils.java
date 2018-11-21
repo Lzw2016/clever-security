@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 作者： lzw<br/>
  * 创建时间：2018-09-17 15:26 <br/>
  */
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates", "WeakerAccess"})
 public class AuthenticationUtils {
 
     public static UserLoginToken getUserLoginToken(Authentication authentication) {

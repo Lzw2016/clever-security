@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 作者： lzw<br/>
  * 创建时间：2018-11-20 21:41 <br/>
  */
+@SuppressWarnings("UnusedReturnValue")
 @Component
 @Slf4j
 public class LoginFailCountRepository {
@@ -19,10 +22,10 @@ public class LoginFailCountRepository {
     @Autowired
     private GenerateKeyService generateKeyService;
 
-    public long incrLoginFailCount(String username) {
-        // TODO 必须设置过期时间
+    public long incrementLoginFailCount(String username) {
         String loginFailCountKey = generateKeyService.getLoginFailCountKey(username);
-        Long count = redisTemplate.opsForValue().increment(loginFailCountKey, 1);
+        Long count = redisTemplate.boundValueOps(loginFailCountKey).increment(1);
+        redisTemplate.expire(loginFailCountKey, 10, TimeUnit.MINUTES);
         return count == null ? 0 : count;
     }
 
@@ -33,7 +36,7 @@ public class LoginFailCountRepository {
 
     public long getLoginFailCount(String username) {
         String loginFailCountKey = generateKeyService.getLoginFailCountKey(username);
-        Long count = redisTemplate.opsForValue().increment(loginFailCountKey, 0);
+        Long count = redisTemplate.boundValueOps(loginFailCountKey).increment(0);
         return count == null ? 0 : count;
     }
 }

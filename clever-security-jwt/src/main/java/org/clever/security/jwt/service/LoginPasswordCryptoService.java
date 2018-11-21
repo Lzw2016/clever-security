@@ -6,6 +6,7 @@ import org.clever.common.utils.codec.CryptoUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.security.jwt.config.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-11-01 10:42 <br/>
  */
-@SuppressWarnings("Duplicates")
+@SuppressWarnings({"Duplicates", "unused"})
 @Component
 @Slf4j
 public class LoginPasswordCryptoService {
@@ -28,14 +29,18 @@ public class LoginPasswordCryptoService {
      * @return Base64编码密码
      */
     public String reqAesEncrypt(String input) {
-        SecurityConfig.AesKey aesKey = securityConfig.getLoginReqAesKey();
-        if (aesKey == null) {
-            throw new BusinessException("请先配置登录密码AesKey");
+        try {
+            SecurityConfig.AesKey aesKey = securityConfig.getLoginReqAesKey();
+            if (aesKey == null) {
+                throw new BusinessException("请先配置登录密码AesKey");
+            }
+            byte[] passwordData = input.getBytes();
+            byte[] key = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesKey());
+            byte[] iv = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesIv());
+            return EncodeDecodeUtils.encodeBase64(CryptoUtils.aesEncrypt(passwordData, key, iv));
+        } catch (Exception e) {
+            throw new BadCredentialsException("请求密码加密失败");
         }
-        byte[] passwordData = input.getBytes();
-        byte[] key = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesKey());
-        byte[] iv = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesIv());
-        return EncodeDecodeUtils.encodeBase64(CryptoUtils.aesEncrypt(passwordData, key, iv));
     }
 
     /**
@@ -44,13 +49,17 @@ public class LoginPasswordCryptoService {
      * @param input Base64编码密码
      */
     public String reqAesDecrypt(String input) {
-        SecurityConfig.AesKey aesKey = securityConfig.getLoginReqAesKey();
-        if (aesKey == null) {
-            throw new BusinessException("请先配置登录密码AesKey");
+        try {
+            SecurityConfig.AesKey aesKey = securityConfig.getLoginReqAesKey();
+            if (aesKey == null) {
+                throw new BusinessException("请先配置登录密码AesKey");
+            }
+            byte[] passwordData = EncodeDecodeUtils.decodeBase64(input);
+            byte[] key = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesKey());
+            byte[] iv = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesIv());
+            return CryptoUtils.aesDecrypt(passwordData, key, iv);
+        } catch (Exception e) {
+            throw new BadCredentialsException("请求密码解密失败");
         }
-        byte[] passwordData = EncodeDecodeUtils.decodeBase64(input);
-        byte[] key = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesKey());
-        byte[] iv = EncodeDecodeUtils.decodeHex(aesKey.getReqPasswordAesIv());
-        return CryptoUtils.aesDecrypt(passwordData, key, iv);
     }
 }

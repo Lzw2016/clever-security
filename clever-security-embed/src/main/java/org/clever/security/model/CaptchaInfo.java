@@ -9,6 +9,7 @@ import java.io.Serializable;
  * 作者： lzw<br/>
  * 创建时间：2018-09-19 21:34 <br/>
  */
+@SuppressWarnings("unused")
 @Data
 public class CaptchaInfo implements Serializable {
 

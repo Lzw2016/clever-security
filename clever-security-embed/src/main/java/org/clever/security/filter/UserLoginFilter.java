@@ -36,6 +36,7 @@ import java.io.IOException;
  * 作者： lzw<br/>
  * 创建时间：2018-03-15 12:48 <br/>
  */
+@SuppressWarnings({"FieldCanBeLocal", "Duplicates"})
 @Component
 @Slf4j
 public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {

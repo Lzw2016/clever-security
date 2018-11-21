@@ -9,6 +9,7 @@ import java.util.Objects;
  * 作者： lzw<br/>
  * 创建时间：2018-03-17 21:38 <br/>
  */
+@SuppressWarnings("unused")
 public class HttpRequestUtils {
 
     /**

@@ -8,6 +8,7 @@ import java.io.Serializable;
  * 作者： lzw<br/>
  * 创建时间：2018-11-20 9:11 <br/>
  */
+@SuppressWarnings("unused")
 @Data
 public class RefreshToken implements Serializable {
 

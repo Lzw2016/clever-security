@@ -21,6 +21,7 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-18 13:55 <br/>
  */
+@SuppressWarnings("NullableProblems")
 @Component
 @Slf4j
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {

@@ -3,6 +3,7 @@ package org.clever.security.jwt.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.client.UserClient;
 import org.clever.security.dto.response.LoginRes;
 import org.clever.security.jwt.AttributeKeyConstant;
 import org.clever.security.jwt.config.SecurityConfig;
@@ -46,6 +47,8 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
     private SecurityConfig securityConfig;
     @Autowired
     private LoginFailCountRepository loginFailCountRepository;
+    @Autowired
+    private UserClient userClient;
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private boolean hideUserNotFoundExceptions = true;
 
@@ -68,13 +71,15 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        // Session记录登录次数
-        Object object = request.getAttribute(AttributeKeyConstant.Login_Username_Request_Key);
-        if (object != null && StringUtils.isNotBlank(object.toString())) {
-            loginFailCountRepository.incrLoginFailCount(object.toString());
+        SecurityConfig.Login login = securityConfig.getLogin();
+        if (login.getNeedCaptcha()) {
+            // 记录登录失败次数
+            Object object = request.getAttribute(AttributeKeyConstant.Login_Username_Request_Key);
+            if (object != null && StringUtils.isNotBlank(object.toString()) && userClient.canLogin(object.toString(), securityConfig.getSysName())) {
+                loginFailCountRepository.incrementLoginFailCount(object.toString());
+            }
         }
         // 登录失败 - 是否需要跳转
-        SecurityConfig.Login login = securityConfig.getLogin();
         if (login.getLoginFailureNeedRedirect() != null && login.getLoginFailureNeedRedirect()) {
             // 跳转
             HttpSession session = request.getSession(false);

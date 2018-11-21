@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * 作者： lzw<br/>
  * 创建时间：2018-11-20 11:12 <br/>
  */
-@SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue", "unused"})
 @Component
 @Slf4j
 public class RedisJwtRepository {
