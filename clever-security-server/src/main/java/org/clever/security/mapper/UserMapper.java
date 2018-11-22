@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.UserQueryPageReq;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.Role;
+import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.User;
 
 import java.util.List;
@@ -29,6 +30,8 @@ public interface UserMapper extends BaseMapper<User> {
     List<User> findByPage(@Param("query") UserQueryPageReq query, IPage page);
 
     List<String> findSysNameByUsername(@Param("username") String username);
+
+    List<ServiceSys> findSysByUsername(@Param("username") String username);
 
     int addUserSys(@Param("username") String username, @Param("sysName") String sysName);
 

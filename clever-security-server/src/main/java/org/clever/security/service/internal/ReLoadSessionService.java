@@ -2,10 +2,8 @@ package org.clever.security.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.mapper.RoleMapper;
-import org.clever.security.mapper.UserMapper;
-import org.clever.security.service.SessionService;
+import org.clever.security.service.ISessionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,14 +22,14 @@ import java.util.Set;
 @Slf4j
 public class ReLoadSessionService {
 
-    @Autowired
-    private UserMapper userMapper;
+    // @Autowired
+    // private UserMapper userMapper;
+    // @Autowired
+    // private RedisOperationsSessionRepository sessionRepository;
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
-    private RedisOperationsSessionRepository sessionRepository;
-    @Autowired
-    private SessionService sessionService;
+    private ISessionService sessionService;
 
     /**
      * 角色所拥有的权限发生变化 - 重新加载Session
@@ -55,12 +53,4 @@ public class ReLoadSessionService {
             sessionService.reloadSessionSecurityContext(username);
         }
     }
-
-//    /**
-//     *
-//     * @param permissionStr
-//     */
-//    public void onChangePermission(String permissionId ) {
-//
-//    }
 }

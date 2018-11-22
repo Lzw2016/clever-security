@@ -103,6 +103,9 @@ public class GenerateKeyService {
         return String.format("%s:%s:%s:%s", redisNamespace, CaptchaInfoKey, code, imageDigest);
     }
 
+    /**
+     * 生成 Redis 存储 LoginFailCountKey
+     */
     public String getLoginFailCountKey(String username) {
         // {redisNamespace}:{LoginFailCountKey}:{username}
         return String.format("%s:%s:%s", redisNamespace, LoginFailCountKey, username);

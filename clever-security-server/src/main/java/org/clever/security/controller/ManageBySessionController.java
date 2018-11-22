@@ -3,7 +3,7 @@ package org.clever.security.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.clever.security.dto.response.ForcedOfflineRes;
-import org.clever.security.service.SessionService;
+import org.clever.security.service.ISessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class ManageBySessionController {
 
     @Autowired
-    private SessionService sessionService;
+    private ISessionService sessionService;
 
     @ApiOperation("重新加载用户SessionSecurityContext")
     @GetMapping("/reload_session_security_context/{username}")

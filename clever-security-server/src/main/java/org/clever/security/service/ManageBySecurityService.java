@@ -44,7 +44,7 @@ public class ManageBySecurityService {
     @Autowired
     private ManageByQueryService manageByQueryService;
     @Autowired
-    private SessionService sessionService;
+    private ISessionService sessionService;
     @Autowired
     private ReLoadSessionService reLoadSessionService;
 

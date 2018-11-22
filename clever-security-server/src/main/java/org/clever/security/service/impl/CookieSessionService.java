@@ -1,11 +1,8 @@
-package org.clever.security.service;
+package org.clever.security.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.security.entity.Permission;
-import org.clever.security.entity.ServiceSys;
-import org.clever.security.entity.User;
-import org.clever.security.entity.UserLoginLog;
+import org.clever.security.entity.*;
 import org.clever.security.mapper.RememberMeTokenMapper;
 import org.clever.security.mapper.ServiceSysMapper;
 import org.clever.security.mapper.UserLoginLogMapper;
@@ -13,6 +10,7 @@ import org.clever.security.mapper.UserMapper;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
 import org.clever.security.model.UserLoginToken;
+import org.clever.security.service.ISessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -21,19 +19,17 @@ import org.springframework.session.data.redis.RedisOperationsSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 作者： lzw<br/>
- * 创建时间：2018-11-12 10:16 <br/>
+ * 创建时间：2018-11-22 19:33 <br/>
  */
+@SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
-@Service
+@Service("cookieSessionService")
 @Slf4j
-public class SessionService {
+public class CookieSessionService implements ISessionService {
 
     private static final String SPRING_SECURITY_CONTEXT = "sessionAttr:SPRING_SECURITY_CONTEXT";
 
@@ -47,8 +43,6 @@ public class SessionService {
     private RememberMeTokenMapper rememberMeTokenMapper;
     @Autowired
     private RedisOperationsSessionRepository sessionRepository;
-//    @Autowired
-//    private SpringSessionBackedSessionRegistry sessionRegistry;
 
     /**
      * 参考 RedisOperationsSessionRepository#getPrincipalKey
@@ -57,45 +51,6 @@ public class SessionService {
         // {redisNameSpace}:{index}:{PRINCIPAL_NAME_INDEX_NAME}:{userName}
         // spring:session:clever-security:index:org.springframework.session.FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME:lizw
         return redisNameSpace + ":index:" + FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME + ":" + userName;
-    }
-
-    /**
-     * 删除用户Session(所有的系统)
-     *
-     * @param userName 用户信息
-     */
-    public void delSession(String userName) {
-        List<String> sysNames = userMapper.findSysNameByUsername(userName);
-        if (sysNames == null || sysNames.size() <= 0) {
-            return;
-        }
-        for (String sysName : sysNames) {
-            delSession(sysName, userName);
-        }
-    }
-
-    /**
-     * 删除用户Session
-     *
-     * @param sysName  系统名
-     * @param userName 用户名
-     */
-    public void delSession(String sysName, String userName) {
-        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
-        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
-            return;
-        }
-        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
-        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
-        if (sessionIds == null) {
-            return;
-        }
-        for (Object sessionId : sessionIds) {
-            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
-                continue;
-            }
-            sessionRepository.deleteById(sessionId.toString());
-        }
     }
 
     /**
@@ -145,15 +100,62 @@ public class SessionService {
         return new SecurityContextImpl(newUserLoginToken);
     }
 
-    /**
-     * 重新加载所有系统用户权限信息(sessionAttr:SPRING_SECURITY_CONTEXT)
-     *
-     * @param sysName  系统名
-     * @param userName 用户名
-     */
+    @Override
+    public Map<String, SecurityContext> getSessionSecurityContext(String sysName, String userName) {
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
+        if (serviceSys == null
+                || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
+            return null;
+        }
+        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
+        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
+        if (sessionIds == null) {
+            return null;
+        }
+        Map<String, SecurityContext> map = new HashMap<>();
+        for (Object sessionId : sessionIds) {
+            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
+                continue;
+            }
+            String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId.toString());
+            Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
+            SecurityContext securityContext = null;
+            if (securityObject instanceof SecurityContext) {
+                securityContext = (SecurityContext) securityObject;
+            }
+            map.put(sessionId.toString(), securityContext);
+        }
+        return map;
+    }
+
+    @Override
+    public SecurityContext getSessionSecurityContext(String sessionId) {
+        if (sessionId == null || StringUtils.isBlank(sessionId)) {
+            return null;
+        }
+        UserLoginLog userLoginLog = userLoginLogMapper.getBySessionId(sessionId);
+        if (userLoginLog == null || StringUtils.isBlank(userLoginLog.getSysName())) {
+            return null;
+        }
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(userLoginLog.getSysName());
+        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+            return null;
+        }
+        String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId);
+        Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
+        if (securityObject instanceof SecurityContext) {
+            return (SecurityContext) securityObject;
+        }
+        return null;
+    }
+
+    @Override
     public SecurityContext reloadSessionSecurityContext(String sysName, String userName) {
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
-        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+        if (serviceSys == null
+                || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
             return null;
         }
         String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
@@ -187,94 +189,33 @@ public class SessionService {
         return newSecurityContext;
     }
 
-    /**
-     * 重新加载所有系统用户权限信息(sessionAttr:SPRING_SECURITY_CONTEXT)
-     *
-     * @param userName 用户名
-     */
+    @Override
     public Map<String, SecurityContext> reloadSessionSecurityContext(String userName) {
         Map<String, SecurityContext> result = new HashMap<>();
-        List<String> sysNames = userMapper.findSysNameByUsername(userName);
-        if (sysNames == null || sysNames.size() <= 0) {
+        List<ServiceSys> sysList = userMapper.findSysByUsername(userName);
+        if (sysList == null || sysList.size() <= 0) {
             return result;
         }
-        for (String sysName : sysNames) {
-            SecurityContext securityContext = reloadSessionSecurityContext(sysName, userName);
-            result.put(sysName, securityContext);
+        for (ServiceSys serviceSys : sysList) {
+            if (serviceSys == null
+                    || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                    || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
+                return null;
+            }
+            SecurityContext securityContext = reloadSessionSecurityContext(serviceSys.getSysName(), userName);
+            result.put(serviceSys.getSysName(), securityContext);
         }
         return result;
     }
 
-    /**
-     * 读取用户SessionSecurityContext
-     *
-     * @param sysName  系统名
-     * @param userName 用户名
-     * @return 不存在返回null
-     */
-    public Map<String, SecurityContext> getSessionSecurityContext(String sysName, String userName) {
-        Map<String, SecurityContext> map = new HashMap<>();
-        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
-        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
-            return null;
-        }
-        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
-        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
-        if (sessionIds == null) {
-            return null;
-        }
-        for (Object sessionId : sessionIds) {
-            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
-                continue;
-            }
-            String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId.toString());
-            Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
-            SecurityContext securityContext = null;
-            if (securityObject instanceof SecurityContext) {
-                securityContext = (SecurityContext) securityObject;
-            }
-            map.put(sessionId.toString(), securityContext);
-        }
-        return map;
-    }
-
-    /**
-     * 读取用户SessionSecurityContext
-     *
-     * @param sessionId Session ID
-     */
-    public SecurityContext getSessionSecurityContext(String sessionId) {
-        if (sessionId == null || StringUtils.isBlank(sessionId)) {
-            return null;
-        }
-        UserLoginLog userLoginLog = userLoginLogMapper.getBySessionId(sessionId);
-        if (userLoginLog == null || StringUtils.isBlank(userLoginLog.getSysName())) {
-            return null;
-        }
-        ServiceSys serviceSys = serviceSysMapper.getBySysName(userLoginLog.getSysName());
-        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
-            return null;
-        }
-        String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId);
-        Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
-        if (securityObject instanceof SecurityContext) {
-            return (SecurityContext) securityObject;
-        }
-        return null;
-    }
-
-    /**
-     * 踢出用户(强制下线)
-     *
-     * @param sysName  系统名
-     * @param userName 用户名
-     * @return 下线Session数量
-     */
     @Transactional
+    @Override
     public int forcedOffline(String sysName, String userName) {
         int count = 0;
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
-        if (serviceSys == null || StringUtils.isBlank(serviceSys.getRedisNameSpace())) {
+        if (serviceSys == null
+                || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
             return 0;
         }
         String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
@@ -293,5 +234,42 @@ public class SessionService {
             sessionRepository.deleteById(sessionId.toString());
         }
         return count;
+    }
+
+    @Override
+    public void delSession(String userName) {
+        List<ServiceSys> sysList = userMapper.findSysByUsername(userName);
+        if (sysList == null || sysList.size() <= 0) {
+            return;
+        }
+        for (ServiceSys serviceSys : sysList) {
+            if (serviceSys == null
+                    || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                    || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
+                continue;
+            }
+            delSession(serviceSys.getSysName(), userName);
+        }
+    }
+
+    @Override
+    public void delSession(String sysName, String userName) {
+        ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
+        if (serviceSys == null
+                || StringUtils.isBlank(serviceSys.getRedisNameSpace())
+                || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
+            return;
+        }
+        String principalKey = getPrincipalKey(serviceSys.getRedisNameSpace(), userName);
+        Set<Object> sessionIds = sessionRepository.getSessionRedisOperations().boundSetOps(principalKey).members();
+        if (sessionIds == null) {
+            return;
+        }
+        for (Object sessionId : sessionIds) {
+            if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
+                continue;
+            }
+            sessionRepository.deleteById(sessionId.toString());
+        }
     }
 }

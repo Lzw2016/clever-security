@@ -125,6 +125,14 @@
         select sys_name from user_sys where username=#{username} order by sys_name
     </select>
 
+    <select id="findSysByUsername" resultType="org.clever.security.entity.ServiceSys">
+        select
+            distinct b.*
+        from user_sys a left join service_sys b on (a.sys_name=b.sys_name)
+        where username=#{username}
+        order by sys_name
+    </select>
+
     <select id="existsByUserName" resultType="int">
         select count(1) from user where username=#{username}
     </select>

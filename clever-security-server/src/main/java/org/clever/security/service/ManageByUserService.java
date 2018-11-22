@@ -48,7 +48,7 @@ public class ManageByUserService {
     @Autowired
     private UserBindSysNameService userBindSysNameService;
     @Autowired
-    private SessionService sessionService;
+    private ISessionService sessionService;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
