@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.RememberMeTokenQueryReq;
+import org.clever.security.dto.request.ServiceSysQueryReq;
 import org.clever.security.dto.request.UserLoginLogQueryReq;
+import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.User;
 import org.clever.security.entity.model.UserLoginLogModel;
 import org.clever.security.entity.model.UserRememberMeToken;
@@ -28,4 +30,6 @@ public interface QueryMapper extends BaseMapper<User> {
     List<UserRememberMeToken> findRememberMeToken(@Param("query") RememberMeTokenQueryReq query, IPage page);
 
     List<UserLoginLogModel> findUserLoginLog(@Param("query") UserLoginLogQueryReq query, IPage page);
+
+    List<ServiceSys> findServiceSys(@Param("query") ServiceSysQueryReq query, IPage page);
 }

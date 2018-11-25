@@ -100,4 +100,19 @@
         </where>
         order by a.update_at DESC, a.login_time DESC
     </select>
+
+    <select id="findServiceSys" resultType="org.clever.security.entity.ServiceSys">
+        select
+          *
+        from service_sys
+        <where>
+          <if test="query.sysName!=null and query.sysName!=''">
+              and sys_name like concat('%', #{query.sysName}, '%')
+          </if>
+            <if test="query.loginModel!=null">
+                and login_model = #{query.loginModel}
+            </if>
+        </where>
+        order by sys_name
+    </select>
 </mapper>

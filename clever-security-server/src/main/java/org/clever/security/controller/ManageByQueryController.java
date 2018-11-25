@@ -6,7 +6,9 @@ import io.swagger.annotations.ApiOperation;
 import org.clever.common.model.response.AjaxMessage;
 import org.clever.common.server.controller.BaseController;
 import org.clever.security.dto.request.RememberMeTokenQueryReq;
+import org.clever.security.dto.request.ServiceSysQueryReq;
 import org.clever.security.dto.request.UserLoginLogQueryReq;
+import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.model.UserLoginLogModel;
 import org.clever.security.entity.model.UserRememberMeToken;
 import org.clever.security.service.ManageByQueryService;
@@ -88,5 +90,11 @@ public class ManageByQueryController extends BaseController {
     @GetMapping("/user_login_log")
     public IPage<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
         return manageByQueryService.findUserLoginLog(req);
+    }
+
+    @ApiOperation("分页查询接入系统")
+    @GetMapping("/service_sys")
+    public IPage<ServiceSys> findServiceSys(ServiceSysQueryReq req) {
+        return manageByQueryService.findServiceSys(req);
     }
 }

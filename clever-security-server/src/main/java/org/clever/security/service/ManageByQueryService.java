@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.dto.request.RememberMeTokenQueryReq;
+import org.clever.security.dto.request.ServiceSysQueryReq;
 import org.clever.security.dto.request.UserLoginLogQueryReq;
+import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.model.UserLoginLogModel;
 import org.clever.security.entity.model.UserRememberMeToken;
 import org.clever.security.mapper.QueryMapper;
@@ -80,6 +82,12 @@ public class ManageByQueryService {
     public IPage<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
         Page<UserLoginLogModel> page = new Page<>(req.getPageNo(), req.getPageSize());
         page.setRecords(queryMapper.findUserLoginLog(req, page));
+        return page;
+    }
+
+    public IPage<ServiceSys> findServiceSys(ServiceSysQueryReq req) {
+        Page<ServiceSys> page = new Page<>(req.getPageNo(), req.getPageSize());
+        page.setRecords(queryMapper.findServiceSys(req, page));
         return page;
     }
 }
