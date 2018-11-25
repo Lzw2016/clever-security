@@ -1,5 +1,7 @@
 package org.clever.security.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.dto.request.RememberMeTokenQueryReq;
 import org.clever.security.dto.request.UserLoginLogQueryReq;
@@ -69,11 +71,15 @@ public class ManageByQueryService {
         return queryMapper.findPermissionStrByRole(roleName);
     }
 
-    public List<UserRememberMeToken> findRememberMeToken(RememberMeTokenQueryReq req) {
-        return queryMapper.findRememberMeToken(req);
+    public IPage<UserRememberMeToken> findRememberMeToken(RememberMeTokenQueryReq req) {
+        Page<UserRememberMeToken> page = new Page<>(req.getPageNo(), req.getPageSize());
+        page.setRecords(queryMapper.findRememberMeToken(req, page));
+        return page;
     }
 
-    public List<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
-        return queryMapper.findUserLoginLog(req);
+    public IPage<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
+        Page<UserLoginLogModel> page = new Page<>(req.getPageNo(), req.getPageSize());
+        page.setRecords(queryMapper.findUserLoginLog(req, page));
+        return page;
     }
 }

@@ -1,5 +1,6 @@
 package org.clever.security.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.clever.common.model.response.AjaxMessage;
@@ -79,13 +80,13 @@ public class ManageByQueryController extends BaseController {
 
     @ApiOperation("分页查询“记住我”功能的Token")
     @GetMapping("/remember_me_token")
-    public List<UserRememberMeToken> findRememberMeToken(RememberMeTokenQueryReq req) {
+    public IPage<UserRememberMeToken> findRememberMeToken(RememberMeTokenQueryReq req) {
         return manageByQueryService.findRememberMeToken(req);
     }
 
     @ApiOperation("分页查询用户登录日志")
     @GetMapping("/user_login_log")
-    public List<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
+    public IPage<UserLoginLogModel> findUserLoginLog(UserLoginLogQueryReq req) {
         return manageByQueryService.findUserLoginLog(req);
     }
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
+import org.clever.common.model.request.QueryByPage;
 
 import java.util.Date;
 
@@ -13,7 +14,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class RememberMeTokenQueryReq extends BaseRequest {
+public class RememberMeTokenQueryReq extends QueryByPage {
 
     @ApiModelProperty("用户登录名")
     private String username;

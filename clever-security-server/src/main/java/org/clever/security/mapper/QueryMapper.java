@@ -1,6 +1,7 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.RememberMeTokenQueryReq;
 import org.clever.security.dto.request.UserLoginLogQueryReq;
@@ -24,7 +25,7 @@ public interface QueryMapper extends BaseMapper<User> {
 
     List<String> findPermissionStrByRole(@Param("roleName") String roleName);
 
-    List<UserRememberMeToken> findRememberMeToken(@Param("query") RememberMeTokenQueryReq query);
+    List<UserRememberMeToken> findRememberMeToken(@Param("query") RememberMeTokenQueryReq query, IPage page);
 
-    List<UserLoginLogModel> findUserLoginLog(@Param("query") UserLoginLogQueryReq query);
+    List<UserLoginLogModel> findUserLoginLog(@Param("query") UserLoginLogQueryReq query, IPage page);
 }

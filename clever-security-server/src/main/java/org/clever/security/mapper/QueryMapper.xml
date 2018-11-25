@@ -89,7 +89,7 @@
                 <![CDATA[ and a.login_time <= #{query.loginTimeEnd} ]]>
             </if>
             <if test="query.loginState!=null">
-                and a.login_state >= #{query.loginState}
+                and a.login_state = #{query.loginState}
             </if>
             <if test="query.telephone!=null and query.telephone!=''">
                 and b.telephone = #{query.telephone}
