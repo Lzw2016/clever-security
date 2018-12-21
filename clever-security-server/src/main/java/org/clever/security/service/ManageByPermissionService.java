@@ -90,7 +90,9 @@ public class ManageByPermissionService {
         }
         Permission permission = BeanMapper.mapper(permissionUpdateReq, Permission.class);
         permission.setId(webPermissionModel.getPermissionId());
-        permissionMapper.updateById(permission);
+        if (permission.getTitle() != null || permission.getPermissionStr() != null || permission.getResourcesType() != null || permission.getDescription() != null) {
+            permissionMapper.updateById(permission);
+        }
         if (permissionUpdateReq.getPermissionStr() != null && !Objects.equals(permissionStr, permissionUpdateReq.getPermissionStr())) {
             // 更新 role_permission 表 - 先查询受影响的角色
             List<String> roleNameList = roleMapper.findRoleNameByPermissionStr(permissionStr);

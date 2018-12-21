@@ -52,8 +52,8 @@ spring:
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
-    host: '127.0.0.1'
-    port: 6379
+    host: 39.108.68.132
+    port: 16379
     timeout: 10s
     database: 0
     lettuce:
@@ -67,8 +67,8 @@ spring:
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/clever-security
-    username: root
+    url: jdbc:mysql://39.108.68.132:3306/clever-security
+    username: clever-security
     password: lizhiwei
     hikari:
       data-source-properties:
@@ -175,7 +175,6 @@ clever:
     - '/*.css'
     - '/*.html'
     - '/actuator/**'
-    - '/api/**'
     ignore-authorization-urls:
     - '/login/user_info.json'
     - '/api/**'
