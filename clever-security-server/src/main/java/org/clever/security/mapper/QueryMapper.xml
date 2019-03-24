@@ -98,7 +98,7 @@
                 and b.email = #{query.email}
             </if>
         </where>
-        order by a.update_at DESC, a.login_time DESC
+        order by a.login_state ASC, a.login_time DESC, a.update_at DESC
     </select>
 
     <select id="findServiceSys" resultType="org.clever.security.entity.ServiceSys">
