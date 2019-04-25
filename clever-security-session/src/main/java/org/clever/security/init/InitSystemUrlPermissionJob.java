@@ -32,7 +32,6 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-11 14:42 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class InitSystemUrlPermissionJob extends GlobalJob {

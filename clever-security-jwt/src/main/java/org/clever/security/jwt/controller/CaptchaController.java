@@ -21,7 +21,6 @@ import java.io.IOException;
  * 作者： lzw<br/>
  * 创建时间：2018-09-19 21:21 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Api(description = "验证码")
 @RestController
 @Slf4j

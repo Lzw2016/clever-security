@@ -34,7 +34,6 @@ import java.util.ArrayList;
  * 作者： lzw<br/>
  * 创建时间：2018-03-14 14:45 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)

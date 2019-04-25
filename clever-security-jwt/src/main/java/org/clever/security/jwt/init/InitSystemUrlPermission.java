@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 作者： lzw<br/>
  * 创建时间：2018-03-17 11:24 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class InitSystemUrlPermission implements ApplicationListener<ContextRefreshedEvent> {

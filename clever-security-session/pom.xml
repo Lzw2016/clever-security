@@ -10,7 +10,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>clever-security-embed</artifactId>
+    <artifactId>clever-security-sesion</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>

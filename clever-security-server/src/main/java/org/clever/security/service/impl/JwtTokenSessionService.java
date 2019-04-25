@@ -23,7 +23,6 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-22 19:51 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
 @Service("jwtTokenSessionService")
 @Slf4j

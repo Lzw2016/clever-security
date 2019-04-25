@@ -25,7 +25,6 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-22 19:33 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
 @Service("cookieSessionService")
 @Slf4j

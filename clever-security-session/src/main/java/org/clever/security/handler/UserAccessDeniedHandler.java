@@ -24,7 +24,6 @@ import java.io.IOException;
  * 作者： lzw<br/>
  * 创建时间：2018-03-18 15:09 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Getter
 @Slf4j

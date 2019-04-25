@@ -23,7 +23,6 @@ import java.io.IOException;
  * 作者： lzw<br/>
  * 创建时间：2018-03-21 10:21 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class UserLogoutSuccessHandler implements LogoutSuccessHandler {

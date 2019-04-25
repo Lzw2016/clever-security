@@ -36,7 +36,6 @@ import java.util.Map;
  * 作者： lzw<br/>
  * 创建时间：2018-03-17 23:04 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class UserLoginFailureHandler implements AuthenticationFailureHandler {

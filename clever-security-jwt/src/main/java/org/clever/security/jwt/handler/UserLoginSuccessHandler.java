@@ -36,7 +36,6 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-03-16 11:06 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {

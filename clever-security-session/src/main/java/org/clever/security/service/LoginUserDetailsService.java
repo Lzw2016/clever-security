@@ -19,7 +19,6 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-03-16 10:54 <br/>
  */
-@SuppressWarnings("Duplicates")
 @Component
 @Slf4j
 public class LoginUserDetailsService implements UserDetailsService {
