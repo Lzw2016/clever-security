@@ -2,8 +2,8 @@ package org.clever.security.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.reflection.ReflectionsUtils;
-import org.clever.security.config.SecurityConfig;
-import org.clever.security.service.LoginPasswordCryptoService;
+import org.clever.security.session.config.SecurityConfig;
+import org.clever.security.session.service.LoginPasswordCryptoService;
 import org.junit.Test;
 
 /**
