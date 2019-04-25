@@ -51,6 +51,7 @@
         <module>clever-security-session-demo</module>
         <module>clever-security-jwt</module>
         <module>clever-security-jwt-demo</module>
+        <module>clever-security-embed</module>
     </modules>
 
     <properties>
@@ -81,12 +82,22 @@
             </dependency>
             <dependency>
                 <groupId>org.clever</groupId>
-                <artifactId>clever-security-server</artifactId>
+                <artifactId>clever-security-embed</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.clever</groupId>
-                <artifactId>clever-security-embed</artifactId>
+                <artifactId>clever-security-session</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.clever</groupId>
+                <artifactId>clever-security-jwt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.clever</groupId>
+                <artifactId>clever-security-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--clever common-->

@@ -22,7 +22,7 @@ logging:
 ###################################################################################
 spring:
   profiles.active: dev
-  application.name: clever-security-demo
+  application.name: clever-security-session-demo
   aop.proxy-target-class: true
 
   servlet: #------------------------------------------------------------ 文件上传配置

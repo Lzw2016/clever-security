@@ -23,7 +23,7 @@ public class Swagger2Config {
     @Bean
     public Docket createApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("clever-security-demo")
+                .title("clever-security-session-demo")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
                 .version("0.0.1-SNAPSHOT")
@@ -35,7 +35,7 @@ public class Swagger2Config {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-demo")
+                .groupName("clever-security-session-demo")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.demo.controller"))
                 .paths(PathSelectors.any())

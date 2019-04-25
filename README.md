@@ -37,7 +37,7 @@ clever-security是一个多系统的权限管理方案，主要解决两个问�
 2. 初始化SQL脚本位置`clever-security/clever-security-server/src/main/resources/database/clever-security_MySql.sql`
 3. 修改配置文件`clever-security/clever-security-server/src/main/resources/dev/application.yml`中Mysql数据库配置和Redis数据库配置
 4. 启动服务端程序`clever-security-server`使用`http://localhost:28080/`进行访问后台地址
-5. 启动Demo程序`clever-security-demo`
+5. 启动Demo程序`clever-security-session-demo`
 
 ### 与SpringBoot项目整合(待写)
 

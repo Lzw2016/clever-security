@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.clever</groupId>
-            <artifactId>clever-security-embed</artifactId>
+            <artifactId>clever-security-session</artifactId>
         </dependency>
         <!--orm-->
         <dependency>
