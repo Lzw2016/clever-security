@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.clever.dynamic.datasource.autoconfigure.DynamicDataSourceAutoConfiguration,\
+org.clever.dynamic.datasource.interceptor.DynamicDatasourceWebAppConfig
