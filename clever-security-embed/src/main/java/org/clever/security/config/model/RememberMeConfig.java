@@ -1,5 +1,7 @@
 package org.clever.security.config.model;
 
+import lombok.Data;
+
 import java.time.Duration;
 
 /**
@@ -7,6 +9,7 @@ import java.time.Duration;
  * 作者： lzw<br/>
  * 创建时间：2019-04-25 19:26 <br/>
  */
+@Data
 public class RememberMeConfig {
     /**
      * 启用"记住我"功能
@@ -21,7 +24,7 @@ public class RememberMeConfig {
     /**
      * "记住我"有效时间(单位秒，默认一个月)
      */
-    private Duration validitySeconds = Duration.ofDays(30);
+    private Duration validity = Duration.ofDays(30);
 
     /**
      * "记住我"参数名

@@ -8,6 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
+import org.clever.security.authorization.RequestAccessDecisionVoter;
+import org.clever.security.config.model.LoginConfig;
+import org.clever.security.config.model.RememberMeConfig;
+import org.clever.security.jackson2.CleverSecurityJackson2Module;
+import org.clever.security.rememberme.RememberMeUserDetailsChecker;
+import org.clever.security.rememberme.UserLoginRememberMeServices;
+import org.clever.security.rememberme.UserLoginTokenRepository;
+import org.clever.security.service.GlobalUserDetailsService;
+import org.clever.security.strategy.SessionExpiredStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +41,8 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
+import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
 import java.security.SecureRandom;
 import java.util.Collections;
@@ -94,7 +105,7 @@ public class ApplicationSecurityBean {
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
     @Bean
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy(@Autowired SessionRegistry sessionRegistry) {
-        SecurityConfig.Login login = securityConfig.getLogin();
+        LoginConfig login = securityConfig.getLogin();
         if (login.getConcurrentLoginCount() == null) {
             return new NullAuthenticatedSessionStrategy();
         }
@@ -111,7 +122,7 @@ public class ApplicationSecurityBean {
     }
 
     /**
-     * 授权校验(使用session登录时才需要)
+     * 授权校验(使用session登录时才需要) TODO ？？jwt 也要
      */
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
     @Bean
@@ -143,9 +154,9 @@ public class ApplicationSecurityBean {
     @Bean
     protected RememberMeServices rememberMeServices(
             @Autowired RememberMeUserDetailsChecker rememberMeUserDetailsChecker,
-            @Autowired LoginUserDetailsService userDetailsService,
+            @Autowired GlobalUserDetailsService userDetailsService,
             @Autowired UserLoginTokenRepository userLoginTokenRepository) {
-        SecurityConfig.RememberMe rememberMe = securityConfig.getRememberMe();
+        RememberMeConfig rememberMe = securityConfig.getRememberMe();
         if (rememberMe == null || rememberMe.getEnable() == null || !rememberMe.getEnable()) {
             return new NullRememberMeServices();
         }
@@ -156,7 +167,7 @@ public class ApplicationSecurityBean {
                 rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
         rememberMeServices.setParameter(rememberMe.getRememberMeParameterName());
-        rememberMeServices.setTokenValiditySeconds(rememberMe.getValiditySeconds());
+        rememberMeServices.setTokenValiditySeconds((int) rememberMe.getValidity().getSeconds());
         rememberMeServices.setCookieName(UserLoginRememberMeServices.REMEMBER_ME);
 //        rememberMeServices.setTokenLength();
 //        rememberMeServices.setSeriesLength();
@@ -169,7 +180,7 @@ public class ApplicationSecurityBean {
     /**
      * 替换Spring Session Redis默认的序列化方式 JdkSerializationRedisSerializer<br />
      *
-     * @see org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration#defaultRedisSerializer
+     * @see org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration#setDefaultRedisSerializer
      */
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
     @Bean("springSessionDefaultRedisSerializer")
@@ -198,5 +209,14 @@ public class ApplicationSecurityBean {
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
+    }
+
+    /**
+     * 集成Spring Session所需的Bean
+     */
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @Bean
+    protected SpringSessionBackedSessionRegistry sessionRegistry(@Autowired RedisOperationsSessionRepository sessionRepository) {
+        return new SpringSessionBackedSessionRegistry<>(sessionRepository);
     }
 }

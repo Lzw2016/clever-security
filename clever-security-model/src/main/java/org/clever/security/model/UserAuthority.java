@@ -1,4 +1,4 @@
-package org.clever.security.session.model;
+package org.clever.security.model;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;

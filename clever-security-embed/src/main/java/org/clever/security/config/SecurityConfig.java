@@ -65,6 +65,11 @@ public class SecurityConfig {
      */
     private String forbiddenForwardPage = "/403.html";
 
+    /**
+     * Session 过期需要跳转的地址，值为空就不跳转
+     */
+    private String sessionExpiredRedirectUrl = null;
+
     // ----------------------------------------------------------------------------------------
 
     /**

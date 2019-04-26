@@ -2,8 +2,8 @@ package org.clever.security.utils;
 
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.entity.User;
-import org.clever.security.session.model.LoginUserDetails;
-import org.clever.security.session.model.UserLoginToken;
+import org.clever.security.model.LoginUserDetails;
+import org.clever.security.model.UserLoginToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 作者： lzw<br/>
  * 创建时间：2018-09-17 15:26 <br/>
  */
-@SuppressWarnings({"Duplicates", "WeakerAccess"})
 public class AuthenticationUtils {
 
     public static UserLoginToken getUserLoginToken(Authentication authentication) {
