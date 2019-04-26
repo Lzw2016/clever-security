@@ -1,6 +1,7 @@
 package org.clever.security.model;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,24 +12,24 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 创建时间：2018-03-15 12:58 <br/>
  */
 @ToString(exclude = {"userDetails"})
-@Getter
 public class UserLoginToken extends AbstractAuthenticationToken {
 
-    public static final String LoginType_RememberMeToken = "rememberMeToken";
-
+    @Getter
     private String username;
+    @Getter
     private String password;
-    private String captcha;
+    @Getter
+    @Setter
+    private boolean isRememberMe = false;
     private UserDetails userDetails;
 
     /**
      * 用于创建登录的凭证信息
      */
-    public UserLoginToken(String username, String password, String captcha) {
+    public UserLoginToken(String username, String password) {
         super(null);
         this.username = username;
         this.password = password;
-        this.captcha = captcha;
         setAuthenticated(false);
     }
 
@@ -74,7 +75,6 @@ public class UserLoginToken extends AbstractAuthenticationToken {
     public void eraseCredentials() {
         super.eraseCredentials();
         password = null;
-        captcha = null;
     }
 
     public void setUsername(String username) {

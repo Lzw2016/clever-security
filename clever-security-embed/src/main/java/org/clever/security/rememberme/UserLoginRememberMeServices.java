@@ -73,7 +73,7 @@ public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeS
         AbstractAuthenticationToken authentication;
         if (user instanceof LoginUserDetails) {
             UserLoginToken userLoginToken = new UserLoginToken(user);
-            userLoginToken.setLoginType(UserLoginToken.LoginType_RememberMeToken);
+            userLoginToken.setRememberMe(true);
             authentication = userLoginToken;
         } else {
             authentication = new RememberMeAuthenticationToken(
