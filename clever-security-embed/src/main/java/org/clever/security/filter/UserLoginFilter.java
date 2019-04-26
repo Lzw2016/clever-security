@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.Constant;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.dto.response.JwtLoginRes;
@@ -151,7 +152,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (securityConfig.getLogin().getJsonDataSubmit()) {
             // 使用Json方式提交数据
             String json = IOUtils.toString(request.getReader());
-            request.setAttribute(AttributeKeyConstant.Login_Data_Body_Request_Key, json);
+            request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
             JSONObject object = new JSONObject(json);
             userLoginToken = new UserLoginToken(
                     object.optString(usernameParameter),

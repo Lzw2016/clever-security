@@ -1,9 +1,9 @@
 package org.clever.security.rememberme;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.Constant;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserLoginToken;
-import org.clever.security.session.SessionAttributeKeyConstant;
 import org.json.JSONObject;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -44,7 +44,7 @@ public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeS
     protected boolean rememberMeRequested(HttpServletRequest request, String parameter) {
         String rememberMe = request.getParameter(parameter);
         if (rememberMe == null) {
-            Object json = request.getAttribute(SessionAttributeKeyConstant.Login_Data_Body_Request_Key);
+            Object json = request.getAttribute(Constant.Login_Data_Body_Request_Key);
             if (json != null) {
                 JSONObject object = new JSONObject(json.toString());
                 rememberMe = object.optString(parameter);

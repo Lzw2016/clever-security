@@ -3,6 +3,7 @@ package org.clever.security.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.Constant;
 import org.clever.security.client.UserClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
@@ -73,7 +74,7 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
         LoginConfig login = securityConfig.getLogin();
         if (login.getNeedCaptcha()) {
             // 记录登录失败次数
-            Object object = request.getAttribute(AttributeKeyConstant.Login_Username_Request_Key);
+            Object object = request.getAttribute(Constant.Login_Username_Request_Key);
             if (object != null && StringUtils.isNotBlank(object.toString()) && userClient.canLogin(object.toString(), securityConfig.getSysName())) {
                 loginFailCountRepository.incrementLoginFailCount(object.toString());
             }
