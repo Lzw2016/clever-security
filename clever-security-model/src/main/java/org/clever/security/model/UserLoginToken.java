@@ -18,9 +18,23 @@ public class UserLoginToken extends AbstractAuthenticationToken {
     private String username;
     @Getter
     private String password;
+
+    /**
+     * 是否使用记住我功能
+     */
     @Getter
     @Setter
     private boolean isRememberMe = false;
+
+    /**
+     * 当前登录类型
+     */
+    @Getter
+    private String loginType;
+
+    /**
+     * 数据库中用户信息
+     */
     private UserDetails userDetails;
 
     /**

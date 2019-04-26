@@ -1,11 +1,15 @@
 package org.clever.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.CollectLoginToken;
+import org.clever.security.Constant;
+import org.clever.security.LoginModel;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.dto.response.JwtLoginRes;
+import org.clever.security.dto.response.LoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.exception.BadCaptchaException;
 import org.clever.security.handler.UserLoginFailureHandler;
@@ -60,15 +64,14 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private LoginFailCountRepository loginFailCountRepository;
     @Autowired
     private List<CollectLoginToken> collectLoginTokenList;
-
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
-    private String loginTypeParameter = LOGIN_TYPE_KEY;
-    private String usernameParameter = USERNAME_KEY;
-    private String passwordParameter = PASSWORD_KEY;
-    private String captchaParameter = CAPTCHA_KEY;
-    private String captchaDigestParameter = CAPTCHA_DIGEST_KEY;
-    private String rememberMeParameter = REMEMBER_ME_KEY;
     private boolean postOnly = true;
+//    private String loginTypeParameter = LOGIN_TYPE_KEY;
+//    private String usernameParameter = USERNAME_KEY;
+//    private String passwordParameter = PASSWORD_KEY;
+//    private String captchaParameter = CAPTCHA_KEY;
+//    private String captchaDigestParameter = CAPTCHA_DIGEST_KEY;
+//    private String rememberMeParameter = REMEMBER_ME_KEY;
     /**
      * 登录是否需要验证码
      */
@@ -125,16 +128,16 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            JwtToken jwtToken = redisJwtRepository.getJwtToken(request);
-            String json = JacksonMapper.nonEmptyMapper().toJson(
-                    new JwtLoginRes(
-                            true,
-                            "您已经登录成功了无须多次登录",
-                            userRes,
-                            jwtToken.getToken(),
-                            jwtToken.getRefreshToken()
-                    )
-            );
+            String json = null;
+            if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
+                // JWT
+                JwtToken jwtToken = redisJwtRepository.getJwtToken(request);
+                JwtLoginRes jwtLoginRes = new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, jwtToken.getToken(), jwtToken.getRefreshToken());
+                json = JacksonMapper.nonEmptyMapper().toJson(jwtLoginRes);
+            } else {
+                // Session
+                json = JacksonMapper.nonEmptyMapper().toJson(new LoginRes(true, "您已经登录成功了无须多次登录", userRes));
+            }
             if (!response.isCommitted()) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setCharacterEncoding("UTF-8");
@@ -183,32 +186,60 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
 //            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameter));
 //            userLoginToken = new UserLoginToken(username, password, captcha, captchaDigest, rememberMe);
 //        }
-//        // 设置登录类型
-//        userLoginToken.setLoginType(loginType);
-//        // 设置用户 "details" 属性(设置请求IP和SessionID)
-//        userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
-//        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-//        request.setAttribute(AttributeKeyConstant.Login_Username_Request_Key, userLoginToken.getUsername());
+
+
+        // 设置登录类型
+        userLoginToken.setLoginType(loginType);
+        // 设置用户 "details" 属性(设置请求IP和SessionID) -- 需要提前创建Session
+        if (LoginModel.session.equals(securityConfig.getLoginModel())) {
+            request.getSession();
+        }
+        userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
+        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
+        request.setAttribute(Constant.Login_Username_Request_Key, userLoginToken.getUsername());
 
         //  读取验证码 - 验证
         if (needCaptcha) {
-            long loginFailCount = loginFailCountRepository.getLoginFailCount(userLoginToken.getUsername());
-            if (loginFailCount > needCaptchaByLoginFailCount) {
-                CaptchaInfo captchaInfo = captchaInfoRepository.getCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
-                if (captchaInfo == null) {
-                    throw new BadCaptchaException("验证码不存在");
+            long loginFailCount = 0;
+            CaptchaInfo captchaInfo;
+            if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
+                // JWT
+                loginFailCount = loginFailCountRepository.getLoginFailCount(userLoginToken.getUsername());
+                if (loginFailCount > needCaptchaByLoginFailCount) {
+                    captchaInfo = captchaInfoRepository.getCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
+                    verifyCaptchaInfo(captchaInfo, userLoginToken.getCaptcha());
+                    captchaInfoRepository.deleteCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
                 }
-                if (captchaInfo.getEffectiveTime() > 0 && System.currentTimeMillis() - captchaInfo.getCreateTime() >= captchaInfo.getEffectiveTime()) {
-                    throw new BadCaptchaException("验证码已过期");
+            } else {
+                // Session
+                Object loginFailCountStr = request.getSession().getAttribute(Constant.Login_Fail_Count_Session_Key);
+                if (loginFailCountStr != null) {
+                    loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0);
                 }
-                if (!captchaInfo.getCode().equalsIgnoreCase(userLoginToken.getCaptcha())) {
-                    throw new BadCaptchaException("验证码不匹配");
+                if (loginFailCount > needCaptchaByLoginFailCount) {
+                    captchaInfo = (CaptchaInfo) request.getSession().getAttribute(Constant.Login_Captcha_Session_Key);
+                    verifyCaptchaInfo(captchaInfo, userLoginToken.getCaptcha());
+                    request.getSession().removeAttribute(Constant.Login_Captcha_Session_Key);
                 }
-                captchaInfoRepository.deleteCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
-                log.info("### 验证码校验通过");
             }
+            log.info("### 验证码校验通过");
         }
         // 验证登录
         return this.getAuthenticationManager().authenticate(authentication);
+    }
+
+    /**
+     * 校验验证码
+     */
+    private void verifyCaptchaInfo(CaptchaInfo captchaInfo, String captcha) {
+        if (captchaInfo == null) {
+            throw new BadCaptchaException("验证码不存在");
+        }
+        if (captchaInfo.getEffectiveTime() > 0 && System.currentTimeMillis() - captchaInfo.getCreateTime() >= captchaInfo.getEffectiveTime()) {
+            throw new BadCaptchaException("验证码已过期");
+        }
+        if (!captchaInfo.getCode().equalsIgnoreCase(captcha)) {
+            throw new BadCaptchaException("验证码不匹配");
+        }
     }
 }
