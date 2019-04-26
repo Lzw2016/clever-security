@@ -106,7 +106,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             }
         }
         if (collectLoginTokenList == null || this.collectLoginTokenList.size() <= 0) {
-            throw new RuntimeException();
+            throw new RuntimeException("未注入收集用户登录登录信息组件");
         }
         this.setAuthenticationSuccessHandler(userLoginSuccessHandler);
         this.setAuthenticationFailureHandler(userLoginFailureHandler);
@@ -149,6 +149,13 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             return null;
         }
 
+        // 获取用户登录信息
+        for (CollectLoginToken collectLoginToken : collectLoginTokenList) {
+            if (collectLoginToken.supports(request)) {
+                authentication = collectLoginToken.attemptAuthentication(request);
+                break;
+            }
+        }
 
 //        // 获取用户登录信息
 //        String loginType;
@@ -183,7 +190,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
 //        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
 //        request.setAttribute(AttributeKeyConstant.Login_Username_Request_Key, userLoginToken.getUsername());
 
-
         //  读取验证码 - 验证
         if (needCaptcha) {
             long loginFailCount = loginFailCountRepository.getLoginFailCount(userLoginToken.getUsername());
@@ -203,6 +209,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             }
         }
         // 验证登录
-        return this.getAuthenticationManager().authenticate(userLoginToken);
+        return this.getAuthenticationManager().authenticate(authentication);
     }
 }

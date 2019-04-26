@@ -4,7 +4,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -27,5 +26,5 @@ public interface CollectLoginToken {
      *
      * @return 返回Authentication子类
      */
-    Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException;
+    Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException, IOException;
 }
