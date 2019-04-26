@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.*;
 
 /**
- * 登录用户信息
+ * 登录的用户信息
  * <p>
  * 作者： lzw<br/>
  * 创建时间：2018-03-16 17:41 <br/>

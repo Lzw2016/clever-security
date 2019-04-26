@@ -136,12 +136,12 @@ public class SecurityConfig {
         private String loginFailureRedirectPage = "/index.html";
 
         /**
-         * 登录是否需呀验证码
+         * 登录是否需要验证码
          */
         private Boolean needCaptcha = true;
 
         /**
-         * 登录失败多少次才需呀验证码(小于等于0,总是需呀验证码)
+         * 登录失败多少次才需要验证码(小于等于0,总是需要验证码)
          */
         private Integer needCaptchaByLoginFailCount = 3;
 

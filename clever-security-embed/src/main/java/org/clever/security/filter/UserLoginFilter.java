@@ -1,10 +1,8 @@
 package org.clever.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
-import org.clever.security.Constant;
+import org.clever.security.CollectLoginToken;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.dto.response.JwtLoginRes;
@@ -14,12 +12,10 @@ import org.clever.security.handler.UserLoginFailureHandler;
 import org.clever.security.handler.UserLoginSuccessHandler;
 import org.clever.security.model.CaptchaInfo;
 import org.clever.security.model.JwtToken;
-import org.clever.security.model.UserLoginToken;
 import org.clever.security.repository.CaptchaInfoRepository;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
 import org.clever.security.utils.AuthenticationUtils;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -33,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 作者： lzw<br/>
@@ -61,6 +58,8 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private CaptchaInfoRepository captchaInfoRepository;
     @Autowired
     private LoginFailCountRepository loginFailCountRepository;
+    @Autowired
+    private List<CollectLoginToken> collectLoginTokenList;
 
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
     private String loginTypeParameter = LOGIN_TYPE_KEY;
@@ -71,11 +70,11 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private String rememberMeParameter = REMEMBER_ME_KEY;
     private boolean postOnly = true;
     /**
-     * 登录是否需呀验证码
+     * 登录是否需要验证码
      */
     private Boolean needCaptcha = true;
     /**
-     * 登录失败多少次才需呀验证码(小于等于0,总是需呀验证码)
+     * 登录失败多少次才需要验证码(小于等于0,总是需要验证码)
      */
     private Integer needCaptchaByLoginFailCount = 3;
 
@@ -105,6 +104,9 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             if (login.getNeedCaptchaByLoginFailCount() != null) {
                 needCaptchaByLoginFailCount = login.getNeedCaptchaByLoginFailCount();
             }
+        }
+        if (collectLoginTokenList == null || this.collectLoginTokenList.size() <= 0) {
+            throw new RuntimeException();
         }
         this.setAuthenticationSuccessHandler(userLoginSuccessHandler);
         this.setAuthenticationFailureHandler(userLoginFailureHandler);
@@ -146,38 +148,42 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             log.info("### 当前用户已登录 [{}]", authentication.toString());
             return null;
         }
-        // 获取用户登录信息
-        String loginType;
-        UserLoginToken userLoginToken;
-        if (securityConfig.getLogin().getJsonDataSubmit()) {
-            // 使用Json方式提交数据
-            String json = IOUtils.toString(request.getReader());
-            request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
-            JSONObject object = new JSONObject(json);
-            userLoginToken = new UserLoginToken(
-                    object.optString(usernameParameter),
-                    object.optString(passwordParameter),
-                    object.optString(captchaParameter),
-                    object.optString(captchaDigestParameter),
-                    object.optString(rememberMeParameter)
-            );
-            loginType = object.optString(loginTypeParameter);
-        } else {
-            // 使用Parameter提交数据
-            loginType = StringUtils.trimToEmpty(request.getParameter(loginTypeParameter));
-            String username = StringUtils.trimToEmpty(request.getParameter(usernameParameter));
-            String password = StringUtils.trimToEmpty(request.getParameter(passwordParameter));
-            String captcha = StringUtils.trimToEmpty(request.getParameter(captchaParameter));
-            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(captchaDigestParameter));
-            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameter));
-            userLoginToken = new UserLoginToken(username, password, captcha, captchaDigest, rememberMe);
-        }
-        // 设置登录类型
-        userLoginToken.setLoginType(loginType);
-        // 设置用户 "details" 属性(设置请求IP和SessionID)
-        userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
-        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-        request.setAttribute(AttributeKeyConstant.Login_Username_Request_Key, userLoginToken.getUsername());
+
+
+//        // 获取用户登录信息
+//        String loginType;
+//        UserLoginToken userLoginToken;
+//        if (securityConfig.getLogin().getJsonDataSubmit()) {
+//            // 使用Json方式提交数据
+//            String json = IOUtils.toString(request.getReader());
+//            request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
+//            JSONObject object = new JSONObject(json);
+//            userLoginToken = new UserLoginToken(
+//                    object.optString(usernameParameter),
+//                    object.optString(passwordParameter),
+//                    object.optString(captchaParameter),
+//                    object.optString(captchaDigestParameter),
+//                    object.optString(rememberMeParameter)
+//            );
+//            loginType = object.optString(loginTypeParameter);
+//        } else {
+//            // 使用Parameter提交数据
+//            loginType = StringUtils.trimToEmpty(request.getParameter(loginTypeParameter));
+//            String username = StringUtils.trimToEmpty(request.getParameter(usernameParameter));
+//            String password = StringUtils.trimToEmpty(request.getParameter(passwordParameter));
+//            String captcha = StringUtils.trimToEmpty(request.getParameter(captchaParameter));
+//            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(captchaDigestParameter));
+//            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameter));
+//            userLoginToken = new UserLoginToken(username, password, captcha, captchaDigest, rememberMe);
+//        }
+//        // 设置登录类型
+//        userLoginToken.setLoginType(loginType);
+//        // 设置用户 "details" 属性(设置请求IP和SessionID)
+//        userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
+//        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
+//        request.setAttribute(AttributeKeyConstant.Login_Username_Request_Key, userLoginToken.getUsername());
+
+
         //  读取验证码 - 验证
         if (needCaptcha) {
             long loginFailCount = loginFailCountRepository.getLoginFailCount(userLoginToken.getUsername());
