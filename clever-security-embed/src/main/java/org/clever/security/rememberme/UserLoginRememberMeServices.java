@@ -3,7 +3,7 @@ package org.clever.security.rememberme;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
 import org.clever.security.model.LoginUserDetails;
-import org.clever.security.model.UserLoginToken;
+import org.clever.security.token.UserLoginToken;
 import org.json.JSONObject;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;

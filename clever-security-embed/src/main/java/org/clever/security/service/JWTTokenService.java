@@ -14,7 +14,7 @@ import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.TokenConfig;
-import org.clever.security.model.JwtToken;
+import org.clever.security.token.JwtAccessToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -74,7 +74,7 @@ public class JWTTokenService {
      * @param authentication 授权信息
      * @param rememberMe     使用记住我
      */
-    public JwtToken createToken(Authentication authentication, boolean rememberMe) {
+    public JwtAccessToken createToken(Authentication authentication, boolean rememberMe) {
         // 用户权限信息
         Set<String> authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -120,12 +120,12 @@ public class JWTTokenService {
                 .compact();
         // 构建返回数据
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(token);
-        jwtToken.setHeader(claimsJws.getHeader());
-        jwtToken.setClaims(claimsJws.getBody());
-        jwtToken.setRefreshToken(createRefreshToken(authentication.getName()));
-        return jwtToken;
+        JwtAccessToken jwtAccessToken = new JwtAccessToken();
+        jwtAccessToken.setToken(token);
+        jwtAccessToken.setHeader(claimsJws.getHeader());
+        jwtAccessToken.setClaims(claimsJws.getBody());
+        jwtAccessToken.setRefreshToken(createRefreshToken(authentication.getName()));
+        return jwtAccessToken;
     }
 
     /**

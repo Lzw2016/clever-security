@@ -7,11 +7,11 @@ import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.exception.BadLoginTypeException;
 import org.clever.security.exception.ConcurrentLoginException;
-import org.clever.security.model.JwtToken;
-import org.clever.security.model.UserLoginToken;
 import org.clever.security.repository.RedisJwtRepository;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.clever.security.service.LoginPasswordCryptoService;
+import org.clever.security.token.JwtAccessToken;
+import org.clever.security.token.UserLoginToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -234,12 +234,12 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             int delCount = list.size() - concurrentLoginCount + 1;
             for (int i = 0; i < delCount; i++) {
                 String jwtTokenKey = list.get(i);
-                JwtToken jwtToken = null;
+                JwtAccessToken jwtAccessToken = null;
                 try {
-                    jwtToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
+                    jwtAccessToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
                 } catch (Throwable ignored) {
                 }
-                redisJwtRepository.deleteJwtToken(jwtToken);
+                redisJwtRepository.deleteJwtToken(jwtAccessToken);
             }
         }
     }

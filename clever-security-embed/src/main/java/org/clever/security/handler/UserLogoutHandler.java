@@ -1,8 +1,8 @@
 package org.clever.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clever.security.model.JwtToken;
 import org.clever.security.repository.RedisJwtRepository;
+import org.clever.security.token.JwtAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -27,17 +27,17 @@ public class UserLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         // UserLoginToken userLoginToken = AuthenticationUtils.getUserLoginToken(authentication);
-        JwtToken jwtToken = null;
+        JwtAccessToken jwtAccessToken = null;
         try {
-            jwtToken = redisJwtRepository.getJwtToken(request);
+            jwtAccessToken = redisJwtRepository.getJwtToken(request);
         } catch (Throwable ignored) {
         }
-        if (jwtToken != null) {
-            redisJwtRepository.deleteJwtToken(jwtToken);
+        if (jwtAccessToken != null) {
+            redisJwtRepository.deleteJwtToken(jwtAccessToken);
             log.info("### 删除 JWT Token成功");
-            Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(jwtToken.getClaims().getSubject());
+            Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(jwtAccessToken.getClaims().getSubject());
             if (ketSet != null && ketSet.size() <= 0) {
-                redisJwtRepository.deleteSecurityContext(jwtToken.getClaims().getSubject());
+                redisJwtRepository.deleteSecurityContext(jwtAccessToken.getClaims().getSubject());
                 log.info("### 删除 SecurityContext 成功");
             }
         }

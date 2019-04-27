@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.security.dto.request.RefreshTokenReq;
 import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.UserRes;
-import org.clever.security.model.JwtToken;
-import org.clever.security.model.RefreshToken;
 import org.clever.security.repository.RedisJwtRepository;
+import org.clever.security.token.JwtAccessToken;
+import org.clever.security.token.JwtRefreshToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -42,25 +42,25 @@ public class LoginUserController {
     @ApiOperation("使用刷新令牌延长登录JwtToken过期时间")
     @PutMapping("/login/refresh_token.json")
     public JwtLoginRes refreshToken(@RequestBody @Validated RefreshTokenReq refreshTokenReq) {
-        RefreshToken refreshToken = redisJwtRepository.getRefreshToken(refreshTokenReq.getRefreshToken());
-        SecurityContext securityContext = redisJwtRepository.getSecurityContext(refreshToken.getUsername());
-        // 生成新的 JwtToken 和 RefreshToken
-        JwtToken newJwtToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(securityContext.getAuthentication()));
+        JwtRefreshToken jwtRefreshToken = redisJwtRepository.getRefreshToken(refreshTokenReq.getRefreshToken());
+        SecurityContext securityContext = redisJwtRepository.getSecurityContext(jwtRefreshToken.getUsername());
+        // 生成新的 JwtAccessToken 和 JwtRefreshToken
+        JwtAccessToken newJwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(securityContext.getAuthentication()));
         // 删除之前的令牌
-        JwtToken oldJwtToken = null;
+        JwtAccessToken oldJwtAccessToken = null;
         try {
-            oldJwtToken = redisJwtRepository.getJwtToken(refreshToken.getUsername(), refreshToken.getTokenId());
+            oldJwtAccessToken = redisJwtRepository.getJwtToken(jwtRefreshToken.getUsername(), jwtRefreshToken.getTokenId());
         } catch (Throwable ignored) {
         }
-        if (oldJwtToken != null) {
-            redisJwtRepository.deleteJwtToken(oldJwtToken);
+        if (oldJwtAccessToken != null) {
+            redisJwtRepository.deleteJwtToken(oldJwtAccessToken);
         }
         return new JwtLoginRes(
                 true,
                 "刷新登录令牌成功",
                 AuthenticationUtils.getUserRes(securityContext.getAuthentication()),
-                newJwtToken.getToken(),
-                newJwtToken.getRefreshToken()
+                newJwtAccessToken.getToken(),
+                newJwtAccessToken.getRefreshToken()
         );
     }
 }

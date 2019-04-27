@@ -15,10 +15,10 @@ import org.clever.security.exception.BadCaptchaException;
 import org.clever.security.handler.UserLoginFailureHandler;
 import org.clever.security.handler.UserLoginSuccessHandler;
 import org.clever.security.model.CaptchaInfo;
-import org.clever.security.model.JwtToken;
 import org.clever.security.repository.CaptchaInfoRepository;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
+import org.clever.security.token.JwtAccessToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
@@ -131,8 +131,8 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             String json = null;
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JWT
-                JwtToken jwtToken = redisJwtRepository.getJwtToken(request);
-                JwtLoginRes jwtLoginRes = new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, jwtToken.getToken(), jwtToken.getRefreshToken());
+                JwtAccessToken jwtAccessToken = redisJwtRepository.getJwtToken(request);
+                JwtLoginRes jwtLoginRes = new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, jwtAccessToken.getToken(), jwtAccessToken.getRefreshToken());
                 json = JacksonMapper.nonEmptyMapper().toJson(jwtLoginRes);
             } else {
                 // Session

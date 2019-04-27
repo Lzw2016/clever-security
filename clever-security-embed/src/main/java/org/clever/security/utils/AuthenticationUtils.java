@@ -3,7 +3,7 @@ package org.clever.security.utils;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.entity.User;
 import org.clever.security.model.LoginUserDetails;
-import org.clever.security.model.UserLoginToken;
+import org.clever.security.token.UserLoginToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,7 +1,7 @@
 package org.clever.security.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clever.security.model.JwtToken;
+import org.clever.security.token.JwtAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -33,9 +33,9 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
-        JwtToken jwtToken;
+        JwtAccessToken jwtAccessToken;
         try {
-            jwtToken = redisJwtRepository.getJwtToken(request);
+            jwtAccessToken = redisJwtRepository.getJwtToken(request);
             log.info("### JWTToken 验证成功");
         } catch (Throwable e) {
             log.warn("### JWTToken 验证失败");
@@ -44,7 +44,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         // 读取 context
         SecurityContext securityContext;
         try {
-            securityContext = redisJwtRepository.getSecurityContext(jwtToken);
+            securityContext = redisJwtRepository.getSecurityContext(jwtAccessToken);
             log.info("### 读取SecurityContext成功");
         } catch (Throwable e) {
             log.warn("### 读取SecurityContext失败");

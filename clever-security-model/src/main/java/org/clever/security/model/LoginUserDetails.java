@@ -1,5 +1,6 @@
 package org.clever.security.model;
 
+import lombok.Getter;
 import lombok.ToString;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
@@ -17,12 +18,63 @@ import java.util.*;
 @ToString(includeFieldNames = false, of = {"username"})
 public class LoginUserDetails implements UserDetails, CredentialsContainer {
 
+    /**
+     * 主键id
+     */
+    @Getter
+    private final Long id;
+    /**
+     * 登录名(一条记录的手机号不能当另一条记录的用户名用)
+     */
     private final String username;
+    /**
+     * 密码
+     */
     private String password;
+    /**
+     * 用户类型，0：系统内建，1：外部系统用户
+     */
+    @Getter
+    private final Integer userType;
+    /**
+     * 手机号
+     */
+    @Getter
+    private final String telephone;
+    /**
+     * 邮箱
+     */
+    @Getter
+    private final String email;
+    /**
+     * 帐号过期时间
+     */
+    @Getter
+    private final Date expiredTime;
     /**
      * 帐号锁定标识
      */
-    private final boolean accountNonLocked;
+    private final boolean locked;
+    /**
+     * 是否启用
+     */
+    private final boolean enabled;
+    /**
+     * 说明
+     */
+    @Getter
+    private String description;
+    /**
+     * 创建时间
+     */
+    @Getter
+    private Date createAt;
+    /**
+     * 更新时间
+     */
+    @Getter
+    private Date updateAt;
+
     /**
      * 凭证过期标识
      */
@@ -32,40 +84,38 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
      */
     private final boolean accountNonExpired;
     /**
-     * 是否启用
-     */
-    private final boolean enabled;
-    /**
-     * 原始用户信息
-     */
-    private User user;
-    /**
      * 用户权限信息
      */
     private final Set<UserAuthority> authorities;
-
-    // TODO 角色信息
-    // private final Set
+    /**
+     * 角色信息
+     */
+    @Getter
+    private final Set<String> roles;
 
     public LoginUserDetails(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
-        this.accountNonExpired = user.getExpiredTime() == null || user.getExpiredTime().compareTo(new Date()) > 0;
-        this.accountNonLocked = Objects.equals(user.getLocked(), EnumConstant.User_Locked_0);
-        this.credentialsNonExpired = true;
+        this.userType = user.getUserType();
+        this.telephone = user.getTelephone();
+        this.email = user.getEmail();
+        this.expiredTime = user.getExpiredTime();
+        this.locked = Objects.equals(user.getLocked(), EnumConstant.User_Locked_0);
         this.enabled = Objects.equals(user.getEnabled(), EnumConstant.User_Enabled_1);
-        this.user = user;
-        this.authorities = new HashSet<>();
-    }
+        this.description = user.getDescription();
+        this.createAt = user.getCreateAt();
+        this.updateAt = user.getUpdateAt();
 
-    public User getUser() {
-        return user;
+        this.credentialsNonExpired = true;
+        this.accountNonExpired = user.getExpiredTime() == null || user.getExpiredTime().compareTo(new Date()) > 0;
+        this.authorities = new HashSet<>();
+        this.roles = new HashSet<>();
     }
 
     @Override
     public void eraseCredentials() {
         this.password = "";
-        user.setPassword("");
     }
 
     @Override
@@ -90,7 +140,7 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
 
     @Override
     public boolean isAccountNonLocked() {
-        return accountNonLocked;
+        return locked;
     }
 
     @Override

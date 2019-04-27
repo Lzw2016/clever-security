@@ -9,10 +9,10 @@ import org.clever.security.dto.request.UserLoginLogAddReq;
 import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.model.JwtToken;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
 import org.clever.security.service.GenerateKeyService;
+import org.clever.security.token.JwtAccessToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -55,21 +55,21 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         requestCache.removeRequest(request, response);
         clearAuthenticationAttributes(request, authentication.getName());
-        // 登录成功保存 JwtToken RefreshToken
-        JwtToken jwtToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
+        // 登录成功保存 JwtAccessToken JwtRefreshToken
+        JwtAccessToken jwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
         redisJwtRepository.saveSecurityContext(new SecurityContextImpl(authentication));
         log.info("### 已保存 JWT Token 和 SecurityContext");
         // 写入登录成功日志
-        addLoginLog(authentication, jwtToken);
+        addLoginLog(authentication, jwtAccessToken);
         // 登录成功 - 返回JSon数据
-        sendJsonData(response, authentication, jwtToken);
+        sendJsonData(response, authentication, jwtAccessToken);
     }
 
     /**
      * 写入登录成功日志
      */
-    private void addLoginLog(Authentication authentication, JwtToken jwtToken) {
-        String jwtTokenId = jwtToken.getClaims().getId();
+    private void addLoginLog(Authentication authentication, JwtAccessToken jwtAccessToken) {
+        String jwtTokenId = jwtAccessToken.getClaims().getId();
         String loginIp = null;
         if (authentication.getDetails() instanceof WebAuthenticationDetails) {
             WebAuthenticationDetails webAuthenticationDetails = (WebAuthenticationDetails) authentication.getDetails();
@@ -95,16 +95,16 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response, Authentication authentication, JwtToken jwtToken) throws IOException {
-        response.setHeader(GenerateKeyService.JwtTokenHeaderKey, jwtToken.getToken());
+    private void sendJsonData(HttpServletResponse response, Authentication authentication, JwtAccessToken jwtAccessToken) throws IOException {
+        response.setHeader(GenerateKeyService.JwtTokenHeaderKey, jwtAccessToken.getToken());
         UserRes userRes = AuthenticationUtils.getUserRes(authentication);
         String json = JacksonMapper.nonEmptyMapper().toJson(
                 new JwtLoginRes(
                         true,
                         "登录成功",
                         userRes,
-                        jwtToken.getToken(),
-                        jwtToken.getRefreshToken()
+                        jwtAccessToken.getToken(),
+                        jwtAccessToken.getRefreshToken()
                 )
         );
         log.info("### 登录成功不需要跳转 -> [{}]", json);
