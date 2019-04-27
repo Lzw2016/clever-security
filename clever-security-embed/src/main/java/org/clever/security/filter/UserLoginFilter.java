@@ -12,12 +12,14 @@ import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.dto.response.LoginRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.exception.BadCaptchaException;
+import org.clever.security.exception.BadLoginTypeException;
 import org.clever.security.handler.UserLoginFailureHandler;
 import org.clever.security.handler.UserLoginSuccessHandler;
 import org.clever.security.model.CaptchaInfo;
 import org.clever.security.repository.CaptchaInfoRepository;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
+import org.clever.security.token.BaseLoginToken;
 import org.clever.security.token.JwtAccessToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,12 +154,16 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             return null;
         }
 
+        BaseLoginToken loginToken = null;
         // 获取用户登录信息
         for (CollectLoginToken collectLoginToken : collectLoginTokenList) {
             if (collectLoginToken.supports(request)) {
-                authentication = collectLoginToken.attemptAuthentication(request);
+                loginToken = collectLoginToken.attemptAuthentication(request);
                 break;
             }
+        }
+        if (loginToken == null) {
+            throw new BadLoginTypeException("不支持的登录请求");
         }
 
 //        // 获取用户登录信息
@@ -188,15 +194,13 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
 //        }
 
 
-        // 设置登录类型
-        userLoginToken.setLoginType(loginType);
         // 设置用户 "details" 属性(设置请求IP和SessionID) -- 需要提前创建Session
         if (LoginModel.session.equals(securityConfig.getLoginModel())) {
             request.getSession();
         }
-        userLoginToken.setDetails(authenticationDetailsSource.buildDetails(request));
-        log.info("### 用户登录开始，构建UserLoginToken [{}]", userLoginToken.toString());
-        request.setAttribute(Constant.Login_Username_Request_Key, userLoginToken.getUsername());
+        loginToken.setDetails(authenticationDetailsSource.buildDetails(request));
+        log.info("### 用户登录开始，构建UserLoginToken [{}]", loginToken.toString());
+        request.setAttribute(Constant.Login_Username_Request_Key, loginToken.getName());
 
         //  读取验证码 - 验证
         if (needCaptcha) {
@@ -204,11 +208,11 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             CaptchaInfo captchaInfo;
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JWT
-                loginFailCount = loginFailCountRepository.getLoginFailCount(userLoginToken.getUsername());
+                loginFailCount = loginFailCountRepository.getLoginFailCount(loginToken.getName());
                 if (loginFailCount > needCaptchaByLoginFailCount) {
-                    captchaInfo = captchaInfoRepository.getCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
-                    verifyCaptchaInfo(captchaInfo, userLoginToken.getCaptcha());
-                    captchaInfoRepository.deleteCaptchaInfo(userLoginToken.getCaptcha(), userLoginToken.getCaptchaDigest());
+                    captchaInfo = captchaInfoRepository.getCaptchaInfo(loginToken.getCaptcha(), loginToken.getCaptchaDigest());
+                    verifyCaptchaInfo(captchaInfo, loginToken.getCaptcha());
+                    captchaInfoRepository.deleteCaptchaInfo(loginToken.getCaptcha(), loginToken.getCaptchaDigest());
                 }
             } else {
                 // Session
@@ -218,7 +222,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                 }
                 if (loginFailCount > needCaptchaByLoginFailCount) {
                     captchaInfo = (CaptchaInfo) request.getSession().getAttribute(Constant.Login_Captcha_Session_Key);
-                    verifyCaptchaInfo(captchaInfo, userLoginToken.getCaptcha());
+                    verifyCaptchaInfo(captchaInfo, loginToken.getCaptcha());
                     request.getSession().removeAttribute(Constant.Login_Captcha_Session_Key);
                 }
             }

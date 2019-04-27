@@ -1,6 +1,6 @@
 package org.clever.security;
 
-import org.springframework.security.core.Authentication;
+import org.clever.security.token.BaseLoginToken;
 import org.springframework.security.core.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,5 +26,5 @@ public interface CollectLoginToken {
      *
      * @return 返回Authentication子类
      */
-    Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException, IOException;
+    BaseLoginToken attemptAuthentication(HttpServletRequest request) throws AuthenticationException, IOException;
 }
