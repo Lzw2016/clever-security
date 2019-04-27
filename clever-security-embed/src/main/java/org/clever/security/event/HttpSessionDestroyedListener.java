@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-09-23 19:33 <br/>
  */
-@SuppressWarnings("NullableProblems")
 @Component
 @Slf4j
 public class HttpSessionDestroyedListener implements ApplicationListener<SessionDestroyedEvent> {

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
  * 作者： lzw<br/>
  * 创建时间：2018-09-23 19:28 <br/>
  */
-@SuppressWarnings("NullableProblems")
 @Component
 @Slf4j
 public class HttpSessionCreatedListener implements ApplicationListener<HttpSessionCreatedEvent> {
