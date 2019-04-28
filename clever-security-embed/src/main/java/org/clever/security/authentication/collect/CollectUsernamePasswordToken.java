@@ -76,9 +76,7 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
             String captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_PARAM));
             boolean rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_PARAM)));
             // 创建Token
-            usernamePasswordToken = new UsernamePasswordToken();
-            usernamePasswordToken.setUsername(username);
-            usernamePasswordToken.setPassword(password);
+            usernamePasswordToken = new UsernamePasswordToken(username, password);
             usernamePasswordToken.setCaptcha(captcha);
             usernamePasswordToken.setCaptchaDigest(captchaDigest);
             usernamePasswordToken.setRememberMe(rememberMe);

@@ -12,6 +12,7 @@ import org.clever.security.entity.User;
 @JsonIgnoreProperties(ignoreUnknown = true)
 class LoginUserDetailsMixin {
 
+    // TODO 反序列化问题
     @JsonCreator
     public LoginUserDetailsMixin(@JsonProperty("user") User user) {
     }

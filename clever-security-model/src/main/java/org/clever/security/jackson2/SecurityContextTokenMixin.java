@@ -1,7 +1,8 @@
 package org.clever.security.jackson2;
 
 import com.fasterxml.jackson.annotation.*;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.clever.security.model.LoginUserDetails;
+import org.clever.security.token.login.BaseLoginToken;
 
 /**
  * 作者： lzw<br/>
@@ -13,6 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 class SecurityContextTokenMixin {
 
     @JsonCreator
-    public SecurityContextTokenMixin(@JsonProperty("userDetails") UserDetails userDetails) {
+    public SecurityContextTokenMixin(@JsonProperty("credentials") BaseLoginToken loginToken, @JsonProperty("principal") LoginUserDetails userDetails) {
     }
 }

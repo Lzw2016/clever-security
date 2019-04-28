@@ -86,12 +86,12 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
     /**
      * 用户权限信息
      */
-    private final Set<UserAuthority> authorities;
+    private final Set<UserAuthority> authorities = new HashSet<>();
     /**
      * 角色信息
      */
     @Getter
-    private final Set<String> roles;
+    private final Set<String> roles = new HashSet<>();
 
     public LoginUserDetails(User user) {
         this.id = user.getId();
@@ -109,8 +109,6 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
 
         this.credentialsNonExpired = true;
         this.accountNonExpired = user.getExpiredTime() == null || user.getExpiredTime().compareTo(new Date()) > 0;
-        this.authorities = new HashSet<>();
-        this.roles = new HashSet<>();
     }
 
     @Override

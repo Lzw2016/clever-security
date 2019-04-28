@@ -44,6 +44,8 @@ public class GlobalUserDetailsService implements UserDetailsService {
         for (Permission permission : permissionList) {
             userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
         }
+        // TODO 加载角色信息
+        // userDetails.getRoles().add()
         return userDetails;
     }
 }
