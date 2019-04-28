@@ -1,6 +1,6 @@
 package org.clever.security.authentication;
 
-import org.clever.security.token.BaseLoginToken;
+import org.clever.security.token.login.BaseLoginToken;
 import org.springframework.security.core.AuthenticationException;
 
 import javax.servlet.http.HttpServletRequest;

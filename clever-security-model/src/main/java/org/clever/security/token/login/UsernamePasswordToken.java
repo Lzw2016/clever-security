@@ -1,6 +1,8 @@
-package org.clever.security.token;
+package org.clever.security.token.login;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.clever.security.LoginTypeConstant;
 
@@ -11,11 +13,18 @@ import org.clever.security.LoginTypeConstant;
 @ToString
 public class UsernamePasswordToken extends BaseLoginToken {
 
+    /**
+     * 用户名
+     */
     @Getter
     private String username;
+    /**
+     * 密码
+     */
+    @JsonIgnore
+    @Setter
     @Getter
     private String password;
-
 
     public UsernamePasswordToken() {
         super(LoginTypeConstant.UsernamePassword);

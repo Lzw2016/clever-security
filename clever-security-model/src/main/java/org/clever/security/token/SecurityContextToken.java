@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.ToString;
 import org.clever.security.model.LoginUserDetails;
+import org.clever.security.token.login.BaseLoginToken;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 /**

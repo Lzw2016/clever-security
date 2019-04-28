@@ -1,4 +1,4 @@
-package org.clever.security.token;
+package org.clever.security.token.login;
 
 import lombok.Getter;
 import lombok.Setter;

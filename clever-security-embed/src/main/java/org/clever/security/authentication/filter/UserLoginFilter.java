@@ -19,8 +19,8 @@ import org.clever.security.model.CaptchaInfo;
 import org.clever.security.repository.CaptchaInfoRepository;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
-import org.clever.security.token.BaseLoginToken;
 import org.clever.security.token.JwtAccessToken;
+import org.clever.security.token.login.BaseLoginToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * 收集用户登录信息
  * 作者： lzw<br/>
  * 创建时间：2018-03-15 12:48 <br/>
  */

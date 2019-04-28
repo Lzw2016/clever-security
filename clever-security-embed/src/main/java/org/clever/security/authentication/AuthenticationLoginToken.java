@@ -1,7 +1,7 @@
 package org.clever.security.authentication;
 
 import org.clever.security.service.RequestCryptoService;
-import org.clever.security.token.BaseLoginToken;
+import org.clever.security.token.login.BaseLoginToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
