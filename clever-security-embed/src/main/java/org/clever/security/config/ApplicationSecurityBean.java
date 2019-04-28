@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
+import org.clever.security.authentication.CollectLoginToken;
 import org.clever.security.authorization.RequestAccessDecisionVoter;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.config.model.RememberMeConfig;
@@ -129,10 +130,10 @@ public class ApplicationSecurityBean {
     protected AccessDecisionManager accessDecisionManager(@Autowired RequestAccessDecisionVoter requestAccessDecisionVoter) {
         // WebExpressionVoter RoleVoter AuthenticatedVoter
         List<AccessDecisionVoter<?>> decisionVoters = Collections.singletonList(requestAccessDecisionVoter);
-        AccessDecisionManager accessDecisionManager = new AffirmativeBased(decisionVoters);
+        // AccessDecisionManager accessDecisionManager = new AffirmativeBased(decisionVoters);
         // accessDecisionManager.
         // TODO 支持注解权限校验
-        return accessDecisionManager;
+        return new AffirmativeBased(decisionVoters);
     }
 
     /**
@@ -166,9 +167,9 @@ public class ApplicationSecurityBean {
                 userLoginTokenRepository,
                 rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
-        rememberMeServices.setParameter(rememberMe.getRememberMeParameterName());
+        rememberMeServices.setParameter(CollectLoginToken.REMEMBER_ME_PARAM);
         rememberMeServices.setTokenValiditySeconds((int) rememberMe.getValidity().getSeconds());
-        rememberMeServices.setCookieName(UserLoginRememberMeServices.REMEMBER_ME);
+        rememberMeServices.setCookieName(UserLoginRememberMeServices.REMEMBER_ME_COOKIE_NAME);
 //        rememberMeServices.setTokenLength();
 //        rememberMeServices.setSeriesLength();
 //        rememberMeServices.setUserDetailsChecker();

@@ -14,10 +14,10 @@ import java.io.IOException;
  */
 public interface CollectLoginToken {
 
-    String LOGIN_TYPE_KEY = "loginType";
-    String CAPTCHA_KEY = "captcha";
-    String CAPTCHA_DIGEST_KEY = "captchaDigest";
-    String REMEMBER_ME_KEY = "remember-me";
+    String LOGIN_TYPE_PARAM = "loginType";
+    String CAPTCHA_PARAM = "captcha";
+    String CAPTCHA_DIGEST_PARAM = "captchaDigest";
+    String REMEMBER_ME_PARAM = "rememberMe";
 
     /**
      * 是否支持收集当前请求的登录信息

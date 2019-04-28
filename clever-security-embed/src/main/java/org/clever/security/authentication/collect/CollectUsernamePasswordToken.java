@@ -42,11 +42,11 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
                 request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
             }
             JSONObject object = new JSONObject(json.toString());
-            loginType = object.optString(LOGIN_TYPE_KEY);
+            loginType = object.optString(LOGIN_TYPE_PARAM);
 
         } else {
             // 使用Parameter提交数据
-            loginType = StringUtils.trimToEmpty(request.getParameter(LOGIN_TYPE_KEY));
+            loginType = StringUtils.trimToEmpty(request.getParameter(LOGIN_TYPE_PARAM));
             username = StringUtils.trimToEmpty(request.getParameter(USERNAME_KEY));
             password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_KEY));
         }
@@ -72,9 +72,9 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
             // 使用Parameter提交数据
             String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_KEY));
             String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_KEY));
-            String captcha = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_KEY));
-            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_KEY));
-            boolean rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_KEY)));
+            String captcha = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_PARAM));
+            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_PARAM));
+            boolean rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_PARAM)));
             // 创建Token
             usernamePasswordToken = new UsernamePasswordToken();
             usernamePasswordToken.setUsername(username);

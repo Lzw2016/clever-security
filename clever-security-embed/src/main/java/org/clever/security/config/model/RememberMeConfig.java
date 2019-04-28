@@ -25,9 +25,4 @@ public class RememberMeConfig {
      * "记住我"有效时间(单位秒，默认一个月)
      */
     private Duration validity = Duration.ofDays(30);
-
-    /**
-     * "记住我"参数名
-     */
-    private String rememberMeParameterName = "remember-me";
 }

@@ -2,6 +2,7 @@ package org.clever.security.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
+import org.clever.security.authentication.CollectLoginToken;
 import org.clever.security.authentication.UserLoginEntryPoint;
 import org.clever.security.authentication.filter.UserLoginFilter;
 import org.clever.security.config.model.LoginConfig;
@@ -124,8 +125,8 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
                     .rememberMeServices(rememberMeServices)
                     .alwaysRemember(rememberMe.getAlwaysRemember())
                     .tokenValiditySeconds((int) rememberMe.getValidity().getSeconds())
-                    .rememberMeParameter(rememberMe.getRememberMeParameterName())
-                    .rememberMeCookieName(UserLoginRememberMeServices.REMEMBER_ME)
+                    .rememberMeParameter(CollectLoginToken.REMEMBER_ME_PARAM)
+                    .rememberMeCookieName(UserLoginRememberMeServices.REMEMBER_ME_COOKIE_NAME)
                     .key(UserLoginRememberMeServices.REMEMBER_ME_KEY)
             ;
         }
