@@ -3,6 +3,8 @@ package org.clever.security.authentication;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
 import org.clever.security.LoginModel;
+import org.clever.security.client.ManageByUserClient;
+import org.clever.security.client.UserClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.exception.BadLoginTypeException;
@@ -67,6 +69,21 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
      */
     @Autowired
     private GlobalUserDetailsService globalUserDetailsService;
+    /**
+     * 读取系统用户
+     */
+    @Autowired
+    private UserClient userClient;
+    /**
+     * 新增系统用户
+     */
+    @Autowired
+    private ManageByUserClient manageByUserClient;
+    /**
+     * 从第三方加载用户信息支持
+     */
+    @Autowired(required = false)
+    private List<LoadThirdUser> loadThirdUserList;
     /**
      * 帐号校验(密码认证之前)
      */
@@ -208,10 +225,24 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
      * 查询用户
      */
     private UserDetails retrieveUser(BaseLoginToken loginToken) {
-        UserDetails loadedUser;
+        UserDetails loadedUser = null;
         try {
-            loadedUser = globalUserDetailsService.loadUserByUsername(loginToken.getName());
-            // TODO 三方加载用户
+            // 从第三方加载用户数据
+            LoadThirdUser loadThirdUser = null;
+            if (loadThirdUserList != null) {
+                for (LoadThirdUser tmp : loadThirdUserList) {
+                    if (tmp.supports(loginToken)) {
+                        loadThirdUser = tmp;
+                        break;
+                    }
+                }
+            }
+            if (loadThirdUser != null) {
+                loadedUser = loadThirdUser.loadUser(loginToken, userClient, manageByUserClient);
+            }
+            if (loadedUser == null) {
+                loadedUser = globalUserDetailsService.loadUserByUsername(loginToken.getName());
+            }
         } catch (UsernameNotFoundException notFound) {
             throw notFound;
         } catch (Exception repositoryProblem) {

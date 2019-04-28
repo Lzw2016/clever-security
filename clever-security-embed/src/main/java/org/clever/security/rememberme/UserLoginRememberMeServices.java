@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.token.SecurityContextToken;
-import org.clever.security.token.login.RememberMeLoginToken;
+import org.clever.security.token.login.RememberMeToken;
 import org.json.JSONObject;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -74,9 +74,9 @@ public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeS
         AbstractAuthenticationToken authentication;
         if (user instanceof LoginUserDetails) {
             LoginUserDetails loginUserDetails = (LoginUserDetails) user;
-            RememberMeLoginToken rememberMeLoginToken = new RememberMeLoginToken();
-            rememberMeLoginToken.setUsername(loginUserDetails.getUsername());
-            authentication = new SecurityContextToken(rememberMeLoginToken, loginUserDetails);
+            RememberMeToken rememberMeToken = new RememberMeToken();
+            rememberMeToken.setUsername(loginUserDetails.getUsername());
+            authentication = new SecurityContextToken(rememberMeToken, loginUserDetails);
         } else {
             authentication = new RememberMeAuthenticationToken(
                     this.getKey(),

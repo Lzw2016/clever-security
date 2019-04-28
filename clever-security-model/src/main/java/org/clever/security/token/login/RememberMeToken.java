@@ -9,7 +9,7 @@ import org.clever.security.LoginTypeConstant;
  * 作者： lzw<br/>
  * 创建时间：2019-04-28 18:25 <br/>
  */
-public class RememberMeLoginToken extends BaseLoginToken {
+public class RememberMeToken extends BaseLoginToken {
 
     /**
      * 用户名
@@ -19,7 +19,7 @@ public class RememberMeLoginToken extends BaseLoginToken {
     @Getter
     private String username;
 
-    public RememberMeLoginToken() {
+    public RememberMeToken() {
         super(LoginTypeConstant.RememberMe);
     }
 
