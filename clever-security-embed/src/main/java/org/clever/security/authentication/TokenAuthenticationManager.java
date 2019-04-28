@@ -1,21 +1,25 @@
-package org.clever.security.authentication.provider;
+package org.clever.security.authentication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
+import org.clever.security.LoginModel;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.exception.BadLoginTypeException;
 import org.clever.security.exception.ConcurrentLoginException;
+import org.clever.security.model.LoginUserDetails;
 import org.clever.security.repository.RedisJwtRepository;
 import org.clever.security.service.GlobalUserDetailsService;
-import org.clever.security.service.LoginPasswordCryptoService;
+import org.clever.security.service.RequestCryptoService;
+import org.clever.security.token.BaseLoginToken;
 import org.clever.security.token.JwtAccessToken;
-import org.clever.security.token.UserLoginToken;
-import org.clever.security.utils.AuthenticationUtils;
+import org.clever.security.token.SecurityContextToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,8 +43,12 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class UserLoginTokenAuthenticationProvider implements AuthenticationProvider {
+public class TokenAuthenticationManager implements AuthenticationProvider {
 
+    /**
+     * 登入模式
+     */
+    private LoginModel loginModel;
     /**
      * 同一个用户并发登录次数限制(-1表示不限制)
      */
@@ -49,33 +57,79 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
      * 同一个用户并发登录次数达到最大值之后，是否不允许之后的登录(false 之后登录的把之前登录的挤下来)
      */
     private final boolean notAllowAfterLogin;
+    /**
+     * 密码处理
+     */
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    /**
+     * 加载用户信息
+     */
     @Autowired
-    private GlobalUserDetailsService userDetailsService;
-    // 帐号校验
+    private GlobalUserDetailsService globalUserDetailsService;
+    /**
+     * 帐号校验(密码认证之前)
+     */
     @Autowired
     @Qualifier("DefaultPreAuthenticationChecks")
     private UserDetailsChecker preAuthenticationChecks;
+    /**
+     * 帐号校验(密码认证之后)
+     */
     @Autowired
     @Qualifier("DefaultPostAuthenticationChecks")
     private UserDetailsChecker postAuthenticationChecks;
+    /**
+     * 请求参数加密/解密
+     */
     @Autowired
-    private LoginPasswordCryptoService loginPasswordCryptoService;
+    private RequestCryptoService requestCryptoService;
+    /**
+     * JwtToken数据存取操作组件
+     */
     @Autowired
     private RedisJwtRepository redisJwtRepository;
-    // 使用缓存?
+    /**
+     * Token认证登录
+     */
+    @Autowired
+    private List<AuthenticationLoginToken> authenticationLoginTokenList;
+    /**
+     * 用户数据本地缓存
+     */
     private UserCache userCache = new NullUserCache();
-    // 解析授权信息
+    /**
+     * 解析授权信息
+     */
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
-    public UserLoginTokenAuthenticationProvider(SecurityConfig securityConfig) {
+    public TokenAuthenticationManager(SecurityConfig securityConfig) {
         LoginConfig login = securityConfig.getLogin();
         if (login == null) {
             throw new BusinessException("未配置Login配置");
         }
         concurrentLoginCount = login.getConcurrentLoginCount();
         notAllowAfterLogin = login.getNotAllowAfterLogin();
+        loginModel = securityConfig.getLoginModel();
+    }
+
+    /**
+     * 是否支持验证此身份类型
+     */
+    @Override
+    public boolean supports(Class<?> authentication) {
+        if (BaseLoginToken.class.isAssignableFrom(authentication)) {
+            if (authenticationLoginTokenList == null) {
+                log.warn("未注入Token认证登录组件");
+            } else {
+                for (AuthenticationLoginToken authenticationLoginToken : authenticationLoginTokenList) {
+                    if (authenticationLoginToken.supports(authentication)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -93,25 +147,30 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             return authentication;
         }
         log.info("### 开始验证用户[{}]", authentication.toString());
-        if (!(authentication instanceof UserLoginToken)) {
-            throw new BadCredentialsException("不支持的登录信息");
+        if (!(authentication instanceof BaseLoginToken)) {
+            throw new BadLoginTypeException("不支持的登录信息");
         }
-        UserLoginToken userLoginToken = (UserLoginToken) authentication;
-        if (StringUtils.isBlank(userLoginToken.getUsername())) {
-            throw new BadCredentialsException("用户名不能为空");
+        AuthenticationLoginToken authenticationLoginToken = null;
+        for (AuthenticationLoginToken tmp : authenticationLoginTokenList) {
+            if (tmp.supports(authentication.getClass())) {
+                authenticationLoginToken = tmp;
+                break;
+            }
         }
-        if (StringUtils.isBlank(userLoginToken.getPassword())) {
-            throw new BadCredentialsException("密码不能为空");
+        if (authenticationLoginToken == null) {
+            throw new InternalAuthenticationServiceException("找不到Token认证登录组件");
         }
+        BaseLoginToken loginToken = (BaseLoginToken) authentication;
+        authenticationLoginToken.preAuthenticationCheck(loginToken);
         // 查询帐号信息
         boolean cacheWasUsed = true;
-        UserDetails loadedUser = this.userCache.getUserFromCache(userLoginToken.getUsername());
+        UserDetails loadedUser = this.userCache.getUserFromCache(loginToken.getName());
         if (loadedUser == null) {
             cacheWasUsed = false;
             try {
-                loadedUser = retrieveUser(userLoginToken.getUsername(), userLoginToken.getLoginType());
+                loadedUser = retrieveUser(loginToken);
             } catch (UsernameNotFoundException notFound) {
-                log.info("### 用户不存在[username={}]", userLoginToken.getUsername());
+                log.info("### 用户不存在[username={}]", loginToken.getName());
                 throw notFound;
             }
             log.info("### 已查询到用户信息[{}]", loadedUser.toString());
@@ -119,15 +178,15 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
         // 验证帐号信息
         try {
             preAuthenticationChecks.check(loadedUser);
-            mainAuthenticationChecks(userLoginToken, loadedUser);
+            authenticationLoginToken.mainAuthenticationChecks(loginToken, loadedUser, requestCryptoService, bCryptPasswordEncoder);
         } catch (AuthenticationException exception) {
             if (cacheWasUsed) {
                 // 缓存中的数据不一定准确，如果使用缓存数据身份认证异常，则直接使用数据库的数据
                 cacheWasUsed = false;
                 // 检查此处的 hideUserNotFoundExceptions 是否需要判断
-                loadedUser = retrieveUser(userLoginToken.getUsername(), userLoginToken.getLoginType());
+                loadedUser = retrieveUser(loginToken);
                 preAuthenticationChecks.check(loadedUser);
-                mainAuthenticationChecks(userLoginToken, loadedUser);
+                authenticationLoginToken.mainAuthenticationChecks(loginToken, loadedUser, requestCryptoService, bCryptPasswordEncoder);
             } else {
                 throw exception;
             }
@@ -139,88 +198,62 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             this.userCache.putUserInCache(loadedUser);
         }
         // 返回认证成功的 Authentication
-        Authentication successAuthentication = createSuccessAuthentication(userLoginToken, loadedUser);
+        Authentication successAuthentication = createSuccessAuthentication(loginToken, loadedUser);
         // 登录并发控制
         concurrentLogin(loadedUser.getUsername());
         return successAuthentication;
     }
 
     /**
-     * 是否支持验证此身份类型
-     */
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return (UserLoginToken.class.isAssignableFrom(authentication));
-    }
-
-    /**
      * 查询用户
      */
-    private UserDetails retrieveUser(String username, String loginType) {
-        if (!UserLoginToken.LoginType_Username.equals(loginType) && !UserLoginToken.LoginType_Telephone.equals(loginType)) {
-            throw new BadLoginTypeException("不支持当前登录类型，" + loginType);
-        }
+    private UserDetails retrieveUser(BaseLoginToken loginToken) {
         UserDetails loadedUser;
         try {
-            loadedUser = userDetailsService.loadUserByUsername(username);
+            loadedUser = globalUserDetailsService.loadUserByUsername(loginToken.getName());
+            // TODO 三方加载用户
         } catch (UsernameNotFoundException notFound) {
             throw notFound;
         } catch (Exception repositoryProblem) {
             throw new InternalAuthenticationServiceException(repositoryProblem.getMessage(), repositoryProblem);
         }
-        if (loadedUser == null) {
-            throw new InternalAuthenticationServiceException("验证服务内部异常");
-        }
         return loadedUser;
     }
 
-    /**
-     * 真正的密码验证
-     */
-    private void mainAuthenticationChecks(UserLoginToken userLoginToken, UserDetails loadedUser) throws AuthenticationException {
-        if (userLoginToken.getUsername() == null) {
-            throw new BadCredentialsException("用户名不能为空");
-        }
-        if (UserLoginToken.LoginType_Username.equals(userLoginToken.getLoginType())) {
-            // 用户密码需要AES对称加解密 网络密文传输
-            userLoginToken.setPassword(loginPasswordCryptoService.reqAesDecrypt(userLoginToken.getPassword()));
-            // 用户名、密码校验
-            if (!userLoginToken.getUsername().equals(loadedUser.getUsername())
-                    || !bCryptPasswordEncoder.matches(userLoginToken.getPassword(), loadedUser.getPassword())) {
-                log.info("### 用户名密码验证失败 [{}]", userLoginToken.toString());
-                throw new BadCredentialsException("用户名密码验证失败");
-            }
-            log.info("### 用户名密码验证成功 [{}]", userLoginToken.toString());
-        } else if (UserLoginToken.LoginType_Telephone.equals(userLoginToken.getLoginType())) {
-            // TODO 手机号、验证码校验 (模拟)
-            if (!userLoginToken.getUsername().equals(AuthenticationUtils.getLoginUserDetails(loadedUser).getUser().getTelephone())
-                    || !"123456".equals(userLoginToken.getPassword())) {
-                log.info("### 短信验证码验证失败 [{}]", userLoginToken.toString());
-                throw new BadCredentialsException("短信验证码验证失败");
-            }
-            log.info("### 短信验证码验证成功 [{}]", userLoginToken.toString());
-        } else {
-            throw new BadCredentialsException("不支持的登录类型");
-        }
-    }
+//    /**
+//     * 真正的Token验证逻辑
+//     */
+//    private void mainAuthenticationChecks(BaseLoginToken loginToken, UserDetails loadedUser) throws AuthenticationException {
+//        // 用户密码需要AES对称加解密 网络密文传输
+//        loginToken.setPassword(requestCryptoService.reqAesDecrypt(loginToken.getPassword()));
+//        // 用户名、密码校验
+//        if (!loginToken.getUsername().equals(loadedUser.getUsername())
+//                || !bCryptPasswordEncoder.matches(loginToken.getPassword(), loadedUser.getPassword())) {
+//            log.info("### 用户名密码验证失败 [{}]", loginToken.toString());
+//            throw new BadCredentialsException("用户名密码验证失败");
+//        }
+//        log.info("### 用户名密码验证成功 [{}]", loginToken.toString());
+//    }
 
     /**
      * 创建认证成功的Authentication
      */
-    private Authentication createSuccessAuthentication(UserLoginToken userLoginToken, UserDetails user) {
-        UserLoginToken result = new UserLoginToken(user);
-        result.setLoginType(userLoginToken.getLoginType());
-        result.setUsername(userLoginToken.getUsername());
-        result.setPassword(userLoginToken.getPassword());
-        result.setRememberMe(userLoginToken.getRememberMe());
-        result.setDetails(userLoginToken.getDetails());
-        return result;
+    private SecurityContextToken createSuccessAuthentication(BaseLoginToken loginToken, UserDetails userDetails) {
+        LoginUserDetails loginUserDetails;
+        if (!(userDetails instanceof LoginUserDetails)) {
+            throw new InternalAuthenticationServiceException(String.format("加载的用户类型不正确,%s | %s", userDetails.getClass(), userDetails.toString()));
+        }
+        loginUserDetails = (LoginUserDetails) userDetails;
+        return new SecurityContextToken(loginToken, loginUserDetails);
     }
 
     /**
      * 并发登录处理
      */
     private void concurrentLogin(String username) {
+        if (!LoginModel.jwt.equals(loginModel)) {
+            return;
+        }
         if (concurrentLoginCount <= 0) {
             return;
         }
@@ -239,6 +272,7 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
                     jwtAccessToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
                 } catch (Throwable ignored) {
                 }
+                assert jwtAccessToken != null;
                 redisJwtRepository.deleteJwtToken(jwtAccessToken);
             }
         }

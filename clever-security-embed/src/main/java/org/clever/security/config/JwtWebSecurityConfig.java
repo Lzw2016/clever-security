@@ -3,7 +3,7 @@ package org.clever.security.config;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
 import org.clever.security.authentication.UserLoginEntryPoint;
-import org.clever.security.filter.UserLoginFilter;
+import org.clever.security.authentication.filter.UserLoginFilter;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;

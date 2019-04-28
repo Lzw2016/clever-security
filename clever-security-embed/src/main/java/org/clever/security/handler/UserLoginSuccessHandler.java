@@ -56,7 +56,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         requestCache.removeRequest(request, response);
         clearAuthenticationAttributes(request, authentication.getName());
         // 登录成功保存 JwtAccessToken JwtRefreshToken
-        JwtAccessToken jwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
+        JwtAccessToken jwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getSecurityContextToken(authentication));
         redisJwtRepository.saveSecurityContext(new SecurityContextImpl(authentication));
         log.info("### 已保存 JWT Token 和 SecurityContext");
         // 写入登录成功日志

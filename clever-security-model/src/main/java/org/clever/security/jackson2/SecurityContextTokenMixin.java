@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_ARRAY)
 @JsonAutoDetect
 @JsonIgnoreProperties(ignoreUnknown = true)
-class UserLoginTokenMixin {
+class SecurityContextTokenMixin {
 
     @JsonCreator
-    public UserLoginTokenMixin(@JsonProperty("userDetails") UserDetails userDetails) {
+    public SecurityContextTokenMixin(@JsonProperty("userDetails") UserDetails userDetails) {
     }
 }

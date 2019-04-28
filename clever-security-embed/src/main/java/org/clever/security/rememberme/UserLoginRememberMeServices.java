@@ -3,7 +3,7 @@ package org.clever.security.rememberme;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
 import org.clever.security.model.LoginUserDetails;
-import org.clever.security.token.UserLoginToken;
+import org.clever.security.token.SecurityContextToken;
 import org.json.JSONObject;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
@@ -72,8 +72,9 @@ public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeS
     protected Authentication createSuccessfulAuthentication(HttpServletRequest request, UserDetails user) {
         AbstractAuthenticationToken authentication;
         if (user instanceof LoginUserDetails) {
-            UserLoginToken userLoginToken = new UserLoginToken(user);
-            userLoginToken.setRememberMe(true);
+            LoginUserDetails loginUserDetails = (LoginUserDetails) user;
+            SecurityContextToken userLoginToken = new SecurityContextToken(null, loginUserDetails);
+            // userLoginToken.setRememberMe(true);
             authentication = userLoginToken;
         } else {
             authentication = new RememberMeAuthenticationToken(

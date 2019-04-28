@@ -11,14 +11,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 /**
- * 登录密码加密-解密
+ * 请求参数加密/解密
  * <p>
  * 作者： lzw<br/>
  * 创建时间：2018-11-01 10:42 <br/>
  */
 @Component
 @Slf4j
-public class LoginPasswordCryptoService {
+public class RequestCryptoService {
 
     @Autowired
     private SecurityConfig securityConfig;

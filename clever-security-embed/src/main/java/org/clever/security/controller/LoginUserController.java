@@ -45,7 +45,7 @@ public class LoginUserController {
         JwtRefreshToken jwtRefreshToken = redisJwtRepository.getRefreshToken(refreshTokenReq.getRefreshToken());
         SecurityContext securityContext = redisJwtRepository.getSecurityContext(jwtRefreshToken.getUsername());
         // 生成新的 JwtAccessToken 和 JwtRefreshToken
-        JwtAccessToken newJwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(securityContext.getAuthentication()));
+        JwtAccessToken newJwtAccessToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getSecurityContextToken(securityContext.getAuthentication()));
         // 删除之前的令牌
         JwtAccessToken oldJwtAccessToken = null;
         try {

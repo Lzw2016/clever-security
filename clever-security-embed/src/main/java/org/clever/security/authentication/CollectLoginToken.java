@@ -1,4 +1,4 @@
-package org.clever.security;
+package org.clever.security.authentication;
 
 import org.clever.security.token.BaseLoginToken;
 import org.springframework.security.core.AuthenticationException;

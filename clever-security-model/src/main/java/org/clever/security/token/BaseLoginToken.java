@@ -21,7 +21,7 @@ import java.util.Collection;
 public abstract class BaseLoginToken implements Authentication, CredentialsContainer, Serializable {
 
     /**
-     * 是否使用记住我功能(当前登录使用的RememberMe功能进行登录的)
+     * 是否使用记住我功能
      */
     @Setter
     @Getter
@@ -71,6 +71,9 @@ public abstract class BaseLoginToken implements Authentication, CredentialsConta
         return false;
     }
 
+    /**
+     * 设置当前Token是否认证成功(只能设置false)
+     */
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         if (isAuthenticated == this.isAuthenticated()) {
@@ -81,11 +84,17 @@ public abstract class BaseLoginToken implements Authentication, CredentialsConta
         }
     }
 
+    /**
+     * 返回登录请求其他信息
+     */
     @Override
     public Object getDetails() {
         return details;
     }
 
+    /**
+     * 返回认证用户的唯一ID
+     */
     @Override
     public String getName() {
         if (this.getPrincipal() instanceof UserDetails) {
@@ -100,6 +109,9 @@ public abstract class BaseLoginToken implements Authentication, CredentialsConta
         return (this.getPrincipal() == null) ? "" : this.getPrincipal().toString();
     }
 
+    /**
+     * 擦除密码
+     */
     @Override
     public void eraseCredentials() {
         eraseSecret(getCredentials());

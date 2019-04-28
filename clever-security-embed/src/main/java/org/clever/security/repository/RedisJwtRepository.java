@@ -11,7 +11,7 @@ import org.clever.security.service.GenerateKeyService;
 import org.clever.security.service.JWTTokenService;
 import org.clever.security.token.JwtAccessToken;
 import org.clever.security.token.JwtRefreshToken;
-import org.clever.security.token.UserLoginToken;
+import org.clever.security.token.SecurityContextToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContext;
@@ -53,10 +53,10 @@ public class RedisJwtRepository {
 
     // -------------------------------------------------------------------------------------------------------------------------------------- JwtAccessToken
 
-    public JwtAccessToken saveJwtToken(UserLoginToken userLoginToken) {
-        boolean rememberMe = userLoginToken.isRememberMe();
+    public JwtAccessToken saveJwtToken(SecurityContextToken securityContextToken) {
+        boolean rememberMe = securityContextToken.getLoginToken().isRememberMe();
         // 保存 JwtAccessToken
-        JwtAccessToken jwtAccessToken = jwtTokenService.createToken(userLoginToken, rememberMe);
+        JwtAccessToken jwtAccessToken = jwtTokenService.createToken(securityContextToken, rememberMe);
         String jwtTokenKey = generateKeyService.getJwtTokenKey(jwtAccessToken.getClaims());
         if (jwtAccessToken.getClaims().getExpiration() == null) {
             redisTemplate.opsForValue().set(jwtTokenKey, jwtAccessToken);
@@ -66,7 +66,7 @@ public class RedisJwtRepository {
         }
         // 保存 JwtRefreshToken
         String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtAccessToken.getRefreshToken());
-        JwtRefreshToken jwtRefreshToken = new JwtRefreshToken(userLoginToken.getName(), jwtAccessToken.getClaims().getId());
+        JwtRefreshToken jwtRefreshToken = new JwtRefreshToken(securityContextToken.getName(), jwtAccessToken.getClaims().getId());
         if (refreshTokenValidity.getSeconds() <= 0) {
             redisTemplate.opsForValue().set(jwtRefreshTokenKey, jwtRefreshToken);
         } else {

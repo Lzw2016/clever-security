@@ -1,11 +1,11 @@
-package org.clever.security.filter;
+package org.clever.security.authentication.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
-import org.clever.security.CollectLoginToken;
 import org.clever.security.Constant;
 import org.clever.security.LoginModel;
+import org.clever.security.authentication.CollectLoginToken;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.dto.response.JwtLoginRes;
@@ -130,7 +130,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            String json = null;
+            String json;
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JWT
                 JwtAccessToken jwtAccessToken = redisJwtRepository.getJwtToken(request);

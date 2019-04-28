@@ -21,6 +21,12 @@ public class UsernamePasswordToken extends BaseLoginToken {
         super(LoginTypeConstant.UsernamePassword);
     }
 
+    public UsernamePasswordToken(String username, String password) {
+        this();
+        this.username = username;
+        this.password = password;
+    }
+
     /**
      * 擦除密码
      */
