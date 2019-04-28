@@ -13,9 +13,9 @@ import org.clever.security.authorization.RequestAccessDecisionVoter;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.config.model.RememberMeConfig;
 import org.clever.security.jackson2.CleverSecurityJackson2Module;
+import org.clever.security.rememberme.LoginRememberMeServices;
+import org.clever.security.rememberme.LoginTokenRepository;
 import org.clever.security.rememberme.RememberMeUserDetailsChecker;
-import org.clever.security.rememberme.UserLoginRememberMeServices;
-import org.clever.security.rememberme.UserLoginTokenRepository;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.clever.security.strategy.SessionExpiredStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,20 +156,20 @@ public class ApplicationSecurityBean {
     protected RememberMeServices rememberMeServices(
             @Autowired RememberMeUserDetailsChecker rememberMeUserDetailsChecker,
             @Autowired GlobalUserDetailsService userDetailsService,
-            @Autowired UserLoginTokenRepository userLoginTokenRepository) {
+            @Autowired LoginTokenRepository loginTokenRepository) {
         RememberMeConfig rememberMe = securityConfig.getRememberMe();
         if (rememberMe == null || rememberMe.getEnable() == null || !rememberMe.getEnable()) {
             return new NullRememberMeServices();
         }
-        UserLoginRememberMeServices rememberMeServices = new UserLoginRememberMeServices(
-                UserLoginRememberMeServices.REMEMBER_ME_KEY,
+        LoginRememberMeServices rememberMeServices = new LoginRememberMeServices(
+                LoginRememberMeServices.REMEMBER_ME_KEY,
                 userDetailsService,
-                userLoginTokenRepository,
+                loginTokenRepository,
                 rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
         rememberMeServices.setParameter(CollectLoginToken.REMEMBER_ME_PARAM);
         rememberMeServices.setTokenValiditySeconds((int) rememberMe.getValidity().getSeconds());
-        rememberMeServices.setCookieName(UserLoginRememberMeServices.REMEMBER_ME_COOKIE_NAME);
+        rememberMeServices.setCookieName(LoginRememberMeServices.REMEMBER_ME_COOKIE_NAME);
 //        rememberMeServices.setTokenLength();
 //        rememberMeServices.setSeriesLength();
 //        rememberMeServices.setUserDetailsChecker();

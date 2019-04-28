@@ -159,7 +159,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             request.getSession();
         }
         loginToken.setDetails(authenticationDetailsSource.buildDetails(request));
-        log.info("### 用户登录开始，构建UserLoginToken [{}]", loginToken.toString());
+        log.info("### 用户登录开始，构建LoginToken [{}]", loginToken.toString());
         request.setAttribute(Constant.Login_Username_Request_Key, loginToken.getName());
 
         //  读取验证码 - 验证

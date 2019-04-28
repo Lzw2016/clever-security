@@ -13,38 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class AuthenticationUtils {
 
-//    public static UserLoginToken getUserLoginToken(Authentication authentication) {
-//        if (authentication == null) {
-//            return null;
-//        }
-//        if (authentication instanceof UserLoginToken) {
-//            return (UserLoginToken) authentication;
-//        }
-//        throw new ClassCastException(String.format("类型%1$s无法转换成%2$s类型", authentication.getClass().getName(), UserLoginToken.class.getName()));
-//    }
-//
-//    public static LoginUserDetails getLoginUserDetails(UserDetails userDetails) {
-//        if (userDetails == null) {
-//            return null;
-//        }
-//        if (userDetails instanceof LoginUserDetails) {
-//            return (LoginUserDetails) userDetails;
-//        }
-//        throw new ClassCastException(String.format("类型%1$s无法转换成%2$s类型", userDetails.getClass().getName(), LoginUserDetails.class.getName()));
-//    }
-//
-//    public static User getUser(Authentication authentication) {
-//        UserLoginToken userLoginToken = getUserLoginToken(authentication);
-//        if (userLoginToken == null) {
-//            return null;
-//        }
-//        LoginUserDetails loginUserDetails = getLoginUserDetails(userLoginToken.getUserDetails());
-//        if (loginUserDetails == null) {
-//            return null;
-//        }
-//        return loginUserDetails.getUser();
-//    }
-
     public static SecurityContextToken getSecurityContextToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return getSecurityContextToken(authentication);

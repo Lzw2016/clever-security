@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * 自定义认证 UserLoginToken
+ * 登录Token认证 BaseLoginToken
  * <p>
  * 作者： lzw<br/>
  * 创建时间：2018-03-15 17:41 <br/>

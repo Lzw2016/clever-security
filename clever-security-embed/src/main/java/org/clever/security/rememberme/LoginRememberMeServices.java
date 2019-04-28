@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServletRequest;
  * 创建时间：2018-09-20 20:23 <br/>
  */
 @Slf4j
-public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeServices {
+public class LoginRememberMeServices extends PersistentTokenBasedRememberMeServices {
 
     public static final String REMEMBER_ME_KEY = "remember-me-key";
     public static final String REMEMBER_ME_COOKIE_NAME = "remember-me";
 
 
-    public UserLoginRememberMeServices(
+    public LoginRememberMeServices(
             String key,
             UserDetailsService userDetailsService,
             PersistentTokenRepository tokenRepository,
@@ -66,7 +66,7 @@ public class UserLoginRememberMeServices extends PersistentTokenBasedRememberMeS
     }
 
     /**
-     * 通过RememberMe登录创建UserLoginToken而非RememberMeAuthenticationToken，以免遇到403时跳转到登录页面<br/>
+     * 通过RememberMe登录创建LoginToken而非RememberMeAuthenticationToken，以免遇到403时跳转到登录页面<br/>
      * 不合理应该修改UserLoginEntryPoint.java
      */
     @Override

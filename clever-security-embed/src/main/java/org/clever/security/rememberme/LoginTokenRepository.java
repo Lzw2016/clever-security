@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @Component
 @Slf4j
-public class UserLoginTokenRepository implements PersistentTokenRepository {
+public class LoginTokenRepository implements PersistentTokenRepository {
 
     @Autowired
     private SecurityConfig securityConfig;

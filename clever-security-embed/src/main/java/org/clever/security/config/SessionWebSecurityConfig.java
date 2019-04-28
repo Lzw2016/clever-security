@@ -9,7 +9,7 @@ import org.clever.security.config.model.LoginConfig;
 import org.clever.security.config.model.RememberMeConfig;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;
-import org.clever.security.rememberme.UserLoginRememberMeServices;
+import org.clever.security.rememberme.LoginRememberMeServices;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -126,8 +126,8 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
                     .alwaysRemember(rememberMe.getAlwaysRemember())
                     .tokenValiditySeconds((int) rememberMe.getValidity().getSeconds())
                     .rememberMeParameter(CollectLoginToken.REMEMBER_ME_PARAM)
-                    .rememberMeCookieName(UserLoginRememberMeServices.REMEMBER_ME_COOKIE_NAME)
-                    .key(UserLoginRememberMeServices.REMEMBER_ME_KEY)
+                    .rememberMeCookieName(LoginRememberMeServices.REMEMBER_ME_COOKIE_NAME)
+                    .key(LoginRememberMeServices.REMEMBER_ME_KEY)
             ;
         }
         // 登录并发控制

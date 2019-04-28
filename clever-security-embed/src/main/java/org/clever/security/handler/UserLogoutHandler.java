@@ -26,7 +26,6 @@ public class UserLogoutHandler implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        // UserLoginToken userLoginToken = AuthenticationUtils.getUserLoginToken(authentication);
         JwtAccessToken jwtAccessToken = null;
         try {
             jwtAccessToken = redisJwtRepository.getJwtToken(request);
