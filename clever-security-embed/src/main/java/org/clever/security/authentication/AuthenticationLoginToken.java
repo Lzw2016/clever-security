@@ -34,7 +34,7 @@ public interface AuthenticationLoginToken {
      * @param loadedUser            数据库中的数据
      * @param requestCryptoService  请求参数加密/解密
      * @param bCryptPasswordEncoder 密码匹配
-     * @throws AuthenticationException
+     * @throws AuthenticationException (BadCredentialsException)
      */
     void mainAuthenticationChecks(
             BaseLoginToken loginToken,
