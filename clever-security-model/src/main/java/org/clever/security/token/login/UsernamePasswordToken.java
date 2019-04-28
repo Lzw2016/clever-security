@@ -16,6 +16,8 @@ public class UsernamePasswordToken extends BaseLoginToken {
     /**
      * 用户名
      */
+    @JsonIgnore
+    @Setter
     @Getter
     private String username;
     /**

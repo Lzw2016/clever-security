@@ -46,13 +46,6 @@ import java.util.List;
 @Slf4j
 public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String LOGIN_TYPE_KEY = "loginType";
-    private static final String USERNAME_KEY = "username";
-    private static final String PASSWORD_KEY = "password";
-    private static final String CAPTCHA_KEY = "captcha";
-    private static final String CAPTCHA_DIGEST_KEY = "captchaDigest";
-    private static final String REMEMBER_ME_KEY = "remember-me";
-
     @Autowired
     private SecurityConfig securityConfig;
     @Autowired
@@ -69,12 +62,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
     private List<CollectLoginToken> collectLoginTokenList;
     private AuthenticationTrustResolver authenticationTrustResolver = new AuthenticationTrustResolverImpl();
     private boolean postOnly = true;
-//    private String loginTypeParameter = LOGIN_TYPE_KEY;
-//    private String usernameParameter = USERNAME_KEY;
-//    private String passwordParameter = PASSWORD_KEY;
-//    private String captchaParameter = CAPTCHA_KEY;
-//    private String captchaDigestParameter = CAPTCHA_DIGEST_KEY;
-//    private String rememberMeParameter = REMEMBER_ME_KEY;
     /**
      * 登录是否需要验证码
      */
@@ -155,46 +142,18 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             return null;
         }
 
+        boolean isSubmitBody = securityConfig.getLogin().getJsonDataSubmit();
         BaseLoginToken loginToken = null;
         // 获取用户登录信息
         for (CollectLoginToken collectLoginToken : collectLoginTokenList) {
-            if (collectLoginToken.supports(request)) {
-                loginToken = collectLoginToken.attemptAuthentication(request);
+            if (collectLoginToken.supports(request, isSubmitBody)) {
+                loginToken = collectLoginToken.attemptAuthentication(request, isSubmitBody);
                 break;
             }
         }
         if (loginToken == null) {
             throw new BadLoginTypeException("不支持的登录请求");
         }
-
-//        // 获取用户登录信息
-//        String loginType;
-//        UserLoginToken userLoginToken;
-//        if (securityConfig.getLogin().getJsonDataSubmit()) {
-//            // 使用Json方式提交数据
-//            String json = IOUtils.toString(request.getReader());
-//            request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
-//            JSONObject object = new JSONObject(json);
-//            userLoginToken = new UserLoginToken(
-//                    object.optString(usernameParameter),
-//                    object.optString(passwordParameter),
-//                    object.optString(captchaParameter),
-//                    object.optString(captchaDigestParameter),
-//                    object.optString(rememberMeParameter)
-//            );
-//            loginType = object.optString(loginTypeParameter);
-//        } else {
-//            // 使用Parameter提交数据
-//            loginType = StringUtils.trimToEmpty(request.getParameter(loginTypeParameter));
-//            String username = StringUtils.trimToEmpty(request.getParameter(usernameParameter));
-//            String password = StringUtils.trimToEmpty(request.getParameter(passwordParameter));
-//            String captcha = StringUtils.trimToEmpty(request.getParameter(captchaParameter));
-//            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(captchaDigestParameter));
-//            String rememberMe = StringUtils.trimToEmpty(request.getParameter(rememberMeParameter));
-//            userLoginToken = new UserLoginToken(username, password, captcha, captchaDigest, rememberMe);
-//        }
-
-
         // 设置用户 "details" 属性(设置请求IP和SessionID) -- 需要提前创建Session
         if (LoginModel.session.equals(securityConfig.getLoginModel())) {
             request.getSession();

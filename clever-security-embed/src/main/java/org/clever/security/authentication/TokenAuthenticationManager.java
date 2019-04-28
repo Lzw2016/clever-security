@@ -220,21 +220,6 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
         return loadedUser;
     }
 
-//    /**
-//     * 真正的Token验证逻辑
-//     */
-//    private void mainAuthenticationChecks(BaseLoginToken loginToken, UserDetails loadedUser) throws AuthenticationException {
-//        // 用户密码需要AES对称加解密 网络密文传输
-//        loginToken.setPassword(requestCryptoService.reqAesDecrypt(loginToken.getPassword()));
-//        // 用户名、密码校验
-//        if (!loginToken.getUsername().equals(loadedUser.getUsername())
-//                || !bCryptPasswordEncoder.matches(loginToken.getPassword(), loadedUser.getPassword())) {
-//            log.info("### 用户名密码验证失败 [{}]", loginToken.toString());
-//            throw new BadCredentialsException("用户名密码验证失败");
-//        }
-//        log.info("### 用户名密码验证成功 [{}]", loginToken.toString());
-//    }
-
     /**
      * 创建认证成功的Authentication
      */
@@ -254,6 +239,7 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
         if (!LoginModel.jwt.equals(loginModel)) {
             return;
         }
+        // JwtToken 方式才处理
         if (concurrentLoginCount <= 0) {
             return;
         }

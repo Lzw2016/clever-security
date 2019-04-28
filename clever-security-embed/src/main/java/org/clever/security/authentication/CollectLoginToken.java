@@ -14,17 +14,26 @@ import java.io.IOException;
  */
 public interface CollectLoginToken {
 
+    String LOGIN_TYPE_KEY = "loginType";
+    String CAPTCHA_KEY = "captcha";
+    String CAPTCHA_DIGEST_KEY = "captchaDigest";
+    String REMEMBER_ME_KEY = "remember-me";
+
     /**
      * 是否支持收集当前请求的登录信息
      *
+     * @param request      请求对象
+     * @param isSubmitBody 提交数据是否是JsonBody格式
      * @return 支持解析返回true
      */
-    boolean supports(HttpServletRequest request);
+    boolean supports(HttpServletRequest request, boolean isSubmitBody) throws IOException;
 
     /**
      * 收集用户登录认证信息
      *
+     * @param request      请求对象
+     * @param isSubmitBody 提交数据是否是JsonBody格式
      * @return 返回Authentication子类
      */
-    BaseLoginToken attemptAuthentication(HttpServletRequest request) throws AuthenticationException, IOException;
+    BaseLoginToken attemptAuthentication(HttpServletRequest request, boolean isSubmitBody) throws AuthenticationException, IOException;
 }
