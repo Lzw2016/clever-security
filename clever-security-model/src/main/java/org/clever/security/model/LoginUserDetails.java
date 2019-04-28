@@ -111,6 +111,39 @@ public class LoginUserDetails implements UserDetails, CredentialsContainer {
         this.accountNonExpired = user.getExpiredTime() == null || user.getExpiredTime().compareTo(new Date()) > 0;
     }
 
+    /**
+     * 用于反序列化构造
+     */
+    public LoginUserDetails(
+            Long id,
+            String username,
+            String password,
+            Integer userType,
+            String telephone,
+            String email,
+            Date expiredTime,
+            boolean locked,
+            boolean enabled,
+            String description,
+            Date createAt,
+            Date updateAt) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.userType = userType;
+        this.telephone = telephone;
+        this.email = email;
+        this.expiredTime = expiredTime;
+        this.locked = locked;
+        this.enabled = enabled;
+        this.description = description;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+
+        this.credentialsNonExpired = true;
+        this.accountNonExpired = expiredTime == null || expiredTime.compareTo(new Date()) > 0;
+    }
+
     @Override
     public void eraseCredentials() {
         this.password = "";

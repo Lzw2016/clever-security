@@ -1,7 +1,8 @@
 package org.clever.security.jackson2;
 
 import com.fasterxml.jackson.annotation.*;
-import org.clever.security.entity.User;
+
+import java.util.Date;
 
 /**
  * 作者： lzw<br/>
@@ -12,8 +13,19 @@ import org.clever.security.entity.User;
 @JsonIgnoreProperties(ignoreUnknown = true)
 class LoginUserDetailsMixin {
 
-    // TODO 反序列化问题
     @JsonCreator
-    public LoginUserDetailsMixin(@JsonProperty("user") User user) {
+    public LoginUserDetailsMixin(
+            @JsonProperty("id") Long id,
+            @JsonProperty("username") String username,
+            @JsonProperty("password") String password,
+            @JsonProperty("userType") Integer userType,
+            @JsonProperty("telephone") String telephone,
+            @JsonProperty("email") String email,
+            @JsonProperty("expiredTime") Date expiredTime,
+            @JsonProperty("accountNonLocked") boolean locked,
+            @JsonProperty("enabled") boolean enabled,
+            @JsonProperty("description") String description,
+            @JsonProperty("createAt") Date createAt,
+            @JsonProperty("updateAt") Date updateAt) {
     }
 }
