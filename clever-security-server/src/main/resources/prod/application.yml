@@ -45,7 +45,7 @@ spring:
   resources: #------------------------------------------------ html、js、css 静态资源
     chain:
       cache: true
-      gzipped: true
+      compressed: true
     cache:
       period: 31536000s
     static-locations: ['classpath:/static/']

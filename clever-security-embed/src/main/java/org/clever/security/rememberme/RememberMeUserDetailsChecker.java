@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-10-22 15:50 <br/>
  */
-@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
 @Component
 @Slf4j
 public class RememberMeUserDetailsChecker implements UserDetailsChecker {

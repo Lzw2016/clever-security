@@ -20,7 +20,7 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-21 19:52 <br/>
  */
-@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
 @Component
 @Slf4j
 public class RememberMeRepository implements PersistentTokenRepository {

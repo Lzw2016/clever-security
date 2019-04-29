@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.GlobalJob;
 import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.exception.ExceptionUtils;
+import org.clever.common.utils.reflection.ReflectionsUtils;
+import org.clever.security.LoginModel;
 import org.clever.security.annotation.UrlAuthorization;
 import org.clever.security.client.ServiceSysClient;
 import org.clever.security.client.WebPermissionClient;
@@ -18,6 +20,7 @@ import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ServiceSys;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -38,6 +41,8 @@ public class InitSystemUrlPermissionJob extends GlobalJob {
     private SecurityConfig securityConfig;
     @Autowired
     private RequestMappingHandlerMapping handlerMapping;
+    @Autowired(required = false)
+    private RedisHttpSessionConfiguration redisHttpSessionConfiguration;
     @Autowired
     private ServiceSysClient serviceSysClient;
     @Autowired
@@ -54,8 +59,17 @@ public class InitSystemUrlPermissionJob extends GlobalJob {
         // 注册系统信息
         ServiceSysAddReq serviceSysAddReq = new ServiceSysAddReq();
         serviceSysAddReq.setSysName(securityConfig.getSysName());
-        serviceSysAddReq.setRedisNameSpace(securityConfig.getTokenConfig().getRedisNamespace());
-        serviceSysAddReq.setLoginModel(EnumConstant.ServiceSys_LoginModel_1);
+        if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
+            // JwtToken
+            serviceSysAddReq.setRedisNameSpace(securityConfig.getTokenConfig().getRedisNamespace());
+            serviceSysAddReq.setLoginModel(EnumConstant.ServiceSys_LoginModel_1);
+        } else if (LoginModel.session.equals(securityConfig.getLoginModel())) {
+            // Session
+            serviceSysAddReq.setRedisNameSpace(ReflectionsUtils.getFieldValue(redisHttpSessionConfiguration, "redisNamespace").toString());
+            serviceSysAddReq.setLoginModel(EnumConstant.ServiceSys_LoginModel_0);
+        } else {
+            throw new IllegalArgumentException("配置项[loginModel - 登入模式]必须指定");
+        }
         ServiceSys serviceSys = serviceSysClient.registerSys(serviceSysAddReq);
         log.info("### 注册系统成功: {}", serviceSys);
         // 获取系统中所有的资源,并排序 - allPermission

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 创建时间：2019-04-29 10:29 <br/>
  */
 @Api("JwtToken刷新登录令牌")
-@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "jwt")
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "jwt")
 @RestController
 @Slf4j
 public class RefreshTokenController {

@@ -13,9 +13,12 @@ import org.clever.security.rememberme.RememberMeServices;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,7 +35,7 @@ import java.util.List;
  * 创建时间：2018-03-14 14:45 <br/>
  */
 @Configuration
-@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
 @Slf4j
 public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
 
@@ -79,6 +82,15 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
     @Override
     SecurityConfig getSecurityConfig() {
         return securityConfig;
+    }
+
+    /**
+     * 在Spring容器中注册 AuthenticationManager
+     */
+    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     /**

@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.clever.dynamic.datasource.autoconfigure.DynamicDataSourceAutoConfiguration,\
-org.clever.dynamic.datasource.interceptor.DynamicDatasourceWebAppConfig
+org.clever.security.config.ApplicationSecurityBean,\
+org.clever.security.config.JwtWebSecurityConfig,\
+org.clever.security.config.SessionWebSecurityConfig

@@ -45,7 +45,7 @@ spring:
   resources: #------------------------------------------------ html、js、css 静态资源
     chain:
       cache: true
-      gzipped: true
+      compressed: true
     cache:
       period: 31536000s
     static-locations: ['classpath:/static/']
@@ -154,6 +154,7 @@ mybatis-plus:
 ###################################################################################
 clever:
   security:
+    login-model: session
     enable-debug: false
     sys-name: ${spring.application.name}
     wait-spring-context-init-count: 1
@@ -186,9 +187,6 @@ clever:
     login:
       login-page: '/login.html'
       login-url: '/login.json'
-      username-parameter: 'username'
-      password-parameter: 'password'
-      captcha-parameter: 'captcha'
       post-only: true
       json-data-submit: true
       login-success-need-redirect: false
@@ -204,8 +202,7 @@ clever:
     remember-me:
       enable: true
       always-remember: false
-      validity-seconds: 2592000
-      remember-me-parameter-name: 'remember-me'
+      validity: 30d
     login-req-aes-key:
       req-password-aes-key: '636c657665722d736563757288888888'
       req-password-aes-iv: '636c657665722d736563757266666666'
@@ -218,7 +215,14 @@ clever:
     req-aes-key: '636c657665722d73656375726974792d'
     req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'
 
-
+###################################################################################
+### Feign配置
+###################################################################################
+#spring.main.allow-bean-definition-overriding: true
+## CommonClientConfigKey 实现
+#clever-security-server:
+#  ribbon:
+#    listOfServers: '127.0.0.1:28080'
 
 
 

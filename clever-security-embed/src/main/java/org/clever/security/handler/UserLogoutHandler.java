@@ -21,7 +21,7 @@ import java.util.Set;
  * 作者： lzw<br/>
  * 创建时间：2018-11-19 15:13 <br/>
  */
-@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "jwt")
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "jwt")
 @Component
 @Slf4j
 public class UserLogoutHandler implements LogoutHandler {

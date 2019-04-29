@@ -19,6 +19,7 @@ import org.clever.security.rememberme.RememberMeUserDetailsChecker;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.clever.security.strategy.SessionExpiredStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,6 +65,7 @@ public class ApplicationSecurityBean {
     /**
      * 密码处理
      */
+    @ConditionalOnMissingBean(BCryptPasswordEncoder.class)
     @Bean
     protected BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
@@ -72,6 +74,7 @@ public class ApplicationSecurityBean {
     /**
      * 使用 GenericJackson2JsonRedisSerializer 替换默认序列化
      */
+    // @ConditionalOnMissingBean(RedisTemplate.class)
     @Bean("redisTemplate")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // 自定义 ObjectMapper
@@ -101,7 +104,7 @@ public class ApplicationSecurityBean {
     /**
      * 登录并发处理(使用session登录时才需要)
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy(@Autowired SessionRegistry sessionRegistry) {
         LoginConfig login = securityConfig.getLogin();
@@ -123,7 +126,7 @@ public class ApplicationSecurityBean {
     /**
      * 授权校验(使用session登录时才需要) TODO ？？jwt 也要
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     protected AccessDecisionManager accessDecisionManager(@Autowired RequestAccessDecisionVoter requestAccessDecisionVoter) {
         // WebExpressionVoter RoleVoter AuthenticatedVoter
@@ -137,7 +140,7 @@ public class ApplicationSecurityBean {
     /**
      * Session过期处理(使用session登录时才需要)
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     protected SessionInformationExpiredStrategy sessionInformationExpiredStrategy() {
         SessionExpiredStrategy sessionExpiredStrategy = new SessionExpiredStrategy();
@@ -149,7 +152,7 @@ public class ApplicationSecurityBean {
     /**
      * 实现的记住我的功能,不使用SpringSession提供的SpringSessionRememberMeServices(使用session登录时才需要)
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     protected org.springframework.security.web.authentication.RememberMeServices rememberMeServices(
             @Autowired RememberMeUserDetailsChecker rememberMeUserDetailsChecker,
@@ -181,7 +184,7 @@ public class ApplicationSecurityBean {
      *
      * @see org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration#setDefaultRedisSerializer
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean("springSessionDefaultRedisSerializer")
     protected RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         //解决查询缓存转换异常的问题
@@ -204,7 +207,7 @@ public class ApplicationSecurityBean {
     /**
      * 监听 HttpSession 事件
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {
         return new HttpSessionEventPublisher();
@@ -213,7 +216,7 @@ public class ApplicationSecurityBean {
     /**
      * 集成Spring Session所需的Bean
      */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
     @Bean
     protected SpringSessionBackedSessionRegistry sessionRegistry(@Autowired RedisOperationsSessionRepository sessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(sessionRepository);

@@ -2,10 +2,7 @@ package org.clever.security.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -69,15 +66,6 @@ public abstract class BaseWebSecurityConfig extends WebSecurityConfigurerAdapter
                 .userDetailsService(getUserDetailsService())
                 // 设置密码编码码器
                 .passwordEncoder(getPasswordEncoder());
-    }
-
-    /**
-     * 在Spring容器中注册 AuthenticationManager
-     */
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
     }
 
     /**
