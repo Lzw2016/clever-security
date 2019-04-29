@@ -3,10 +3,10 @@ package org.clever.security.handler;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.response.AccessDeniedRes;
 import org.clever.security.utils.HttpRequestUtils;
+import org.clever.security.utils.HttpResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.WebAttributes;
@@ -61,13 +61,8 @@ public class UserAccessDeniedHandler implements AccessDeniedHandler {
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response) throws IOException {
-        String json = JacksonMapper.nonEmptyMapper().toJson(new AccessDeniedRes("没有访问权限"));
-        if (!response.isCommitted()) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(json);
-        }
+    private void sendJsonData(HttpServletResponse response) {
+        AccessDeniedRes accessDeniedRes = new AccessDeniedRes("没有访问权限");
+        HttpResponseUtils.sendJsonBy403(response, accessDeniedRes);
     }
 }

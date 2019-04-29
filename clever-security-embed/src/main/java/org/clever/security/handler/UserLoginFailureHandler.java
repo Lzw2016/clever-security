@@ -2,8 +2,9 @@ package org.clever.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.utils.mapper.JacksonMapper;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.security.Constant;
+import org.clever.security.LoginModel;
 import org.clever.security.client.UserClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LoginConfig;
@@ -13,6 +14,7 @@ import org.clever.security.exception.BadLoginTypeException;
 import org.clever.security.exception.CanNotLoginSysException;
 import org.clever.security.exception.ConcurrentLoginException;
 import org.clever.security.repository.LoginFailCountRepository;
+import org.clever.security.utils.HttpResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
@@ -73,10 +75,20 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         LoginConfig login = securityConfig.getLogin();
         if (login.getNeedCaptcha()) {
-            // 记录登录失败次数
-            Object object = request.getAttribute(Constant.Login_Username_Request_Key);
-            if (object != null && StringUtils.isNotBlank(object.toString()) && userClient.canLogin(object.toString(), securityConfig.getSysName())) {
-                loginFailCountRepository.incrementLoginFailCount(object.toString());
+            if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
+                // JwtToken 记录登录失败次数
+                Object object = request.getAttribute(Constant.Login_Username_Request_Key);
+                if (object != null && StringUtils.isNotBlank(object.toString()) && userClient.canLogin(object.toString(), securityConfig.getSysName())) {
+                    loginFailCountRepository.incrementLoginFailCount(object.toString());
+                }
+            } else {
+                // Session 记录登录次数
+                Object loginFailCountStr = request.getSession().getAttribute(Constant.Login_Fail_Count_Session_Key);
+                int loginFailCount = 1;
+                if (loginFailCountStr != null) {
+                    loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0) + 1;
+                }
+                request.getSession().setAttribute(Constant.Login_Fail_Count_Session_Key, loginFailCount);
             }
         }
         // 登录失败 - 是否需要跳转
@@ -102,7 +114,7 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response, AuthenticationException exception) throws IOException {
+    private void sendJsonData(HttpServletResponse response, AuthenticationException exception) {
         String message = failureMessageMap.get(exception.getClass().getName());
         if (hideUserNotFoundExceptions && exception instanceof UsernameNotFoundException) {
             message = failureMessageMap.get(BadCredentialsException.class.getName());
@@ -110,14 +122,9 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
         if (StringUtils.isBlank(message)) {
             message = "登录失败";
         }
-        String json = JacksonMapper.nonEmptyMapper().toJson(new LoginRes(false, message));
-        log.info("### 登录失败不需要跳转 -> [{}]", json);
-        if (!response.isCommitted()) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(json);
-        }
+        LoginRes loginRes = new LoginRes(false, message);
+        log.info("### 登录失败不需要跳转 -> [{}]", loginRes);
+        HttpResponseUtils.sendJsonBy401(response, loginRes);
     }
 
     /**

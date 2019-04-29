@@ -54,6 +54,13 @@ public class HttpResponseUtils {
     }
 
     /**
+     * 写入响应Json数据
+     */
+    public static void sendJsonBy403(HttpServletResponse response, Object resData) {
+        sendJson(response, resData, HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    /**
      * 重定向页面(客户端跳转)
      *
      * @param redirectUrl 跳转地址
