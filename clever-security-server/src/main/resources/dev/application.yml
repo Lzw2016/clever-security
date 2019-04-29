@@ -144,7 +144,6 @@ mybatis-plus:
   executor-type: reuse
   global-config:
     banner: true
-    sql-parser-cache: true
     db-config:
       id-type: auto
       field-strategy: not_null
@@ -154,7 +153,8 @@ mybatis-plus:
 ###################################################################################
 clever:
   security:
-    login-model: session
+    # login-model: session
+    login-model: jwt
     enable-debug: false
     sys-name: ${spring.application.name}
     wait-spring-context-init-count: 1
