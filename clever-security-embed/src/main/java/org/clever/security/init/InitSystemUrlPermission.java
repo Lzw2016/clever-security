@@ -31,6 +31,7 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
     @Autowired
     private InitSystemUrlPermissionJob job;
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         count.addAndGet(1);
