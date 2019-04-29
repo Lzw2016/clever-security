@@ -22,8 +22,12 @@ import org.clever.security.repository.RedisJwtRepository;
 import org.clever.security.token.JwtAccessToken;
 import org.clever.security.token.login.BaseLoginToken;
 import org.clever.security.utils.AuthenticationUtils;
+import org.clever.security.utils.HttpResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -99,7 +103,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             }
         }
         if (collectLoginTokenList == null || this.collectLoginTokenList.size() <= 0) {
-            throw new RuntimeException("未注入收集用户登录登录信息组件");
+            throw new RuntimeException("未注入收集用户登录信息组件");
         }
         this.setAuthenticationSuccessHandler(userLoginSuccessHandler);
         this.setAuthenticationFailureHandler(userLoginFailureHandler);
@@ -128,23 +132,13 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                 // Session
                 json = JacksonMapper.nonEmptyMapper().toJson(new LoginRes(true, "您已经登录成功了无须多次登录", userRes));
             }
-            if (!response.isCommitted()) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.setCharacterEncoding("UTF-8");
-                response.setContentType("application/json;charset=utf-8");
-                try {
-                    response.getWriter().print(json);
-                } catch (IOException e) {
-                    throw new InternalAuthenticationServiceException("返回数据写入响应流失败", e);
-                }
-            }
+            HttpResponseUtils.sendJsonBy200(response, json);
             log.info("### 当前用户已登录 [{}]", authentication.toString());
             return null;
         }
-
+        // 获取用户登录信息
         boolean isSubmitBody = securityConfig.getLogin().getJsonDataSubmit();
         BaseLoginToken loginToken = null;
-        // 获取用户登录信息
         for (CollectLoginToken collectLoginToken : collectLoginTokenList) {
             if (collectLoginToken.supports(request, isSubmitBody)) {
                 loginToken = collectLoginToken.attemptAuthentication(request, isSubmitBody);
@@ -161,7 +155,6 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         loginToken.setDetails(authenticationDetailsSource.buildDetails(request));
         log.info("### 用户登录开始，构建LoginToken [{}]", loginToken.toString());
         request.setAttribute(Constant.Login_Username_Request_Key, loginToken.getName());
-
         //  读取验证码 - 验证
         if (needCaptcha) {
             long loginFailCount = 0;

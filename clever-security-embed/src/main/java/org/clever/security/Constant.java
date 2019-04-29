@@ -12,7 +12,7 @@ public class Constant {
     public static final String ConfigPrefix = "clever.security";
 
     /**
-     * 登录请求数据Session Key
+     * 登录请求数据 Key
      */
     public static final String Login_Data_Body_Request_Key = "Login_Data_Body_Request_Key";
 
@@ -22,12 +22,12 @@ public class Constant {
     public static final String Login_Username_Request_Key = "Login_Username_Request_Key";
 
     /**
-     * 登录验证码KEY
+     * 登录验证码 Key
      */
     public static final String Login_Captcha_Session_Key = "Login_Captcha_Session_Key";
 
     /**
-     * 登录失败次数KEY
+     * 登录失败次数 Key
      */
     public static final String Login_Fail_Count_Session_Key = "Login_Fail_Count_Session_Key";
 }

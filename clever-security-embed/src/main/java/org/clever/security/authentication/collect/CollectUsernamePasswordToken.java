@@ -26,14 +26,14 @@ import java.io.IOException;
 @Slf4j
 public class CollectUsernamePasswordToken implements CollectLoginToken {
 
-    private static final String USERNAME_KEY = "username";
-    private static final String PASSWORD_KEY = "password";
+    private static final String USERNAME_PARAM = "username";
+    private static final String PASSWORD_PARAM = "password";
 
     @Override
     public boolean supports(HttpServletRequest request, boolean isSubmitBody) throws IOException {
         String loginType;
-        String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_KEY));
-        String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_KEY));
+        String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
+        String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
         if (isSubmitBody) {
             // 使用Json方式提交数据
             Object json = request.getAttribute(Constant.Login_Data_Body_Request_Key);
@@ -47,8 +47,8 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
         } else {
             // 使用Parameter提交数据
             loginType = StringUtils.trimToEmpty(request.getParameter(LOGIN_TYPE_PARAM));
-            username = StringUtils.trimToEmpty(request.getParameter(USERNAME_KEY));
-            password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_KEY));
+            username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
+            password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
         }
         if (LoginTypeConstant.UsernamePassword.equalsIgnoreCase(loginType)) {
             return true;
@@ -70,8 +70,8 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
             usernamePasswordToken = JacksonMapper.nonEmptyMapper().fromJson(json.toString(), UsernamePasswordToken.class);
         } else {
             // 使用Parameter提交数据
-            String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_KEY));
-            String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_KEY));
+            String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
+            String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
             String captcha = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_PARAM));
             String captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_PARAM));
             boolean rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_PARAM)));
