@@ -2,7 +2,6 @@ package org.clever.security.authentication.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.Constant;
 import org.clever.security.LoginModel;
 import org.clever.security.authentication.CollectLoginToken;
@@ -122,17 +121,16 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            String json;
+            Object resData;
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JWT
                 JwtAccessToken jwtAccessToken = redisJwtRepository.getJwtToken(request);
-                JwtLoginRes jwtLoginRes = new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, jwtAccessToken.getToken(), jwtAccessToken.getRefreshToken());
-                json = JacksonMapper.nonEmptyMapper().toJson(jwtLoginRes);
+                resData = new JwtLoginRes(true, "您已经登录成功了无须多次登录", userRes, jwtAccessToken.getToken(), jwtAccessToken.getRefreshToken());
             } else {
                 // Session
-                json = JacksonMapper.nonEmptyMapper().toJson(new LoginRes(true, "您已经登录成功了无须多次登录", userRes));
+                resData = new LoginRes(true, "您已经登录成功了无须多次登录", userRes);
             }
-            HttpResponseUtils.sendJsonBy200(response, json);
+            HttpResponseUtils.sendJsonBy200(response, resData);
             log.info("### 当前用户已登录 [{}]", authentication.toString());
             return null;
         }

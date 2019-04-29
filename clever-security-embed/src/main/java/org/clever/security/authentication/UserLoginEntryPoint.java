@@ -3,9 +3,9 @@ package org.clever.security.authentication;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.model.response.ErrorResponse;
-import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.utils.HttpRequestUtils;
+import org.clever.security.utils.HttpResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -33,12 +33,8 @@ public class UserLoginEntryPoint implements AuthenticationEntryPoint {
         log.info("### 未登录访问拦截，访问地址[{}] {}", request.getMethod(), request.getRequestURL().toString());
         if (!securityConfig.getNotLoginNeedForward() || HttpRequestUtils.isJsonResponse(request)) {
             // 返回401错误
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setCharacterEncoding("UTF-8");
-            response.setHeader("Content-Type", "application/json;charset=utf-8");
-            // response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
             ErrorResponse errorResponse = new ErrorResponse("您还未登录，请先登录", authException, HttpServletResponse.SC_UNAUTHORIZED, request.getRequestURI());
-            response.getWriter().print(JacksonMapper.nonEmptyMapper().toJson(errorResponse));
+            HttpResponseUtils.sendJsonBy401(response, errorResponse);
             return;
         }
         // 跳转到登录页面
@@ -46,6 +42,6 @@ public class UserLoginEntryPoint implements AuthenticationEntryPoint {
         if (StringUtils.isBlank(redirectUrl)) {
             redirectUrl = "/index.html";
         }
-        response.sendRedirect(redirectUrl);
+        HttpResponseUtils.sendRedirect(response, redirectUrl);
     }
 }
