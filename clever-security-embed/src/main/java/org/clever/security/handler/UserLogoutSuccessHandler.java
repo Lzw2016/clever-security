@@ -2,13 +2,13 @@ package org.clever.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.LogoutConfig;
 import org.clever.security.dto.response.LogoutRes;
 import org.clever.security.dto.response.UserRes;
 import org.clever.security.utils.AuthenticationUtils;
 import org.clever.security.utils.HttpRequestUtils;
+import org.clever.security.utils.HttpResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -36,7 +36,6 @@ public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-
         if (authentication == null) {
             log.info("### 登出无效(还未登录)");
         } else {
@@ -71,14 +70,10 @@ public class UserLogoutSuccessHandler implements LogoutSuccessHandler {
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response, Authentication authentication) throws IOException {
+    private void sendJsonData(HttpServletResponse response, Authentication authentication) {
         UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-        String json = JacksonMapper.nonEmptyMapper().toJson(new LogoutRes(true, "登出成功", userRes));
-        log.info("### 登出成功不需要跳转 -> [{}]", json);
-        if (!response.isCommitted()) {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(json);
-        }
+        LogoutRes logoutRes = new LogoutRes(true, "登出成功", userRes);
+        HttpResponseUtils.sendJsonBy200(response, logoutRes);
+        log.info("### 登出成功不需要跳转 -> [{}]", logoutRes);
     }
 }
