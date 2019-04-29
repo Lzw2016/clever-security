@@ -16,7 +16,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-10-22 20:34 <br/>
  */
-@Api(description = "服务系统")
+@Api("服务系统")
 @RestController
 @RequestMapping("/api")
 public class ServiceSysController {

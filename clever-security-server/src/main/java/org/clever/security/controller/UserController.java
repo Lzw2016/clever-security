@@ -19,7 +19,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-09-17 9:21 <br/>
  */
-@Api(description = "用户信息")
+@Api("用户信息")
 @RestController
 @RequestMapping("/api")
 public class UserController extends BaseController {

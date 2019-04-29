@@ -121,11 +121,6 @@
                 <artifactId>clever-common-client</artifactId>
                 <version>${common.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.clever</groupId>
-                <artifactId>clever-security-jwt</artifactId>
-                <version>${common.version}</version>
-            </dependency>
             <!--spring-cloud-->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>

@@ -21,7 +21,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-10-03 21:22 <br/>
  */
-@Api(description = "系统、角色、权限分配管理")
+@Api("系统、角色、权限分配管理")
 @RestController
 @RequestMapping("/api/manage/security")
 public class ManageBySecurityController extends BaseController {

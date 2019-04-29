@@ -3,13 +3,14 @@ package org.clever.security.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.entity.*;
-import org.clever.security.jwt.model.LoginUserDetails;
-import org.clever.security.jwt.model.UserAuthority;
-import org.clever.security.jwt.model.UserLoginToken;
 import org.clever.security.mapper.ServiceSysMapper;
 import org.clever.security.mapper.UserLoginLogMapper;
 import org.clever.security.mapper.UserMapper;
-import org.clever.security.service.ISessionService;
+import org.clever.security.model.LoginUserDetails;
+import org.clever.security.model.UserAuthority;
+import org.clever.security.service.ISecurityContextService;
+import org.clever.security.token.SecurityContextToken;
+import org.clever.security.token.login.BaseLoginToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContext;
@@ -23,10 +24,11 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-22 19:51 <br/>
  */
+@SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
-@Service("jwtTokenSessionService")
+@Service("jwtTokenSecurityContextService")
 @Slf4j
-public class JwtTokenSessionService implements ISessionService {
+public class JwtTokenSecurityContextService implements ISecurityContextService {
 
     /**
      * SecurityContext Key
@@ -77,11 +79,12 @@ public class JwtTokenSessionService implements ISessionService {
     /**
      * 加载用户安全信息
      *
-     * @param sysName  系统名
-     * @param userName 用户名
+     * @param loginToken 当前的loginToken
+     * @param sysName    系统名
+     * @param userName   用户名
      * @return 不存在返回null
      */
-    private UserLoginToken loadUserLoginToken(String sysName, String userName) {
+    private SecurityContextToken loadUserLoginToken(BaseLoginToken loginToken, String sysName, String userName) {
         // 获取用所有权限
         User user = userMapper.getByUnique(userName);
         if (user == null) {
@@ -92,8 +95,10 @@ public class JwtTokenSessionService implements ISessionService {
         for (Permission permission : permissionList) {
             userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
         }
+        // TODO 加载角色
+        // userDetails.getRoles().add();
         // 组装 UserLoginToken
-        return new UserLoginToken(userDetails);
+        return new SecurityContextToken(loginToken, userDetails);
     }
 
     /**
@@ -102,10 +107,7 @@ public class JwtTokenSessionService implements ISessionService {
      * @param newUserLoginToken 新的Token
      * @param oldUserLoginToken 旧的Token
      */
-    private SecurityContext loadSecurityContext(UserLoginToken newUserLoginToken, UserLoginToken oldUserLoginToken) {
-        newUserLoginToken.setLoginType(oldUserLoginToken.getLoginType());
-        newUserLoginToken.setUsername(oldUserLoginToken.getUsername());
-        newUserLoginToken.setPassword(oldUserLoginToken.getPassword());
+    private SecurityContext loadSecurityContext(SecurityContextToken newUserLoginToken, SecurityContextToken oldUserLoginToken) {
         newUserLoginToken.setDetails(oldUserLoginToken.getDetails());
         newUserLoginToken.eraseCredentials();
         // 组装 SecurityContext
@@ -113,7 +115,7 @@ public class JwtTokenSessionService implements ISessionService {
     }
 
     @Override
-    public Map<String, SecurityContext> getSessionSecurityContext(String sysName, String userName) {
+    public Map<String, SecurityContext> getSecurityContext(String sysName, String userName) {
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
         if (serviceSys == null
                 || StringUtils.isBlank(serviceSys.getRedisNameSpace())
@@ -135,7 +137,7 @@ public class JwtTokenSessionService implements ISessionService {
     }
 
     @Override
-    public SecurityContext getSessionSecurityContext(String tokenId) {
+    public SecurityContext getSecurityContext(String tokenId) {
         UserLoginLog userLoginLog = userLoginLogMapper.getBySessionId(tokenId);
         ServiceSys serviceSys = serviceSysMapper.getBySysName(userLoginLog.getSysName());
         if (serviceSys == null
@@ -155,7 +157,8 @@ public class JwtTokenSessionService implements ISessionService {
     }
 
     @Override
-    public SecurityContext reloadSessionSecurityContext(String sysName, String userName) {
+    public List<SecurityContext> reloadSecurityContext(String sysName, String userName) {
+        List<SecurityContext> newSecurityContextList = new ArrayList<>();
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
         if (serviceSys == null
                 || StringUtils.isBlank(serviceSys.getRedisNameSpace())
@@ -168,15 +171,16 @@ public class JwtTokenSessionService implements ISessionService {
             return null;
         }
         SecurityContext oldSecurityContext = (SecurityContext) oldSecurityObject;
-        if (!(oldSecurityContext.getAuthentication() instanceof UserLoginToken)) {
+        if (!(oldSecurityContext.getAuthentication() instanceof SecurityContextToken)) {
             return null;
         }
-        UserLoginToken oldUserLoginToken = (UserLoginToken) oldSecurityContext.getAuthentication();
-        UserLoginToken newUserLoginToken = loadUserLoginToken(sysName, userName);
+        SecurityContextToken oldUserLoginToken = (SecurityContextToken) oldSecurityContext.getAuthentication();
+        SecurityContextToken newUserLoginToken = loadUserLoginToken(oldUserLoginToken.getLoginToken(), sysName, userName);
         if (newUserLoginToken == null) {
             return null;
         }
         SecurityContext newSecurityContext = loadSecurityContext(newUserLoginToken, oldUserLoginToken);
+        newSecurityContextList.add(newSecurityContext);
         redisTemplate.opsForValue().set(securityContextKey, newSecurityContext);
         // 删除 JwtToken
         String jwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
@@ -184,12 +188,12 @@ public class JwtTokenSessionService implements ISessionService {
         if (jwtTokenKeySet != null && jwtTokenKeySet.size() > 0) {
             redisTemplate.delete(jwtTokenKeySet);
         }
-        return newSecurityContext;
+        return newSecurityContextList;
     }
 
     @Override
-    public Map<String, SecurityContext> reloadSessionSecurityContext(String userName) {
-        Map<String, SecurityContext> result = new HashMap<>();
+    public Map<String, List<SecurityContext>> reloadSecurityContext(String userName) {
+        Map<String, List<SecurityContext>> result = new HashMap<>();
         List<ServiceSys> sysList = userMapper.findSysByUsername(userName);
         if (sysList == null || sysList.size() <= 0) {
             return result;
@@ -200,8 +204,8 @@ public class JwtTokenSessionService implements ISessionService {
                     || !Objects.equals(EnumConstant.ServiceSys_LoginModel_1, serviceSys.getLoginModel())) {
                 continue;
             }
-            SecurityContext securityContext = reloadSessionSecurityContext(serviceSys.getSysName(), userName);
-            result.put(serviceSys.getSysName(), securityContext);
+            List<SecurityContext> securityContextList = reloadSecurityContext(serviceSys.getSysName(), userName);
+            result.put(serviceSys.getSysName(), securityContextList);
         }
         return result;
     }

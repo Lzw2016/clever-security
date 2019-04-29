@@ -44,7 +44,7 @@ public class ManageBySecurityService {
     @Autowired
     private ManageByQueryService manageByQueryService;
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
     @Autowired
     private ReLoadSessionService reLoadSessionService;
 
@@ -170,7 +170,7 @@ public class ManageBySecurityService {
         }
         userMapper.addRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
         // 更新Session
-        sessionService.reloadSessionSecurityContext(userRoleReq.getUsername());
+        sessionService.reloadSecurityContext(userRoleReq.getUsername());
         // 构造返回数据
         UserBindRoleRes res = new UserBindRoleRes();
         res.setUsername(userRoleReq.getUsername());
@@ -186,7 +186,7 @@ public class ManageBySecurityService {
         }
         userMapper.delRole(userRoleReq.getUsername(), userRoleReq.getRoleName());
         // 更新Session
-        sessionService.reloadSessionSecurityContext(userRoleReq.getUsername());
+        sessionService.reloadSecurityContext(userRoleReq.getUsername());
         // 构造返回数据
         UserBindRoleRes res = new UserBindRoleRes();
         res.setUsername(userRoleReq.getUsername());

@@ -2,7 +2,7 @@ package org.clever.security.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.mapper.RoleMapper;
-import org.clever.security.service.ISessionService;
+import org.clever.security.service.ISecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public class ReLoadSessionService {
     @Autowired
     private RoleMapper roleMapper;
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
 
     /**
      * 角色所拥有的权限发生变化 - 重新加载Session
@@ -37,7 +37,7 @@ public class ReLoadSessionService {
     public void onChangeRole(String roleName) {
         List<String> usernameList = roleMapper.findUsernameByRoleName(roleName);
         for (String username : usernameList) {
-            sessionService.reloadSessionSecurityContext(username);
+            sessionService.reloadSecurityContext(username);
         }
     }
 
@@ -50,7 +50,7 @@ public class ReLoadSessionService {
             usernameList.addAll(roleMapper.findUsernameByRoleName(roleName));
         }
         for (String username : usernameList) {
-            sessionService.reloadSessionSecurityContext(username);
+            sessionService.reloadSecurityContext(username);
         }
     }
 }

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * 作者： lzw<br/>
  * 创建时间：2018-10-02 20:45 <br/>
  */
-@Api(description = "用户管理")
+@Api("用户管理")
 @RestController
 @RequestMapping("/api/manage")
 public class ManageByUserController extends BaseController {

@@ -3,7 +3,7 @@ package org.clever.security.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.clever.security.dto.response.ForcedOfflineRes;
-import org.clever.security.service.ISessionService;
+import org.clever.security.service.ISecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,36 +11,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * 作者： lzw<br/>
  * 创建时间：2018-11-12 10:21 <br/>
  */
-@Api(description = "Session管理")
+@Api("Session管理")
 @RestController
 @RequestMapping("/api/manage")
 public class ManageBySessionController {
 
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
 
     @ApiOperation("重新加载用户SessionSecurityContext")
     @GetMapping("/reload_session_security_context/{username}")
-    public Map<String, SecurityContext> reloadSessionSecurityContext(@PathVariable("username") String username) {
-        return sessionService.reloadSessionSecurityContext(username);
+    public Map<String, List<SecurityContext>> reloadSessionSecurityContext(@PathVariable("username") String username) {
+        return sessionService.reloadSecurityContext(username);
     }
 
     @ApiOperation("读取用户SessionSecurityContext")
     @GetMapping("/session_security_context/{sysName}/{username}")
     public Map<String, SecurityContext> getSessionSecurityContext(@PathVariable("sysName") String sysName, @PathVariable("username") String username) {
-        return sessionService.getSessionSecurityContext(sysName, username);
+        return sessionService.getSecurityContext(sysName, username);
     }
 
     @ApiOperation("读取用户SessionSecurityContext")
     @GetMapping("/session_security_context/{sessionId}")
     public SecurityContext getSessionSecurityContext(@PathVariable("sessionId") String sessionId) {
-        return sessionService.getSessionSecurityContext(sessionId);
+        return sessionService.getSecurityContext(sessionId);
     }
 
     @ApiOperation("踢出用户(强制下线)")

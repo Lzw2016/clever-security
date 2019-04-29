@@ -87,8 +87,7 @@ public class ApplicationSecurityBean {
         List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
         objectMapper.findAndRegisterModules();
         objectMapper.registerModules(modules);
-//        objectMapper.registerModule(new org.clever.security.session.jackson2.CleverSecurityJackson2Module());
-//        objectMapper.registerModule(new org.clever.security.jwt.jackson2.CleverSecurityJackson2Module());
+        objectMapper.registerModule(new CleverSecurityJackson2Module());
         // 创建 RedisTemplate
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);

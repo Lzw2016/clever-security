@@ -22,7 +22,7 @@ import java.util.Set;
  * 作者： lzw<br/>
  * 创建时间：2018-10-02 20:48 <br/>
  */
-@Api(description = "权限管理")
+@Api("权限管理")
 @RestController
 @RequestMapping("/api/manage")
 public class ManageByPermissionController extends BaseController {

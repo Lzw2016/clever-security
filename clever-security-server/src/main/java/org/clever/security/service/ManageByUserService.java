@@ -48,7 +48,7 @@ public class ManageByUserService {
     @Autowired
     private UserBindSysNameService userBindSysNameService;
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
 
     public IPage<User> findByPage(UserQueryPageReq userQueryPageReq) {
         Page<User> page = new Page<>(userQueryPageReq.getPageNo(), userQueryPageReq.getPageSize());
@@ -166,7 +166,7 @@ public class ManageByUserService {
         }
         if (sessionFlag == 1) {
             // 更新Session
-            sessionService.reloadSessionSecurityContext(user.getUsername());
+            sessionService.reloadSecurityContext(user.getUsername());
         }
         if (sessionFlag == 2) {
             // 删除Session

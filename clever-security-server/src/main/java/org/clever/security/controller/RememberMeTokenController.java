@@ -19,7 +19,7 @@ import java.util.Map;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 16:36 <br/>
  */
-@Api(description = "RememberMeToken")
+@Api("RememberMeToken")
 @RestController
 @RequestMapping("/api")
 public class RememberMeTokenController extends BaseController {

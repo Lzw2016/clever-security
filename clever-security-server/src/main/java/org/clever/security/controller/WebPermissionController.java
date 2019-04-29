@@ -18,7 +18,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 18:59 <br/>
  */
-@Api(description = "Web权限")
+@Api("Web权限")
 @RestController
 @RequestMapping("/api")
 public class WebPermissionController extends BaseController {

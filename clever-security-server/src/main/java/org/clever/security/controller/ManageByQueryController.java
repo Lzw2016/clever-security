@@ -24,7 +24,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-10-02 20:50 <br/>
  */
-@Api(description = "管理页面查询")
+@Api("管理页面查询")
 @RestController
 @RequestMapping("/api/manage")
 public class ManageByQueryController extends BaseController {

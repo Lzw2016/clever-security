@@ -7,10 +7,10 @@ import org.clever.security.mapper.RememberMeTokenMapper;
 import org.clever.security.mapper.ServiceSysMapper;
 import org.clever.security.mapper.UserLoginLogMapper;
 import org.clever.security.mapper.UserMapper;
-import org.clever.security.service.ISessionService;
-import org.clever.security.session.model.LoginUserDetails;
-import org.clever.security.session.model.UserAuthority;
-import org.clever.security.session.model.UserLoginToken;
+import org.clever.security.model.LoginUserDetails;
+import org.clever.security.model.UserAuthority;
+import org.clever.security.service.ISecurityContextService;
+import org.clever.security.token.SecurityContextToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -25,10 +25,11 @@ import java.util.*;
  * 作者： lzw<br/>
  * 创建时间：2018-11-22 19:33 <br/>
  */
+@SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
-@Service("cookieSessionService")
+@Service("sessionSecurityContextService")
 @Slf4j
-public class CookieSessionService implements ISessionService {
+public class SessionSecurityContextService implements ISecurityContextService {
 
     private static final String SPRING_SECURITY_CONTEXT = "sessionAttr:SPRING_SECURITY_CONTEXT";
 
@@ -61,14 +62,7 @@ public class CookieSessionService implements ISessionService {
         return redisNameSpace + ":sessions:" + sessionId;
     }
 
-    /**
-     * 加载用户安全信息
-     *
-     * @param sysName  系统名
-     * @param userName 用户名
-     * @return 不存在返回null
-     */
-    private UserLoginToken loadUserLoginToken(String sysName, String userName) {
+    private LoginUserDetails loadUserLoginToken(String sysName, String userName) {
         // 获取用所有权限
         User user = userMapper.getByUnique(userName);
         if (user == null) {
@@ -79,9 +73,34 @@ public class CookieSessionService implements ISessionService {
         for (Permission permission : permissionList) {
             userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
         }
-        // 组装 UserLoginToken
-        return new UserLoginToken(userDetails);
+        // TODO 加载角色
+        // userDetails.getRoles().add();
+        return userDetails;
     }
+
+//    /**
+//     * 加载用户安全信息
+//     *
+//     * @param sysName  系统名
+//     * @param userName 用户名
+//     * @return 不存在返回null
+//     */
+//    private SecurityContextToken loadUserLoginToken(BaseLoginToken loginToken, String sysName, String userName) {
+//        // 获取用所有权限
+//        User user = userMapper.getByUnique(userName);
+//        if (user == null) {
+//            return null;
+//        }
+//        List<Permission> permissionList = userMapper.findByUsername(userName, sysName);
+//        LoginUserDetails userDetails = new LoginUserDetails(user);
+//        for (Permission permission : permissionList) {
+//            userDetails.getAuthorities().add(new UserAuthority(permission.getPermissionStr(), permission.getTitle()));
+//        }
+//        // TODO 加载角色
+//        // userDetails.getRoles().add();
+//        // 组装 UserLoginToken
+//        return new SecurityContextToken(loginToken, userDetails);
+//    }
 
     /**
      * 加载用户安全信息
@@ -89,10 +108,7 @@ public class CookieSessionService implements ISessionService {
      * @param newUserLoginToken 新的Token
      * @param oldUserLoginToken 旧的Token
      */
-    private SecurityContext loadSecurityContext(UserLoginToken newUserLoginToken, UserLoginToken oldUserLoginToken) {
-        newUserLoginToken.setLoginType(oldUserLoginToken.getLoginType());
-        newUserLoginToken.setUsername(oldUserLoginToken.getUsername());
-        newUserLoginToken.setPassword(oldUserLoginToken.getPassword());
+    private SecurityContext loadSecurityContext(SecurityContextToken newUserLoginToken, SecurityContextToken oldUserLoginToken) {
         newUserLoginToken.setDetails(oldUserLoginToken.getDetails());
         newUserLoginToken.eraseCredentials();
         // 组装 SecurityContext
@@ -100,7 +116,7 @@ public class CookieSessionService implements ISessionService {
     }
 
     @Override
-    public Map<String, SecurityContext> getSessionSecurityContext(String sysName, String userName) {
+    public Map<String, SecurityContext> getSecurityContext(String sysName, String userName) {
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
         if (serviceSys == null
                 || StringUtils.isBlank(serviceSys.getRedisNameSpace())
@@ -129,7 +145,7 @@ public class CookieSessionService implements ISessionService {
     }
 
     @Override
-    public SecurityContext getSessionSecurityContext(String sessionId) {
+    public SecurityContext getSecurityContext(String sessionId) {
         if (sessionId == null || StringUtils.isBlank(sessionId)) {
             return null;
         }
@@ -150,7 +166,8 @@ public class CookieSessionService implements ISessionService {
     }
 
     @Override
-    public SecurityContext reloadSessionSecurityContext(String sysName, String userName) {
+    public List<SecurityContext> reloadSecurityContext(String sysName, String userName) {
+        List<SecurityContext> newSecurityContextList = new ArrayList<>();
         ServiceSys serviceSys = serviceSysMapper.getBySysName(sysName);
         if (serviceSys == null
                 || StringUtils.isBlank(serviceSys.getRedisNameSpace())
@@ -162,35 +179,40 @@ public class CookieSessionService implements ISessionService {
         if (sessionIds == null) {
             return null;
         }
-        UserLoginToken newUserLoginToken = null;
-        SecurityContext newSecurityContext = null;
+        LoginUserDetails loginUserDetails = null;
         for (Object sessionId : sessionIds) {
             if (sessionId == null || StringUtils.isBlank(sessionId.toString())) {
                 continue;
             }
             String sessionKey = getSessionKey(serviceSys.getRedisNameSpace(), sessionId.toString());
             Object securityObject = sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).get(SPRING_SECURITY_CONTEXT);
-            if (newUserLoginToken == null) {
-                newUserLoginToken = loadUserLoginToken(sysName, userName);
-                if (newUserLoginToken == null) {
+            if (!(securityObject instanceof SecurityContext)) {
+                log.error("重新加载SecurityContext失败, SecurityContext类型错误，{}", securityObject == null ? "null" : securityObject.getClass());
+                continue;
+            }
+            SecurityContext oldSecurityContext = (SecurityContext) securityObject;
+            if (!(oldSecurityContext.getAuthentication() instanceof SecurityContextToken)) {
+                log.error("重新加载SecurityContext失败, Authentication类型错误，{}", oldSecurityContext.getAuthentication().getClass());
+                continue;
+            }
+            SecurityContextToken oldUserLoginToken = (SecurityContextToken) oldSecurityContext.getAuthentication();
+            if (loginUserDetails == null) {
+                loginUserDetails = loadUserLoginToken(sysName, userName);
+                if (loginUserDetails == null) {
                     return null;
                 }
             }
-            if (securityObject instanceof SecurityContext) {
-                SecurityContext oldSecurityContext = (SecurityContext) securityObject;
-                if (oldSecurityContext.getAuthentication() instanceof UserLoginToken) {
-                    UserLoginToken oldUserLoginToken = (UserLoginToken) oldSecurityContext.getAuthentication();
-                    newSecurityContext = loadSecurityContext(newUserLoginToken, oldUserLoginToken);
-                    sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).put(SPRING_SECURITY_CONTEXT, newSecurityContext);
-                }
-            }
+            SecurityContextToken newUserLoginToken = new SecurityContextToken(oldUserLoginToken.getLoginToken(), loginUserDetails);
+            SecurityContext newSecurityContext = loadSecurityContext(newUserLoginToken, oldUserLoginToken);
+            sessionRepository.getSessionRedisOperations().boundHashOps(sessionKey).put(SPRING_SECURITY_CONTEXT, newSecurityContext);
+            newSecurityContextList.add(newSecurityContext);
         }
-        return newSecurityContext;
+        return newSecurityContextList;
     }
 
     @Override
-    public Map<String, SecurityContext> reloadSessionSecurityContext(String userName) {
-        Map<String, SecurityContext> result = new HashMap<>();
+    public Map<String, List<SecurityContext>> reloadSecurityContext(String userName) {
+        Map<String, List<SecurityContext>> result = new HashMap<>();
         List<ServiceSys> sysList = userMapper.findSysByUsername(userName);
         if (sysList == null || sysList.size() <= 0) {
             return result;
@@ -201,8 +223,8 @@ public class CookieSessionService implements ISessionService {
                     || !Objects.equals(EnumConstant.ServiceSys_LoginModel_0, serviceSys.getLoginModel())) {
                 return null;
             }
-            SecurityContext securityContext = reloadSessionSecurityContext(serviceSys.getSysName(), userName);
-            result.put(serviceSys.getSysName(), securityContext);
+            List<SecurityContext> securityContextList = reloadSecurityContext(serviceSys.getSysName(), userName);
+            result.put(serviceSys.getSysName(), securityContextList);
         }
         return result;
     }

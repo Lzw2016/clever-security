@@ -3,7 +3,7 @@ package org.clever.security.service.internal;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.mapper.QueryMapper;
 import org.clever.security.mapper.UserMapper;
-import org.clever.security.service.ISessionService;
+import org.clever.security.service.ISecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class UserBindRoleService {
     @Autowired
     private QueryMapper queryMapper;
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
 
     /**
      * 重新为用户分配角色
@@ -52,6 +52,6 @@ public class UserBindRoleService {
             userMapper.delRole(userName, roleName);
         }
         // 更新Session
-        sessionService.reloadSessionSecurityContext(userName);
+        sessionService.reloadSecurityContext(userName);
     }
 }

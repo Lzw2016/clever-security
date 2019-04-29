@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 19:21 <br/>
  */
-@Api(description = "用户登录日志")
+@Api("用户登录日志")
 @RestController
 @RequestMapping("/api")
 public class UserLoginLogController extends BaseController {

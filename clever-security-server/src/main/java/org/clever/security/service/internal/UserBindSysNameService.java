@@ -2,7 +2,7 @@ package org.clever.security.service.internal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.mapper.UserMapper;
-import org.clever.security.service.ISessionService;
+import org.clever.security.service.ISecurityContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class UserBindSysNameService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private ISessionService sessionService;
+    private ISecurityContextService sessionService;
 
     /**
      * 重置用户系统绑定
