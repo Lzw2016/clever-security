@@ -13,8 +13,8 @@ import org.clever.security.authorization.RequestAccessDecisionVoter;
 import org.clever.security.config.model.LoginConfig;
 import org.clever.security.config.model.RememberMeConfig;
 import org.clever.security.jackson2.CleverSecurityJackson2Module;
-import org.clever.security.rememberme.LoginRememberMeServices;
-import org.clever.security.rememberme.LoginTokenRepository;
+import org.clever.security.rememberme.RememberMeRepository;
+import org.clever.security.rememberme.RememberMeServices;
 import org.clever.security.rememberme.RememberMeUserDetailsChecker;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.clever.security.strategy.SessionExpiredStrategy;
@@ -36,7 +36,6 @@ import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.security.web.authentication.NullRememberMeServices;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.session.ConcurrentSessionControlAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -153,23 +152,23 @@ public class ApplicationSecurityBean {
      */
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
     @Bean
-    protected RememberMeServices rememberMeServices(
+    protected org.springframework.security.web.authentication.RememberMeServices rememberMeServices(
             @Autowired RememberMeUserDetailsChecker rememberMeUserDetailsChecker,
             @Autowired GlobalUserDetailsService userDetailsService,
-            @Autowired LoginTokenRepository loginTokenRepository) {
+            @Autowired RememberMeRepository rememberMeRepository) {
         RememberMeConfig rememberMe = securityConfig.getRememberMe();
         if (rememberMe == null || rememberMe.getEnable() == null || !rememberMe.getEnable()) {
             return new NullRememberMeServices();
         }
-        LoginRememberMeServices rememberMeServices = new LoginRememberMeServices(
-                LoginRememberMeServices.REMEMBER_ME_KEY,
+        RememberMeServices rememberMeServices = new RememberMeServices(
+                RememberMeServices.REMEMBER_ME_KEY,
                 userDetailsService,
-                loginTokenRepository,
+                rememberMeRepository,
                 rememberMeUserDetailsChecker);
         rememberMeServices.setAlwaysRemember(rememberMe.getAlwaysRemember());
         rememberMeServices.setParameter(CollectLoginToken.REMEMBER_ME_PARAM);
         rememberMeServices.setTokenValiditySeconds((int) rememberMe.getValidity().getSeconds());
-        rememberMeServices.setCookieName(LoginRememberMeServices.REMEMBER_ME_COOKIE_NAME);
+        rememberMeServices.setCookieName(RememberMeServices.REMEMBER_ME_COOKIE_NAME);
 //        rememberMeServices.setTokenLength();
 //        rememberMeServices.setSeriesLength();
 //        rememberMeServices.setUserDetailsChecker();

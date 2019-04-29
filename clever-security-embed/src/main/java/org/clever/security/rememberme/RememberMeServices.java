@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServletRequest;
  * 创建时间：2018-09-20 20:23 <br/>
  */
 @Slf4j
-public class LoginRememberMeServices extends PersistentTokenBasedRememberMeServices {
+public class RememberMeServices extends PersistentTokenBasedRememberMeServices {
 
     public static final String REMEMBER_ME_KEY = "remember-me-key";
     public static final String REMEMBER_ME_COOKIE_NAME = "remember-me";
 
 
-    public LoginRememberMeServices(
+    public RememberMeServices(
             String key,
             UserDetailsService userDetailsService,
             PersistentTokenRepository tokenRepository,

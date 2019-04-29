@@ -1,12 +1,14 @@
 package org.clever.security.rememberme;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.Constant;
 import org.clever.security.client.RememberMeTokenClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.RememberMeTokenAddReq;
 import org.clever.security.dto.request.RememberMeTokenUpdateReq;
 import org.clever.security.entity.RememberMeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.web.authentication.rememberme.PersistentRememberMeToken;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
@@ -18,9 +20,10 @@ import java.util.Date;
  * 作者： lzw<br/>
  * 创建时间：2018-09-21 19:52 <br/>
  */
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "loginModel", havingValue = "session")
 @Component
 @Slf4j
-public class LoginTokenRepository implements PersistentTokenRepository {
+public class RememberMeRepository implements PersistentTokenRepository {
 
     @Autowired
     private SecurityConfig securityConfig;

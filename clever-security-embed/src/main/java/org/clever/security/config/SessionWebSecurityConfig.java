@@ -9,7 +9,7 @@ import org.clever.security.config.model.LoginConfig;
 import org.clever.security.config.model.RememberMeConfig;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;
-import org.clever.security.rememberme.LoginRememberMeServices;
+import org.clever.security.rememberme.RememberMeServices;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +20,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
@@ -60,7 +59,7 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
     @Autowired
     private SessionInformationExpiredStrategy sessionInformationExpiredStrategy;
     @Autowired
-    private RememberMeServices rememberMeServices;
+    private org.springframework.security.web.authentication.RememberMeServices rememberMeServices;
 
     @Override
     PasswordEncoder getPasswordEncoder() {
@@ -126,8 +125,8 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
                     .alwaysRemember(rememberMe.getAlwaysRemember())
                     .tokenValiditySeconds((int) rememberMe.getValidity().getSeconds())
                     .rememberMeParameter(CollectLoginToken.REMEMBER_ME_PARAM)
-                    .rememberMeCookieName(LoginRememberMeServices.REMEMBER_ME_COOKIE_NAME)
-                    .key(LoginRememberMeServices.REMEMBER_ME_KEY)
+                    .rememberMeCookieName(RememberMeServices.REMEMBER_ME_COOKIE_NAME)
+                    .key(RememberMeServices.REMEMBER_ME_KEY)
             ;
         }
         // 登录并发控制
