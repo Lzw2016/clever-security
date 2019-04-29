@@ -8,11 +8,11 @@ import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
+import org.clever.security.token.SecurityContextToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
@@ -81,27 +81,23 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
      */
     @Override
     public int vote(Authentication authentication, FilterInvocation filterInvocation, Collection<ConfigAttribute> attributes) {
-        Object principal = authentication.getPrincipal();
-        if (principal == null) {
-            log.info("### 放弃授权(principal为空) -> [{}]", filterInvocation.getRequestUrl());
+        if (!(authentication instanceof SecurityContextToken)) {
+            log.info("### 放弃授权(authentication类型不匹配SecurityContextToken) -> [{}] [{}]", authentication.getClass().getSimpleName(), filterInvocation.getRequestUrl());
             return ACCESS_ABSTAIN;
         }
-        if (!(principal instanceof UserDetails)) {
-            log.info("### 放弃授权(principal类型不匹配UserDetails) -> [{}] [{}]", principal.getClass().getSimpleName(), filterInvocation.getRequestUrl());
+        SecurityContextToken securityContextToken = (SecurityContextToken) authentication;
+        LoginUserDetails loginUserDetails = securityContextToken.getUserDetails();
+        if (loginUserDetails == null) {
+            log.info("### 放弃授权(loginUserDetails为空) -> [{}]", filterInvocation.getRequestUrl());
             return ACCESS_ABSTAIN;
         }
-        UserDetails userDetails = (UserDetails) principal;
-        if (!(userDetails instanceof LoginUserDetails)) {
-            log.info("### 放弃授权(UserDetails类型不匹配CustomUserDetails) -> [{}]", filterInvocation.getRequestUrl());
-            return ACCESS_ABSTAIN;
-        }
-        LoginUserDetails loginUserDetails = (LoginUserDetails) userDetails;
-        log.info("### 开始授权 [username={}] -> [{}]", userDetails.getUsername(), filterInvocation.getRequestUrl());
-        HandlerExecutionChain handlerExecutionChain = null;
+        log.info("### 开始授权 [username={}] -> [{}]", loginUserDetails.getUsername(), filterInvocation.getRequestUrl());
+        HandlerExecutionChain handlerExecutionChain;
         try {
             handlerExecutionChain = requestMappingHandlerMapping.getHandler(filterInvocation.getHttpRequest());
         } catch (Throwable e) {
             log.warn("### 授权时出现异常", e);
+            return ACCESS_DENIED;
         }
         if (handlerExecutionChain == null) {
             log.info("### 授权通过(未知的资源404) -> [{}]", filterInvocation.getRequestUrl());
