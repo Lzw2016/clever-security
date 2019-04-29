@@ -156,7 +156,7 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Authentication currentLogined = SecurityContextHolder.getContext().getAuthentication();
         if (currentLogined != null && currentLogined.isAuthenticated() && !authenticationTrustResolver.isRememberMe(currentLogined)) {
-            log.info("### 当前Session已登录拦截 [{}]", currentLogined.toString());
+            log.info("### 当前用户已登录拦截 [{}]", currentLogined.toString());
             return currentLogined;
         }
         if (authentication.isAuthenticated()) {
@@ -165,8 +165,9 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
         }
         log.info("### 开始验证用户[{}]", authentication.toString());
         if (!(authentication instanceof BaseLoginToken)) {
-            throw new BadLoginTypeException("不支持的登录信息");
+            throw new BadLoginTypeException(String.format("不支持的登录信息,%s | %s", authentication.getClass(), authentication.toString()));
         }
+        // 获取对应的认证组件
         AuthenticationLoginToken authenticationLoginToken = null;
         for (AuthenticationLoginToken tmp : authenticationLoginTokenList) {
             if (tmp.supports(authentication.getClass())) {
@@ -216,8 +217,10 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
         }
         // 返回认证成功的 Authentication
         Authentication successAuthentication = createSuccessAuthentication(loginToken, loadedUser);
-        // 登录并发控制
-        concurrentLogin(loadedUser.getUsername());
+        // JwtToken 并发登录控制
+        if (LoginModel.jwt.equals(loginModel)) {
+            concurrentLogin(loadedUser.getUsername());
+        }
         return successAuthentication;
     }
 
@@ -264,13 +267,9 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
     }
 
     /**
-     * 并发登录处理
+     * JwtToken 并发登录控制
      */
     private void concurrentLogin(String username) {
-        if (!LoginModel.jwt.equals(loginModel)) {
-            return;
-        }
-        // JwtToken 方式才处理
         if (concurrentLoginCount <= 0) {
             return;
         }
