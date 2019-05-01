@@ -112,7 +112,6 @@ clever:
   security:
     enable-debug: false
     sys-name: '权限系统Demo'
-    wait-spring-context-init-count: 2
     default-need-authorization: true
     ignore-urls:
     - '/swagger-ui*/**'

@@ -9,8 +9,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * 初始化系统的所有Url权限
  * <p>
@@ -25,19 +23,15 @@ public class InitSystemUrlPermission implements ApplicationListener<ContextRefre
      * 是否初始化完成
      */
     private volatile boolean initFinish = false;
-    private AtomicInteger count = new AtomicInteger(0);
     @Autowired
     private SecurityConfig securityConfig;
     @Autowired
     private InitSystemUrlPermissionJob job;
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        count.addAndGet(1);
-        log.info("### [系统权限初始化] 当前Spring容器初始化次数 {} ", count.get());
-        if (count.get() < securityConfig.getWaitSpringContextInitCount()) {
-            log.info("### [系统权限初始化] 等待Spring容器初始化次数 {} ", count.get());
+        if (job == null) {
+            log.info("等待InitSystemUrlPermissionJob注入...");
             return;
         }
         if (initFinish) {

@@ -122,7 +122,6 @@ clever:
     login-model: jwt
     enable-debug: false
     sys-name: ${spring.application.name}
-    wait-spring-context-init-count: 2
     ignore-urls:
       # swagger
       - '/swagger-ui*/**'
@@ -190,9 +189,30 @@ clever:
 ###################################################################################
 ### Feign配置
 ###################################################################################
-spring.main.allow-bean-definition-overriding: true
+#spring.main.allow-bean-definition-overriding: true
+
 # CommonClientConfigKey 实现
 clever-security-server:
   ribbon:
-    list-of-servers: ['127.0.0.1:28080']
+    listOfServers: '127.0.0.1:28080'
+    list-of-servers: '127.0.0.1:28080'
 
+
+
+#feign:
+#  hystrix.enabled: true
+#  okhttp.enabled: true
+#  compression:
+#    request:
+#      enabled: true
+#    response:
+#      enabled: true
+#  client:
+#    default-to-properties: true
+#    default-config: default
+#    config:
+#      default:
+#        loggerLevel: FULL
+#        connectTimeout: 5000
+#        readTimeout: 5000
+#        # requestInterceptors:

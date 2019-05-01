@@ -11,7 +11,7 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-10-23 10:23 <br/>
  */
-@FeignClient(name = "clever-security-server", path = "/api")
+@FeignClient(contextId = "org.clever.security.client.ServiceSysClient", name = "clever-security-server", path = "/api")
 public interface ServiceSysClient {
 
     /**

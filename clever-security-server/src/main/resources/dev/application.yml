@@ -157,7 +157,6 @@ clever:
     login-model: jwt
     enable-debug: false
     sys-name: ${spring.application.name}
-    wait-spring-context-init-count: 1
     ignore-urls:
       # swagger
       - '/swagger-ui*/**'
