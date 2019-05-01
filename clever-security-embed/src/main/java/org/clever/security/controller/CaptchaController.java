@@ -40,7 +40,7 @@ public class CaptchaController {
         String code = ValidateCodeSourceUtils.getRandString(4);
         byte[] image = ImageValidateCageUtils.createImage(code);
         // 3分钟有效
-        Long captchaEffectiveTime = 18000000L;
+        Long captchaEffectiveTime = 180000L;
         String imageDigestHeader = "ImageDigest";
         if (securityConfig.getLogin() != null && securityConfig.getLogin().getCaptchaEffectiveTime() != null) {
             captchaEffectiveTime = securityConfig.getLogin().getCaptchaEffectiveTime();
