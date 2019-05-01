@@ -33,6 +33,10 @@ public class SecurityConfig {
      */
     private String sysName;
     /**
+     * 等待spring容器初始化次数(用于系统启动之后初始化系统权限)
+     */
+    private Integer waitSpringContextInitCount = 0;
+    /**
      * 是否需要控制Web资源权限，默认true(true 需要；false 不要)
      */
     private Boolean defaultNeedAuthorization = true;

@@ -157,6 +157,7 @@ clever:
     login-model: jwt
     enable-debug: false
     sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 1
     ignore-urls:
       # swagger
       - '/swagger-ui*/**'
@@ -178,6 +179,7 @@ clever:
       - '/'
       - '/login/captcha.png'
       - '/login/refresh_token.json'
+      - '/api/**'
     default-need-authorization: true
     ignore-authorization-urls:
       - '/login/user_info.json'
@@ -199,7 +201,7 @@ clever:
       login-failure-redirect-page: '/login.html'
       need-captcha: false
       need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 18000
+      captcha-effective-time: 18000000
       concurrent-login-count: 1
       not-allow-after-login: false
     remember-me:

@@ -54,8 +54,8 @@ spring:
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
-    host: '127.0.0.1'
-    port: 6379
+    host: 39.108.68.132
+    port: 16379
     timeout: 1s
     database: 0
     lettuce:
@@ -122,6 +122,7 @@ clever:
     login-model: jwt
     enable-debug: false
     sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 7
     ignore-urls:
       # swagger
       - '/swagger-ui*/**'
@@ -164,7 +165,7 @@ clever:
       login-failure-redirect-page: '/login.html'
       need-captcha: true
       need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 18000
+      captcha-effective-time: 18000000
       concurrent-login-count: 1
       not-allow-after-login: false
     remember-me:
@@ -194,25 +195,32 @@ clever:
 # CommonClientConfigKey 实现
 clever-security-server:
   ribbon:
-    listOfServers: '127.0.0.1:28080'
-    list-of-servers: '127.0.0.1:28080'
+    listOfServers: 'http://127.0.0.1:28080'
+    ConnectTimeout: 5000
+    ReadTimeout: 5000
 
+ribbon:
+  okhttp.enabled: true
+#  eager-load:
+#    enabled: true
+#    clients:
+#      - org.clever.security.client.ServiceSysClient
+#      - org.clever.security.client.WebPermissionClient
 
-
-#feign:
-#  hystrix.enabled: true
-#  okhttp.enabled: true
-#  compression:
-#    request:
-#      enabled: true
-#    response:
-#      enabled: true
-#  client:
-#    default-to-properties: true
-#    default-config: default
-#    config:
-#      default:
-#        loggerLevel: FULL
-#        connectTimeout: 5000
-#        readTimeout: 5000
-#        # requestInterceptors:
+feign:
+  hystrix.enabled: true
+  okhttp.enabled: true
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  client:
+    default-to-properties: true
+    default-config: default
+    config:
+      default:
+        loggerLevel: BASIC
+        connectTimeout: 5000
+        readTimeout: 5000
+        # requestInterceptors:

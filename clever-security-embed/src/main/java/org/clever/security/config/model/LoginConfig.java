@@ -68,7 +68,7 @@ public class LoginConfig {
     /**
      * 验证码有效时间(毫秒)
      */
-    private Long captchaEffectiveTime = 60000L;
+    private Long captchaEffectiveTime = 60000000L;
 
     /**
      * 同一个用户并发登录次数限制(-1表示不限制)

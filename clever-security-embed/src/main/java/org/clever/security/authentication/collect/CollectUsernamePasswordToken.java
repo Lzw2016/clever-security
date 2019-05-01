@@ -51,8 +51,8 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
             username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
             password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
         }
-        if (LoginTypeConstant.UsernamePassword.equalsIgnoreCase(loginType)) {
-            return true;
+        if (StringUtils.isNotBlank(loginType)) {
+            return LoginTypeConstant.UsernamePassword.equalsIgnoreCase(loginType);
         }
         return StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password);
     }

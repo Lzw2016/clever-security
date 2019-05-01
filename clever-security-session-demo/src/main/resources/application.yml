@@ -112,6 +112,7 @@ clever:
   security:
     enable-debug: false
     sys-name: '权限系统Demo'
+    wait-spring-context-init-count: 0
     default-need-authorization: true
     ignore-urls:
     - '/swagger-ui*/**'
@@ -149,7 +150,7 @@ clever:
       login-failure-redirect-page: '/login.html'
       need-captcha: true
       need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 60000
+      captcha-effective-time: 18000000
       concurrent-login-count: 1
       not-allow-after-login: false
     logout:

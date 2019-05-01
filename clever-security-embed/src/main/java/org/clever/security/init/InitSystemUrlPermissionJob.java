@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.GlobalJob;
 import org.clever.common.utils.IDCreateUtils;
-import org.clever.common.utils.exception.ExceptionUtils;
 import org.clever.common.utils.reflection.ReflectionsUtils;
 import org.clever.security.LoginModel;
 import org.clever.security.annotation.UrlAuthorization;
@@ -50,12 +49,13 @@ public class InitSystemUrlPermissionJob extends GlobalJob {
 
     @Override
     protected void exceptionHandle(Throwable e) {
-        log.info("### 初始化系统的所有Url权限异常", e);
-        throw ExceptionUtils.unchecked(e);
+        log.info("### [系统权限初始化] 初始化系统的所有Url权限异常", e);
+        // throw ExceptionUtils.unchecked(e);
     }
 
     @Override
     protected void internalExecute() {
+        log.info("### [系统权限初始化] 开始初始化...");
         // 注册系统信息
         ServiceSysAddReq serviceSysAddReq = new ServiceSysAddReq();
         serviceSysAddReq.setSysName(securityConfig.getSysName());

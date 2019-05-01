@@ -20,6 +20,9 @@ import javax.servlet.http.HttpSession;
 @Slf4j
 public class TestController {
 
+//    @Autowired
+//    private DefaultClientConfigImpl config;
+
     @GetMapping("/01")
     public Object test(HttpServletRequest request) {
         HttpSession httpSession = request.getSession(false);

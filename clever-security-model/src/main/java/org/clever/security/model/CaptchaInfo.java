@@ -18,7 +18,7 @@ public class CaptchaInfo implements Serializable {
     private String code;
 
     /**
-     * 创建时间戳
+     * 创建时间戳(毫秒)
      */
     private Long createTime;
 
