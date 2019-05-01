@@ -1,6 +1,5 @@
 package org.clever.security.token.login;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,14 +10,13 @@ import org.clever.security.LoginTypeConstant;
  * 作者： lzw<br/>
  * 创建时间：2019-04-27 21:19 <br/>
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
 public class UsernamePasswordToken extends BaseLoginToken {
 
     /**
      * 用户名
      */
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(value = "principal", access = JsonProperty.Access.WRITE_ONLY)
     @Setter
     @Getter
     private String username;

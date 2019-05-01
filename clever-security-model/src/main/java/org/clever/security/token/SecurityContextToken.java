@@ -1,7 +1,6 @@
 package org.clever.security.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.ToString;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.token.login.BaseLoginToken;
@@ -13,7 +12,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
  * 作者： lzw<br/>
  * 创建时间：2019-04-27 20:50 <br/>
  */
-@JsonIgnoreProperties(value = {"details"})
+//@JsonIgnoreProperties(value = {"details"})
 @ToString(exclude = {"userDetails"})
 public class SecurityContextToken extends AbstractAuthenticationToken {
 

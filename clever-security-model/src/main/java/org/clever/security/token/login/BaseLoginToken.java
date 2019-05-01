@@ -1,6 +1,7 @@
 package org.clever.security.token.login;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -19,7 +20,7 @@ import java.util.Collection;
  * 作者： lzw<br/>
  * 创建时间：2019-04-27 20:46 <br/>
  */
-@JsonIgnoreProperties(value = {"isRememberMe", "credentials", "authorities"})
+@JsonIgnoreProperties(value = {"isRememberMe", "credentials", "authorities", "name"})
 public abstract class BaseLoginToken implements Authentication, CredentialsContainer, Serializable {
 
     /**
@@ -32,6 +33,7 @@ public abstract class BaseLoginToken implements Authentication, CredentialsConta
     /**
      * 当前登录类型(用户名密码、手机号验证码、其他三方登录方式)
      */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Setter
     @Getter
     private String loginType;
