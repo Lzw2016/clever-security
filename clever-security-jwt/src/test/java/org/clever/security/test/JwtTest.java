@@ -144,10 +144,10 @@ public class JwtTest {
 
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(jws);
 
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(jws);
-        jwtToken.setHeader(claimsJws.getHeader());
-        jwtToken.setClaims(claimsJws.getBody());
+        JwtToken JwtToken = new JwtToken();
+        JwtToken.setToken(jws);
+        JwtToken.setHeader(claimsJws.getHeader());
+        JwtToken.setClaims(claimsJws.getBody());
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
@@ -163,7 +163,7 @@ public class JwtTest {
 //        objectMapper.registerModules(modules);
         objectMapper.registerModule(new CleverSecurityJackson2Module());
         GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-        String json = new String(genericJackson2JsonRedisSerializer.serialize(jwtToken));
+        String json = new String(genericJackson2JsonRedisSerializer.serialize(JwtToken));
         log.info("### json -> {}", json);
         Object object = genericJackson2JsonRedisSerializer.deserialize(json.getBytes());
         log.info("### object -> {}", object);

@@ -138,14 +138,14 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (authentication != null && authentication.isAuthenticated() && !authenticationTrustResolver.isRememberMe(authentication)) {
             // 已经登录成功了
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
-            JwtToken jwtToken = redisJwtRepository.getJwtToken(request);
+            JwtToken JwtToken = redisJwtRepository.getJwtToken(request);
             String json = JacksonMapper.nonEmptyMapper().toJson(
                     new JwtLoginRes(
                             true,
                             "您已经登录成功了无须多次登录",
                             userRes,
-                            jwtToken.getToken(),
-                            jwtToken.getRefreshToken()
+                            JwtToken.getToken(),
+                            JwtToken.getRefreshToken()
                     )
             );
             if (!response.isCommitted()) {

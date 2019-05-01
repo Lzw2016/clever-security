@@ -1,5 +1,6 @@
 package org.clever.security.token.login;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -18,6 +19,7 @@ import java.util.Collection;
  * 作者： lzw<br/>
  * 创建时间：2019-04-27 20:46 <br/>
  */
+@JsonIgnoreProperties(value = {"isRememberMe", "credentials", "authorities"})
 public abstract class BaseLoginToken implements Authentication, CredentialsContainer, Serializable {
 
     /**

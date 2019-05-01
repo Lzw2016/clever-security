@@ -32,8 +32,8 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
     @Override
     public boolean supports(HttpServletRequest request, boolean isSubmitBody) throws IOException {
         String loginType;
-        String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
-        String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
+        String username;
+        String password;
         if (isSubmitBody) {
             // 使用Json方式提交数据
             Object json = request.getAttribute(Constant.Login_Data_Body_Request_Key);
@@ -42,8 +42,9 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
                 request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
             }
             JSONObject object = new JSONObject(json.toString());
-            loginType = object.optString(LOGIN_TYPE_PARAM);
-
+            loginType = StringUtils.trimToEmpty(object.optString(LOGIN_TYPE_PARAM));
+            username = StringUtils.trimToEmpty(object.optString(USERNAME_PARAM));
+            password = StringUtils.trimToEmpty(object.optString(PASSWORD_PARAM));
         } else {
             // 使用Parameter提交数据
             loginType = StringUtils.trimToEmpty(request.getParameter(LOGIN_TYPE_PARAM));

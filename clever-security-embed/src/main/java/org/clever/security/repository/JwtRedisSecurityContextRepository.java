@@ -5,6 +5,7 @@ import org.clever.security.token.JwtAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,9 +37,9 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
         JwtAccessToken jwtAccessToken;
         try {
             jwtAccessToken = redisJwtRepository.getJwtToken(request);
-            log.info("### JWTToken 验证成功");
+            log.info("### JwtToken 验证成功");
         } catch (Throwable e) {
-            log.warn("### JWTToken 验证失败");
+            log.warn("### JwtToken 验证失败", e);
             return SecurityContextHolder.createEmptyContext();
         }
         // 读取 context
@@ -47,8 +48,7 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
             securityContext = redisJwtRepository.getSecurityContext(jwtAccessToken);
             log.info("### 读取SecurityContext成功");
         } catch (Throwable e) {
-            log.warn("### 读取SecurityContext失败");
-            return SecurityContextHolder.createEmptyContext();
+            throw new InternalAuthenticationServiceException("读取SecurityContext失败", e);
         }
         return securityContext;
     }

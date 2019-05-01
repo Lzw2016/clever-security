@@ -180,7 +180,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             log.info("### 验证码校验通过");
         }
         // 验证登录
-        return this.getAuthenticationManager().authenticate(authentication);
+        return this.getAuthenticationManager().authenticate(loginToken);
     }
 
     /**

@@ -24,9 +24,9 @@ public class DelegateSecurityContextService implements ISecurityContextService {
 
     private final List<ISecurityContextService> sessionServiceList = new ArrayList<>();
 
-    public DelegateSecurityContextService(SessionSecurityContextService cookieSessionService, JwtTokenSecurityContextService jwtTokenSessionService) {
+    public DelegateSecurityContextService(SessionSecurityContextService cookieSessionService, JwtTokenSecurityContextService JwtTokenSessionService) {
         sessionServiceList.add(cookieSessionService);
-        sessionServiceList.add(jwtTokenSessionService);
+        sessionServiceList.add(JwtTokenSessionService);
     }
 
     @Override

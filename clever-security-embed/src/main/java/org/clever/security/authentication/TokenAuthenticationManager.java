@@ -282,10 +282,10 @@ public class TokenAuthenticationManager implements AuthenticationProvider {
             List<String> list = ketSet.stream().sorted().collect(Collectors.toList());
             int delCount = list.size() - concurrentLoginCount + 1;
             for (int i = 0; i < delCount; i++) {
-                String jwtTokenKey = list.get(i);
+                String JwtTokenKey = list.get(i);
                 JwtAccessToken jwtAccessToken = null;
                 try {
-                    jwtAccessToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
+                    jwtAccessToken = redisJwtRepository.getJwtTokenByKey(JwtTokenKey);
                 } catch (Throwable ignored) {
                 }
                 assert jwtAccessToken != null;

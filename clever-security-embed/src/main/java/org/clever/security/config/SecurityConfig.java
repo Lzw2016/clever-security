@@ -68,7 +68,7 @@ public class SecurityConfig {
     /**
      * Session 过期需要跳转的地址，值为空就不跳转
      */
-    private String sessionExpiredRedirectUrl = null;
+    private String sessionExpiredRedirectUrl = "/index.html";
 
     // ----------------------------------------------------------------------------------------
 

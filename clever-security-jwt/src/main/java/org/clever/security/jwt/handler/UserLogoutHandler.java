@@ -27,17 +27,17 @@ public class UserLogoutHandler implements LogoutHandler {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         // UserLoginToken userLoginToken = AuthenticationUtils.getUserLoginToken(authentication);
-        JwtToken jwtToken = null;
+        JwtToken JwtToken = null;
         try {
-            jwtToken = redisJwtRepository.getJwtToken(request);
+            JwtToken = redisJwtRepository.getJwtToken(request);
         } catch (Throwable ignored) {
         }
-        if (jwtToken != null) {
-            redisJwtRepository.deleteJwtToken(jwtToken);
+        if (JwtToken != null) {
+            redisJwtRepository.deleteJwtToken(JwtToken);
             log.info("### 删除 JWT Token成功");
-            Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(jwtToken.getClaims().getSubject());
+            Set<String> ketSet = redisJwtRepository.getJwtTokenPatternKey(JwtToken.getClaims().getSubject());
             if (ketSet != null && ketSet.size() <= 0) {
-                redisJwtRepository.deleteSecurityContext(jwtToken.getClaims().getSubject());
+                redisJwtRepository.deleteSecurityContext(JwtToken.getClaims().getSubject());
                 log.info("### 删除 SecurityContext 成功");
             }
         }

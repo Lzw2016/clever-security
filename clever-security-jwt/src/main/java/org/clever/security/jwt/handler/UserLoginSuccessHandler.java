@@ -56,20 +56,20 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         requestCache.removeRequest(request, response);
         clearAuthenticationAttributes(request, authentication.getName());
         // 登录成功保存 JwtToken RefreshToken
-        JwtToken jwtToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
+        JwtToken JwtToken = redisJwtRepository.saveJwtToken(AuthenticationUtils.getUserLoginToken(authentication));
         redisJwtRepository.saveSecurityContext(new SecurityContextImpl(authentication));
         log.info("### 已保存 JWT Token 和 SecurityContext");
         // 写入登录成功日志
-        addLoginLog(authentication, jwtToken);
+        addLoginLog(authentication, JwtToken);
         // 登录成功 - 返回JSon数据
-        sendJsonData(response, authentication, jwtToken);
+        sendJsonData(response, authentication, JwtToken);
     }
 
     /**
      * 写入登录成功日志
      */
-    private void addLoginLog(Authentication authentication, JwtToken jwtToken) {
-        String jwtTokenId = jwtToken.getClaims().getId();
+    private void addLoginLog(Authentication authentication, JwtToken JwtToken) {
+        String JwtTokenId = JwtToken.getClaims().getId();
         String loginIp = null;
         if (authentication.getDetails() instanceof WebAuthenticationDetails) {
             WebAuthenticationDetails webAuthenticationDetails = (WebAuthenticationDetails) authentication.getDetails();
@@ -82,7 +82,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));
         userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
         userLoginLog.setLoginModel(EnumConstant.ServiceSys_LoginModel_1);
-        userLoginLog.setSessionId(StringUtils.trimToEmpty(jwtTokenId));
+        userLoginLog.setSessionId(StringUtils.trimToEmpty(JwtTokenId));
         userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
         try {
             userLoginLogClient.addUserLoginLog(userLoginLog);
@@ -95,16 +95,16 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response, Authentication authentication, JwtToken jwtToken) throws IOException {
-        response.setHeader(GenerateKeyService.JwtTokenHeaderKey, jwtToken.getToken());
+    private void sendJsonData(HttpServletResponse response, Authentication authentication, JwtToken JwtToken) throws IOException {
+        response.setHeader(GenerateKeyService.JwtTokenHeaderKey, JwtToken.getToken());
         UserRes userRes = AuthenticationUtils.getUserRes(authentication);
         String json = JacksonMapper.nonEmptyMapper().toJson(
                 new JwtLoginRes(
                         true,
                         "登录成功",
                         userRes,
-                        jwtToken.getToken(),
-                        jwtToken.getRefreshToken()
+                        JwtToken.getToken(),
+                        JwtToken.getRefreshToken()
                 )
         );
         log.info("### 登录成功不需要跳转 -> [{}]", json);

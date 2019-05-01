@@ -47,7 +47,7 @@ spring:
   resources: #------------------------------------------------ html、js、css 静态资源
     chain:
       cache: true
-      gzipped: true
+      compressed: true
     cache:
       period: 31536000s
     static-locations: ['classpath:/static/']
@@ -77,7 +77,7 @@ spring:
         instance-zone: wuhan
         instance-group: svc
         tags:
-        - serviceName=${spring.application.name}
+          - serviceName=${spring.application.name}
         health-check-path: '/actuator/health'
         health-check-interval: 1s
 
@@ -90,85 +90,109 @@ management:
     web:
       exposure:
         include:
-        - health
-        - info
-        - env
-        - metrics
-        - prometheus
+          - health
+          - info
+          - env
+          - metrics
+          - prometheus
   endpoint:
     prometheus:
       enabled: true
   metrics:
+    enable:
+      root: true
     export:
       prometheus:
         enabled: true
         descriptions: true
-        step: 30s
+        step: 5s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.75, 0.9, 0.95, 0.99
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s, 2s, 3s, 4s, 5s, 10s, 15s, 20s, 30s, 50s
 
 ###################################################################################
 ### clever security配置
 ###################################################################################
 clever:
   security:
-    jwt:
-      enable-debug: true
-      sys-name: 'clever-security-jwt-demo'
-      wait-spring-context-init-count: 2
-      default-need-authorization: true
-      ignore-urls:
+    login-model: jwt
+    enable-debug: false
+    sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 2
+    ignore-urls:
+      # swagger
       - '/swagger-ui*/**'
       - '/webjars/springfox*/**'
       - '/swagger-resources*/**'
       - '/v2/api-docs'
-      - '/favicon.ico'
       - '/csrf'
       - '/error'
-
+      # 静态资源
       - '/favicon.ico'
+      - '/dist/**'
+      - '/static/**'
+      - '/*.png'
+      - '/*.js'
+      - '/*.css'
+      - '/*.html'
+      # 基本请求
+      - '/actuator/**'
+      - '/'
       - '/login/captcha.png'
       - '/login/refresh_token.json'
-      - '/dist/**'
-      - '/api/user'
-      - '/actuator/**'
-      ignore-authorization-urls:
+    default-need-authorization: true
+    ignore-authorization-urls:
+      - '/login/user_info.json'
       - '/test/**'
-      hide-user-not-found-exceptions: true
-      not-login-need-forward: false
-      forbidden-need-forward: false
-      forbidden-forward-page: '/403.html'
-      session-expired-redirect-url:
-      login:
-        login-page: '/login.html'
-        login-url: '/login.json'
-        username-parameter: 'username'
-        password-parameter: 'password'
-        captcha-parameter: 'captcha'
-        captcha-digest-parameter: 'captchaDigest'
-        remember-me-parameter: 'remember-me'
-        post-only: true
-        json-data-submit: true
-        login-success-need-redirect: false
-        login-success-redirect-page: '/index.html'
-        login-failure-need-redirect: false
-        login-failure-need-forward: false
-        login-failure-redirect-page: '/login.html'
-        need-captcha: true
-        need-captcha-by-login-fail-count: 3
-        captcha-effective-time: 300000
-        concurrent-login-count: 3
-        not-allow-after-login: false
-      login-req-aes-key:
-        req-password-aes-key: '636c657665722d736563757288888888'
-        req-password-aes-iv: '636c657665722d736563757266666666'
-      logout:
-        logout-url: '/logout.json'
-        logout-success-need-redirect: false
-        logout-success-redirect-page: '/login.html'
+    hide-user-not-found-exceptions: true
+    not-login-need-forward: false
+    forbidden-need-forward: false
+    forbidden-forward-page: '/403.html'
+    session-expired-redirect-url: '/index.html'
+    login:
+      login-page: '/login.html'
+      login-url: '/login.json'
+      post-only: true
+      json-data-submit: true
+      login-success-need-redirect: false
+      login-success-redirect-page: '/index.html'
+      login-failure-need-redirect: false
+      login-failure-need-forward: false
+      login-failure-redirect-page: '/login.html'
+      need-captcha: true
+      need-captcha-by-login-fail-count: 3
+      captcha-effective-time: 18000
+      concurrent-login-count: 1
+      not-allow-after-login: false
+    remember-me:
+      enable: true
+      always-remember: false
+      validity: 30d
+    login-req-aes-key:
+      req-password-aes-key: '636c657665722d736563757288888888'
+      req-password-aes-iv: '636c657665722d736563757266666666'
+    logout:
+      logout-url: '/logout.json'
+      logout-success-need-redirect: false
+      logout-success-redirect-page: '/login.html'
+    token-config:
+      redis-namespace: ${spring.application.name}
+      secret-key: 'clever-security-jwt|${spring.application.name}'
+      token-validity: 7d
+      token-validity-for-remember-me: 15d
+      refresh-token-validity: 30d
+      hours-in-day: '03:45:00'
 
 ###################################################################################
 ### Feign配置
 ###################################################################################
+spring.main.allow-bean-definition-overriding: true
 # CommonClientConfigKey 实现
 clever-security-server:
   ribbon:
-    listOfServers: '127.0.0.1:28080'
+    list-of-servers: ['127.0.0.1:28080']
+

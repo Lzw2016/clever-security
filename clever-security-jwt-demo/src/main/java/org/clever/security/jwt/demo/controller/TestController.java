@@ -14,7 +14,7 @@ import javax.servlet.http.HttpSession;
  * 作者： lzw<br/>
  * 创建时间：2018-09-14 18:05 <br/>
  */
-@Api(description = "测试")
+@Api("测试")
 @RequestMapping("/test")
 @RestController
 @Slf4j

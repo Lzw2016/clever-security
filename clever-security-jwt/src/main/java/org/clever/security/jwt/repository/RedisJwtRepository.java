@@ -10,7 +10,7 @@ import org.clever.security.jwt.model.JwtToken;
 import org.clever.security.jwt.model.RefreshToken;
 import org.clever.security.jwt.model.UserLoginToken;
 import org.clever.security.jwt.service.GenerateKeyService;
-import org.clever.security.jwt.service.JWTTokenService;
+import org.clever.security.jwt.service.JwtTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,7 +37,7 @@ public class RedisJwtRepository {
     private final Duration refreshTokenValidity;
 
     @Autowired
-    private JWTTokenService jwtTokenService;
+    private JwtTokenService jwtTokenService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
@@ -64,36 +64,36 @@ public class RedisJwtRepository {
             }
         }
         // 保存 JwtToken
-        JwtToken jwtToken = jwtTokenService.createToken(userLoginToken, rememberMe);
-        String jwtTokenKey = generateKeyService.getJwtTokenKey(jwtToken.getClaims());
-        if (jwtToken.getClaims().getExpiration() == null) {
-            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken);
+        JwtToken JwtToken = jwtTokenService.createToken(userLoginToken, rememberMe);
+        String JwtTokenKey = generateKeyService.getJwtTokenKey(JwtToken.getClaims());
+        if (JwtToken.getClaims().getExpiration() == null) {
+            redisTemplate.opsForValue().set(JwtTokenKey, JwtToken);
         } else {
-            long timeout = jwtToken.getClaims().getExpiration().getTime() - System.currentTimeMillis();
-            redisTemplate.opsForValue().set(jwtTokenKey, jwtToken, timeout, TimeUnit.MILLISECONDS);
+            long timeout = JwtToken.getClaims().getExpiration().getTime() - System.currentTimeMillis();
+            redisTemplate.opsForValue().set(JwtTokenKey, JwtToken, timeout, TimeUnit.MILLISECONDS);
         }
         // 保存 RefreshToken
-        String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
-        RefreshToken refreshToken = new RefreshToken(userLoginToken.getName(), jwtToken.getClaims().getId());
+        String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(JwtToken.getRefreshToken());
+        RefreshToken refreshToken = new RefreshToken(userLoginToken.getName(), JwtToken.getClaims().getId());
         if (refreshTokenValidity.getSeconds() <= 0) {
             redisTemplate.opsForValue().set(jwtRefreshTokenKey, refreshToken);
         } else {
             redisTemplate.opsForValue().set(jwtRefreshTokenKey, refreshToken, refreshTokenValidity.getSeconds(), TimeUnit.SECONDS);
         }
-        return jwtToken;
+        return JwtToken;
     }
 
-    public void deleteJwtTokenByKey(String jwtTokenKey) {
-        JwtToken jwtToken = getJwtTokenByKey(jwtTokenKey);
-        deleteJwtToken(jwtToken);
+    public void deleteJwtTokenByKey(String JwtTokenKey) {
+        JwtToken JwtToken = getJwtTokenByKey(JwtTokenKey);
+        deleteJwtToken(JwtToken);
     }
 
-    public void deleteJwtToken(JwtToken jwtToken) {
+    public void deleteJwtToken(JwtToken JwtToken) {
         // 删除 JwtToken
-        String jwtTokenKey = generateKeyService.getJwtTokenKey(jwtToken.getClaims());
-        redisTemplate.delete(jwtTokenKey);
+        String JwtTokenKey = generateKeyService.getJwtTokenKey(JwtToken.getClaims());
+        redisTemplate.delete(JwtTokenKey);
         // 删除 RefreshToken
-        String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(jwtToken.getRefreshToken());
+        String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(JwtToken.getRefreshToken());
         redisTemplate.delete(jwtRefreshTokenKey);
     }
 
@@ -115,12 +115,12 @@ public class RedisJwtRepository {
     }
 
     public JwtToken getJwtToken(String username, String tokenId) {
-        String jwtTokenKey = generateKeyService.getJwtTokenKey(username, tokenId);
-        return getJwtTokenByKey(jwtTokenKey);
+        String JwtTokenKey = generateKeyService.getJwtTokenKey(username, tokenId);
+        return getJwtTokenByKey(JwtTokenKey);
     }
 
-    public JwtToken getJwtTokenByKey(String jwtTokenKey) {
-        Object object = redisTemplate.opsForValue().get(jwtTokenKey);
+    public JwtToken getJwtTokenByKey(String JwtTokenKey) {
+        Object object = redisTemplate.opsForValue().get(JwtTokenKey);
         if (object == null) {
             throw new BusinessException("JwtToken已过期");
         }
@@ -164,8 +164,8 @@ public class RedisJwtRepository {
         redisTemplate.delete(securityContextKey);
     }
 
-    public SecurityContext getSecurityContext(JwtToken jwtToken) {
-        return getSecurityContext(jwtToken.getClaims().getSubject());
+    public SecurityContext getSecurityContext(JwtToken JwtToken) {
+        return getSecurityContext(JwtToken.getClaims().getSubject());
     }
 
     public SecurityContext getSecurityContext(Claims claims) {

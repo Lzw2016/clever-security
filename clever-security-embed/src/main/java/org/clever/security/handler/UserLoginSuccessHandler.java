@@ -134,7 +134,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
      * 写入登录成功日志
      */
     private void addLoginLog(Authentication authentication, JwtAccessToken jwtAccessToken) {
-        String jwtTokenId = jwtAccessToken.getClaims().getId();
+        String JwtTokenId = jwtAccessToken.getClaims().getId();
         String loginIp = null;
         if (authentication.getDetails() instanceof WebAuthenticationDetails) {
             WebAuthenticationDetails webAuthenticationDetails = (WebAuthenticationDetails) authentication.getDetails();
@@ -147,7 +147,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));
         userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
         userLoginLog.setLoginModel(EnumConstant.ServiceSys_LoginModel_1);
-        userLoginLog.setSessionId(StringUtils.trimToEmpty(jwtTokenId));
+        userLoginLog.setSessionId(StringUtils.trimToEmpty(JwtTokenId));
         userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
         try {
             userLoginLogClient.addUserLoginLog(userLoginLog);

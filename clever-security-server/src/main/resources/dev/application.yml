@@ -94,7 +94,7 @@ spring:
         instance-zone: wuhan
         instance-group: svc
         tags:
-        - serviceName=${spring.application.name}
+          - serviceName=${spring.application.name}
         health-check-path: '/actuator/health'
         health-check-interval: 1s
 
@@ -107,11 +107,11 @@ management:
     web:
       exposure:
         include:
-        - health
-        - info
-        - env
-        - metrics
-        - prometheus
+          - health
+          - info
+          - env
+          - metrics
+          - prometheus
   endpoint:
     prometheus:
       enabled: true
@@ -158,32 +158,36 @@ clever:
     enable-debug: false
     sys-name: ${spring.application.name}
     wait-spring-context-init-count: 1
-    default-need-authorization: true
     ignore-urls:
-    - '/swagger-ui*/**'
-    - '/webjars/springfox*/**'
-    - '/swagger-resources*/**'
-    - '/v2/api-docs'
-    - '/favicon.ico'
-    - '/csrf'
-    - '/error'
-    - '/login/captcha.png'
-    - '/dist/**'
-    - '/static/**'
-    - '/'
-    - '/*.png'
-    - '/*.js'
-    - '/*.css'
-    - '/*.html'
-    - '/actuator/**'
+      # swagger
+      - '/swagger-ui*/**'
+      - '/webjars/springfox*/**'
+      - '/swagger-resources*/**'
+      - '/v2/api-docs'
+      - '/csrf'
+      - '/error'
+      # 静态资源
+      - '/favicon.ico'
+      - '/dist/**'
+      - '/static/**'
+      - '/*.png'
+      - '/*.js'
+      - '/*.css'
+      - '/*.html'
+      # 基本请求
+      - '/actuator/**'
+      - '/'
+      - '/login/captcha.png'
+      - '/login/refresh_token.json'
+    default-need-authorization: true
     ignore-authorization-urls:
-    - '/login/user_info.json'
-    - '/api/**'
+      - '/login/user_info.json'
+      - '/api/**'
     hide-user-not-found-exceptions: true
     not-login-need-forward: false
     forbidden-need-forward: false
     forbidden-forward-page: '/403.html'
-    session-expired-redirect-url:
+    session-expired-redirect-url: '/index.html'
     login:
       login-page: '/login.html'
       login-url: '/login.json'
@@ -196,7 +200,7 @@ clever:
       login-failure-redirect-page: '/login.html'
       need-captcha: false
       need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 60000
+      captcha-effective-time: 18000
       concurrent-login-count: 1
       not-allow-after-login: false
     remember-me:
@@ -210,7 +214,13 @@ clever:
       logout-url: '/logout.json'
       logout-success-need-redirect: false
       logout-success-redirect-page: '/login.html'
-
+    token-config:
+      redis-namespace: ${spring.application.name}
+      secret-key: 'clever-security-jwt|${spring.application.name}'
+      token-validity: 7d
+      token-validity-for-remember-me: 15d
+      refresh-token-validity: 30d
+      hours-in-day: '03:45:00'
   config:
     req-aes-key: '636c657665722d73656375726974792d'
     req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'

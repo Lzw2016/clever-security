@@ -232,13 +232,13 @@ public class UserLoginTokenAuthenticationProvider implements AuthenticationProvi
             List<String> list = ketSet.stream().sorted().collect(Collectors.toList());
             int delCount = list.size() - concurrentLoginCount + 1;
             for (int i = 0; i < delCount; i++) {
-                String jwtTokenKey = list.get(i);
-                JwtToken jwtToken = null;
+                String JwtTokenKey = list.get(i);
+                JwtToken JwtToken = null;
                 try {
-                    jwtToken = redisJwtRepository.getJwtTokenByKey(jwtTokenKey);
+                    JwtToken = redisJwtRepository.getJwtTokenByKey(JwtTokenKey);
                 } catch (Throwable ignored) {
                 }
-                redisJwtRepository.deleteJwtToken(jwtToken);
+                redisJwtRepository.deleteJwtToken(JwtToken);
             }
         }
     }

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class JWTTokenService {
+public class JwtTokenService {
 
     private static final String PermissionKey = "permissions";
     private static final String RoleKey = "roles";
@@ -56,7 +56,7 @@ public class JWTTokenService {
      */
     private final String hoursInDay;
 
-    protected JWTTokenService(SecurityConfig securityConfig) {
+    protected JwtTokenService(SecurityConfig securityConfig) {
         SecurityConfig.TokenConfig tokenConfig = securityConfig.getTokenConfig();
         if (tokenConfig == null) {
             throw new BusinessException("未配置TokenConfig");
@@ -119,12 +119,12 @@ public class JWTTokenService {
                 .compact();
         // 构建返回数据
         Jws<Claims> claimsJws = Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(token);
-        jwtToken.setHeader(claimsJws.getHeader());
-        jwtToken.setClaims(claimsJws.getBody());
-        jwtToken.setRefreshToken(createRefreshToken(authentication.getName()));
-        return jwtToken;
+        JwtToken JwtToken = new JwtToken();
+        JwtToken.setToken(token);
+        JwtToken.setHeader(claimsJws.getHeader());
+        JwtToken.setClaims(claimsJws.getBody());
+        JwtToken.setRefreshToken(createRefreshToken(authentication.getName()));
+        return JwtToken;
     }
 
     /**

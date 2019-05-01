@@ -26,7 +26,7 @@ import java.util.*;
  */
 @SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
-@Service("jwtTokenSecurityContextService")
+@Service("JwtTokenSecurityContextService")
 @Slf4j
 public class JwtTokenSecurityContextService implements ISecurityContextService {
 
@@ -183,10 +183,10 @@ public class JwtTokenSecurityContextService implements ISecurityContextService {
         newSecurityContextList.add(newSecurityContext);
         redisTemplate.opsForValue().set(securityContextKey, newSecurityContext);
         // 删除 JwtToken
-        String jwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
-        Set<String> jwtTokenKeySet = redisTemplate.keys(jwtTokenKeyPattern);
-        if (jwtTokenKeySet != null && jwtTokenKeySet.size() > 0) {
-            redisTemplate.delete(jwtTokenKeySet);
+        String JwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
+        Set<String> JwtTokenKeySet = redisTemplate.keys(JwtTokenKeyPattern);
+        if (JwtTokenKeySet != null && JwtTokenKeySet.size() > 0) {
+            redisTemplate.delete(JwtTokenKeySet);
         }
         return newSecurityContextList;
     }
@@ -220,11 +220,11 @@ public class JwtTokenSecurityContextService implements ISecurityContextService {
             return 0;
         }
         // 删除 JwtToken
-        String jwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
-        Set<String> jwtTokenKeySet = redisTemplate.keys(jwtTokenKeyPattern);
-        if (jwtTokenKeySet != null && jwtTokenKeySet.size() > 0) {
-            redisTemplate.delete(jwtTokenKeySet);
-            count = jwtTokenKeySet.size();
+        String JwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
+        Set<String> JwtTokenKeySet = redisTemplate.keys(JwtTokenKeyPattern);
+        if (JwtTokenKeySet != null && JwtTokenKeySet.size() > 0) {
+            redisTemplate.delete(JwtTokenKeySet);
+            count = JwtTokenKeySet.size();
         }
         // 删除 RefreshToken
         String jwtRefreshTokenKeyPattern = getJwtRefreshTokenKey(serviceSys.getRedisNameSpace(), userName + ":*");
@@ -261,10 +261,10 @@ public class JwtTokenSecurityContextService implements ISecurityContextService {
             return;
         }
         // 删除 JwtToken
-        String jwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
-        Set<String> jwtTokenKeySet = redisTemplate.keys(jwtTokenKeyPattern);
-        if (jwtTokenKeySet != null && jwtTokenKeySet.size() > 0) {
-            redisTemplate.delete(jwtTokenKeySet);
+        String JwtTokenKeyPattern = getJwtTokenPatternKey(serviceSys.getRedisNameSpace(), userName);
+        Set<String> JwtTokenKeySet = redisTemplate.keys(JwtTokenKeyPattern);
+        if (JwtTokenKeySet != null && JwtTokenKeySet.size() > 0) {
+            redisTemplate.delete(JwtTokenKeySet);
         }
         // 删除 RefreshToken
         String jwtRefreshTokenKeyPattern = getJwtRefreshTokenKey(serviceSys.getRedisNameSpace(), userName + ":*");

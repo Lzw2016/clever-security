@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class JWTTokenService {
+public class JwtTokenService {
 
     private static final String PermissionKey = "permissions";
     private static final String RoleKey = "roles";
@@ -57,7 +57,7 @@ public class JWTTokenService {
      */
     private final String hoursInDay;
 
-    protected JWTTokenService(SecurityConfig securityConfig) {
+    protected JwtTokenService(SecurityConfig securityConfig) {
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         if (tokenConfig == null) {
             throw new BusinessException("未配置TokenConfig");

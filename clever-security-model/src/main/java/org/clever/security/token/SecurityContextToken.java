@@ -1,7 +1,7 @@
 package org.clever.security.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.ToString;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.token.login.BaseLoginToken;
@@ -13,20 +13,17 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
  * 作者： lzw<br/>
  * 创建时间：2019-04-27 20:50 <br/>
  */
+@JsonIgnoreProperties(value = {"details"})
 @ToString(exclude = {"userDetails"})
 public class SecurityContextToken extends AbstractAuthenticationToken {
 
     /**
      * 用户登录请求参数Token
      */
-    @JsonIgnore
-    @Getter
     private BaseLoginToken loginToken;
     /**
      * 数据库中用户信息
      */
-    @JsonIgnore
-    @Getter
     private LoginUserDetails userDetails;
 
     /**
@@ -71,5 +68,15 @@ public class SecurityContextToken extends AbstractAuthenticationToken {
         super.eraseCredentials();
         loginToken.eraseCredentials();
         userDetails.eraseCredentials();
+    }
+
+    @JsonIgnore
+    public BaseLoginToken getLoginToken() {
+        return loginToken;
+    }
+
+    @JsonIgnore
+    public LoginUserDetails getUserDetails() {
+        return userDetails;
     }
 }

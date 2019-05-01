@@ -33,18 +33,18 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
         HttpServletRequest request = requestResponseHolder.getRequest();
-        JwtToken jwtToken;
+        JwtToken JwtToken;
         try {
-            jwtToken = redisJwtRepository.getJwtToken(request);
-            log.info("### JWTToken 验证成功");
+            JwtToken = redisJwtRepository.getJwtToken(request);
+            log.info("### JwtToken 验证成功");
         } catch (Throwable e) {
-            log.warn("### JWTToken 验证失败");
+            log.warn("### JwtToken 验证失败");
             return SecurityContextHolder.createEmptyContext();
         }
         // 读取 context
         SecurityContext securityContext;
         try {
-            securityContext = redisJwtRepository.getSecurityContext(jwtToken);
+            securityContext = redisJwtRepository.getSecurityContext(JwtToken);
             log.info("### 读取SecurityContext成功");
         } catch (Throwable e) {
             log.warn("### 读取SecurityContext失败");
