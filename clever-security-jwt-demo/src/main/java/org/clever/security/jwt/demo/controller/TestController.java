@@ -23,6 +23,9 @@ public class TestController {
 //    @Autowired
 //    private DefaultClientConfigImpl config;
 
+//    @Autowired
+//    private IClientConfig clientConfig;
+
     @GetMapping("/01")
     public Object test(HttpServletRequest request) {
         HttpSession httpSession = request.getSession(false);
@@ -36,4 +39,9 @@ public class TestController {
     public Object test2() {
         return SecurityContextHolder.getContext();
     }
+
+//    @GetMapping("/03")
+//    public Object test3() {
+//        return clientConfig;
+//    }
 }

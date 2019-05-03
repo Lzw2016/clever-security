@@ -18,9 +18,13 @@ import java.util.TimeZone;
 @EnableFeignClients(basePackages = {"org.clever.security.client"})
 @SpringBootApplication(scanBasePackages = {"org.clever"})
 public class StartJwtDemoApp {
+
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
         ApplicationContext ctx = SpringApplication.run(StartJwtDemoApp.class, args);
         log.info("### 服务启动完成 === " + ctx);
+
+        // InitSystemUrlPermissionJob initJob = ctx.getBean(InitSystemUrlPermissionJob.class);
+        // initJob.execute();
     }
 }
