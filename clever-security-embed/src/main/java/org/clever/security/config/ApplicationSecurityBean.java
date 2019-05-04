@@ -78,19 +78,7 @@ public class ApplicationSecurityBean {
     @Bean("redisTemplate")
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         // 自定义 ObjectMapper
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-//        objectMapper.setDateFormat();
-//        objectMapper.setDefaultMergeable()
-//        objectMapper.setDefaultPropertyInclusion()
-//        objectMapper.setDefaultSetterInfo()
-//        objectMapper.setDefaultVisibility()
-        // 查看Spring的实现 SecurityJackson2Modules
-        List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
-        objectMapper.findAndRegisterModules();
-        objectMapper.registerModules(modules);
-        objectMapper.registerModule(new CleverSecurityJackson2Module());
+        ObjectMapper objectMapper = newObjectMapper();
         // 创建 RedisTemplate
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
@@ -188,19 +176,7 @@ public class ApplicationSecurityBean {
     @Bean("springSessionDefaultRedisSerializer")
     protected RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         //解决查询缓存转换异常的问题
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-//        objectMapper.setDateFormat();
-//        objectMapper.setDefaultMergeable()
-//        objectMapper.setDefaultPropertyInclusion()
-//        objectMapper.setDefaultSetterInfo()
-//        objectMapper.setDefaultVisibility()
-        // 查看Spring的实现 SecurityJackson2Modules
-        List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
-        objectMapper.findAndRegisterModules();
-        objectMapper.registerModules(modules);
-        objectMapper.registerModule(new CleverSecurityJackson2Module());
+        ObjectMapper objectMapper = newObjectMapper();
         return new GenericJackson2JsonRedisSerializer(objectMapper);
     }
 
@@ -220,5 +196,22 @@ public class ApplicationSecurityBean {
     @Bean
     protected SpringSessionBackedSessionRegistry sessionRegistry(@Autowired RedisOperationsSessionRepository sessionRepository) {
         return new SpringSessionBackedSessionRegistry<>(sessionRepository);
+    }
+
+    private ObjectMapper newObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+//        objectMapper.setDateFormat();
+//        objectMapper.setDefaultMergeable()
+//        objectMapper.setDefaultPropertyInclusion()
+//        objectMapper.setDefaultSetterInfo()
+//        objectMapper.setDefaultVisibility()
+        // 查看Spring的实现 SecurityJackson2Modules
+        List<Module> modules = SecurityJackson2Modules.getModules(getClass().getClassLoader());
+        objectMapper.findAndRegisterModules();
+        objectMapper.registerModules(modules);
+        objectMapper.registerModule(new CleverSecurityJackson2Module());
+        return objectMapper;
     }
 }

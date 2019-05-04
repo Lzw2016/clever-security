@@ -25,10 +25,10 @@ public class HttpSessionDestroyedListener implements ApplicationListener<Session
     @Autowired
     private UserLoginLogClient userLoginLogClient;
 
-    // org.springframework.session.events.SessionDestroyedEvent;
     @SuppressWarnings("NullableProblems")
     @Override
     public void onApplicationEvent(SessionDestroyedEvent event) {
+        // org.springframework.session.events.SessionDestroyedEvent;
         if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
             log.error("### 注销Session [{}] -> 不应该创建HttpSession", event.getId());
         } else {

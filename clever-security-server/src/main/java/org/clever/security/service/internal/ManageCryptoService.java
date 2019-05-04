@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  * 作者： lzw<br/>
  * 创建时间：2018-11-12 9:29 <br/>
  */
-@SuppressWarnings("unused")
 @Component
 @Slf4j
 public class ManageCryptoService {
