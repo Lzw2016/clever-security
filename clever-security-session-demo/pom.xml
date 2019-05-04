@@ -42,6 +42,25 @@
             <groupId>org.clever</groupId>
             <artifactId>clever-security-embed</artifactId>
         </dependency>
+        <!--clever-security-session-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
+        <!--feign-http-->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-okhttp</artifactId>
+        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.openfeign</groupId>-->
+        <!--            <artifactId>feign-httpclient</artifactId>-->
+        <!--            <version>10.2.0</version>-->
+        <!--        </dependency>-->
     </dependencies>
 
     <build>
