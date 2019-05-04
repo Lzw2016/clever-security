@@ -20,15 +20,15 @@ import java.util.TimeZone;
 @EnableFeignClients(basePackages = {"org.clever.security.client"})
 @EnableRedisHttpSession(
         cleanupCron = "0/3 * * * * *",
-        maxInactiveIntervalInSeconds = 60,
-        redisNamespace = "spring:session:demo",
+        maxInactiveIntervalInSeconds = 3600,
+        redisNamespace = "clever-security-session-demo",
         redisFlushMode = RedisFlushMode.ON_SAVE
 )
 @SpringBootApplication(scanBasePackages = {"org.clever"})
-public class StartDemoApp {
+public class StartSessionDemoApp {
     public static void main(String[] args) {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
-        ApplicationContext ctx = SpringApplication.run(StartDemoApp.class, args);
+        ApplicationContext ctx = SpringApplication.run(StartSessionDemoApp.class, args);
         log.info("### 服务启动完成 === " + ctx);
     }
 }

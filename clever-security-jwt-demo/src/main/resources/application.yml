@@ -192,7 +192,6 @@ clever:
 ### Feign配置
 ###################################################################################
 #spring.main.allow-bean-definition-overriding: true
-
 # DefaultClientConfigImpl.loadProperties(restClientName)加载配置,配置定义位置CommonClientConfigKey
 clever-security-server:
   ribbon:

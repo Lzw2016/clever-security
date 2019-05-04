@@ -47,15 +47,15 @@ spring:
   resources: #------------------------------------------------ html、js、css 静态资源
     chain:
       cache: true
-      gzipped: true
+      compressed: true
     cache:
       period: 31536000s
     static-locations: ['classpath:/static/']
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
-    host: '127.0.0.1'
-    port: 6379
+    host: 39.108.68.132
+    port: 16379
     timeout: 1s
     database: 0
     lettuce:
@@ -77,7 +77,7 @@ spring:
         instance-zone: wuhan
         instance-group: svc
         tags:
-        - serviceName=${spring.application.name}
+          - serviceName=${spring.application.name}
         health-check-path: '/actuator/health'
         health-check-interval: 1s
 
@@ -90,57 +90,73 @@ management:
     web:
       exposure:
         include:
-        - health
-        - info
-        - env
-        - metrics
-        - prometheus
+          - health
+          - info
+          - env
+          - metrics
+          - prometheus
   endpoint:
     prometheus:
       enabled: true
   metrics:
+    enable:
+      root: true
     export:
       prometheus:
         enabled: true
         descriptions: true
-        step: 30s
+        step: 5s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.75, 0.9, 0.95, 0.99
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s, 2s, 3s, 4s, 5s, 10s, 15s, 20s, 30s, 50s
 
 ###################################################################################
 ### clever security配置
 ###################################################################################
 clever:
   security:
+    login-model: session
     enable-debug: false
-    sys-name: '权限系统Demo'
-    wait-spring-context-init-count: 0
-    default-need-authorization: true
+    sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 8
+    #wait-spring-context-init-count: 100
     ignore-urls:
-    - '/swagger-ui*/**'
-    - '/webjars/springfox*/**'
-    - '/swagger-resources*/**'
-    - '/v2/api-docs'
-    - '/favicon.ico'
-    - '/csrf'
-    - '/error'
-
-    - '/favicon.ico'
-    - '/login/captcha.png'
-    - '/dist/**'
-    - '/api/user'
-    - '/actuator/**'
+      # swagger
+      - '/swagger-ui*/**'
+      - '/webjars/springfox*/**'
+      - '/swagger-resources*/**'
+      - '/v2/api-docs'
+      - '/csrf'
+      - '/error'
+      # 静态资源
+      - '/favicon.ico'
+      - '/dist/**'
+      - '/static/**'
+      - '/*.png'
+      - '/*.js'
+      - '/*.css'
+      - '/*.html'
+      # 基本请求
+      - '/actuator/**'
+      - '/'
+      - '/login/captcha.png'
+      - '/login/refresh_token.json'
+    default-need-authorization: true
     ignore-authorization-urls:
-    - '/test/config'
+      - '/login/user_info.json'
+      - '/test/**'
     hide-user-not-found-exceptions: true
-    notLoginNeedForward: false
+    not-login-need-forward: false
     forbidden-need-forward: false
     forbidden-forward-page: '/403.html'
-    session-expired-redirect-url:
+    session-expired-redirect-url: '/index.html'
     login:
       login-page: '/login.html'
       login-url: '/login.json'
-      username-parameter: 'username'
-      password-parameter: 'password'
-      captcha-parameter: 'captcha'
       post-only: true
       json-data-submit: true
       login-success-need-redirect: false
@@ -153,20 +169,52 @@ clever:
       captcha-effective-time: 180000
       concurrent-login-count: 1
       not-allow-after-login: false
+    remember-me:
+      enable: true
+      always-remember: false
+      validity: 30d
+    login-req-aes-key:
+      req-password-aes-key: '636c657665722d736563757288888888'
+      req-password-aes-iv: '636c657665722d736563757266666666'
     logout:
       logout-url: '/logout.json'
       logout-success-need-redirect: false
       logout-success-redirect-page: '/login.html'
-    remember-me:
-      enable: true
-      always-remember: false
-      validity-seconds: 2592000
-      remember-Me-Parameter-Name: 'remember-me'
 
 ###################################################################################
 ### Feign配置
 ###################################################################################
-# CommonClientConfigKey 实现
+#spring.main.allow-bean-definition-overriding: true
+# DefaultClientConfigImpl.loadProperties(restClientName)加载配置,配置定义位置CommonClientConfigKey
 clever-security-server:
   ribbon:
-    listOfServers: '127.0.0.1:28080'
+    listOfServers: 'http://127.0.0.1:28080'
+    ConnectTimeout: 5000
+    ReadTimeout: 5000
+
+ribbon:
+  okhttp.enabled: true
+#  eager-load:
+#    enabled: true
+#    clients:
+#      - clever-security-server
+#      - org.clever.security.client.ServiceSysClient
+#      - org.clever.security.client.WebPermissionClient
+
+feign:
+  hystrix.enabled: true
+  okhttp.enabled: true
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  client:
+    default-to-properties: true
+    default-config: default
+    config:
+      default:
+        loggerLevel: BASIC
+        connectTimeout: 5000
+        readTimeout: 5000
+        # requestInterceptors:
