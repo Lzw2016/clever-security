@@ -2,7 +2,6 @@ package org.clever.security.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.common.server.controller.BaseController;
 import org.clever.security.dto.request.UserAuthenticationReq;
 import org.clever.security.dto.response.UserAuthenticationRes;
@@ -48,16 +47,6 @@ public class UserController extends BaseController {
     @ApiOperation("用户登录认证")
     @PostMapping("/user/authentication")
     public UserAuthenticationRes authentication(@RequestBody @Validated UserAuthenticationReq req) {
-        UserAuthenticationRes userAuthenticationRes = new UserAuthenticationRes();
-        if (StringUtils.isBlank(req.getLoginType())) {
-            req.setLoginType("username");
-        }
-        try {
-            userAuthenticationRes.setSuccess(userService.authentication(req));
-        } catch (Exception e) {
-            userAuthenticationRes.setSuccess(false);
-            userAuthenticationRes.setFailMessage(e.getMessage());
-        }
-        return userAuthenticationRes;
+        return userService.authenticationAndRes(req);
     }
 }

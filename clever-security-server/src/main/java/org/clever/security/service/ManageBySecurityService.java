@@ -121,6 +121,7 @@ public class ManageBySecurityService {
         return result;
     }
 
+    @SuppressWarnings("Duplicates")
     @Transactional
     public UserBindSysRes userBindSys(UserSysReq userSysReq) {
         // 校验用户存在
@@ -140,6 +141,7 @@ public class ManageBySecurityService {
         return userBindSysRes;
     }
 
+    @SuppressWarnings("Duplicates")
     @Transactional
     public UserBindSysRes userUnBindSys(UserSysReq userSysReq) {
         // 校验用户存在

@@ -28,6 +28,7 @@ public class RequestCryptoService {
      *
      * @return Base64编码密码
      */
+    @SuppressWarnings("Duplicates")
     public String reqAesEncrypt(String input) {
         try {
             AesKeyConfig aesKey = securityConfig.getLoginReqAesKey();
@@ -48,6 +49,7 @@ public class RequestCryptoService {
      *
      * @param input Base64编码密码
      */
+    @SuppressWarnings("Duplicates")
     public String reqAesDecrypt(String input) {
         try {
             AesKeyConfig aesKey = securityConfig.getLoginReqAesKey();

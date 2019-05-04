@@ -40,16 +40,6 @@ public class UserServiceProxy implements UserClient {
 
     @Override
     public UserAuthenticationRes authentication(UserAuthenticationReq req) {
-        UserAuthenticationRes userAuthenticationRes = new UserAuthenticationRes();
-        if (StringUtils.isBlank(req.getLoginType())) {
-            req.setLoginType("username");
-        }
-        try {
-            userAuthenticationRes.setSuccess(userService.authentication(req));
-        } catch (Exception e) {
-            userAuthenticationRes.setSuccess(false);
-            userAuthenticationRes.setFailMessage(e.getMessage());
-        }
-        return userAuthenticationRes;
+        return userService.authenticationAndRes(req);
     }
 }

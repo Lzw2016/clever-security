@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.server.service.BaseService;
 import org.clever.security.dto.request.UserAuthenticationReq;
+import org.clever.security.dto.response.UserAuthenticationRes;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.User;
@@ -89,5 +90,19 @@ public class UserService extends BaseService {
             throw new BusinessException("不支持的登录类型");
         }
         return true;
+    }
+
+    public UserAuthenticationRes authenticationAndRes(UserAuthenticationReq req) {
+        UserAuthenticationRes userAuthenticationRes = new UserAuthenticationRes();
+        if (StringUtils.isBlank(req.getLoginType())) {
+            req.setLoginType("username");
+        }
+        try {
+            userAuthenticationRes.setSuccess(authentication(req));
+        } catch (Exception e) {
+            userAuthenticationRes.setSuccess(false);
+            userAuthenticationRes.setFailMessage(e.getMessage());
+        }
+        return userAuthenticationRes;
     }
 }
