@@ -3,12 +3,14 @@ package org.clever.security.event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.Constant;
 import org.clever.security.LoginModel;
 import org.clever.security.client.UserLoginLogClient;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.UserLoginLogAddReq;
 import org.clever.security.entity.EnumConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
@@ -18,10 +20,11 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 /**
- * 登录事件监听
+ * 登录事件监听(写入登录成功的SessionID日志)
  * 作者： lzw<br/>
  * 创建时间：2018-09-18 13:55 <br/>
  */
+@ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
 @Component
 @Slf4j
 public class LoginSuccessListener implements ApplicationListener<AuthenticationSuccessEvent> {
@@ -31,6 +34,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
     @Autowired
     private UserLoginLogClient userLoginLogClient;
 
+    @SuppressWarnings("Duplicates")
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
         Authentication authentication = event.getAuthentication();

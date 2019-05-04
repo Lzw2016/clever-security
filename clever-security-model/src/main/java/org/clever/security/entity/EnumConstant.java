@@ -77,7 +77,7 @@ public class EnumConstant {
     public static final Integer UserLoginLog_LoginState_2 = 2;
 
     /**
-     * 登录类型，0：sesion-cookie
+     * 登录类型，0：session-cookie
      */
     public static final Integer ServiceSys_LoginModel_0 = 0;
 

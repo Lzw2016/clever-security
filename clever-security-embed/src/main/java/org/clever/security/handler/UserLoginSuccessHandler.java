@@ -131,8 +131,9 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     /**
-     * 写入登录成功日志
+     * 写入登录成功日志(JwtToken日志)
      */
+    @SuppressWarnings("Duplicates")
     private void addLoginLog(Authentication authentication, JwtAccessToken jwtAccessToken) {
         String JwtTokenId = jwtAccessToken.getClaims().getId();
         String loginIp = null;
