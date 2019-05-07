@@ -42,8 +42,8 @@ steps:
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
     settings:
-      host: ssh.msvc.top
-      port: 18822
+      host: 192.168.159.1
+      port: 22
       username:
         from_secret: ssh_username
       password:
@@ -55,16 +55,16 @@ steps:
         - cd /Applications/Docker.app/Contents/Resources/bin
         - ls
         - echo "------------------< 停止容器 >------------------"
-        - docker stop clever-security-server
+        - ./docker stop clever-security-server
         - echo "------------------< 删除容器 >------------------"
-        - docker rm -v clever-security-server
+        - ./docker rm -v clever-security-server
         - echo "------------------< 删除旧镜像 >------------------"
-        - docker rmi 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - ./docker rmi 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 拉取新镜像 >------------------"
-        - docker pull 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
-        - docker tag 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT java-service/clever-security-server:0.0.1-SNAPSHOT
+        - ./docker pull 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - ./docker tag 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 运行新镜像 >------------------"
-        - docker run --name clever-security-server -p 28081:9066 -v /Users/lzw/Desktop/docker-opt/logs/java-service:/logs -d java-service/clever-security-server:0.0.1-SNAPSHOT
+        - ./docker run --name clever-security-server -p 28081:9066 -v /Users/lzw/Desktop/docker-opt/logs/java-service:/logs -d java-service/clever-security-server:0.0.1-SNAPSHOT
         - exit
 
   - name: 发送通知[Email]
