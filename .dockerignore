@@ -1,0 +1,32 @@
+# IDEA 默认排除的
+*.class
+*.log
+*.ctxt
+.mtj.tmp/
+hs_err_pid*
+
+# 常见的包文件
+*.zip
+*.tar.gz
+*.rar
+*.ear
+*.war
+#*.jar
+
+# 自定义排除的文件
+*.java
+*.xml
+*.iml
+*.properties
+
+# 自定义排除的文件夹
+.git
+.idea
+clever-security-client
+clever-security-model
+clever-security-embed
+clever-security-server/src
+clever-security-jwt-demo
+clever-security-session-demo
+image
+

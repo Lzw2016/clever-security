@@ -1,0 +1,87 @@
+# 跳过构建在Commit Message中添加 [CI SKIP]
+kind: pipeline
+name: 打包部署[Java-Maven]
+
+clone:
+  disable: true
+
+steps:
+  - name: 下载源代码[Git]
+    image: docker:git
+    commands:
+      - echo "### $DRONE_GIT_HTTP_URL -> $DRONE_BRANCH"
+      - git clone $DRONE_GIT_HTTP_URL ./
+      - git checkout $DRONE_BRANCH
+
+  - name: 编译源代码[Maven]
+    image: maven:3.6.0-jdk-8-alpine
+    volumes:
+      - name: package-java
+        path: /package-java
+    commands:
+      - mvn package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V -Pdev --settings /package-java/Maven/settings.xml
+      # - mvn deploy -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V -Pdev --settings /package-java/Maven/settings.xml
+      # - cp -f puli-learn-server/target/puli-learn-server-*-SNAPSHOT.jar /package-java
+
+  - name: 构建镜像[Docker]
+    image: plugins/docker
+    settings:
+      registry: '172.17.0.1:15000'
+      repo: '172.17.0.1:15000/java-service/clever-security-server'
+      # bip: true
+      insecure: true
+      dockerfile: ./Dockerfile
+      target: dev
+      tags: ['0.0.1-SNAPSHOT']
+      force_tag: true
+      auto_tag: false
+      auto_tag_suffix: ''
+
+  - name: 启动Docker容器[SSH]
+    image: appleboy/drone-ssh
+    settings:
+      host: 172.17.0.1
+      port: 22
+      username:
+        from_secret: SshUsername
+      password:
+        from_secret: SshPassword
+      command_timeout: 300s
+      script:
+        - echo "------------------< 停止容器 >------------------"
+        - docker stop clever-security-server
+        - echo "------------------< 删除容器 >------------------"
+        - docker rm -v clever-security-server
+        - echo "------------------< 删除旧镜像 >------------------"
+        - docker rmi 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - echo "------------------< 拉取新镜像 >------------------"
+        - docker pull 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - echo "------------------< 运行新镜像 >------------------"
+        - docker run --name clever-security-server -p 28081:9066 -v /opt/logs/java-service:/logs -d 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - exit
+
+  - name: 发送通知[Email]
+    image: drillster/drone-email
+    # detach: true
+    settings:
+      host: smtp.163.com
+      port: 465
+      username:
+        from_secret: EmailUsername
+      password:
+        from_secret: EmailPassword
+      skip_verify: true
+      from:
+        from_secret: EmailUsername
+      recipients: [ 'lzw1000000@163.com' ]
+      recipients_only: true
+      subject: '[#{{build.number}}-{{build.status}}] {{repo.name}}'
+      body: 'file:///drone/src/drone-email.html'
+
+volumes:
+  # Java打包目录
+  - name: package-java
+    host:
+      path: ~/Desktop/docker-opt/package/java
+
+# -------------------------------------------------------------------------------------------------------------

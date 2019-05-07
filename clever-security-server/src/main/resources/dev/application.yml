@@ -2,7 +2,7 @@
 ### Web服务器配置
 ###################################################################################
 server:
-  port: 28080
+  port: 28081
   servlet:
     context-path: /
 
@@ -233,7 +233,7 @@ clever:
 ## CommonClientConfigKey 实现
 #clever-security-server:
 #  ribbon:
-#    listOfServers: '127.0.0.1:28080'
+#    listOfServers: '127.0.0.1:28081'
 
 
 

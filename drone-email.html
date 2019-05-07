@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>服务构建部署通知</title>
+    <style>
+        body {
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+
+        /*-------------------------------------------------------------------*/
+        .info {
+            color: #1890ff;
+        }
+
+        .success {
+            color: #52c41a;
+        }
+
+        .warning {
+            color: #faad14;
+        }
+
+        .error {
+            color: #f5222d;
+        }
+
+        .status-success {
+            color: #ffffff;
+            background-color: #52c41a;
+        }
+
+        .status-error {
+            color: #ffffff;
+            background-color: #f5222d;
+        }
+
+        /*-------------------------------------------------------------------*/
+        .info-table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            empty-cells: show;
+            /*border-top: 2px solid #B0CBE2;*/
+            /*border-bottom: 2px solid #B0CBE2;*/
+            /*font-size: 12px;*/
+            width: 100%;
+        }
+
+        .info-table tbody {
+            display: table-row-group;
+            vertical-align: middle;
+            border-color: inherit;
+        }
+
+        .info-table tbody td, th {
+            border: 1px solid #B0CBE2;
+            padding: 8px 16px;
+            text-align: left;
+        }
+
+        .info-table .table-label {
+            padding-left: 0;
+            font-weight: bold;
+            color: rgba(0, 0, 0, 0.55);
+            width: 150px;
+            text-align: center;
+            background-color: #D5E7F3;
+        }
+
+        .info-table .table-value {
+            /*font-size: 12px;*/
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%;text-align: center;margin-top: 32px;">
+    <div style="display: inline-block;border: 1px solid #B0CBE2;padding: 12px 32px 8px 32px;">
+        <div style="font-size: 20px;font-weight: bold;margin: 8px auto 12px;" class="{{build.status}}">
+            <span>[{{repo.name}}]</span>
+            <span>构建部署成功</span>
+        </div>
+        <table class="info-table" style="width: 800px;">
+            <!--<tr>-->
+            <!--<td colspan="2" class="table-label" style="background-color: white;color: #1890ff;">-->
+            <!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;< 构建部署信息 >&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+            <!--</td>-->
+            <!--</tr>-->
+            <tr>
+                <td class="table-label">当前构建次数</td>
+                <td class="table-value">
+                    <span>{{build.number}}次</span>
+                    <a href="{{build.link}}" target="_blank" style="margin-left: 8px;">构建日志</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">构建状态</td>
+                <td class="table-value">
+                    <span class="status-{{build.status}}" style="border-radius:5px;display: inline-block;padding: 0 6px 3px 6px;">{{build.status}}</span>
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">构建时间</td>
+                <td class="table-value">
+                    {{datetime build.started "2006年1月2日 15:04:05" "Local"}} ~ {{datetime build.finished "2006年1月2日 15:04:05" "Local"}}
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">触发构建事件</td>
+                <td class="table-value">{{build.event}}</td>
+            </tr>
+            <!--<tr>-->
+            <!--<td colspan="2" class="table-label" style="background-color: white;color: #1890ff;">-->
+            <!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;< 项目仓库信息 >&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+            <!--</td>-->
+            <!--</tr>-->
+            <tr>
+                <td class="table-label">项目名称</td>
+                <td class="table-value">
+                    <a href="{{remote.URL}}" target="_blank">{{repo.fullName}}</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">项目分支</td>
+                <td class="table-value">{{repo.branch}}</td>
+            </tr>
+            <tr>
+                <td class="table-label">项目地址</td>
+                <td class="table-value">
+                    <a href="{{remote.URL}}" target="_blank">{{remote.URL}}</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">项目作者</td>
+                <td class="table-value">{{repo.owner}}</td>
+            </tr>
+            <tr>
+                <td class="table-label">是否开源</td>
+                <td class="table-value">{{repo.private}}</td>
+            </tr>
+            <tr>
+                <td class="table-label">是否受信任</td>
+                <td class="table-value">{{repo.trusted}}</td>
+            </tr>
+            <!--<tr>-->
+            <!--<td colspan="2" class="table-label" style="background-color: white;color: #1890ff;">-->
+            <!--&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;< 项目提交信息 >&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+            <!--</td>-->
+            <!--</tr>-->
+            <tr>
+                <td class="table-label">提交代码分支</td>
+                <td class="table-value">{{commit.branch}} [{{commit.ref}}]</td>
+            </tr>
+            <tr>
+                <td class="table-label">提交记录</td>
+                <td class="table-value">
+                    <a href="{{commit.link}}" target="_blank">{{commit.message}}</a>
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">提交人姓名</td>
+                <td class="table-value">
+                    <img src="{{commit.author.avatar}}" alt="avatar" style="width: 16px;height: 16px;margin-right: 1px;position: relative;bottom: -3px;">
+                    {{commit.author.name}} [{{commit.author.email}}]
+                </td>
+            </tr>
+            <tr>
+                <td class="table-label">创建Git Tag</td>
+                <td class="table-value">{{tag}}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -188,7 +188,7 @@ clever:
 # DefaultClientConfigImpl.loadProperties(restClientName)加载配置,配置定义位置CommonClientConfigKey
 clever-security-server:
   ribbon:
-    listOfServers: 'http://127.0.0.1:28080'
+    listOfServers: 'http://127.0.0.1:28081'
     ConnectTimeout: 5000
     ReadTimeout: 5000
 
