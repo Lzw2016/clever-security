@@ -44,11 +44,11 @@ steps:
     settings:
       host: ssh.msvc.top
       port: 18822
-#      username:
-#        from_secret: SshUsername
-#      password:
-#        from_secret: SshPassword
-      secrets: [ ssh_username, ssh_password ]
+      username:
+        from_secret: ssh_username
+      password:
+        from_secret: ssh_password
+      # secrets: [ ssh_username, ssh_password ]
       command_timeout: 300s
       script:
         - echo $PATH
