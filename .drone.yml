@@ -27,8 +27,9 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker
     settings:
-      registry: '172.17.0.1:15000'
-      repo: '172.17.0.1:15000/java-service/clever-security-server'
+      # 使用 172.17.0.1 ？
+      registry: '172.17.0.7:15000'
+      repo: '172.17.0.7:15000/java-service/clever-security-server'
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
