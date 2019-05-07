@@ -52,7 +52,7 @@ steps:
       script:
         - echo $PATH
         - cd /Applications/Docker.app/Contents/Resources/bin
-        - ll
+        - ls -l
         - echo "------------------< 停止容器 >------------------"
         - docker stop clever-security-server
         - echo "------------------< 删除容器 >------------------"
