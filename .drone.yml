@@ -44,15 +44,16 @@ steps:
     settings:
       host: ssh.msvc.top
       port: 18822
-      username:
-        from_secret: SshUsername
-      password:
-        from_secret: SshPassword
+#      username:
+#        from_secret: SshUsername
+#      password:
+#        from_secret: SshPassword
+      secrets: [ ssh_username, ssh_password ]
       command_timeout: 300s
       script:
         - echo $PATH
         - cd /Applications/Docker.app/Contents/Resources/bin
-        - ls -l
+        - ls
         - echo "------------------< 停止容器 >------------------"
         - docker stop clever-security-server
         - echo "------------------< 删除容器 >------------------"
