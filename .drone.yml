@@ -83,6 +83,6 @@ volumes:
   # Java打包目录
   - name: package-java
     host:
-      path: ~/Desktop/docker-opt/package/java
+      path: /Users/lzw/Desktop/docker-opt/package/java
 
 # -------------------------------------------------------------------------------------------------------------
