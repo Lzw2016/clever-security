@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--suppress SqlResolve -->
+<mapper namespace="org.clever.security.mapper.ServiceSysMapper">
+
+    <select id="existsSysName" resultType="int">
+        select count(1) from service_sys where sys_name = #{sysName}
+    </select>
+
+    <select id="existsRedisNameSpace" resultType="int">
+        select count(1) from service_sys where redis_name_space = #{redisNameSpace}
+    </select>
+
+    <select id="getByUnique" resultType="org.clever.security.entity.ServiceSys">
+        select * from service_sys where sys_name = #{sysName} or redis_name_space = #{redisNameSpace}
+    </select>
+
+    <select id="getBySysName" resultType="org.clever.security.entity.ServiceSys">
+        select * from service_sys where sys_name = #{sysName}
+    </select>
+
+    <select id="allSysName" resultType="java.lang.String">
+        select sys_name from service_sys
+    </select>
+</mapper>

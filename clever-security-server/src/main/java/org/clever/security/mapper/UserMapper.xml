@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
+<mapper namespace="org.clever.security.mapper.UserMapper">
+    <insert id="addUserSys">
+        INSERT INTO user_sys
+        (username, sys_name)
+        VALUES(#{username}, #{sysName})
+    </insert>
+
+    <insert id="addRole">
+        INSERT INTO user_role
+        (username, role_name)
+        VALUES(#{username}, #{roleName})
+    </insert>
+
+    <delete id="delUserSys">
+        delete from user_sys where username=#{username} and sys_name=#{sysName}
+    </delete>
+
+    <delete id="delRole">
+        delete from user_role where username=#{username} and role_name=#{roleName}
+    </delete>
+
+    <delete id="delUserRole">
+        delete from user_role where username=#{username}
+    </delete>
+
+    <delete id="delAllUserSys">
+        delete from user_sys where username=#{username}
+    </delete>
+
+    <select id="getByUnique" resultType="org.clever.security.entity.User">
+        select *
+        from user
+        <where>
+            <if test="unique!=null and unique!=''">
+                username = #{unique} or telephone = #{unique} or email = #{unique}
+            </if>
+            <if test="unique==null or unique==''">
+              1=2
+            </if>
+        </where>
+    </select>
+
+    <select id="getByUsername" resultType="org.clever.security.entity.User">
+        select *
+        from user
+        where username = #{username}
+    </select>
+
+    <select id="getByTelephone" resultType="org.clever.security.entity.User">
+        select *
+        from user
+        where telephone = #{telephone}
+    </select>
+
+    <select id="findByUsername" resultType="org.clever.security.entity.Permission">
+        select distinct c.*
+        from user_role a
+                 left join role_permission b on (a.role_name = b.role_name)
+                 left join permission c on (b.permission_str = c.permission_str)
+        where a.username = #{username}
+          and c.sys_name = #{sysName}
+    </select>
+
+    <select id="existsUserBySysName" resultType="int">
+        select count(1)
+        from user_sys
+        where username = #{username}
+          and sys_name = #{sysName}
+    </select>
+
+    <select id="findByPage" resultType="org.clever.security.entity.User" parameterType="org.clever.security.dto.request.UserQueryPageReq">
+        select
+        id,
+        username,
+        user_type,
+        telephone,
+        email,
+        expired_time,
+        locked,
+        enabled,
+        description,
+        create_at,
+        update_at
+        from user
+        <where>
+            <if test="query.username!=null and query.username!=''">
+                and username = #{query.username}
+            </if>
+            <if test="query.userType!=null">
+                and user_type = #{query.userType}
+            </if>
+            <if test="query.telephone!=null and query.telephone!=''">
+                and telephone = #{query.telephone}
+            </if>
+            <if test="query.email!=null and query.email!=''">
+                and email = #{query.email}
+            </if>
+            <if test="query.expiredTimeStart!=null">
+                and expired_time >= #{query.expiredTimeStart}
+            </if>
+            <if test="query.expiredTimeEnd!=null">
+                <![CDATA[ and expired_time <= #{query.expiredTimeEnd} ]]>
+            </if>
+            <if test="query.locked!=null">
+                and locked = #{query.locked}
+            </if>
+            <if test="query.enabled!=null">
+                and enabled = #{query.enabled}
+            </if>
+            <if test="query.search!=null and query.search!=''">
+                and (
+                username like concat('%', #{query.search}, '%')
+                or telephone like concat('%', #{query.search}, '%')
+                or email like concat('%', #{query.search}, '%')
+                )
+            </if>
+        </where>
+        order by create_at DESC
+    </select>
+
+    <select id="findSysNameByUsername" resultType="string">
+        select sys_name from user_sys where username=#{username} order by sys_name
+    </select>
+
+    <select id="findSysByUsername" resultType="org.clever.security.entity.ServiceSys">
+        select
+            distinct b.*
+        from user_sys a left join service_sys b on (a.sys_name=b.sys_name)
+        where username=#{username}
+        order by sys_name
+    </select>
+
+    <select id="existsByUserName" resultType="int">
+        select count(1) from user where username=#{username}
+    </select>
+
+    <select id="existsByTelephone" resultType="int">
+        select count(1) from user where telephone=#{telephone}
+    </select>
+
+    <select id="existsByEmail" resultType="int">
+        select count(1) from user where email=#{email}
+    </select>
+
+    <select id="findRoleByUsername" resultType="org.clever.security.entity.Role">
+        select
+            b.*
+        from user_role a left join role b on (a.role_name=b.name)
+        where a.username=#{username}
+    </select>
+
+    <select id="existsUserRole" resultType="int">
+        select count(1) from user_role where username=#{username} and role_name=#{roleName}
+    </select>
+</mapper>

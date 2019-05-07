@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--suppress SqlDialectInspection -->
+<mapper namespace="org.clever.security.mapper.RememberMeTokenMapper">
+    <update id="updateBySeries">
+      update remember_me_token set token = #{tokenValue}, last_used = #{lastUsed} where series = #{series}
+    </update>
+
+    <delete id="deleteByUsername">
+        delete from remember_me_token where username = #{username}
+    </delete>
+
+    <delete id="deleteBySysNameAndUsername">
+        delete from remember_me_token where sys_name = #{sysName} and username = #{username}
+    </delete>
+
+    <select id="getBySeries" resultType="org.clever.security.entity.RememberMeToken">
+        select * from remember_me_token where series = #{series}
+    </select>
+
+</mapper>

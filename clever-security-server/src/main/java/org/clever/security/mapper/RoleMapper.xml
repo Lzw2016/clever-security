@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--suppress SqlNoDataSourceInspection, SqlResolve, SqlDialectInspection -->
+<mapper namespace="org.clever.security.mapper.RoleMapper">
+    <insert id="addPermission">
+        insert into role_permission (role_name, permission_str) value (#{roleName}, #{permissionStr})
+    </insert>
+
+    <update id="updateUserRoleByRoleName">
+        update user_role
+        set role_name = #{newName}
+        where role_name = #{oldName}
+    </update>
+
+    <update id="updateRolePermissionByRoleName">
+        update role_permission
+        set role_name = #{newName}
+        where role_name = #{oldName}
+    </update>
+
+    <update id="updateRolePermissionByPermissionStr">
+        update role_permission set permission_str=#{newPermissionStr} where permission_str=#{oldPermissionStr}
+    </update>
+
+    <delete id="delUserRoleByRoleName">
+        delete
+        from user_role
+        where role_name = #{name}
+    </delete>
+
+    <delete id="delRolePermissionByRoleName">
+        delete
+        from role_permission
+        where role_name = #{name}
+    </delete>
+
+    <delete id="delPermission">
+        delete
+        from role_permission
+        where role_name = #{roleName} and permission_str = #{permissionStr}
+    </delete>
+
+    <select id="getByName" resultType="org.clever.security.entity.Role">
+        select *
+        from role
+        where name = #{name}
+    </select>
+
+    <select id="findByUsername" resultType="org.clever.security.entity.Role">
+        select a.*
+        from role a
+                 left join user_role b on (a.name = b.role_name)
+        where b.username = #{username}
+        order by a.name
+    </select>
+
+    <select id="findByPage" resultType="org.clever.security.entity.Role" parameterType="org.clever.security.dto.request.RoleQueryPageReq">
+        select *
+        from role
+        <where>
+            <if test="query.name!=null and query.name!=''">
+                and name like concat('%', #{query.name}, '%')
+            </if>
+        </where>
+        order by name
+    </select>
+
+    <select id="existsByRole" resultType="int">
+        select count(1) from role where name = #{roleName}
+    </select>
+
+    <select id="findPermissionByRoleName" resultType="org.clever.security.entity.Permission">
+        select
+          b.*
+        from role_permission a
+          left join permission b on (a.permission_str=b.permission_str)
+        where a.role_name = #{roleName}
+        order by b.title
+    </select>
+
+    <select id="existsRolePermission" resultType="int">
+        select count(1) from role_permission where role_name=#{roleName} and permission_str=#{permissionStr}
+    </select>
+
+    <select id="findUsernameByRoleName" resultType="string">
+        select username from user_role where role_name=#{roleName}
+    </select>
+
+    <select id="findRoleNameByPermissionStr" resultType="string">
+        select role_name from role_permission where permission_str=#{permissionStr}
+    </select>
+
+    <select id="findRoleNameByPermissionStrList" resultType="string">
+        select role_name from role_permission where permission_str in
+        <foreach collection="permissionStrList" item="permissionStr" open="(" close=")" separator=",">
+            #{permissionStr}
+        </foreach>
+    </select>
+</mapper>
