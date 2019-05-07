@@ -28,8 +28,8 @@ steps:
     image: plugins/docker
     settings:
       # 使用 172.17.0.1 ？
-      registry: '172.17.0.7:15000'
-      repo: '172.17.0.7:15000/java-service/clever-security-server'
+      registry: '10.2.151.82:15000'
+      repo: '10.2.151.82:15000/java-service/clever-security-server'
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
