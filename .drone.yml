@@ -51,8 +51,8 @@ steps:
       command_timeout: 300s
       script:
         - echo $PATH
-        - cd ~
-        - pwd
+        - cd /Applications/Docker.app/Contents/Resources/bin
+        - ll
         - echo "------------------< 停止容器 >------------------"
         - docker stop clever-security-server
         - echo "------------------< 删除容器 >------------------"
