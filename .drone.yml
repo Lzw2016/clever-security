@@ -10,7 +10,8 @@ steps:
     image: docker:git
     commands:
       - echo "### $DRONE_GIT_HTTP_URL -> $DRONE_BRANCH"
-      - git clone $DRONE_GIT_HTTP_URL ./
+      - git clone http://172.17.0.1:13000/lizw/clever-security.git ./
+      # - git clone $DRONE_GIT_HTTP_URL ./
       - git checkout $DRONE_BRANCH
 
   - name: 编译源代码[Maven]
