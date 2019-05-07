@@ -50,6 +50,7 @@ steps:
         from_secret: SshPassword
       command_timeout: 300s
       script:
+        - ifconfig
         - echo "------------------< 停止容器 >------------------"
         - docker stop clever-security-server
         - echo "------------------< 删除容器 >------------------"
