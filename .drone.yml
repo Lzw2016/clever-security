@@ -1,4 +1,5 @@
 # 跳过构建在Commit Message中添加 [CI SKIP]
+# 192.168.159.1 必须是物理机网卡(可以是虚拟网卡)
 kind: pipeline
 name: 打包部署[Java-Maven]
 
@@ -27,7 +28,6 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker
     settings:
-      # 192.168.159.1 必须是物理机网卡(可以是虚拟网卡)
       registry: '192.168.159.1:15000'
       repo: '192.168.159.1:15000/java-service/clever-security-server'
       # bip: true
