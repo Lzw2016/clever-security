@@ -45,6 +45,7 @@ public class UserService extends BaseService {
         return userMapper.existsUserBySysName(username, sysName) >= 1;
     }
 
+    // TODO 认证
     public Boolean authentication(UserAuthenticationReq req) {
         User user = userMapper.getByUnique(req.getLoginName());
         if (user == null) {

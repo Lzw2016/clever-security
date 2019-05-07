@@ -58,8 +58,9 @@ steps:
         - docker rmi 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 拉取新镜像 >------------------"
         - docker pull 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker tag 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 运行新镜像 >------------------"
-        - docker run --name clever-security-server -p 28081:9066 -v /opt/logs/java-service:/logs -d 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker run --name clever-security-server -p 28081:9066 -v /Users/lzw/Desktop/docker-opt/logs/java-service:/logs -d java-service/clever-security-server:0.0.1-SNAPSHOT
         - exit
 
   - name: 发送通知[Email]
