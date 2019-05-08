@@ -102,7 +102,8 @@
             <tr>
                 <td class="table-label">构建时间</td>
                 <td class="table-value">
-                    {{datetime build.started "2006年1月2日 15:04:05" "Asia/Shanghai"}} ~ {{datetime build.finished "2006年1月2日 15:04:05" "Asia/Shanghai"}}
+                    <!--{{datetime build.started "2006年1月2日 15:04:05" "Asia/Shanghai"}} ~ {{datetime build.finished "2006年1月2日 15:04:05" "Asia/Shanghai"}}-->
+                    {{datetime (build.started + 8*3600) "2006年1月2日 15:04:05" "UTC"}} ~ {{datetime (build.finished + 8*3600) "2006年1月2日 15:04:05" "UTC"}}
                 </td>
             </tr>
             <tr>

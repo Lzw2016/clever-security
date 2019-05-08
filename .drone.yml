@@ -58,7 +58,7 @@ steps:
         - echo "------------------< 删除容器 >------------------"
         - docker rm -v clever-security-server
         - echo "------------------< 删除旧镜像 >------------------"
-        - docker rmi 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker rmi java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 拉取新镜像 >------------------"
         - docker pull 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - docker tag 192.168.159.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT java-service/clever-security-server:0.0.1-SNAPSHOT
