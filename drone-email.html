@@ -102,8 +102,8 @@
             <tr>
                 <td class="table-label">构建时间</td>
                 <td class="table-value">
-                    {{datetime build.started "2006年1月2日 15:04:05 +0800 CST" "Asia/Shanghai"}} ~ {{datetime build.finished "2006年1月2日 15:04:05" "Asia/Shanghai"}}
-                    {{build.started}}
+                    <!--{{datetime build.started "2006年1月2日 15:04:05" "Asia/Shanghai"}} ~ {{datetime build.finished "2006年1月2日 15:04:05" "Asia/Shanghai"}}-->
+                    {{moment build.started format="YYYY年MM月DD日 HH:mm:ss"}} ~ {{moment build.finished format="YYYY年MM月DD日 HH:mm:ss"}}
                 </td>
             </tr>
             <tr>
