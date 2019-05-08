@@ -69,11 +69,6 @@ steps:
   - name: 发送通知[Email]
     image: drillster/drone-email
     # detach: true
-    commands:
-      - date
-      - cd /etc
-      - wget https://gitee.com/LiZhiW/share-files/raw/master/localtime
-      - date
     settings:
       host: smtp.163.com
       port: 465
