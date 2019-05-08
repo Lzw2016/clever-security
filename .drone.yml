@@ -72,9 +72,11 @@ steps:
     commands:
       - date
       - cd /etc
-      - sleep 1000
-      # - wget https://gitee.com/LiZhiW/share-files/raw/master/localtime
-      # - date
+      - cp /share/localtime ./
+      - date
+    volumes:
+      - name: share
+        path: /share
     settings:
       host: smtp.163.com
       port: 465
@@ -91,6 +93,10 @@ steps:
       body: 'file:///drone/src/drone-email.html'
 
 volumes:
+  # 共享文件
+  - name: share
+    host:
+      path: /Users/lzw/Desktop/docker-opt/share
   # Java打包目录
   - name: package-java
     host:
