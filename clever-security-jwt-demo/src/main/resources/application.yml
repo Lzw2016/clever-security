@@ -221,7 +221,18 @@ feign:
     default-config: default
     config:
       default:
+        # NONE BASIC HEADERS FULL
         loggerLevel: BASIC
         connectTimeout: 5000
         readTimeout: 5000
         # requestInterceptors:
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000

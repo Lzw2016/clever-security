@@ -2,7 +2,7 @@
 ### Web服务器配置
 ###################################################################################
 server:
-  port: 28081
+  port: 28083
   servlet:
     context-path: /
 
@@ -214,7 +214,18 @@ feign:
     default-config: default
     config:
       default:
+        # NONE BASIC HEADERS FULL
         loggerLevel: BASIC
         connectTimeout: 5000
         readTimeout: 5000
         # requestInterceptors:
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
