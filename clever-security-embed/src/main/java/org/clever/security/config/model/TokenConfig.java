@@ -40,4 +40,24 @@ public class TokenConfig {
      * 设置密钥过期时间 (格式 HH:mm:ss)
      */
     private String hoursInDay = "03:45:00";
+
+    /**
+     * iss（签发者）
+     */
+    private String issuer = "clever-security-jwt";
+
+    /**
+     * aud（接收方）
+     */
+    private String audience = "clever-*";
+
+    /**
+     * 使用Cookie读写JWT Token
+     */
+    private boolean useCookie = false;
+
+    /**
+     * Head或者Cookie中的JwtToken的key值
+     */
+    private String jwtTokenKey = "Authorization";
 }

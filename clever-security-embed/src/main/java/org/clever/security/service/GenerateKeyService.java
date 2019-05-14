@@ -16,10 +16,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class GenerateKeyService {
     /**
-     * JWT Token请求头Key
-     */
-    public static final String JwtTokenHeaderKey = "Authorization";
-    /**
      * SecurityContext Key
      */
     private static final String SecurityContextKey = "security-context";

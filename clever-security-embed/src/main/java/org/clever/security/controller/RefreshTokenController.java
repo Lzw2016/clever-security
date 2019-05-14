@@ -3,7 +3,9 @@ package org.clever.security.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.utils.CookieUtils;
 import org.clever.security.Constant;
+import org.clever.security.config.SecurityConfig;
 import org.clever.security.dto.request.RefreshTokenReq;
 import org.clever.security.dto.response.JwtLoginRes;
 import org.clever.security.repository.RedisJwtRepository;
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 作者： lzw<br/>
  * 创建时间：2019-04-29 10:29 <br/>
@@ -29,11 +33,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class RefreshTokenController {
 
     @Autowired
+    private SecurityConfig securityConfig;
+    @Autowired
     private RedisJwtRepository redisJwtRepository;
 
     @ApiOperation("使用刷新令牌延长登录JwtToken过期时间")
     @PutMapping("/login/refresh_token.json")
-    public JwtLoginRes refreshToken(@RequestBody @Validated RefreshTokenReq refreshTokenReq) {
+    public JwtLoginRes refreshToken(HttpServletResponse response, @RequestBody @Validated RefreshTokenReq refreshTokenReq) {
         JwtRefreshToken jwtRefreshToken = redisJwtRepository.getRefreshToken(refreshTokenReq.getRefreshToken());
         SecurityContext securityContext = redisJwtRepository.getSecurityContext(jwtRefreshToken.getUsername());
         // 生成新的 JwtAccessToken 和 JwtRefreshToken
@@ -46,6 +52,9 @@ public class RefreshTokenController {
         }
         if (oldJwtAccessToken != null) {
             redisJwtRepository.deleteJwtToken(oldJwtAccessToken);
+        }
+        if (securityConfig.getTokenConfig().isUseCookie()) {
+            CookieUtils.setCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), newJwtAccessToken.getToken());
         }
         return new JwtLoginRes(
                 true,

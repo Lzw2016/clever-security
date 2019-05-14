@@ -2,6 +2,7 @@ package org.clever.security.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.clever.common.utils.CookieUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.Constant;
 import org.clever.security.LoginModel;
@@ -15,7 +16,6 @@ import org.clever.security.dto.response.UserRes;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.repository.LoginFailCountRepository;
 import org.clever.security.repository.RedisJwtRepository;
-import org.clever.security.service.GenerateKeyService;
 import org.clever.security.token.JwtAccessToken;
 import org.clever.security.utils.AuthenticationUtils;
 import org.clever.security.utils.HttpRequestUtils;
@@ -214,7 +214,10 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
             resData = new LoginRes(true, "登录成功", userRes);
         } else {
-            response.setHeader(GenerateKeyService.JwtTokenHeaderKey, jwtAccessToken.getToken());
+            if (securityConfig.getTokenConfig().isUseCookie()) {
+                CookieUtils.setCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), jwtAccessToken.getToken());
+            }
+            response.setHeader(securityConfig.getTokenConfig().getJwtTokenKey(), jwtAccessToken.getToken());
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);
             resData = new JwtLoginRes(true, "登录成功", userRes, jwtAccessToken.getToken(), jwtAccessToken.getRefreshToken());
         }

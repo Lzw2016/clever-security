@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jws;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.CookieUtils;
 import org.clever.security.config.SecurityConfig;
 import org.clever.security.config.model.TokenConfig;
 import org.clever.security.service.GenerateKeyService;
@@ -35,6 +36,10 @@ public class RedisJwtRepository {
      * 刷新令牌有效时间
      */
     private final Duration refreshTokenValidity;
+    /**
+     * JWT Token配置
+     */
+    private final TokenConfig tokenConfig;
 
     @Autowired
     private JwtTokenService jwtTokenService;
@@ -44,7 +49,7 @@ public class RedisJwtRepository {
     private GenerateKeyService generateKeyService;
 
     protected RedisJwtRepository(SecurityConfig securityConfig) {
-        TokenConfig tokenConfig = securityConfig.getTokenConfig();
+        tokenConfig = securityConfig.getTokenConfig();
         if (tokenConfig == null || tokenConfig.getRefreshTokenValidity() == null) {
             throw new IllegalArgumentException("未配置TokenConfig");
         }
@@ -90,7 +95,10 @@ public class RedisJwtRepository {
     }
 
     public JwtAccessToken getJwtToken(HttpServletRequest request) {
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
+        String token = request.getHeader(tokenConfig.getJwtTokenKey());
+        if (StringUtils.isBlank(token) && tokenConfig.isUseCookie()) {
+            token = CookieUtils.getCookie(request, tokenConfig.getJwtTokenKey());
+        }
         if (StringUtils.isBlank(token)) {
             throw new BusinessException("Token不存在");
         }
@@ -182,7 +190,10 @@ public class RedisJwtRepository {
      * 验证令牌 (不会抛出异常)
      */
     public boolean validationToken(HttpServletRequest request) {
-        String token = request.getHeader(GenerateKeyService.JwtTokenHeaderKey);
+        String token = request.getHeader(tokenConfig.getJwtTokenKey());
+        if (StringUtils.isBlank(token) && tokenConfig.isUseCookie()) {
+            token = CookieUtils.getCookie(request, tokenConfig.getJwtTokenKey());
+        }
         if (StringUtils.isBlank(token)) {
             return false;
         }

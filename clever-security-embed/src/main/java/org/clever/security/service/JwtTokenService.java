@@ -57,8 +57,13 @@ public class JwtTokenService {
      */
     private final String hoursInDay;
 
+    /**
+     * JWT Token配置
+     */
+    private final TokenConfig tokenConfig;
+
     protected JwtTokenService(SecurityConfig securityConfig) {
-        TokenConfig tokenConfig = securityConfig.getTokenConfig();
+        tokenConfig = securityConfig.getTokenConfig();
         if (tokenConfig == null) {
             throw new BusinessException("未配置TokenConfig");
         }
@@ -102,8 +107,8 @@ public class JwtTokenService {
         }
         //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）, jti（JWT ID）
         DefaultClaims claims = new DefaultClaims();
-        claims.setIssuer("clever-security-jwt");
-        claims.setAudience("clever-*");
+        claims.setIssuer(tokenConfig.getIssuer());
+        claims.setAudience(tokenConfig.getAudience());
         claims.setSubject(authentication.getName());
         claims.setExpiration(expiration);
         claims.setIssuedAt(new Date());
