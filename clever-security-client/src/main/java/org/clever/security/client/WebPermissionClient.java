@@ -1,6 +1,7 @@
 package org.clever.security.client;
 
 import feign.QueryMap;
+import org.clever.security.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.WebPermissionInitReq;
 import org.clever.security.dto.request.WebPermissionModelGetReq;
 import org.clever.security.dto.response.WebPermissionInitRes;
@@ -17,7 +18,12 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 19:14 <br/>
  */
-@FeignClient(contextId = "org.clever.security.client.WebPermissionClient", name = "clever-security-server", path = "/api")
+@FeignClient(
+        contextId = "org.clever.security.client.WebPermissionClient",
+        name = "clever-security-server",
+        path = "/api",
+        configuration = CleverSecurityFeignConfiguration.class
+)
 public interface WebPermissionClient {
 
     /**

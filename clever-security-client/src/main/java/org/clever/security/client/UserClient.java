@@ -1,5 +1,6 @@
 package org.clever.security.client;
 
+import org.clever.security.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.UserAuthenticationReq;
 import org.clever.security.dto.response.UserAuthenticationRes;
 import org.clever.security.entity.Permission;
@@ -16,7 +17,12 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 20:17 <br/>
  */
-@FeignClient(contextId = "org.clever.security.client.UserClient", name = "clever-security-server", path = "/api")
+@FeignClient(
+        contextId = "org.clever.security.client.UserClient",
+        name = "clever-security-server",
+        path = "/api",
+        configuration = CleverSecurityFeignConfiguration.class
+)
 public interface UserClient {
 
     /**

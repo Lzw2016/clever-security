@@ -1,5 +1,6 @@
 package org.clever.security.client;
 
+import org.clever.security.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.RememberMeTokenAddReq;
 import org.clever.security.dto.request.RememberMeTokenUpdateReq;
 import org.clever.security.entity.RememberMeToken;
@@ -12,7 +13,12 @@ import java.util.Map;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 18:45 <br/>
  */
-@FeignClient(contextId = "org.clever.security.client.RememberMeTokenClient", name = "clever-security-server", path = "/api")
+@FeignClient(
+        contextId = "org.clever.security.client.RememberMeTokenClient",
+        name = "clever-security-server",
+        path = "/api",
+        configuration = CleverSecurityFeignConfiguration.class
+)
 public interface RememberMeTokenClient {
 
     /**

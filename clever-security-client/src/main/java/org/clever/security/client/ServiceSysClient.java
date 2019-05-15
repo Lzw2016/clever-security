@@ -1,5 +1,6 @@
 package org.clever.security.client;
 
+import org.clever.security.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.ServiceSysAddReq;
 import org.clever.security.entity.ServiceSys;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,7 +12,12 @@ import java.util.List;
  * 作者： lzw<br/>
  * 创建时间：2018-10-23 10:23 <br/>
  */
-@FeignClient(contextId = "org.clever.security.client.ServiceSysClient", name = "clever-security-server", path = "/api")
+@FeignClient(
+        contextId = "org.clever.security.client.ServiceSysClient",
+        name = "clever-security-server",
+        path = "/api",
+        configuration = CleverSecurityFeignConfiguration.class
+)
 public interface ServiceSysClient {
 
     /**

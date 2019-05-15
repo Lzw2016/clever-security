@@ -1,5 +1,6 @@
 package org.clever.security.client;
 
+import org.clever.security.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.UserLoginLogAddReq;
 import org.clever.security.dto.request.UserLoginLogUpdateReq;
 import org.clever.security.entity.UserLoginLog;
@@ -11,7 +12,12 @@ import org.springframework.web.bind.annotation.*;
  * 作者： lzw<br/>
  * 创建时间：2018-09-24 19:25 <br/>
  */
-@FeignClient(contextId = "org.clever.security.client.UserLoginLogClient", name = "clever-security-server", path = "/api")
+@FeignClient(
+        contextId = "org.clever.security.client.UserLoginLogClient",
+        name = "clever-security-server",
+        path = "/api",
+        configuration = CleverSecurityFeignConfiguration.class
+)
 public interface UserLoginLogClient {
 
     /**
