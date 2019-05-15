@@ -1,6 +1,7 @@
 package org.clever.security.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.exception.BusinessException;
 import org.clever.security.token.JwtAccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -39,7 +40,11 @@ public class JwtRedisSecurityContextRepository implements SecurityContextReposit
             jwtAccessToken = redisJwtRepository.getJwtToken(request);
             log.info("### JwtToken 验证成功");
         } catch (Throwable e) {
-            log.warn("### JwtToken 验证失败", e);
+            if (e instanceof BusinessException) {
+                log.warn("### JwtToken 验证失败: {}", e.getMessage());
+            } else {
+                log.warn("### JwtToken 验证失败", e);
+            }
             return SecurityContextHolder.createEmptyContext();
         }
         // 读取 context

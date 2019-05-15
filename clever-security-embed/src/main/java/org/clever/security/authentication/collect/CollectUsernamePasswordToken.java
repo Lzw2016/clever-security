@@ -3,7 +3,6 @@ package org.clever.security.authentication.collect;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.Constant;
 import org.clever.security.LoginTypeConstant;
 import org.clever.security.authentication.CollectLoginToken;
@@ -29,11 +28,13 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
     private static final String USERNAME_PARAM = "username";
     private static final String PASSWORD_PARAM = "password";
 
-    @Override
-    public boolean supports(HttpServletRequest request, boolean isSubmitBody) throws IOException {
+    private UsernamePasswordToken readUsernamePasswordToken(HttpServletRequest request, boolean isSubmitBody) throws IOException {
         String loginType;
         String username;
         String password;
+        String captcha;
+        String captchaDigest;
+        boolean rememberMe;
         if (isSubmitBody) {
             // 使用Json方式提交数据
             Object json = request.getAttribute(Constant.Login_Data_Body_Request_Key);
@@ -45,43 +46,39 @@ public class CollectUsernamePasswordToken implements CollectLoginToken {
             loginType = StringUtils.trimToEmpty(object.optString(LOGIN_TYPE_PARAM));
             username = StringUtils.trimToEmpty(object.optString(USERNAME_PARAM));
             password = StringUtils.trimToEmpty(object.optString(PASSWORD_PARAM));
+            captcha = StringUtils.trimToEmpty(object.optString(CAPTCHA_PARAM));
+            captchaDigest = StringUtils.trimToEmpty(object.optString(CAPTCHA_DIGEST_PARAM));
+            rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(object.optString(REMEMBER_ME_PARAM)));
         } else {
             // 使用Parameter提交数据
             loginType = StringUtils.trimToEmpty(request.getParameter(LOGIN_TYPE_PARAM));
             username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
             password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
+            captcha = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_PARAM));
+            captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_PARAM));
+            rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_PARAM)));
         }
-        if (StringUtils.isNotBlank(loginType)) {
-            return LoginTypeConstant.UsernamePassword.equalsIgnoreCase(loginType);
+        // 创建Token
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
+        usernamePasswordToken.setLoginType(loginType);
+        usernamePasswordToken.setCaptcha(captcha);
+        usernamePasswordToken.setCaptchaDigest(captchaDigest);
+        usernamePasswordToken.setRememberMe(rememberMe);
+        return usernamePasswordToken;
+    }
+
+    @Override
+    public boolean supports(HttpServletRequest request, boolean isSubmitBody) throws IOException {
+        UsernamePasswordToken usernamePasswordToken = readUsernamePasswordToken(request, isSubmitBody);
+        if (StringUtils.isNotBlank(usernamePasswordToken.getLoginType())) {
+            return LoginTypeConstant.UsernamePassword.equalsIgnoreCase(usernamePasswordToken.getLoginType());
         }
-        return StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password);
+        return StringUtils.isNotBlank(usernamePasswordToken.getUsername()) && StringUtils.isNotBlank(usernamePasswordToken.getPassword());
     }
 
 
     @Override
     public BaseLoginToken attemptAuthentication(HttpServletRequest request, boolean isSubmitBody) throws AuthenticationException, IOException {
-        UsernamePasswordToken usernamePasswordToken;
-        if (isSubmitBody) {
-            // 使用Json方式提交数据
-            Object json = request.getAttribute(Constant.Login_Data_Body_Request_Key);
-            if (json == null) {
-                json = IOUtils.toString(request.getReader());
-                request.setAttribute(Constant.Login_Data_Body_Request_Key, json);
-            }
-            usernamePasswordToken = JacksonMapper.nonEmptyMapper().fromJson(json.toString(), UsernamePasswordToken.class);
-        } else {
-            // 使用Parameter提交数据
-            String username = StringUtils.trimToEmpty(request.getParameter(USERNAME_PARAM));
-            String password = StringUtils.trimToEmpty(request.getParameter(PASSWORD_PARAM));
-            String captcha = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_PARAM));
-            String captchaDigest = StringUtils.trimToEmpty(request.getParameter(CAPTCHA_DIGEST_PARAM));
-            boolean rememberMe = Boolean.parseBoolean(StringUtils.trimToEmpty(request.getParameter(REMEMBER_ME_PARAM)));
-            // 创建Token
-            usernamePasswordToken = new UsernamePasswordToken(username, password);
-            usernamePasswordToken.setCaptcha(captcha);
-            usernamePasswordToken.setCaptchaDigest(captchaDigest);
-            usernamePasswordToken.setRememberMe(rememberMe);
-        }
-        return usernamePasswordToken;
+        return readUsernamePasswordToken(request, isSubmitBody);
     }
 }

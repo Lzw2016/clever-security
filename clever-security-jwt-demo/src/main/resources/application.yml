@@ -187,6 +187,8 @@ clever:
       token-validity-for-remember-me: 15d
       refresh-token-validity: 30d
       hours-in-day: '03:45:00'
+      jwt-token-key: 'Authorization'
+      use-cookie: true
 
 ###################################################################################
 ### Feign配置

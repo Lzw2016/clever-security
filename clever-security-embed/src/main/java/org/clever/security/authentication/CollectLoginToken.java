@@ -11,6 +11,7 @@ import java.io.IOException;
  * <p>
  * 作者： lzw<br/>
  * 创建时间：2019-04-26 16:36 <br/>
+ * @see org.clever.security.authentication.collect.CollectUsernamePasswordToken
  */
 public interface CollectLoginToken {
 
