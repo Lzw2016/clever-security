@@ -189,6 +189,9 @@ clever:
       hours-in-day: '03:45:00'
       jwt-token-key: 'Authorization'
       use-cookie: true
+    access-token-heads:
+      Authorization: 'Authorization123'
+      Token: 'Token123'
 
 ###################################################################################
 ### Feign配置
@@ -224,7 +227,7 @@ feign:
     config:
       default:
         # NONE BASIC HEADERS FULL
-        loggerLevel: BASIC
+        loggerLevel: FULL
         connectTimeout: 5000
         readTimeout: 5000
         # requestInterceptors:

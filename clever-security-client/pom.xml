@@ -14,10 +14,18 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!--spring-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--clever-common-->
         <dependency>
             <groupId>org.clever</groupId>
             <artifactId>clever-common-client</artifactId>
         </dependency>
+        <!--clever-security-->
         <dependency>
             <groupId>org.clever</groupId>
             <artifactId>clever-security-model</artifactId>
