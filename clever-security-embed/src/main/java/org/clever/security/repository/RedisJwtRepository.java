@@ -144,7 +144,7 @@ public class RedisJwtRepository {
         String jwtRefreshTokenKey = generateKeyService.getJwtRefreshTokenKey(refreshToken);
         Object object = redisTemplate.opsForValue().get(jwtRefreshTokenKey);
         if (object == null) {
-            throw new BusinessException("刷新令牌已过期");
+            throw new BusinessException("刷新令牌错误或已过期");
         }
         if (!(object instanceof JwtRefreshToken)) {
             throw new BusinessException("刷新令牌类型错误");
