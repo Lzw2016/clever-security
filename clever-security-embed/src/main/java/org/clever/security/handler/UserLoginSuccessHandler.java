@@ -215,7 +215,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
             resData = new LoginRes(true, "登录成功", userRes);
         } else {
             if (securityConfig.getTokenConfig().isUseCookie()) {
-                CookieUtils.setCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), jwtAccessToken.getToken());
+                CookieUtils.setRooPathCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), jwtAccessToken.getToken());
             }
             response.setHeader(securityConfig.getTokenConfig().getJwtTokenKey(), jwtAccessToken.getToken());
             UserRes userRes = AuthenticationUtils.getUserRes(authentication);

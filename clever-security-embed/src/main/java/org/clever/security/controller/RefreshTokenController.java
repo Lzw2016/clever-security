@@ -54,7 +54,7 @@ public class RefreshTokenController {
             redisJwtRepository.deleteJwtToken(oldJwtAccessToken);
         }
         if (securityConfig.getTokenConfig().isUseCookie()) {
-            CookieUtils.setCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), newJwtAccessToken.getToken());
+            CookieUtils.setRooPathCookie(response, securityConfig.getTokenConfig().getJwtTokenKey(), newJwtAccessToken.getToken());
         }
         return new JwtLoginRes(
                 true,

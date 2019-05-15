@@ -1,4 +1,4 @@
       [  ]  1. 使用 Token 就能访问 clever-security-server 服务 (clever-security-client 请求统一加上Token)
 已测试 [OK]  2. JwtToken的位置可以在Cookie中
 已测试 [OK]  3. JwtToken内容可配置
-
+      [  ]  4. 代码中的TODO
