@@ -148,7 +148,7 @@ clever:
     default-need-authorization: true
     ignore-authorization-urls:
       - '/login/user_info.json'
-      - '/test/**'
+#      - '/test/**'
     hide-user-not-found-exceptions: true
     not-login-need-forward: false
     forbidden-need-forward: false
@@ -190,8 +190,7 @@ clever:
       jwt-token-key: 'Authorization'
       use-cookie: true
     access-token-heads:
-      Authorization: 'Authorization123'
-      Token: 'Token123'
+      ServerApiToken: '12893489iu34yqw2edwerdsiohf89ij23iorhiu3jkfgriouy3hnio3489gt4iuhkoerniou45y89gertikoiofehr89gyiodfgklnio'
 
 ###################################################################################
 ### Feign配置
@@ -231,6 +230,11 @@ feign:
         connectTimeout: 5000
         readTimeout: 5000
         # requestInterceptors:
+#  # 自定义全局请求头
+#  global:
+#    request:
+#      heads:
+#        ServerApiToken: ServerApiToken123
 
 hystrix:
   command:

@@ -90,6 +90,41 @@ public class ApplicationSecurityBean {
     }
 
     /**
+     * 授权校验 <br/>
+     * <pre>
+     * {@code
+     *   AffirmativeBased (有一个允许访问就有权访问)
+     *     1. 只要有AccessDecisionVoter的投票为ACCESS_GRANTED则同意用户进行访问
+     *     2. 如果全部弃权也表示通过
+     *     3. 如果没有一个人投赞成票，但是有人投反对票，则将抛出AccessDeniedException
+     *   ConsensusBased (大多数允许访问才有权访问)
+     *     1. 如果赞成票多于反对票则表示通过
+     *     2. 反过来，如果反对票多于赞成票则将抛出AccessDeniedException
+     *     3. 如果赞成票与反对票相同且不等于0，并且属性allowIfEqualGrantedDeniedDecisions的值为true，则表示通过，否则将抛出异常AccessDeniedException。参数allowIfEqualGrantedDeniedDecisions的值默认为true
+     *     4. 如果所有的AccessDecisionVoter都弃权了，则将视参数allowIfAllAbstainDecisions的值而定，如果该值为true则表示通过，否则将抛出异常AccessDeniedException。参数allowIfAllAbstainDecisions的值默认为false
+     *   UnanimousBased
+     *     逻辑与另外两种实现有点不一样，
+     *     另外两种会一次性把受保护对象的配置属性全部传递给AccessDecisionVoter进行投票，
+     *     而UnanimousBased会一次只传递一个ConfigAttribute给AccessDecisionVoter进行投票。
+     *     这也就意味着如果我们的AccessDecisionVoter的逻辑是只要传递进来的ConfigAttribute中有一个能够匹配则投赞成票，
+     *     但是放到UnanimousBased中其投票结果就不一定是赞成了
+     *     1. 如果受保护对象配置的某一个ConfigAttribute被任意的AccessDecisionVoter反对了，则将抛出AccessDeniedException
+     *     2. 如果没有反对票，但是有赞成票，则表示通过
+     *     3. 如果全部弃权了，则将视参数allowIfAllAbstainDecisions的值而定，true则通过，false则抛出AccessDeniedException
+     * }
+     * </pre>
+     */
+    @Bean
+    protected AccessDecisionManager accessDecisionManager(@Autowired RequestAccessDecisionVoter requestAccessDecisionVoter) {
+        // WebExpressionVoter RoleVoter AuthenticatedVoter
+        List<AccessDecisionVoter<?>> decisionVoters = Collections.singletonList(requestAccessDecisionVoter);
+        // AffirmativeBased accessDecisionManager = new AffirmativeBased(decisionVoters);
+        // accessDecisionManager.
+        // TODO 支持注解权限校验
+        return new AffirmativeBased(decisionVoters);
+    }
+
+    /**
      * 登录并发处理(使用session登录时才需要)
      */
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
@@ -109,20 +144,6 @@ public class ApplicationSecurityBean {
         sessionAuthenticationStrategy.setExceptionIfMaximumExceeded(notAllowAfterLogin);
         // sessionAuthenticationStrategy.setMessageSource();
         return sessionAuthenticationStrategy;
-    }
-
-    /**
-     * 授权校验(使用session登录时才需要) TODO ？？jwt 也要
-     */
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login-model", havingValue = "session")
-    @Bean
-    protected AccessDecisionManager accessDecisionManager(@Autowired RequestAccessDecisionVoter requestAccessDecisionVoter) {
-        // WebExpressionVoter RoleVoter AuthenticatedVoter
-        List<AccessDecisionVoter<?>> decisionVoters = Collections.singletonList(requestAccessDecisionVoter);
-        // AccessDecisionManager accessDecisionManager = new AffirmativeBased(decisionVoters);
-        // accessDecisionManager.
-        // TODO 支持注解权限校验
-        return new AffirmativeBased(decisionVoters);
     }
 
     /**

@@ -179,7 +179,7 @@ clever:
       - '/'
       - '/login/captcha.png'
       - '/login/refresh_token.json'
-      - '/api/**'
+      # - '/api/**'
     default-need-authorization: true
     ignore-authorization-urls:
       - '/login/user_info.json'
@@ -222,6 +222,9 @@ clever:
       token-validity-for-remember-me: 15d
       refresh-token-validity: 30d
       hours-in-day: '03:45:00'
+    server-api-access-token:
+      token-name: 'ServerApiToken'
+      token-value: '12893489iu34yqw2edwerdsiohf89ij23iorhiu3jkfgriouy3hnio3489gt4iuhkoerniou45y89gertikoiofehr89gyiodfgklnio'
   config:
     req-aes-key: '636c657665722d73656375726974792d'
     req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'

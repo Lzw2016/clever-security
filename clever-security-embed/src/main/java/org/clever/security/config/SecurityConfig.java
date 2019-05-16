@@ -24,6 +24,7 @@ public class SecurityConfig {
      * 登入模式
      */
     private LoginModel loginModel = LoginModel.jwt;
+
     /**
      * 启用Spring Security调试功能
      */
@@ -97,4 +98,10 @@ public class SecurityConfig {
      */
     @NestedConfigurationProperty
     private final TokenConfig tokenConfig = new TokenConfig();
+
+    /**
+     * 服务间免登陆Token访问配置
+     */
+    @NestedConfigurationProperty
+    private ServerApiAccessToken serverApiAccessToken = new ServerApiAccessToken();
 }

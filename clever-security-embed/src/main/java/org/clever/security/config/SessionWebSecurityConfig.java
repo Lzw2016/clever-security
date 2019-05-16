@@ -98,6 +98,7 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+//        http.setSharedObject(SecurityContextRepository.class, jwtRedisSecurityContextRepository);
         // 自定义登录 Filter --> UserLoginFilter
         http.addFilterAt(userLoginFilter, UsernamePasswordAuthenticationFilter.class);
 

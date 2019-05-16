@@ -9,6 +9,7 @@ import org.clever.security.entity.model.WebPermissionModel;
 import org.clever.security.model.LoginUserDetails;
 import org.clever.security.model.UserAuthority;
 import org.clever.security.token.SecurityContextToken;
+import org.clever.security.token.ServerApiAccessContextToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
@@ -31,6 +32,8 @@ import java.util.Objects;
  * <p>
  * 作者： lzw<br/>
  * 创建时间：2018-03-15 17:51 <br/>
+ *
+ * @see org.springframework.security.access.SecurityMetadataSource
  */
 @Component
 @Slf4j
@@ -81,6 +84,10 @@ public class RequestAccessDecisionVoter implements AccessDecisionVoter<FilterInv
      */
     @Override
     public int vote(Authentication authentication, FilterInvocation filterInvocation, Collection<ConfigAttribute> attributes) {
+        if (authentication instanceof ServerApiAccessContextToken) {
+            log.info("[ServerApiAccessContextToken]允许访问 -> {}", authentication);
+            return ACCESS_GRANTED;
+        }
         if (!(authentication instanceof SecurityContextToken)) {
             log.info("### 放弃授权(authentication类型不匹配SecurityContextToken) -> [{}] [{}]", authentication.getClass().getSimpleName(), filterInvocation.getRequestUrl());
             return ACCESS_ABSTAIN;

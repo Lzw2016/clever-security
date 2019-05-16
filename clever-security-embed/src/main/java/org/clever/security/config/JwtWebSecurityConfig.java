@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.BeanIds;
@@ -53,8 +54,8 @@ public class JwtWebSecurityConfig extends BaseWebSecurityConfig {
     private UserLogoutSuccessHandler userLogoutSuccessHandler;
     @Autowired
     private UserAccessDeniedHandler userAccessDeniedHandler;
-    // @Autowired
-    // private AccessDecisionManager accessDecisionManager;
+     @Autowired
+     private AccessDecisionManager accessDecisionManager;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
@@ -125,7 +126,7 @@ public class JwtWebSecurityConfig extends BaseWebSecurityConfig {
                 .sessionManagement().disable()
                 .exceptionHandling().authenticationEntryPoint(userLoginEntryPoint).accessDeniedHandler(userAccessDeniedHandler)
                 .and()
-                .authorizeRequests().anyRequest().authenticated()//.accessDecisionManager(accessDecisionManager)
+                .authorizeRequests().anyRequest().authenticated().accessDecisionManager(accessDecisionManager)
                 .and()
                 .formLogin().disable()
                 .logout().logoutUrl(securityConfig.getLogout().getLogoutUrl()).addLogoutHandler(userLogoutHandler).logoutSuccessHandler(userLogoutSuccessHandler).permitAll()
