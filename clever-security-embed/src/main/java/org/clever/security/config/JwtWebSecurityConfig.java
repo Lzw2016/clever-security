@@ -7,7 +7,7 @@ import org.clever.security.authentication.filter.UserLoginFilter;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;
-import org.clever.security.repository.JwtRedisSecurityContextRepository;
+import org.clever.security.repository.SecurityContextRepositoryProxy;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -54,12 +54,12 @@ public class JwtWebSecurityConfig extends BaseWebSecurityConfig {
     private UserLogoutSuccessHandler userLogoutSuccessHandler;
     @Autowired
     private UserAccessDeniedHandler userAccessDeniedHandler;
-     @Autowired
-     private AccessDecisionManager accessDecisionManager;
+    @Autowired
+    private AccessDecisionManager accessDecisionManager;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
-    private JwtRedisSecurityContextRepository jwtRedisSecurityContextRepository;
+    private SecurityContextRepositoryProxy securityContextRepositoryProxy;
 
     @Override
     PasswordEncoder getPasswordEncoder() {
@@ -96,7 +96,7 @@ public class JwtWebSecurityConfig extends BaseWebSecurityConfig {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Jwt Token不需要使用HttpSession
-        http.setSharedObject(SecurityContextRepository.class, jwtRedisSecurityContextRepository);
+        http.setSharedObject(SecurityContextRepository.class, securityContextRepositoryProxy);
         http.setSharedObject(RequestCache.class, new NullRequestCache());
 
         // 自定义登录 Filter --> UserLoginFilter

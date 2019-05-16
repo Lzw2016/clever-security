@@ -10,6 +10,7 @@ import org.clever.security.config.model.RememberMeConfig;
 import org.clever.security.handler.UserAccessDeniedHandler;
 import org.clever.security.handler.UserLogoutSuccessHandler;
 import org.clever.security.rememberme.RememberMeServices;
+import org.clever.security.repository.SecurityContextRepositoryProxy;
 import org.clever.security.service.GlobalUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 
@@ -57,6 +59,8 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
     private AccessDecisionManager accessDecisionManager;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private SecurityContextRepositoryProxy securityContextRepositoryProxy;
     @Autowired
     private SpringSessionBackedSessionRegistry sessionRegistry;
     @Autowired
@@ -98,7 +102,7 @@ public class SessionWebSecurityConfig extends BaseWebSecurityConfig {
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        http.setSharedObject(SecurityContextRepository.class, jwtRedisSecurityContextRepository);
+        http.setSharedObject(SecurityContextRepository.class, securityContextRepositoryProxy);
         // 自定义登录 Filter --> UserLoginFilter
         http.addFilterAt(userLoginFilter, UsernamePasswordAuthenticationFilter.class);
 

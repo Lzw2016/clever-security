@@ -180,6 +180,8 @@ clever:
       logout-url: '/logout.json'
       logout-success-need-redirect: false
       logout-success-redirect-page: '/login.html'
+    access-token-heads:
+      ServerApiToken: '12893489iu34yqw2edwerdsiohf89ij23iorhiu3jkfgriouy3hnio3489gt4iuhkoerniou45y89gertikoiofehr89gyiodfgklnio'
 
 ###################################################################################
 ### Feign配置
@@ -215,10 +217,15 @@ feign:
     config:
       default:
         # NONE BASIC HEADERS FULL
-        loggerLevel: BASIC
+        loggerLevel: FULL
         connectTimeout: 5000
         readTimeout: 5000
         # requestInterceptors:
+#  # 自定义全局请求头
+#  global:
+#    request:
+#      heads:
+#        ServerApiToken: ServerApiToken123
 
 hystrix:
   command:
