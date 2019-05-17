@@ -23,10 +23,10 @@ public class CleverSecurityFeignConfiguration implements RequestInterceptor {
     public void apply(RequestTemplate template) {
         if (accessTokenConfig == null) {
             accessTokenConfig = SpringContextHolder.getBean(CleverSecurityAccessTokenConfig.class);
-            log.info("读取访问clever-security-server服务API的授权Token请求头: {}", accessTokenConfig.getAccessTokenHeads());
+            // log.debug("读取访问clever-security-server服务API的授权Token请求头: {}", accessTokenConfig.getAccessTokenHeads());
         }
         if (accessTokenConfig.getAccessTokenHeads() != null && accessTokenConfig.getAccessTokenHeads().size() > 0) {
-            log.debug("[访问clever-security-server的AccessToken请求头] --> {}", accessTokenConfig.getAccessTokenHeads());
+            // log.debug("[访问clever-security-server的AccessToken请求头] --> {}", accessTokenConfig.getAccessTokenHeads());
             for (Map.Entry<String, String> entry : accessTokenConfig.getAccessTokenHeads().entrySet()) {
                 template.header(entry.getKey(), entry.getValue());
             }
