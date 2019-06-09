@@ -1,5 +1,5 @@
 # 跳过构建在Commit Message中添加 [CI SKIP]
-# 127.0.0.1 必须是物理机网卡(可以是虚拟网卡)
+# 172.17.0.1 必须是物理机网卡(可以是虚拟网卡)
 kind: pipeline
 name: 打包部署[Java-Maven]
 
@@ -11,7 +11,7 @@ steps:
     image: docker:git
     commands:
       - echo "### $DRONE_GIT_HTTP_URL -> $DRONE_BRANCH"
-      - git clone http://127.0.0.1:13000/lizw/clever-security.git ./
+      - git clone http://172.17.0.1:13000/lizw/clever-security.git ./
       # - git clone $DRONE_GIT_HTTP_URL ./
       - git checkout $DRONE_BRANCH
 
@@ -28,8 +28,8 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker
     settings:
-      registry: '127.0.0.1:15000'
-      repo: '127.0.0.1:15000/java-service/clever-security-server'
+      registry: '172.17.0.1:15000'
+      repo: '172.17.0.1:15000/java-service/clever-security-server'
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
@@ -42,7 +42,7 @@ steps:
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
     settings:
-      host: 127.0.0.1
+      host: 172.17.0.1
       port: 22
       username:
         from_secret: ssh_username
@@ -58,11 +58,11 @@ steps:
         - echo "------------------< 删除容器 >------------------"
         - docker rm -v clever-security-server
         - echo "------------------< 删除旧镜像 >------------------"
-        - docker rmi 127.0.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker rmi 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 拉取新镜像 >------------------"
-        - docker pull 127.0.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker pull 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 运行新镜像 >------------------"
-        - docker run --name clever-security-server -p 28081:9066 -v /Users/lzw/Desktop/docker-opt/logs/java-service:/logs -d 127.0.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker run --name clever-security-server -p 28081:9066 -v /Users/lzw/Desktop/docker-opt/logs/java-service:/logs -d 172.17.0.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - exit
 
   - name: 发送通知[Email]
