@@ -97,10 +97,10 @@ volumes:
   # 共享文件
   - name: share
     host:
-      path: /Users/lzw/Desktop/docker-opt/share
+      path: /home/lizw/Desktop/docker-opt/share
   # Java打包目录
   - name: package-java
     host:
-      path: /Users/lzw/Desktop/docker-opt/package/java
+      path: /home/lizw/Desktop/docker-opt/package/java
 
 # -------------------------------------------------------------------------------------------------------------
