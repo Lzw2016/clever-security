@@ -45,9 +45,9 @@ steps:
       host: 192.168.31.5
       port: 22
       username:
-        from_secret: ssh_username
+        from_secret: sshUsername
       password:
-        from_secret: ssh_password
+        from_secret: sshPassword
       # secrets: [ ssh_username, ssh_password ]
       command_timeout: 300s
       script:
@@ -82,14 +82,14 @@ steps:
       host: smtp.163.com
       port: 465
       username:
-        from_secret: EmailUsername
+        from_secret: emailUsername
       password:
-        from_secret: EmailPassword
+        from_secret: emailPassword
       skip_verify: true
       from:
         from_secret: EmailUsername
       recipients: [ 'lzw1000000@163.com' ]
-      recipients_only: true
+      recipients_only: false
       subject: '[#{{build.number}}-{{build.status}}] {{repo.name}}'
       body: 'file:///drone/src/drone-email.html'
 
