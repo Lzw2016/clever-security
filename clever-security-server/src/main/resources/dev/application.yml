@@ -52,8 +52,9 @@ spring:
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
-    host: 39.108.68.132
-    port: 16379
+    host: redis.msvc.top
+    port: 6379
+    password: lizhiwei1993
     timeout: 10s
     database: 0
     lettuce:
@@ -67,9 +68,9 @@ spring:
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://39.108.68.132:3306/clever-security
+    url: jdbc:mysql://mysql.msvc.top:3306/clever-security
     username: clever-security
-    password: lizhiwei
+    password: lizhiwei1993
     hikari:
       data-source-properties:
         serverTimezone: GMT+8
