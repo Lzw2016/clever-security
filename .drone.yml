@@ -88,7 +88,7 @@ steps:
       skip_verify: true
       from:
         from_secret: EmailUsername
-      recipients: [ 'lzw1000000@163.com' ]
+      recipients: [ 'love520lzw1000000@163.com', 'lzw1000000@163.com' ]
       recipients_only: false
       subject: '[#{{build.number}}-{{build.status}}] {{repo.name}}'
       body: 'file:///drone/src/drone-email.html'
