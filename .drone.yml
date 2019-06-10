@@ -79,7 +79,7 @@ steps:
       - name: share
         path: /share
     settings:
-      host: smtp.163.com
+      host: smtp.qq.com
       port: 465
       username:
         from_secret: emailUsername
