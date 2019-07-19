@@ -98,6 +98,7 @@ spring:
           - serviceName=${spring.application.name}
         health-check-path: '/actuator/health'
         health-check-interval: 1s
+        health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
 
 ###################################################################################
 ### management配置
