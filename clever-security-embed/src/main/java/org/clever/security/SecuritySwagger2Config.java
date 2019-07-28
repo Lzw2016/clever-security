@@ -36,7 +36,7 @@ public class SecuritySwagger2Config {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-jwt")
+                .groupName("clever-security-embed")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
                 .paths(PathSelectors.any())
