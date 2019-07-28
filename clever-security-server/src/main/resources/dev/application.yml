@@ -149,7 +149,9 @@ mybatis-plus:
     banner: true
     db-config:
       id-type: auto
-      field-strategy: not_null
+      insert-strategy: not_null
+      update-strategy: not_null
+      select-strategy: not_null
 
 ###################################################################################
 ### clever security配置
