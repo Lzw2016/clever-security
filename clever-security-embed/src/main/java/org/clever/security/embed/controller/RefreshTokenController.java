@@ -1,4 +1,4 @@
-package org.clever.security.controller;
+package org.clever.security.embed.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

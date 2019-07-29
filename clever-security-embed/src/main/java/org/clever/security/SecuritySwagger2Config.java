@@ -38,7 +38,7 @@ public class SecuritySwagger2Config {
                 .apiInfo(apiInfo)
                 .groupName("clever-security-embed")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
+                .apis(RequestHandlerSelectors.basePackage("org.clever.security.embed.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
