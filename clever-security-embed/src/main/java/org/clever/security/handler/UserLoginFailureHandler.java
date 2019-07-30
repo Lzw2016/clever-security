@@ -73,18 +73,19 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        Integer loginFailCount = null;
         LoginConfig login = securityConfig.getLogin();
         if (login.getNeedCaptcha()) {
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JwtToken 记录登录失败次数
                 Object object = request.getAttribute(Constant.Login_Username_Request_Key);
                 if (object != null && StringUtils.isNotBlank(object.toString()) && userClient.canLogin(object.toString(), securityConfig.getSysName())) {
-                    loginFailCountRepository.incrementLoginFailCount(object.toString());
+                    loginFailCount = Long.valueOf(loginFailCountRepository.incrementLoginFailCount(object.toString())).intValue();
                 }
             } else {
                 // Session 记录登录次数
                 Object loginFailCountStr = request.getSession().getAttribute(Constant.Login_Fail_Count_Session_Key);
-                int loginFailCount = 1;
+                loginFailCount = 1;
                 if (loginFailCountStr != null) {
                     loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0) + 1;
                 }
@@ -108,13 +109,13 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
             return;
         }
         // 不需要跳转
-        sendJsonData(response, exception);
+        sendJsonData(response, exception, login, loginFailCount);
     }
 
     /**
      * 直接返回Json数据
      */
-    private void sendJsonData(HttpServletResponse response, AuthenticationException exception) {
+    private void sendJsonData(HttpServletResponse response, AuthenticationException exception, LoginConfig login, Integer loginFailCount) {
         String message = failureMessageMap.get(exception.getClass().getName());
         if (hideUserNotFoundExceptions && exception instanceof UsernameNotFoundException) {
             message = failureMessageMap.get(BadCredentialsException.class.getName());
@@ -123,6 +124,12 @@ public class UserLoginFailureHandler implements AuthenticationFailureHandler {
             message = "登录失败";
         }
         LoginRes loginRes = new LoginRes(false, message);
+        if (loginFailCount != null) {
+            if (login.getNeedCaptcha() && login.getNeedCaptchaByLoginFailCount() <= loginFailCount) {
+                // 下次登录需要验证码
+                loginRes.setNeedCaptcha(true);
+            }
+        }
         log.info("### 登录失败不需要跳转 -> [{}]", loginRes);
         HttpResponseUtils.sendJsonBy401(response, loginRes);
     }

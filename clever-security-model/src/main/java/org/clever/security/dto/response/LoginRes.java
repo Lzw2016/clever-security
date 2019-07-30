@@ -27,6 +27,11 @@ public class LoginRes extends BaseResponse {
     private Long timestamp = System.currentTimeMillis();
 
     /**
+     * 登录是否需要验证码
+     */
+    private Boolean needCaptcha = false;
+
+    /**
      * 当前登录用户信息
      */
     private UserRes user;

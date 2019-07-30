@@ -43,7 +43,7 @@ public class CaptchaController {
         Long captchaEffectiveTime = 180000L;
         String imageDigestHeader = "ImageDigest";
         if (securityConfig.getLogin() != null && securityConfig.getLogin().getCaptchaEffectiveTime() != null) {
-            captchaEffectiveTime = securityConfig.getLogin().getCaptchaEffectiveTime();
+            captchaEffectiveTime = securityConfig.getLogin().getCaptchaEffectiveTime().toMillis();
         }
         CaptchaInfo captchaInfo;
         if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {

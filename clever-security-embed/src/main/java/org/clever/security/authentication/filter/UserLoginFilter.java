@@ -160,7 +160,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
             if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
                 // JWT
                 loginFailCount = loginFailCountRepository.getLoginFailCount(loginToken.getName());
-                if (loginFailCount > needCaptchaByLoginFailCount) {
+                if (loginFailCount >= needCaptchaByLoginFailCount) {
                     captchaInfo = captchaInfoRepository.getCaptchaInfo(loginToken.getCaptcha(), loginToken.getCaptchaDigest());
                     verifyCaptchaInfo(captchaInfo, loginToken.getCaptcha());
                     captchaInfoRepository.deleteCaptchaInfo(loginToken.getCaptcha(), loginToken.getCaptchaDigest());
@@ -171,7 +171,7 @@ public class UserLoginFilter extends AbstractAuthenticationProcessingFilter {
                 if (loginFailCountStr != null) {
                     loginFailCount = NumberUtils.toInt(loginFailCountStr.toString(), 0);
                 }
-                if (loginFailCount > needCaptchaByLoginFailCount) {
+                if (loginFailCount >= needCaptchaByLoginFailCount) {
                     captchaInfo = (CaptchaInfo) request.getSession().getAttribute(Constant.Login_Captcha_Session_Key);
                     verifyCaptchaInfo(captchaInfo, loginToken.getCaptcha());
                     request.getSession().removeAttribute(Constant.Login_Captcha_Session_Key);

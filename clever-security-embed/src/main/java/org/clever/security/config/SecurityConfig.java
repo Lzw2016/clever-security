@@ -84,7 +84,7 @@ public class SecurityConfig {
     @NestedConfigurationProperty
     private final LogoutConfig logout = new LogoutConfig();
     /**
-     * 用户登录请求Aes Key
+     * 用户登录请求参数加密配置 Aes Key
      */
     @NestedConfigurationProperty
     private final AesKeyConfig loginReqAesKey = new AesKeyConfig();

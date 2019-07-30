@@ -2,6 +2,8 @@ package org.clever.security.config.model;
 
 import lombok.Data;
 
+import java.time.Duration;
+
 /**
  * 用户登录配置
  * 作者： lzw<br/>
@@ -66,9 +68,9 @@ public class LoginConfig {
     private Integer needCaptchaByLoginFailCount = 3;
 
     /**
-     * 验证码有效时间(毫秒)
+     * 验证码有效时间
      */
-    private Long captchaEffectiveTime = 60000000L;
+    private Duration captchaEffectiveTime = Duration.ofSeconds(120);
 
     /**
      * 同一个用户并发登录次数限制(-1表示不限制)

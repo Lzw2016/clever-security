@@ -24,7 +24,7 @@ public class LoginFailCountRepository {
     public long incrementLoginFailCount(String username) {
         String loginFailCountKey = generateKeyService.getLoginFailCountKey(username);
         Long count = redisTemplate.boundValueOps(loginFailCountKey).increment(1);
-        redisTemplate.expire(loginFailCountKey, 10, TimeUnit.MINUTES);
+        redisTemplate.expire(loginFailCountKey, 30, TimeUnit.MINUTES);
         return count == null ? 0 : count;
     }
 

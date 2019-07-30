@@ -204,9 +204,9 @@ clever:
       login-failure-need-redirect: false
       login-failure-need-forward: false
       login-failure-redirect-page: '/login.html'
-      need-captcha: false
+      need-captcha: true
       need-captcha-by-login-fail-count: 3
-      captcha-effective-time: 180000
+      captcha-effective-time: 120s
       concurrent-login-count: 1
       not-allow-after-login: false
     remember-me:
@@ -222,12 +222,12 @@ clever:
       logout-success-redirect-page: '/login.html'
     token-config:
       redis-namespace: ${spring.application.name}
-      secret-key: 'clever-security-jwt|${spring.application.name}'
+      secret-key: clever-security-jwt|${spring.application.name}
       token-validity: 7d
       token-validity-for-remember-me: 15d
       refresh-token-validity: 30d
       hours-in-day: '03:45:00'
-      use-cookie: false
+      use-cookie: true
       jwt-token-key: 'Authorization'
     server-api-access-token:
       token-name: 'ServerApiToken'
