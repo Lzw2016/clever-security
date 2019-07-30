@@ -7,6 +7,7 @@ import org.clever.common.utils.codec.DigestUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
+import org.clever.common.utils.reflection.ReflectionsUtils;
 import org.clever.security.Constant;
 import org.clever.security.LoginModel;
 import org.clever.security.config.SecurityConfig;
@@ -46,6 +47,7 @@ public class CaptchaController {
             captchaEffectiveTime = securityConfig.getLogin().getCaptchaEffectiveTime().toMillis();
         }
         CaptchaInfo captchaInfo;
+        setContentTypeNoCharset(response, "image/png");
         if (LoginModel.jwt.equals(securityConfig.getLoginModel())) {
             // JWT Token
             String imageDigest = EncodeDecodeUtils.encodeHex(DigestUtils.sha1(image));
@@ -62,5 +64,34 @@ public class CaptchaController {
             log.info("### 客户端[SessionID={}] 获取验证码[{}]", request.getSession().getId(), captchaInfo);
         }
         response.getOutputStream().write(image);
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static void setContentTypeNoCharset(HttpServletResponse response, String contentType) {
+        boolean flag = false;
+        Object object = response;
+        while (true) {
+            try {
+                object = ReflectionsUtils.getFieldValue(object, "response");
+            } catch (Throwable e) {
+                break;
+            }
+            if (object instanceof org.apache.catalina.connector.Response) {
+                break;
+            }
+        }
+        if (object instanceof org.apache.catalina.connector.Response) {
+            org.apache.catalina.connector.Response connectorResponse = (org.apache.catalina.connector.Response) object;
+            object = ReflectionsUtils.getFieldValue(connectorResponse, "coyoteResponse");
+            if (object instanceof org.apache.coyote.Response) {
+                org.apache.coyote.Response coyoteResponse = (org.apache.coyote.Response) object;
+                coyoteResponse.setContentTypeNoCharset(contentType);
+                ReflectionsUtils.setFieldValue(coyoteResponse, "charset", null);
+                flag = true;
+            }
+        }
+        if (!flag) {
+            response.setContentType(contentType);
+        }
     }
 }
