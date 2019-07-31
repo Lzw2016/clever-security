@@ -42,7 +42,7 @@ public class SecurityContextRepositoryProxy implements SecurityContextRepository
 
     @Override
     public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
-        if (userServerApiAccessToken()) {
+        if (userServerApiAccessToken(requestResponseHolder.getRequest())) {
             ServerApiAccessToken serverApiAccessToken = securityConfig.getServerApiAccessToken();
             if (validationServerApiAccessToken(requestResponseHolder.getRequest())) {
                 ServerApiAccessContextToken serverApiAccessContextToken = new ServerApiAccessContextToken(serverApiAccessToken.getTokenName(), serverApiAccessToken.getTokenValue());
@@ -64,7 +64,7 @@ public class SecurityContextRepositoryProxy implements SecurityContextRepository
 
     @Override
     public boolean containsContext(HttpServletRequest request) {
-        if (userServerApiAccessToken()) {
+        if (userServerApiAccessToken(request)) {
             if (validationServerApiAccessToken(request)) {
                 return true;
             }
@@ -97,10 +97,11 @@ public class SecurityContextRepositoryProxy implements SecurityContextRepository
     /**
      * 是否使用了 ServerApiAccessToken
      */
-    private boolean userServerApiAccessToken() {
+    private boolean userServerApiAccessToken(HttpServletRequest request) {
         return securityConfig != null
                 && securityConfig.getServerApiAccessToken() != null
-                && !StringUtils.isBlank(securityConfig.getServerApiAccessToken().getTokenName())
-                && !StringUtils.isBlank(securityConfig.getServerApiAccessToken().getTokenValue());
+                && StringUtils.isNotBlank(securityConfig.getServerApiAccessToken().getTokenName())
+                && StringUtils.isNotBlank(securityConfig.getServerApiAccessToken().getTokenValue())
+                && StringUtils.isNotBlank(request.getHeader(securityConfig.getServerApiAccessToken().getTokenName()));
     }
 }
