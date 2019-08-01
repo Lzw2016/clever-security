@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -95,9 +96,11 @@ public class RedisJwtRepository {
     }
 
     public JwtAccessToken getJwtToken(HttpServletRequest request) {
-        String token = request.getHeader(tokenConfig.getJwtTokenKey());
-        if (StringUtils.isBlank(token) && tokenConfig.isUseCookie()) {
+        String token;
+        if (Objects.equals(tokenConfig.isUseCookie(), true)) {
             token = CookieUtils.getCookie(request, tokenConfig.getJwtTokenKey());
+        } else {
+            token = request.getHeader(tokenConfig.getJwtTokenKey());
         }
         if (StringUtils.isBlank(token)) {
             throw new BusinessException("Token不存在");
