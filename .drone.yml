@@ -21,7 +21,7 @@ steps:
       - name: package-java
         path: /package-java
     commands:
-      - mvn package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V -Pdev --settings /package-java/Maven/settings.xml
+      - mvn package -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V -Pprod --settings /package-java/Maven/settings.xml
       # - mvn deploy -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -B -V -Pdev --settings /package-java/Maven/settings.xml
       # - cp -f puli-learn-server/target/puli-learn-server-*-SNAPSHOT.jar /package-java
 
@@ -33,7 +33,7 @@ steps:
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
-      target: dev
+      target: prod
       tags: ['0.0.1-SNAPSHOT']
       force_tag: true
       auto_tag: false

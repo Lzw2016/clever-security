@@ -19,7 +19,7 @@ logging:
 ### Spring配置
 ###################################################################################
 spring:
-  profiles.active: prod
+  profiles.active: dev
   application.name: clever-security-server
   aop.proxy-target-class: true
 
@@ -50,12 +50,27 @@ spring:
       period: 31536000s
     static-locations: ['classpath:/static/']
 
+  redis: #---------------------------------------------------------------- Redis配置
+    ssl: false
+    host: 172.18.1.1
+    port: 6379
+    password: lizhiwei1993
+    timeout: 10s
+    database: 0
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 1
+        max-wait: 1s
+      shutdown-timeout: 1000ms
+
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/clever-security
-    username: root
-    password: lizhiwei
+    url: jdbc:mysql://172.18.1.1:3306/clever-security
+    username: clever-security
+    password: lizhiwei1993
     hikari:
       data-source-properties:
         serverTimezone: GMT+8
@@ -68,6 +83,56 @@ spring:
       minimum-idle: 5
       max-lifetime: 1800000
       connection-test-query: SELECT 1
+
+  cloud: #------------------------------------------------------------ Spring Cloud
+    consul:
+      enabled: true
+      host: 172.18.1.1
+      port: 80
+      discovery:
+        enabled: true
+        instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        instance-zone: wuhan
+        instance-group: svc
+        tags:
+          - serviceName=${spring.application.name}
+        health-check-path: '/actuator/health'
+        health-check-interval: 1s
+        prefer-ip-address: true
+        health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+
+###################################################################################
+### management配置
+###################################################################################
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - env
+          - metrics
+          - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    enable:
+      root: true
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 5s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.75, 0.9, 0.95, 0.99
+      sla:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms, 1s, 2s, 3s, 4s, 5s, 10s, 15s, 20s, 30s, 50s
 
 ###################################################################################
 ### mybatis-plus配置
@@ -82,18 +147,103 @@ mybatis-plus:
   executor-type: reuse
   global-config:
     banner: true
-    refresh: true
-    sql-parser-cache: true
     db-config:
       id-type: auto
-      field-strategy: not_empty
+      insert-strategy: not_null
+      update-strategy: not_null
+      select-strategy: not_null
 
+###################################################################################
+### clever security配置
+###################################################################################
+clever:
+  security:
+    # login-model: session
+    login-model: jwt
+    enable-debug: false
+    sys-name: ${spring.application.name}
+    wait-spring-context-init-count: 1
+    ignore-urls:
+      # swagger
+      - '/swagger-ui*/**'
+      - '/webjars/springfox*/**'
+      - '/swagger-resources*/**'
+      - '/v2/api-docs'
+      - '/csrf'
+      - '/error'
+      # 静态资源
+      - '/favicon.ico'
+      - '/dist/**'
+      - '/static/**'
+      - '/*.png'
+      - '/*.js'
+      - '/*.css'
+      - '/*.html'
+      # 基本请求
+      - '/actuator/**'
+      - '/'
+      - '/login/captcha.png'
+      - '/login/refresh_token.json'
+      # - '/api/**'
+    default-need-authorization: true
+    ignore-authorization-urls:
+      - '/login/user_info.json'
+      - '/api/**'
+    hide-user-not-found-exceptions: true
+    not-login-need-forward: false
+    forbidden-need-forward: false
+    forbidden-forward-page: '/403.html'
+    session-expired-redirect-url: '/index.html'
+    login:
+      login-page: '/login.html'
+      login-url: '/login.json'
+      post-only: true
+      json-data-submit: true
+      login-success-need-redirect: false
+      login-success-redirect-page: '/index.html'
+      login-failure-need-redirect: false
+      login-failure-need-forward: false
+      login-failure-redirect-page: '/login.html'
+      need-captcha: true
+      need-captcha-by-login-fail-count: 3
+      captcha-effective-time: 120s
+      concurrent-login-count: 1
+      not-allow-after-login: false
+    remember-me:
+      enable: true
+      always-remember: false
+      validity: 30d
+    login-req-aes-key:
+      req-password-aes-key: '636c657665722d736563757288888888'
+      req-password-aes-iv: '636c657665722d736563757266666666'
+    logout:
+      logout-url: '/logout.json'
+      logout-success-need-redirect: false
+      logout-success-redirect-page: '/login.html'
+    token-config:
+      redis-namespace: ${spring.application.name}
+      secret-key: clever-security-jwt|${spring.application.name}
+      token-validity: 7d
+      token-validity-for-remember-me: 15d
+      refresh-token-validity: 30d
+      hours-in-day: '03:45:00'
+      use-cookie: true
+      jwt-token-key: 'Authorization'
+    server-api-access-token:
+      token-name: 'ServerApiToken'
+      token-value: '12893489iu34yqw2edwerdsiohf89ij23iorhiu3jkfgriouy3hnio3489gt4iuhkoerniou45y89gertikoiofehr89gyiodfgklnio'
+  config:
+    req-aes-key: '636c657665722d73656375726974792d'
+    req-aes-iv: 'f0021ea5a06d5a7bade961afe47e9ad9'
 
-
-
-
-
-
+###################################################################################
+### Feign配置
+###################################################################################
+#spring.main.allow-bean-definition-overriding: true
+## CommonClientConfigKey 实现
+#clever-security-server:
+#  ribbon:
+#    listOfServers: '127.0.0.1:28081'
 
 
 

@@ -86,7 +86,7 @@ spring:
 
   cloud: #------------------------------------------------------------ Spring Cloud
     consul:
-      enabled: true
+      enabled: false
       host: consul.msvc.top
       port: 80
       discovery:
