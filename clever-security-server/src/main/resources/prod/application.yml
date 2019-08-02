@@ -88,7 +88,7 @@ spring:
     consul:
       enabled: true
       host: 172.18.1.1
-      port: 8500
+      port: 18500
       discovery:
         enabled: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
