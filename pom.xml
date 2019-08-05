@@ -7,7 +7,7 @@
     <!--统一版本修改 versions:set -DnewVersion=0.0.1-SNAPSHOT-->
     <groupId>org.clever</groupId>
     <artifactId>clever-security</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0.RELEASES</version>
     <packaging>pom</packaging>
 
     <parent>
