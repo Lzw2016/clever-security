@@ -30,17 +30,26 @@
             <id>nexus-spring</id>
             <url>https://repo.spring.io/libs-release/</url>
         </repository>
+        <repository>
+            <id>nexus-snapshots</id>
+            <url>http://nexus.msvc.top:8081/repository/maven-snapshots/</url>
+        </repository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://nexus.msvc.top:8081/repository/maven-releases/</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
-        <repository>
-            <id>rdc-releases</id>
-            <url>https://repo.rdc.aliyun.com/repository/40909-release-XykGpp/</url>
-        </repository>
         <snapshotRepository>
-            <id>rdc-snapshots</id>
-            <url>https://repo.rdc.aliyun.com/repository/40909-snapshot-qVLdzK/</url>
+            <id>nexus-snapshots</id>
+            <uniqueVersion>true</uniqueVersion>
+            <url>http://nexus.msvc.top:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <url>http://nexus.msvc.top:8081/repository/maven-releases/</url>
+        </repository>
     </distributionManagement>
 
     <modules>
@@ -61,7 +70,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
         <mybatis-plus.version>3.1.2</mybatis-plus.version>
-        <common.version>0.0.1-SNAPSHOT</common.version>
+        <common.version>1.0.0.RELEASES</common.version>
     </properties>
 
     <dependencyManagement>
@@ -269,12 +278,6 @@
                     <!-- 发布时自动将源码同时发布的配置 -->
                     <execution>
                         <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <phase>compile</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
