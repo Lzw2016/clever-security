@@ -26,7 +26,7 @@ public class HttpResponseUtils {
                     || resData instanceof Boolean) {
                 json = String.valueOf(resData);
             } else {
-                json = JacksonMapper.nonEmptyMapper().toJson(resData);
+                json = JacksonMapper.getInstance().toJson(resData);
             }
             response.setStatus(status);
             response.setCharacterEncoding("UTF-8");

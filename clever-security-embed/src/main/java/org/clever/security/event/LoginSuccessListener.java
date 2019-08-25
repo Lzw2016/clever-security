@@ -55,7 +55,7 @@ public class LoginSuccessListener implements ApplicationListener<AuthenticationS
             userLoginLog.setUsername(authentication.getName());
             userLoginLog.setLoginTime(new Date());
             userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));
-            userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
+            userLoginLog.setAuthenticationInfo(JacksonMapper.getInstance().toJson(authentication));
             userLoginLog.setLoginModel(EnumConstant.ServiceSys_LoginModel_0);
             userLoginLog.setSessionId(StringUtils.trimToEmpty(sessionId));
             userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);

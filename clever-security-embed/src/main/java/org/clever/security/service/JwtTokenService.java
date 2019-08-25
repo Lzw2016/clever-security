@@ -144,7 +144,7 @@ public class JwtTokenService {
         // 解析获得签名私钥
         String payload = strArray[1];
         payload = new String(EncodeDecodeUtils.decodeBase64(payload));
-        DefaultClaims claims = JacksonMapper.nonEmptyMapper().fromJson(payload, DefaultClaims.class);
+        DefaultClaims claims = JacksonMapper.getInstance().fromJson(payload, DefaultClaims.class);
         Key key = Keys.hmacShaKeyFor((claims.getSubject() + secretKey).getBytes());
         try {
             //通过密钥验证Token

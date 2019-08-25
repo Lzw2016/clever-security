@@ -53,7 +53,7 @@ public class SessionExpiredStrategy implements SessionInformationExpiredStrategy
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=utf-8");
-            response.getWriter().print(JacksonMapper.nonEmptyMapper().toJson(errorResponse));
+            response.getWriter().print(JacksonMapper.getInstance().toJson(errorResponse));
         }
     }
 }

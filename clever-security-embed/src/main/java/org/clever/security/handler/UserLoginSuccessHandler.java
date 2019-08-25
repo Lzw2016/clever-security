@@ -146,7 +146,7 @@ public class UserLoginSuccessHandler implements AuthenticationSuccessHandler {
         userLoginLog.setUsername(authentication.getName());
         userLoginLog.setLoginTime(new Date());
         userLoginLog.setLoginIp(StringUtils.trimToEmpty(loginIp));
-        userLoginLog.setAuthenticationInfo(JacksonMapper.nonEmptyMapper().toJson(authentication));
+        userLoginLog.setAuthenticationInfo(JacksonMapper.getInstance().toJson(authentication));
         userLoginLog.setLoginModel(EnumConstant.ServiceSys_LoginModel_1);
         userLoginLog.setSessionId(StringUtils.trimToEmpty(JwtTokenId));
         userLoginLog.setLoginState(EnumConstant.UserLoginLog_LoginState_1);

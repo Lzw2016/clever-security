@@ -7,7 +7,7 @@
     <!--统一版本修改 versions:set -DnewVersion=0.0.1-SNAPSHOT-->
     <groupId>org.clever</groupId>
     <artifactId>clever-security</artifactId>
-    <version>1.0.0.RELEASES</version>
+    <version>1.0.1.RELEASES</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -70,7 +70,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
         <mybatis-plus.version>3.1.2</mybatis-plus.version>
-        <common.version>1.0.0.RELEASES</common.version>
+        <common.version>1.0.1.RELEASES</common.version>
     </properties>
 
     <dependencyManagement>
