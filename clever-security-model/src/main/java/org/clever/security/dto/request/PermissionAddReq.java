@@ -32,7 +32,7 @@ public class PermissionAddReq extends BaseRequest {
     @Length(min = 6, max = 255)
     private String permissionStr;
 
-    @ApiModelProperty("权限类型，1:web资源权限, 2:菜单权限，3:ui权限，4:自定义")
+    @ApiModelProperty("权限类型，1:API接口, 2:菜单权限，3:ui权限，4:自定义")
     @NotNull
     @Range(min = 2, max = 4)
     private Integer resourcesType;

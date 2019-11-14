@@ -37,7 +37,7 @@ public class EnumConstant {
     public static final Integer Permission_NeedAuthorization_2 = 2;
 
     /**
-     * 权限类型，1:web资源权限
+     * 权限类型，1:API接口
      */
     public static final Integer Permission_ResourcesType_1 = 1;
 

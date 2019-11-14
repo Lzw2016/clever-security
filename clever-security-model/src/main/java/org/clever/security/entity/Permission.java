@@ -26,7 +26,7 @@ public class Permission implements Serializable {
     /** 唯一权限标识字符串 */    
     private String permissionStr;
     
-    /** 权限类型，1:web资源权限, 2:菜单权限，3:ui权限，...... */    
+    /** 权限类型，1:API接口, 2:菜单权限，3:ui权限，...... */
     private Integer resourcesType;
     
     /** 权限说明 */    
