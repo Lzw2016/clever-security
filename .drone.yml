@@ -9,7 +9,7 @@ clone:
 
 steps:
   - name: 下载源代码[Git]
-    image: docker:git
+    image: alpine/git
     commands:
       - echo "### $DRONE_GIT_HTTP_URL -> $DRONE_BRANCH"
       - git clone http://172.18.1.1:13000/lizw/clever-security.git ./
