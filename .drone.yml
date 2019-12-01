@@ -1,7 +1,6 @@
 # 跳过构建在Commit Message中添加 [CI SKIP]
 # 192.168.31.5 必须是物理机网卡(可以是虚拟网卡)
 kind: pipeline
-type: docker
 name: 打包部署[Java-Maven]
 
 clone:
@@ -9,7 +8,7 @@ clone:
 
 steps:
   - name: 下载源代码[Git]
-    image: alpine/git
+    image: docker:git
     commands:
       - echo "### $DRONE_GIT_HTTP_URL -> $DRONE_BRANCH"
       - git clone http://172.18.1.1:13000/lizw/clever-security.git ./
@@ -30,6 +29,8 @@ steps:
     image: plugins/docker
     settings:
       registry: '172.18.1.1:15000'
+      username: lizw
+      password: Lizhiwei1993
       repo: '172.18.1.1:15000/java-service/clever-security-server'
       # bip: true
       insecure: true
