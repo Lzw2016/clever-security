@@ -1,6 +1,7 @@
 # 跳过构建在Commit Message中添加 [CI SKIP]
 # 192.168.31.5 必须是物理机网卡(可以是虚拟网卡)
 kind: pipeline
+type: docker
 name: 打包部署[Java-Maven]
 
 clone:
