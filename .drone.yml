@@ -28,7 +28,7 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker:18
     settings:
-      registry: '172.18.1.1:15000'
+      # registry: '172.18.1.1:15000'
       repo: '172.18.1.1:15000/java-service/clever-security-server'
       username: lizw
       password: Lizhiwei1993
