@@ -26,7 +26,7 @@ steps:
       # - cp -f puli-learn-server/target/puli-learn-server-*-SNAPSHOT.jar /package-java
 
   - name: 构建镜像[Docker]
-    image: plugins/docker:linux-amd64
+    image: plugins/docker:18.09
     settings:
       registry: '172.18.1.1:15000'
       repo: '172.18.1.1:15000/java-service/clever-security-server'
@@ -34,7 +34,6 @@ steps:
         from_secret: harborUsername
       password:
         from_secret: harborPassword
-      # auth: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzc4NTAwMTAsImlhdCI6MTU3NTI1ODAxMCwiaXNzIjoiaGFyYm9yLXRva2VuLWlzc3VlciIsImlkIjoxLCJwaWQiOjQsImFjY2VzcyI6W3siUmVzb3VyY2UiOiIvcHJvamVjdC80L3JlcG9zaXRvcnkiLCJBY3Rpb24iOiJwdXNoIiwiRWZmZWN0IjoiIn1dfQ.RKI2Pzg_lWbUjpVTc3_6-TgSJSWjZZdnmc-yvcM3ONOXxJRcsLYWtWwfav9Q86h52J64Okibncprmj_JcvgayuRFnla1WgFN3jmu6wy_rLfYRAvPEsu9xHIJcwML8MOEtrhtAbbx85ZmHRgK3jkeLBm3weT0Ui56-Z5-iVcUZquNbIlYMWcVA7ykCVUvxmnEoFsjCnrdlRdvQhZMf17Hw0_1iv056qnn-Jv2nlfm_99Idvfnv4APg8q_0bOym8EHdKUM7NkGGd5byKMsJZUwsd4tcvwAn0uu5a2P9zIWxqOd0DpodNTMZMrPeD-l1EWUfhWjBxe_bZ6dSLt6gKIL0pQ2UCUtK65ADk2u0L1-LRimsOeNBxhGyr1MdpGKm8OClgiP6WYinLOJ_JIiesJebpcqD5KRh2XDiDhVRGEMvH97k4tNOPXQ0sq4ZdRGS4a36sopfYgUvmfWUYpRBpmMFZ8A8oqzOncK8yZ7ojRQIJln99tes8dHyFPpm4sLNrAi4chqbwthYIfuyKimx24LtJK8LYXB9NBCF-Jmmg2aBcyTgBOQ7VjvcOT_wR94-6Nra9h3Blpg6EbHFXIJj9ePY4rLLseFbqdeAWO7A7Nsic1p2K5OR03BWb_hEDcw9YVDVMtfweuHGQFy6UpUzQl0yeZGesAz_UFYGTywJ_6RIv4'
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
