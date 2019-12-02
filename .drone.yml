@@ -28,10 +28,9 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker
     settings:
-      registry: '172.18.1.1:15000'
-      repo: '172.18.1.1:15000/java-service/clever-security-server'
-      username:
-        from_secret: harborUsername
+      registry: 'registry.cn-hangzhou.aliyuncs.com'
+      repo: 'registry.cn-hangzhou.aliyuncs.com/java-service/clever-security-server'
+      username: lzw1000000@163.com
       password:
         from_secret: harborPassword
       bip: true
@@ -42,6 +41,8 @@ steps:
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
+      debug: true
+      launch_debug: true
 
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
