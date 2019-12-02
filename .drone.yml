@@ -40,6 +40,7 @@ steps:
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
+      launch_debug: true
 
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
