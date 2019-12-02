@@ -29,7 +29,7 @@ steps:
     image: plugins/docker
     settings:
       registry: 'registry.cn-hangzhou.aliyuncs.com'
-      repo: 'registry.cn-hangzhou.aliyuncs.com/java-service/clever-security-server'
+      repo: 'registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server'
       username: lzw1000000@163.com
       password:
         from_secret: harborPassword
@@ -37,7 +37,7 @@ steps:
       insecure: true
       dockerfile: ./Dockerfile
       target: prod
-      tags: ['0.0.1-SNAPSHOT']
+      tags: ['1.0.1.RELEASES']
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
@@ -63,11 +63,11 @@ steps:
         - echo "------------------< 删除容器 >------------------"
         - docker rm -v clever-security-server
         - echo "------------------< 删除旧镜像 >------------------"
-        - docker rmi 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker rmi registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
         - echo "------------------< 拉取新镜像 >------------------"
-        - docker pull 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker pull registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
         - echo "------------------< 运行新镜像 >------------------"
-        - docker run --name clever-security-server -p 28081:9066 -v /home/lizw/Desktop/docker-opt/logs/java-service:/logs -d 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
+        - docker run --name clever-security-server -p 28081:9066 -v /home/lizw/Desktop/docker-opt/logs/java-service:/logs -d registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
         - exit
 
   - name: 发送通知[Email]
