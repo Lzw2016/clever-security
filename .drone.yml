@@ -26,7 +26,7 @@ steps:
       # - cp -f puli-learn-server/target/puli-learn-server-*-SNAPSHOT.jar /package-java
 
   - name: 构建镜像[Docker]
-    image: plugins/docker:18.09
+    image: plugins/docker
     settings:
       registry: '172.18.1.1:15000'
       repo: '172.18.1.1:15000/java-service/clever-security-server'
@@ -34,7 +34,7 @@ steps:
         from_secret: harborUsername
       password:
         from_secret: harborPassword
-      # bip: true
+      bip: true
       insecure: true
       dockerfile: ./Dockerfile
       target: prod
@@ -42,8 +42,6 @@ steps:
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
-      debug: true
-      launch_debug: true
 
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
