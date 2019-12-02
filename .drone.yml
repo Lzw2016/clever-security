@@ -28,10 +28,10 @@ steps:
   - name: 构建镜像[Docker]
     image: plugins/docker
     settings:
-      registry: '172.18.1.1:15000'
-      username: lizw
-      password: Lizhiwei1993
+      username: 'lizw'
+      password: 'Lizhiwei1993'
       auth: 'bGl6dzpMaXpoaXdlaTE5OTM='
+      registry: '172.18.1.1:15000'
       repo: '172.18.1.1:15000/java-service/clever-security-server'
       # bip: true
       insecure: true
