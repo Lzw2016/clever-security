@@ -29,9 +29,9 @@ steps:
     image: plugins/docker
     settings:
       registry: '172.18.1.1:15000'
-      # username: lizw
-      # password: Lizhiwei1993
-      repo: '172.18.1.1:15000/java-service/clever-security-server'
+      username: lizw
+      password: Lizhiwei1993
+      repo: '172.18.1.1:15000/java-services/clever-security-server'
       # bip: true
       insecure: true
       dockerfile: ./Dockerfile
