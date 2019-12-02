@@ -34,14 +34,13 @@ steps:
       # password: Lizhiwei1993
       repo: '172.18.1.1:15000/java-service/clever-security-server'
       # bip: true
-      insecure: true
+      insecure: false
       dockerfile: ./Dockerfile
       target: prod
       tags: ['0.0.1-SNAPSHOT']
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
-      launch_debug: true
 
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
