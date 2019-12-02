@@ -33,7 +33,7 @@ steps:
       username: lzw1000000@163.com
       password:
         from_secret: harborPassword
-      bip: true
+      # bip: true
       insecure: true
       dockerfile: ./Dockerfile
       target: prod
