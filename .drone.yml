@@ -38,7 +38,7 @@ steps:
       password:
         from_secret: harborPassword
       # bip: true
-      insecure: true
+      # insecure: true
       dockerfile: ./Dockerfile
       target: prod
       tags: ['0.0.1-SNAPSHOT']
