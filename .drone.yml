@@ -27,17 +27,21 @@ steps:
 
   - name: 构建镜像[Docker]
     image: plugins/docker
+    volumes:
+      - name: docker-daemon
+        path: /etc/docker
     settings:
-      registry: 'registry.cn-hangzhou.aliyuncs.com'
-      repo: 'registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server'
-      username: lzw1000000@163.com
+      registry: '172.18.1.1:15000'
+      repo: '172.18.1.1:15000/java-service/clever-security-server'
+      username:
+        from_secret: harborUsername
       password:
         from_secret: harborPassword
-      # bip: true
+      bip: true
       insecure: true
       dockerfile: ./Dockerfile
       target: prod
-      tags: ['1.0.1.RELEASES']
+      tags: ['0.0.1-SNAPSHOT']
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
@@ -61,11 +65,11 @@ steps:
         - echo "------------------< 删除容器 >------------------"
         - docker rm -v clever-security-server
         - echo "------------------< 删除旧镜像 >------------------"
-        - docker rmi registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
+        - docker rmi 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 拉取新镜像 >------------------"
-        - docker pull registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
+        - docker pull 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - echo "------------------< 运行新镜像 >------------------"
-        - docker run --name clever-security-server -p 28081:9066 -v /home/lizw/Desktop/docker-opt/logs/java-service:/logs -d registry.cn-hangzhou.aliyuncs.com/msvc/clever-security-server:1.0.1.RELEASES
+        - docker run --name clever-security-server -p 28081:9066 -v /home/lizw/Desktop/docker-opt/logs/java-service:/logs -d 172.18.1.1:15000/java-service/clever-security-server:0.0.1-SNAPSHOT
         - exit
 
   - name: 发送通知[Email]
@@ -105,5 +109,9 @@ volumes:
   - name: package-java
     host:
       path: /home/lizw/Desktop/docker-opt/package/java
+  # docker-daemon 配置
+  - name: docker-daemon
+    host:
+      path: /etc/docker
 
 # -------------------------------------------------------------------------------------------------------------
