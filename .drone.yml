@@ -37,7 +37,6 @@ steps:
         from_secret: harborUsername
       password:
         from_secret: harborPassword
-      # bip: true
       # insecure: true
       dockerfile: ./Dockerfile
       target: prod
@@ -45,8 +44,6 @@ steps:
       force_tag: true
       auto_tag: false
       auto_tag_suffix: ''
-      debug: true
-      launch_debug: true
 
   - name: 启动Docker容器[SSH]
     image: appleboy/drone-ssh
