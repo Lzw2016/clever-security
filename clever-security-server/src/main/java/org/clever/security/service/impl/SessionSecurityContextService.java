@@ -27,7 +27,7 @@ import java.util.*;
  */
 @SuppressWarnings("Duplicates")
 @Transactional(readOnly = true)
-@Service("sessionSecurityContextService")
+@Service("SessionSecurityContextService")
 @Slf4j
 public class SessionSecurityContextService implements ISecurityContextService {
 
