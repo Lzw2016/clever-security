@@ -19,7 +19,7 @@ public class CheckUserLoginLogJob extends GlobalJob {
     }
 
     @Override
-    protected void exceptionHandle(Throwable e) {
+    protected void exceptionHandle(Exception e) {
 
     }
 }

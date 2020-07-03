@@ -48,7 +48,7 @@ public class InitSystemUrlPermissionJob extends GlobalJob {
     private WebPermissionClient webPermissionClient;
 
     @Override
-    protected void exceptionHandle(Throwable e) {
+    protected void exceptionHandle(Exception e) {
         log.info("### [系统权限初始化] 初始化系统的所有Url权限异常", e);
         // throw ExceptionUtils.unchecked(e);
     }
