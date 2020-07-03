@@ -7,7 +7,7 @@
     <parent>
         <artifactId>clever-security</artifactId>
         <groupId>org.clever</groupId>
-        <version>1.0.1.RELEASES</version>
+        <version>1.0.2.RELEASES</version>
     </parent>
 
     <artifactId>clever-security-server</artifactId>
