@@ -27,7 +27,7 @@ public class SecuritySwagger2Config {
                 .title("clever-security-embed")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
-                .version("0.0.1-SNAPSHOT")
+                .version("3.0.0-SNAPSHOT")
                 // .license("license")
                 // .licenseUrl("licenseUrl")
                 // .termsOfServiceUrl("termsOfServiceUrl")
