@@ -1,28 +1,4 @@
-### 2020-xx-xx 1.0.3.RELEASES
-
-- [bug fix]
-
-- [增强]
-
-- [新增]
-
-- [变化]
-
----
-
-### 2020-07-03 1.0.2.RELEASES
-
-- [bug fix]
-
-- [增强]
-
-- [新增]
-
-- [变化]
-    - 升级clever-common到1.0.5.RELEASES
----
-
-### 2019-08-25 1.0.1.RELEASES
+### 2020-xx-xx 3.x.x.RELEASES
 
 - [bug fix]
     - 无
@@ -33,10 +9,10 @@
 - [新增]
     - 无
 - [变化]
-    - 升级clever-common到1.0.1.RELEASES
+    - 无
 ---
 
-### 2019-08-05 1.0.0.RELEASES
+### 2020-xx-xx 3.x.x.RELEASES
 
 - 发布第一个版本
 

@@ -39,19 +39,10 @@ clever-security是一个多系统的权限管理方案，主要解决两个问�
 4. 启动服务端程序`clever-security-server`使用`http://localhost:28081/`进行访问后台地址
 5. 启动Demo程序`clever-security-session-demo`
 
-### 与SpringBoot项目整合(待写)
+### 与SpringBoot项目整合
 
 
 ### 系统截图
 
-![API](image/api.png)
-
-![用户管理](image/user.png)
-
-![角色管理](image/role.png)
-
-![权限管理](image/permission.png)
-
-![全局授权](image/authorization.png)
 
 
