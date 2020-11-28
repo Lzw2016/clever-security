@@ -1,0 +1,66 @@
+package org.clever.security.entity;
+
+import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * 用户登录日志(UserLoginLog)实体类
+ *
+ * @author lizw
+ * @since 2020-11-28 19:47:42
+ */
+@Data
+public class UserLoginLog implements Serializable {
+    private static final long serialVersionUID = 515728531537980535L;
+    /**
+     * 登录日志id(系统自动生成且不会变化)
+     */
+    private Long id;
+
+    /**
+     * 域id
+     */
+    private Long domainId;
+
+    /**
+     * 用户id
+     */
+    private String uid;
+
+    /**
+     * 登录时间
+     */
+    private Date loginTime;
+
+    /**
+     * 登录IP
+     */
+    private String loginIp;
+
+    /**
+     * 登录状态，0:登录失败，1:登录成功
+     */
+    private Integer loginState;
+
+    /**
+     * 登录请求数据
+     */
+    private String requestData;
+
+    /**
+     * JWT-Token id
+     */
+    private Long jwtTokenId;
+
+    /**
+     * 创建时间
+     */
+    private Date createAt;
+
+    /**
+     * 更新时间
+     */
+    private Date updateAt;
+}
