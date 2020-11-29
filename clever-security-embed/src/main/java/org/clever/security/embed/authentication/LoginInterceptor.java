@@ -82,7 +82,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         return false;
     }
 
-    protected void login(HttpServletRequest request, HttpServletResponse response) {
+    protected void login(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // TODO Context
 
         // 收集登录数据
@@ -123,34 +123,25 @@ public class LoginInterceptor implements HandlerInterceptor {
             // TODO
             throw new RuntimeException("身份认证失败");
         }
-        boolean loginSuccess = false;
         LoginException loginException = null;
         try {
             verifyLoginData.authentication(securityConfig, request, loginReq, userInfo);
-            loginSuccess = true;
         } catch (LoginException e) {
             // TODO
             loginException = e;
         }
-        if (loginSuccess) {
-            // 登录成功
+        // 登录成功
+        if (loginException == null && loginSuccessHandlerList != null) {
             LoginSuccessEvent loginSuccessEvent = new LoginSuccessEvent();
             for (LoginSuccessHandler handler : loginSuccessHandlerList) {
-                try {
-                    handler.onLoginSuccess(request, response, loginSuccessEvent);
-                } catch (Exception e) {
-                    // TODO
-                }
+                handler.onLoginSuccess(request, response, loginSuccessEvent);
             }
-        } else {
-            // 登录失败
+        }
+        // 登录失败
+        if (loginException != null && loginFailureHandlerList != null) {
+            LoginFailureEvent loginFailureEvent = new LoginFailureEvent(loginException);
             for (LoginFailureHandler handler : loginFailureHandlerList) {
-                LoginFailureEvent loginFailureEvent = new LoginFailureEvent();
-                try {
-                    handler.onLoginFailure(request, response, loginFailureEvent);
-                } catch (Exception e) {
-                    // TODO
-                }
+                handler.onLoginFailure(request, response, loginFailureEvent);
             }
         }
     }

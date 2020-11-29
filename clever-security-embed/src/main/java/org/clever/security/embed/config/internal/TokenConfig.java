@@ -48,7 +48,7 @@ public class TokenConfig {
      */
     private boolean useCookie = true;
     /**
-     * WT-Token名称(Cookie或Header中的key)
+     * JWT-Token名称(Cookie或Header中的key)
      */
     private String jwtTokenName = "Authorization";
 }
