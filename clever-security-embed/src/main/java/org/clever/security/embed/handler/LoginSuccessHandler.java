@@ -1,6 +1,7 @@
 package org.clever.security.embed.handler;
 
 import org.clever.security.embed.event.LoginSuccessEvent;
+import org.springframework.core.Ordered;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,7 @@ import java.io.IOException;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:25 <br/>
  */
-public interface LoginSuccessHandler {
+public interface LoginSuccessHandler extends Ordered {
 
     /**
      * 登录成功处理逻辑
