@@ -2,6 +2,7 @@ package org.clever.security.model.login;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.clever.security.LoginType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -22,4 +23,9 @@ public class ScanCodeReq extends AbstractUserLoginReq {
      */
     @NotBlank(message = "Token不能为空")
     private String loginToken;
+
+    @Override
+    public LoginType getLoginType() {
+        return LoginType.ScanCode;
+    }
 }

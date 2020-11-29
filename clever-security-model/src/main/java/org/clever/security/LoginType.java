@@ -1,9 +1,16 @@
 package org.clever.security;
 
+import lombok.Getter;
+import lombok.ToString;
+
 /**
+ * 登录方式
+ * <p>
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 15:24 <br/>
  */
+@ToString
+@Getter
 public enum LoginType {
     /**
      * 用户名密码
@@ -44,4 +51,11 @@ public enum LoginType {
         this.id = id;
         this.name = name;
     }
+
+//    public static LoginType valueOf(String name) {
+//        if(Objects.equals(LoginType.LoginName_Password.getName(), name) || ) {
+//            return LoginType.LoginName_Password;
+//        }
+//        return null;
+//    }
 }

@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
+ * 登录渠道
+ * <p>
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 15:11 <br/>
  */
@@ -33,7 +35,7 @@ public enum LoginChannel {
     /**
      * 微信小程序
      */
-    Wechat_Small_Program(5, "Wechat-Small-Program"),
+    WechatSmallProgram(5, "WechatSmallProgram"),
     ;
 
     /**
@@ -49,4 +51,8 @@ public enum LoginChannel {
         this.id = id;
         this.name = name;
     }
+
+//    public static LoginType valueOf(String name) {
+//
+//    }
 }

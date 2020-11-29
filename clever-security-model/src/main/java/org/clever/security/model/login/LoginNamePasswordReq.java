@@ -2,6 +2,7 @@ package org.clever.security.model.login;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.clever.security.LoginType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -22,4 +23,9 @@ public class LoginNamePasswordReq extends AbstractUserLoginReq {
      */
     @NotBlank(message = "登录密码不能为空")
     private String password;
+
+    @Override
+    public LoginType getLoginType() {
+        return LoginType.LoginName_Password;
+    }
 }

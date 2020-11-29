@@ -2,6 +2,7 @@ package org.clever.security.model.login;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.clever.security.LoginType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -22,4 +23,9 @@ public class TelephoneValidateCodeReq extends AbstractUserLoginReq {
      */
     @NotBlank(message = "验证码不能为空")
     private String validateCode;
+
+    @Override
+    public LoginType getLoginType() {
+        return LoginType.Telephone_ValidateCode;
+    }
 }

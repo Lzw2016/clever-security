@@ -2,6 +2,7 @@ package org.clever.security.model.login;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.clever.security.LoginType;
 
 import javax.validation.constraints.NotBlank;
 
@@ -17,4 +18,9 @@ public class RememberMeReq extends AbstractUserLoginReq {
      */
     @NotBlank(message = "RememberMeToken不能为空")
     private String rememberMeToken;
+
+    @Override
+    public LoginType getLoginType() {
+        return LoginType.RememberMe;
+    }
 }
