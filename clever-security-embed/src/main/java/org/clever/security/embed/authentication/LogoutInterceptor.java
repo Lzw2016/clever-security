@@ -1,5 +1,6 @@
-package org.clever.security.embed.auth;
+package org.clever.security.embed.authentication;
 
+import lombok.extern.slf4j.Slf4j;
 import org.clever.security.embed.config.SecurityConfig;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -8,16 +9,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 用户权限认证拦截器(授权拦截器)
- * <p>
  * 作者：lizw <br/>
- * 创建时间：2020/11/29 16:18 <br/>
+ * 创建时间：2020/11/29 16:35 <br/>
  */
-public class AuthInterceptor implements HandlerInterceptor {
+@Slf4j
+public class LogoutInterceptor implements HandlerInterceptor {
 
     private final SecurityConfig securityConfig;
 
-    public AuthInterceptor(SecurityConfig securityConfig) {
+    public LogoutInterceptor(SecurityConfig securityConfig) {
         this.securityConfig = securityConfig;
     }
 
