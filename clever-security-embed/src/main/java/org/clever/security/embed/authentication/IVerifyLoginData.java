@@ -2,8 +2,8 @@ package org.clever.security.embed.authentication;
 
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.LoginException;
-import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.UserInfo;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public interface IVerifyLoginData extends Ordered {
     boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo);
 
     /**
-     * 用户登录身份认证
+     * 用户登录验证
      *
      * @param securityConfig 系统授权配置
      * @param request        请求对象
@@ -33,5 +33,5 @@ public interface IVerifyLoginData extends Ordered {
      * @param userInfo       用户信息(数据库中的用户数据)
      * @throws LoginException 验证失败
      */
-    void authentication(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) throws LoginException;
+    void verify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) throws LoginException;
 }

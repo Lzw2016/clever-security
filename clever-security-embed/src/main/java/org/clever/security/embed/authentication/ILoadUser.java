@@ -1,7 +1,7 @@
 package org.clever.security.embed.authentication;
 
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.model.UserInfo;
+import org.clever.security.model.login.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.springframework.core.Ordered;
 

@@ -9,8 +9,8 @@ import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.ListSortUtils;
-import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.UserInfo;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 用户身份认证拦截器(登录拦截器)
+ * 登录拦截器
  * <p>
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:09 <br/>
@@ -41,7 +41,7 @@ public class LoginInterceptor implements HandlerInterceptor {
      */
     private final List<ILoadUser> loadUserList;
     /**
-     * 用户登录身份认证
+     * 用户登录验证(密码、验证码等)
      */
     private final List<IVerifyLoginData> verifyLoginDataList;
     /**
@@ -63,7 +63,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(loginDataCollectList, "登录数据收集器(ILoginDataCollect)不存在");
         Assert.notEmpty(loadUserList, "用户信息加载器(ILoadUser)不存在");
-        Assert.notEmpty(verifyLoginDataList, "用户登录身份认证器(IVerifyLoginData)不存在");
+        Assert.notEmpty(verifyLoginDataList, "用户登录验证器(IVerifyLoginData)不存在");
         this.securityConfig = securityConfig;
         this.loginDataCollectList = ListSortUtils.sort(loginDataCollectList);
         this.loadUserList = ListSortUtils.sort(loadUserList);
@@ -111,7 +111,7 @@ public class LoginInterceptor implements HandlerInterceptor {
             throw new RuntimeException("用户信息不存在");
         }
         UserInfo userInfo = loadUser.loadUserInfo(securityConfig, request, loginReq);
-        // 身份认证
+        // 用户登录验证
         IVerifyLoginData verifyLoginData = null;
         for (IVerifyLoginData verify : verifyLoginDataList) {
             if (verify.isSupported(securityConfig, request, loginReq, userInfo)) {
@@ -121,11 +121,11 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
         if (verifyLoginData == null) {
             // TODO
-            throw new RuntimeException("身份认证失败");
+            throw new RuntimeException("登录验证失败");
         }
         LoginException loginException = null;
         try {
-            verifyLoginData.authentication(securityConfig, request, loginReq, userInfo);
+            verifyLoginData.verify(securityConfig, request, loginReq, userInfo);
         } catch (LoginException e) {
             // TODO
             loginException = e;
