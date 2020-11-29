@@ -25,10 +25,6 @@ public class LoginConfig implements Serializable {
      */
     private boolean postOnly = true;
     /**
-     * Json 数据提交方式
-     */
-    private boolean jsonDataSubmit = true;
-    /**
      * 登录成功 - 是否需要重定向到指定页面
      */
     private boolean loginSuccessNeedRedirect = false;
@@ -40,10 +36,6 @@ public class LoginConfig implements Serializable {
      * 登录失败 - 是否需要重定向
      */
     private boolean loginFailureNeedRedirect = false;
-    /**
-     * 登录失败 - 是否需要请求转发(优先级低于loginFailureNeedRedirect)
-     */
-    private boolean loginFailureNeedForward = false;
     /**
      * 登录失败跳转地址
      */

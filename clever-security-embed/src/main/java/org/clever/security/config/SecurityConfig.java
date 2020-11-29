@@ -43,17 +43,17 @@ public class SecurityConfig implements Serializable {
      */
     private boolean hideUserNotFoundException = true;
     /**
-     * 未登录时是否需要请求转发到登录页面
+     * 未登录时是否需要重定向到登录页面
      */
-    private boolean notLoginNeedForward = false;
+    private boolean notLoginNeedRedirect = false;
     /**
-     * 无权访问时是否需要请求转发到403页面
+     * 无权访问时是否需要重定向到403页面
      */
-    private boolean forbiddenNeedForward = false;
+    private boolean forbiddenNeedRedirect = false;
     /**
-     * 403页面地址(无权访问时的请求转发地址)
+     * 403页面地址(无权访问时的重定向地址)
      */
-    private String forbiddenForwardPage = "/403.html";
+    private String forbiddenRedirectPage = "/403.html";
 
     // ----------------------------------------------------------------------------------------
 
