@@ -1,6 +1,7 @@
 package org.clever.security.embed.collect;
 
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.model.login.AbstractUserLoginReq;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,5 +22,11 @@ public interface ILoginDataCollect extends Ordered {
      */
     boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request);
 
-
+    /***
+     * 收集登录请求数据
+     * @param securityConfig 系统授权配置
+     * @param request           请求对象
+     * @return 登录数据对象
+     */
+    AbstractUserLoginReq collectLoginData(SecurityConfig securityConfig, HttpServletRequest request);
 }

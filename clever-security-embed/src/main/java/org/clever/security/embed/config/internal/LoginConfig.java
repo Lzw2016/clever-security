@@ -20,6 +20,13 @@ public class LoginConfig implements Serializable {
      * 登录请求Path
      */
     private String loginPath = "/login";
+
+
+
+
+
+
+
     /**
      * 登录只支持POST请求
      */
