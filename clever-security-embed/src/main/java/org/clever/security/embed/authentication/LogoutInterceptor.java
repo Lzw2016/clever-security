@@ -37,7 +37,6 @@ public class LogoutInterceptor implements HandlerInterceptor {
      */
     private final List<LogoutFailureHandler> logoutFailureHandlerList;
 
-
     public LogoutInterceptor(
             SecurityConfig securityConfig,
             List<LogoutSuccessHandler> logoutSuccessHandlerList,
