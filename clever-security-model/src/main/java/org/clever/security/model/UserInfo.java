@@ -1,4 +1,4 @@
-package org.clever.security.model.login;
+package org.clever.security.model;
 
 import java.io.Serializable;
 

@@ -9,8 +9,8 @@ import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.ListSortUtils;
+import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
-import org.clever.security.model.login.UserInfo;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerInterceptor;
 

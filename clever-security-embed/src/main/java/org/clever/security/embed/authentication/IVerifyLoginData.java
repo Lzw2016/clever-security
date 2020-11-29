@@ -3,7 +3,7 @@ package org.clever.security.embed.authentication;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.model.login.AbstractUserLoginReq;
-import org.clever.security.model.login.UserInfo;
+import org.clever.security.model.UserInfo;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;

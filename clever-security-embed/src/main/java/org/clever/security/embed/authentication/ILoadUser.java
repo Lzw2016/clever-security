@@ -1,7 +1,7 @@
 package org.clever.security.embed.authentication;
 
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.model.login.UserInfo;
+import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.springframework.core.Ordered;
 
@@ -25,6 +25,8 @@ public interface ILoadUser extends Ordered {
     boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq);
 
     /**
+     * 加载用户信息(从数据库或其他系统中加载)
+     *
      * @param securityConfig 系统授权配置
      * @param request        请求对象
      * @param loginReq       登录请求参数

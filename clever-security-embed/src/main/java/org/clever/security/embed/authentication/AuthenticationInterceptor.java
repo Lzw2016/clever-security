@@ -2,10 +2,12 @@ package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
-import org.clever.security.embed.SecurityContextHolder;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
+import org.clever.security.embed.context.ISecurityContextRepository;
+import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.model.SecurityContext;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -24,9 +26,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
      * 全局配置
      */
     private final SecurityConfig securityConfig;
+    /**
+     * 加载用户信息
+     */
+    private final ISecurityContextRepository securityContextRepository;
 
-    public AuthenticationInterceptor(SecurityConfig securityConfig) {
+    public AuthenticationInterceptor(
+            SecurityConfig securityConfig,
+            ISecurityContextRepository securityContextRepository) {
+        Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
+        Assert.notNull(securityContextRepository, "参数securityContextRepository不能null");
         this.securityConfig = securityConfig;
+        this.securityContextRepository = securityContextRepository;
     }
 
     @Override
@@ -47,7 +58,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         // TODO 解析Token
 
         // 2.根据JWT-Token获取SecurityContext
-        SecurityContext securityContext = null;
+        SecurityContext securityContext = securityContextRepository.loadContext(jwtToken, request, response);
+
+
         // TODO 是否需要存储 SecurityContext ??
         SecurityContextHolder.setSecurityContext(securityContext);
     }

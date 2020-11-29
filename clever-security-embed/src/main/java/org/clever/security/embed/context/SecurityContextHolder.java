@@ -1,4 +1,4 @@
-package org.clever.security.embed;
+package org.clever.security.embed.context;
 
 import org.clever.security.model.SecurityContext;
 
