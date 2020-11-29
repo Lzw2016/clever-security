@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletResponse;
  * 创建时间：2020/11/29 16:18 <br/>
  */
 @Slf4j
-public class AuthInterceptor implements HandlerInterceptor {
+public class AuthorizationInterceptor implements HandlerInterceptor {
 
     private final SecurityConfig securityConfig;
 
-    public AuthInterceptor(SecurityConfig securityConfig) {
+    public AuthorizationInterceptor(SecurityConfig securityConfig) {
         this.securityConfig = securityConfig;
     }
 
