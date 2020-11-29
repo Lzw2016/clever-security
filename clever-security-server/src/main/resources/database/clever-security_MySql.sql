@@ -268,7 +268,7 @@ create table validate_code
     domain_id           bigint          not null                                                comment '域id',
     uid                 varchar(63)     not null                                                comment '用户id',
     code                varchar(15)     not null                                                comment '验证码',
-    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置验证码',
+    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码',
     expired_time        datetime(3)     not null                                                comment '验证码过期时间',
     validate_time       datetime(3)                                                             comment '验证码验证时间(使用时间)',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',

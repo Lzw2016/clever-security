@@ -35,7 +35,7 @@ public class ValidateCode implements Serializable {
     private String code;
 
     /**
-     * 验证码类型，1:登录验证码，2:找回密码验证码，3:重置验证码
+     * 验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码
      */
     private Integer type;
 
