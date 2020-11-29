@@ -1,10 +1,10 @@
-package org.clever.security.config;
+package org.clever.security.embed.config;
 
 import lombok.Data;
 import org.clever.security.Constant;
+import org.clever.security.embed.config.internal.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.List;
  * 创建时间：2018-03-15 14:31 <br/>
  */
 @ConfigurationProperties(prefix = Constant.ConfigPrefix)
-@Component
 @Data
 public class SecurityConfig implements Serializable {
     /**

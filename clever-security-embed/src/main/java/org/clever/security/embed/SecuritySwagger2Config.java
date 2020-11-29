@@ -1,4 +1,4 @@
-package org.clever.security;
+package org.clever.security.embed;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * 作者：lizw <br/>
  * 创建时间：2017/6/12 9:28 <br/>
  */
-@Profile({"dev", "test"})
+@Profile({"local", "dev", "test", "pre"})
 @Configuration
 @EnableSwagger2
 public class SecuritySwagger2Config {

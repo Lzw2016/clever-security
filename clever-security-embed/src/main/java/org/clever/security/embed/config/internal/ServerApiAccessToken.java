@@ -1,4 +1,4 @@
-package org.clever.security.config;
+package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
