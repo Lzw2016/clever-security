@@ -45,6 +45,11 @@ public class UserLoginLog implements Serializable {
     private Integer loginChannel;
 
     /**
+     * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:“记住我”token，5:微信小程序，6:扫码登录
+     */
+    private Integer loginType;
+
+    /**
      * 登录状态，0:登录失败，1:登录成功
      */
     private Integer loginState;
