@@ -292,6 +292,7 @@ create table user_login_log
     uid                 varchar(63)     not null                                                comment '用户id',
     login_time          datetime(3)     not null                                                comment '登录时间',
     login_ip            varchar(63)     not null                                                comment '登录IP',
+    login_channel       int(1)          not null                                                comment '登录渠道，0:PC-Admin，1:PC-Web，2:PC-H5，3:IOS-APP，4:Android-APP，5:微信小程序',
     login_state         int(1)          not null        default 0                               comment '登录状态，0:登录失败，1:登录成功',
     request_data        varchar(1023)   not null                                                comment '登录请求数据',
     jwt_token_id        bigint                                                                  comment 'JWT-Token id',
