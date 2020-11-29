@@ -40,7 +40,7 @@ public class UserLoginLog implements Serializable {
     private String loginIp;
 
     /**
-     * 登录渠道，0:PC-Admin，1:PC-Web，2:PC-H5，3:IOS-APP，4:Android-APP，5:微信小程序
+     * 登录渠道，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
     private Integer loginChannel;
 

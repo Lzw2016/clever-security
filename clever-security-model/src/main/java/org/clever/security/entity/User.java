@@ -60,7 +60,7 @@ public class User implements Serializable {
     private String avatar;
 
     /**
-     * 用户注册渠道，0:管理员，1:PC-Web，2:PC-H5，3:IOS-APP，4:Android-APP，5:微信小程序
+     * 用户注册渠道，0:管理员，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
     private Integer registerChannel;
 

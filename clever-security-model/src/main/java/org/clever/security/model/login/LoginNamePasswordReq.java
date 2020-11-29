@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class LoginNamePasswordReq extends AbstractUserLoginReq {
     /**
-     * 用户登录名(允许修改)
+     * 用户登录名
      */
     @NotBlank(message = "登录名不能为空")
     private String loginName;
