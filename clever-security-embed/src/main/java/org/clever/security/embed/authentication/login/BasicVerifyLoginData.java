@@ -21,6 +21,7 @@ public class BasicVerifyLoginData implements IVerifyLoginData {
 
     @Override
     public void verify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) throws LoginException {
+        // TODO BasicVerifyLoginData
         // 登录数据格式校验(空、长度等)
         // 不支持的登录类型
         // 验证码错误

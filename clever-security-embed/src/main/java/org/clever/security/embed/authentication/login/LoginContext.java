@@ -41,9 +41,9 @@ public class LoginContext {
     }
 
     /**
-     * 是否登录成功
+     * 是否登录失败
      */
-    public boolean isLoginSuccess() {
-        return loginData != null && loginException == null && userInfo != null;
+    public boolean isLoginFailure() {
+        return loginException != null;
     }
 }

@@ -20,6 +20,7 @@ public class BasicVerifyUserInfo implements IVerifyUserInfo {
 
     @Override
     public void verify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) throws LoginException {
+        // TODO BasicVerifyUserInfo
         // 登录用户不存在
         // 密码错误
         // 不支持登录域错误

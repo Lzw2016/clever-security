@@ -7,6 +7,7 @@ import org.clever.security.embed.authentication.login.IVerifyUserInfo;
 import org.clever.security.embed.authentication.login.LoginContext;
 import org.clever.security.embed.collect.ILoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.embed.exception.LoginException;
@@ -16,6 +17,7 @@ import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.springframework.http.HttpMethod;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -27,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 登录拦截器
@@ -94,13 +97,24 @@ public class LoginInterceptor extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        // 执行登录逻辑
-        try {
-            LoginContext context = new LoginContext((HttpServletRequest) request, (HttpServletResponse) response);
-            login(context);
-        } catch (Throwable e) {
-            // TODO 登录异常 - 抛出异常
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        if (!isLoginRequest(httpRequest)) {
+            // 不是登录请求
+            chain.doFilter(request, response);
+            return;
         }
+        log.debug("### 开始执行登录逻辑 ---------------------------------------------------------------------->");
+        // 执行登录逻辑
+        LoginContext context = new LoginContext(httpRequest, httpResponse);
+        try {
+            login(context);
+            // 登录成功 - 返回数据给客户端
+            // TODO 返回数据给客户端
+        } catch (Throwable e) {
+            // TODO 登录异常 - 响应登录错误数据
+        }
+        log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
     }
 
     /**
@@ -118,10 +132,12 @@ public class LoginInterceptor extends GenericFilterBean {
             }
         }
         if (loginDataCollect == null) {
-            throw new LoginInnerException("不支持的登录请求(无法获取登录数据)");
+            context.setLoginException(new LoginInnerException("不支持的登录请求(无法获取登录数据)"));
+            throw context.getLoginException();
         }
         AbstractUserLoginReq loginReq = loginDataCollect.collectLoginData(securityConfig, context.getRequest());
         context.setLoginData(loginReq);
+        log.debug("### 收集登录数据 -> {}", loginReq);
         // 加载用户之前校验登录数据
         for (IVerifyLoginData verifyLoginData : verifyLoginDataList) {
             if (!verifyLoginData.isSupported(securityConfig, context.getRequest(), loginReq)) {
@@ -134,6 +150,14 @@ public class LoginInterceptor extends GenericFilterBean {
                 break;
             }
         }
+        // 登录失败
+        if (context.isLoginFailure()) {
+            log.debug("### 加载用户之前校验登录数据失败(登录失败) -> {}", loginReq, context.getLoginException());
+            loginFailureHandler(context);
+            throw context.getLoginException();
+        } else {
+            log.debug("### 加载用户之前校验登录数据成功 -> {}", loginReq);
+        }
         // 加载用户信息
         ILoadUser loadUser = null;
         for (ILoadUser load : loadUserList) {
@@ -143,10 +167,12 @@ public class LoginInterceptor extends GenericFilterBean {
             }
         }
         if (loadUser == null) {
-            throw new LoginInnerException("用户信息不存在(无法加载用户信息)");
+            context.setLoginException(new LoginInnerException("用户信息不存在(无法加载用户信息)"));
+            throw context.getLoginException();
         }
         UserInfo userInfo = loadUser.loadUserInfo(securityConfig, context.getRequest(), loginReq);
         context.setUserInfo(userInfo);
+        log.debug("### 加载用户信息 -> {}", userInfo);
         // 加载用户之后校验登录数据
         for (IVerifyUserInfo verifyUserInfo : verifyUserInfoList) {
             if (!verifyUserInfo.isSupported(securityConfig, context.getRequest(), loginReq, userInfo)) {
@@ -159,17 +185,31 @@ public class LoginInterceptor extends GenericFilterBean {
                 break;
             }
         }
-        if (context.isLoginSuccess()) {
+        if (context.isLoginFailure()) {
+            // 登录失败
+            log.debug("### 加载用户之后校验登录数据失败(登录失败) -> {}", userInfo, context.getLoginException());
+            loginFailureHandler(context);
+            throw context.getLoginException();
+        } else {
             // 登录成功
             loginSuccessHandler(context);
-        } else {
-            // 登录失败
-            loginFailureHandler(context);
+            log.debug("### 登录成功 -> {}", userInfo);
         }
-        // 登录成功 - 返回数据给客户端
-        if (context.isLoginSuccess()) {
-            // TODO 返回数据给客户端
+    }
+
+    /**
+     * 当前请求是否是登录请求
+     */
+    protected boolean isLoginRequest(HttpServletRequest httpRequest) {
+        LoginConfig login = securityConfig.getLogin();
+        if (login == null) {
+            return false;
         }
+        if (!Objects.equals(login.getLoginPath(), httpRequest.getServletPath())) {
+            return false;
+        }
+        boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
+        return !login.isPostOnly() || postRequest;
     }
 
     /**
