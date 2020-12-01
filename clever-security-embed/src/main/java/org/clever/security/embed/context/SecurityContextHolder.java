@@ -9,17 +9,15 @@ import org.clever.security.model.SecurityContext;
 public class SecurityContextHolder {
     private static final ThreadLocal<SecurityContext> Security_Context = new ThreadLocal<>();
 
-    // TODO 私有
-    public static void setSecurityContext(SecurityContext securityContext) {
+    public static void setContext(SecurityContext securityContext) {
         Security_Context.set(securityContext);
     }
 
-    // TODO 私有
-    public static void removeSecurityContext() {
+    public static void clearContext() {
         Security_Context.remove();
     }
 
-    public static SecurityContext getSecurityContext() {
+    public static SecurityContext getContext() {
         return Security_Context.get();
     }
 }

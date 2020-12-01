@@ -49,12 +49,23 @@ public class AuthenticationInterceptor extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
+        // 执行认证逻辑
         try {
             authentication((HttpServletRequest) request, (HttpServletResponse) response);
         } catch (Exception e) {
-            // TODO
+            // TODO 认证异常 - 抛出异常
         }
-        chain.doFilter(request, response);
+        try {
+            // 处理业务逻辑
+            chain.doFilter(request, response);
+        } finally {
+            // 清理数据防止内存泄漏
+            try {
+                clearSecurityContext();
+            } catch (Exception e) {
+                log.warn("clearSecurityContext失败", e);
+            }
+        }
     }
 
     protected void authentication(HttpServletRequest request, HttpServletResponse response) {
@@ -69,18 +80,10 @@ public class AuthenticationInterceptor extends GenericFilterBean {
 
 
         // TODO 是否需要存储 SecurityContext ??
-        SecurityContextHolder.setSecurityContext(securityContext);
+        SecurityContextHolder.setContext(securityContext);
     }
 
-//    // TODO 放在 GenericFilterBean 中
-//    @Override
-//    public void postHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, ModelAndView modelAndView) {
-//        SecurityContextHolder.removeSecurityContext();
-//    }
-
-//    // TODO 放在 GenericFilterBean 中
-//    @Override
-//    public void afterCompletion(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, Exception ex) {
-//        SecurityContextHolder.removeSecurityContext();
-//    }
+    protected void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
 }

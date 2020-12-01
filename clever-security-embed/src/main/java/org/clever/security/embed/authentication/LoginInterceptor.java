@@ -12,12 +12,15 @@ import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.filter.GenericFilterBean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,7 +30,7 @@ import java.util.List;
  * 创建时间：2020/11/29 16:09 <br/>
  */
 @Slf4j
-public class LoginInterceptor implements HandlerInterceptor {
+public class LoginInterceptor extends GenericFilterBean {
     /**
      * 全局配置
      */
@@ -73,13 +76,18 @@ public class LoginInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler) {
-        try {
-            login(request, response);
-        } catch (Exception e) {
-            // TODO
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+            log.warn("[clever-security]仅支持HTTP服务器");
+            chain.doFilter(request, response);
+            return;
         }
-        return false;
+        // 执行登录逻辑
+        try {
+            login((HttpServletRequest) request, (HttpServletResponse) response);
+        } catch (Throwable e) {
+            // TODO 登录异常 - 抛出异常
+        }
     }
 
     protected void login(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -143,6 +151,10 @@ public class LoginInterceptor implements HandlerInterceptor {
             for (LoginFailureHandler handler : loginFailureHandlerList) {
                 handler.onLoginFailure(request, response, loginFailureEvent);
             }
+        }
+        // 登录成功 - 返回数据给客户端
+        if (loginException == null) {
+            // TODO 返回数据给客户端
         }
     }
 }

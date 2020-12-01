@@ -2,11 +2,15 @@ package org.clever.security.embed.authorization;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.embed.config.SecurityConfig;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.filter.GenericFilterBean;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 用户权限认证拦截器(授权拦截器)
@@ -15,8 +19,10 @@ import javax.servlet.http.HttpServletResponse;
  * 创建时间：2020/11/29 16:18 <br/>
  */
 @Slf4j
-public class AuthorizationInterceptor implements HandlerInterceptor {
-
+public class AuthorizationInterceptor extends GenericFilterBean {
+    /**
+     * 全局配置
+     */
     private final SecurityConfig securityConfig;
 
     public AuthorizationInterceptor(SecurityConfig securityConfig) {
@@ -24,17 +30,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        return false;
-    }
-
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
-    }
-
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+            log.warn("[clever-security]仅支持HTTP服务器");
+            chain.doFilter(request, response);
+            return;
+        }
 
     }
 }
