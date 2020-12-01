@@ -8,20 +8,22 @@ import org.clever.security.embed.context.ISecurityContextRepository;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.model.SecurityContext;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.filter.GenericFilterBean;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 21:27 <br/>
  */
 @Slf4j
-public class AuthenticationInterceptor implements HandlerInterceptor {
+public class AuthenticationInterceptor extends GenericFilterBean {
     /**
      * 全局配置
      */
@@ -41,13 +43,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler) {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+            log.warn("[clever-security]仅支持HTTP服务器");
+            chain.doFilter(request, response);
+            return;
+        }
         try {
-            authentication(request, response);
+            authentication((HttpServletRequest) request, (HttpServletResponse) response);
         } catch (Exception e) {
             // TODO
         }
-        return true;
+        chain.doFilter(request, response);
     }
 
     protected void authentication(HttpServletRequest request, HttpServletResponse response) {
@@ -65,15 +72,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         SecurityContextHolder.setSecurityContext(securityContext);
     }
 
-    // TODO 放在 GenericFilterBean 中
-    @Override
-    public void postHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, ModelAndView modelAndView) {
-        SecurityContextHolder.removeSecurityContext();
-    }
+//    // TODO 放在 GenericFilterBean 中
+//    @Override
+//    public void postHandle(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, ModelAndView modelAndView) {
+//        SecurityContextHolder.removeSecurityContext();
+//    }
 
-    // TODO 放在 GenericFilterBean 中
-    @Override
-    public void afterCompletion(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, Exception ex) {
-        SecurityContextHolder.removeSecurityContext();
-    }
+//    // TODO 放在 GenericFilterBean 中
+//    @Override
+//    public void afterCompletion(@Nonnull HttpServletRequest request, @Nonnull HttpServletResponse response, @Nullable Object handler, Exception ex) {
+//        SecurityContextHolder.removeSecurityContext();
+//    }
 }
