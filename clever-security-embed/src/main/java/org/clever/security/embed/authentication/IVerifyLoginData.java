@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IVerifyLoginData extends Ordered {
     /**
-     * 是否支持加载用户信息
+     * 是否支持验证登录用户信息
      *
      * @param securityConfig 系统授权配置
      * @param request        请求对象

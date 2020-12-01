@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface ILoginDataCollect extends Ordered {
     /**
-     * 是否支持收集当前登录信息
+     * 是否支持收集当前用户登录信息
      *
      * @param securityConfig 系统授权配置
      * @param request        请求对象

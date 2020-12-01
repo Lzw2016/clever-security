@@ -98,6 +98,8 @@ public class LoginInterceptor extends GenericFilterBean {
         for (ILoginDataCollect collect : loginDataCollectList) {
             if (collect.isSupported(securityConfig, request)) {
                 loginDataCollect = collect;
+            }
+            if (loginDataCollect != null) {
                 break;
             }
         }
