@@ -1,6 +1,7 @@
-package org.clever.security.embed.event;
+package org.clever.security.embed.authentication.login;
 
 import lombok.Data;
+import org.clever.security.embed.exception.LoginException;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 
@@ -8,13 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * 登录成功事件
- * <p>
  * 作者：lizw <br/>
- * 创建时间：2020/11/29 16:14 <br/>
+ * 创建时间：2020/12/01 21:16 <br/>
  */
 @Data
-public class LoginSuccessEvent {
+public class LoginContext {
     /**
      * 请求对象
      */
@@ -26,16 +25,25 @@ public class LoginSuccessEvent {
     /**
      * 用户登录数据
      */
-    private final AbstractUserLoginReq loginData;
+    private AbstractUserLoginReq loginData;
+    /**
+     * 登录异常信息
+     */
+    private LoginException loginException;
     /**
      * 用户信息(从数据库或其它服务加载)
      */
-    private final UserInfo userInfo;
+    private UserInfo userInfo;
 
-    public LoginSuccessEvent(HttpServletRequest request, HttpServletResponse response, AbstractUserLoginReq loginData, UserInfo userInfo) {
+    public LoginContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
-        this.loginData = loginData;
-        this.userInfo = userInfo;
+    }
+
+    /**
+     * 是否登录成功
+     */
+    public boolean isLoginSuccess() {
+        return loginData != null && loginException == null && userInfo != null;
     }
 }

@@ -1,4 +1,4 @@
-package org.clever.security.embed.authentication;
+package org.clever.security.embed.authentication.login;
 
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.model.UserInfo;

@@ -1,11 +1,16 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.embed.authentication.login.ILoadUser;
+import org.clever.security.embed.authentication.login.IVerifyLoginData;
+import org.clever.security.embed.authentication.login.IVerifyUserInfo;
+import org.clever.security.embed.authentication.login.LoginContext;
 import org.clever.security.embed.collect.ILoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.ListSortUtils;
@@ -40,13 +45,17 @@ public class LoginInterceptor extends GenericFilterBean {
      */
     private final List<ILoginDataCollect> loginDataCollectList;
     /**
+     * 加载用户前后校验登录数据(字段格式、验证码等等)
+     */
+    private final List<IVerifyLoginData> verifyLoginDataList;
+    /**
      * 加载用户信息
      */
     private final List<ILoadUser> loadUserList;
     /**
-     * 用户登录验证(密码、验证码等)
+     * 加载用户之后校验登录数据(密码、验证码等)
      */
-    private final List<IVerifyLoginData> verifyLoginDataList;
+    private final List<IVerifyUserInfo> verifyUserInfoList;
     /**
      * 登录成功处理
      */
@@ -59,18 +68,21 @@ public class LoginInterceptor extends GenericFilterBean {
     public LoginInterceptor(
             SecurityConfig securityConfig,
             List<ILoginDataCollect> loginDataCollectList,
-            List<ILoadUser> loadUserList,
             List<IVerifyLoginData> verifyLoginDataList,
+            List<ILoadUser> loadUserList,
+            List<IVerifyUserInfo> verifyUserInfoList,
             List<LoginSuccessHandler> loginSuccessHandlerList,
             List<LoginFailureHandler> loginFailureHandlerList) {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(loginDataCollectList, "登录数据收集器(ILoginDataCollect)不存在");
-        Assert.notEmpty(loadUserList, "用户信息加载器(ILoadUser)不存在");
         Assert.notEmpty(verifyLoginDataList, "用户登录验证器(IVerifyLoginData)不存在");
+        Assert.notEmpty(loadUserList, "用户信息加载器(ILoadUser)不存在");
+        Assert.notEmpty(verifyUserInfoList, "用户登录验证器(IVerifyUserInfo)不存在");
         this.securityConfig = securityConfig;
         this.loginDataCollectList = ListSortUtils.sort(loginDataCollectList);
-        this.loadUserList = ListSortUtils.sort(loadUserList);
         this.verifyLoginDataList = ListSortUtils.sort(verifyLoginDataList);
+        this.loadUserList = ListSortUtils.sort(loadUserList);
+        this.verifyUserInfoList = ListSortUtils.sort(verifyUserInfoList);
         this.loginSuccessHandlerList = ListSortUtils.sort(loginSuccessHandlerList);
         this.loginFailureHandlerList = ListSortUtils.sort(loginFailureHandlerList);
     }
@@ -84,19 +96,21 @@ public class LoginInterceptor extends GenericFilterBean {
         }
         // 执行登录逻辑
         try {
-            login((HttpServletRequest) request, (HttpServletResponse) response);
+            LoginContext context = new LoginContext((HttpServletRequest) request, (HttpServletResponse) response);
+            login(context);
         } catch (Throwable e) {
             // TODO 登录异常 - 抛出异常
         }
     }
 
-    protected void login(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        // TODO Context
-
+    /**
+     * 登录流程
+     */
+    protected void login(LoginContext context) throws Exception {
         // 收集登录数据
         ILoginDataCollect loginDataCollect = null;
         for (ILoginDataCollect collect : loginDataCollectList) {
-            if (collect.isSupported(securityConfig, request)) {
+            if (collect.isSupported(securityConfig, context.getRequest())) {
                 loginDataCollect = collect;
             }
             if (loginDataCollect != null) {
@@ -104,59 +118,94 @@ public class LoginInterceptor extends GenericFilterBean {
             }
         }
         if (loginDataCollect == null) {
-            // TODO
-            throw new RuntimeException("不支持的登录请求(登录数据错误)");
+            throw new LoginInnerException("不支持的登录请求(无法获取登录数据)");
         }
-        AbstractUserLoginReq loginReq = loginDataCollect.collectLoginData(securityConfig, request);
+        AbstractUserLoginReq loginReq = loginDataCollect.collectLoginData(securityConfig, context.getRequest());
+        context.setLoginData(loginReq);
+        // 加载用户之前校验登录数据
+        for (IVerifyLoginData verifyLoginData : verifyLoginDataList) {
+            if (!verifyLoginData.isSupported(securityConfig, context.getRequest(), loginReq)) {
+                continue;
+            }
+            try {
+                verifyLoginData.verify(securityConfig, context.getRequest(), loginReq);
+            } catch (LoginException e) {
+                context.setLoginException(e);
+                break;
+            }
+        }
         // 加载用户信息
         ILoadUser loadUser = null;
         for (ILoadUser load : loadUserList) {
-            if (load.isSupported(securityConfig, request, loginReq)) {
+            if (load.isSupported(securityConfig, context.getRequest(), loginReq)) {
                 loadUser = load;
                 break;
             }
         }
         if (loadUser == null) {
-            // TODO
-            throw new RuntimeException("用户信息不存在");
+            throw new LoginInnerException("用户信息不存在(无法加载用户信息)");
         }
-        UserInfo userInfo = loadUser.loadUserInfo(securityConfig, request, loginReq);
-        // 用户登录验证
-        IVerifyLoginData verifyLoginData = null;
-        for (IVerifyLoginData verify : verifyLoginDataList) {
-            if (verify.isSupported(securityConfig, request, loginReq, userInfo)) {
-                verifyLoginData = verify;
+        UserInfo userInfo = loadUser.loadUserInfo(securityConfig, context.getRequest(), loginReq);
+        context.setUserInfo(userInfo);
+        // 加载用户之后校验登录数据
+        for (IVerifyUserInfo verifyUserInfo : verifyUserInfoList) {
+            if (!verifyUserInfo.isSupported(securityConfig, context.getRequest(), loginReq, userInfo)) {
+                continue;
+            }
+            try {
+                verifyUserInfo.verify(securityConfig, context.getRequest(), loginReq, userInfo);
+            } catch (LoginException e) {
+                context.setLoginException(e);
                 break;
             }
         }
-        if (verifyLoginData == null) {
-            // TODO
-            throw new RuntimeException("登录验证失败");
-        }
-        LoginException loginException = null;
-        try {
-            verifyLoginData.verify(securityConfig, request, loginReq, userInfo);
-        } catch (LoginException e) {
-            // TODO
-            loginException = e;
-        }
-        // 登录成功
-        if (loginException == null && loginSuccessHandlerList != null) {
-            LoginSuccessEvent loginSuccessEvent = new LoginSuccessEvent();
-            for (LoginSuccessHandler handler : loginSuccessHandlerList) {
-                handler.onLoginSuccess(request, response, loginSuccessEvent);
-            }
-        }
-        // 登录失败
-        if (loginException != null && loginFailureHandlerList != null) {
-            LoginFailureEvent loginFailureEvent = new LoginFailureEvent(loginException);
-            for (LoginFailureHandler handler : loginFailureHandlerList) {
-                handler.onLoginFailure(request, response, loginFailureEvent);
-            }
+        if (context.isLoginSuccess()) {
+            // 登录成功
+            loginSuccessHandler(context);
+        } else {
+            // 登录失败
+            loginFailureHandler(context);
         }
         // 登录成功 - 返回数据给客户端
-        if (loginException == null) {
+        if (context.isLoginSuccess()) {
             // TODO 返回数据给客户端
+        }
+    }
+
+    /**
+     * 登录成功处理
+     */
+    protected void loginSuccessHandler(LoginContext context) throws Exception {
+        if (loginSuccessHandlerList == null) {
+            return;
+        }
+        LoginSuccessEvent loginSuccessEvent = new LoginSuccessEvent(
+                context.getRequest(),
+                context.getResponse(),
+                context.getLoginData(),
+                context.getUserInfo()
+        );
+        for (LoginSuccessHandler handler : loginSuccessHandlerList) {
+            handler.onLoginSuccess(context.getRequest(), context.getResponse(), loginSuccessEvent);
+        }
+    }
+
+    /**
+     * 登录失败处理
+     */
+    protected void loginFailureHandler(LoginContext context) throws Exception {
+        if (loginFailureHandlerList == null) {
+            return;
+        }
+        LoginFailureEvent loginFailureEvent = new LoginFailureEvent(
+                context.getRequest(),
+                context.getResponse(),
+                context.getLoginData(),
+                context.getUserInfo(),
+                context.getLoginException()
+        );
+        for (LoginFailureHandler handler : loginFailureHandlerList) {
+            handler.onLoginFailure(context.getRequest(), context.getResponse(), loginFailureEvent);
         }
     }
 }
