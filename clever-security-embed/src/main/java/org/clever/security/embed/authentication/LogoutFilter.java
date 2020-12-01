@@ -26,7 +26,7 @@ import java.util.List;
  * 创建时间：2020/11/29 16:35 <br/>
  */
 @Slf4j
-public class LogoutInterceptor extends GenericFilterBean {
+public class LogoutFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
@@ -40,7 +40,7 @@ public class LogoutInterceptor extends GenericFilterBean {
      */
     private final List<LogoutFailureHandler> logoutFailureHandlerList;
 
-    public LogoutInterceptor(
+    public LogoutFilter(
             SecurityConfig securityConfig,
             List<LogoutSuccessHandler> logoutSuccessHandlerList,
             List<LogoutFailureHandler> logoutFailureHandlerList) {

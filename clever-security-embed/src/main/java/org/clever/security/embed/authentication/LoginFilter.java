@@ -38,7 +38,7 @@ import java.util.Objects;
  * 创建时间：2020/11/29 16:09 <br/>
  */
 @Slf4j
-public class LoginInterceptor extends GenericFilterBean {
+public class LoginFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
@@ -68,7 +68,7 @@ public class LoginInterceptor extends GenericFilterBean {
      */
     private final List<LoginFailureHandler> loginFailureHandlerList;
 
-    public LoginInterceptor(
+    public LoginFilter(
             SecurityConfig securityConfig,
             List<ILoginDataCollect> loginDataCollectList,
             List<IVerifyLoginData> verifyLoginDataList,
@@ -113,8 +113,9 @@ public class LoginInterceptor extends GenericFilterBean {
             // TODO 返回数据给客户端
         } catch (Throwable e) {
             // TODO 登录异常 - 响应登录错误数据
+        } finally {
+            log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
         }
-        log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
     }
 
     /**

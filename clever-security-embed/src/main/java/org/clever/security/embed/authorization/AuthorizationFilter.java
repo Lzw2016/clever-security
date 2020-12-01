@@ -19,13 +19,13 @@ import java.io.IOException;
  * 创建时间：2020/11/29 16:18 <br/>
  */
 @Slf4j
-public class AuthorizationInterceptor extends GenericFilterBean {
+public class AuthorizationFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
     private final SecurityConfig securityConfig;
 
-    public AuthorizationInterceptor(SecurityConfig securityConfig) {
+    public AuthorizationFilter(SecurityConfig securityConfig) {
         this.securityConfig = securityConfig;
     }
 

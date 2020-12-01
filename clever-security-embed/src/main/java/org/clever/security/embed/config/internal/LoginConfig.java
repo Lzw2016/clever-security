@@ -21,11 +21,7 @@ public class LoginConfig implements Serializable {
      */
     private String loginPath = "/login";
 
-
-
-
-
-
+    // TODO 手机验证码、邮箱验证码、图片验证码、扫码登录相关配置
 
     /**
      * 登录只支持POST请求

@@ -1,5 +1,6 @@
 package org.clever.security.embed.authentication.login;
 
+import lombok.extern.slf4j.Slf4j;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/12/01 20:57 <br/>
  */
+@Slf4j
 public class BasicVerifyLoginData implements IVerifyLoginData {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) {

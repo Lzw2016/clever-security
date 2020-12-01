@@ -23,7 +23,7 @@ import java.io.IOException;
  * 创建时间：2020/11/29 21:27 <br/>
  */
 @Slf4j
-public class AuthenticationInterceptor extends GenericFilterBean {
+public class AuthenticationFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
@@ -33,7 +33,7 @@ public class AuthenticationInterceptor extends GenericFilterBean {
      */
     private final ISecurityContextRepository securityContextRepository;
 
-    public AuthenticationInterceptor(
+    public AuthenticationFilter(
             SecurityConfig securityConfig,
             ISecurityContextRepository securityContextRepository) {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
