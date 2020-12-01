@@ -49,6 +49,7 @@ public class AuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
+        // TODO 是否需要执行认证逻辑
         // 执行认证逻辑
         try {
             authentication((HttpServletRequest) request, (HttpServletResponse) response);
@@ -73,10 +74,10 @@ public class AuthenticationFilter extends GenericFilterBean {
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 1.获取JWT-Token
         String jwtToken = CookieUtils.getCookie(request, tokenConfig.getJwtTokenName());
-        // TODO 解析Token
-
+        // TODO 解析Token得到uid
+        String uid = null;
         // 2.根据JWT-Token获取SecurityContext
-        SecurityContext securityContext = securityContextRepository.loadContext(jwtToken, request, response);
+        SecurityContext securityContext = securityContextRepository.loadContext(uid, request, response);
 
 
         // TODO 是否需要存储 SecurityContext ??
