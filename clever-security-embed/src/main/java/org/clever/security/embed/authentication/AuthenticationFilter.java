@@ -1,11 +1,13 @@
 package org.clever.security.embed.authentication;
 
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.ISecurityContextRepository;
 import org.clever.security.embed.context.SecurityContextHolder;
+import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.model.SecurityContext;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
@@ -74,10 +76,11 @@ public class AuthenticationFilter extends GenericFilterBean {
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 1.获取JWT-Token
         String jwtToken = CookieUtils.getCookie(request, tokenConfig.getJwtTokenName());
-        // TODO 解析Token得到uid
-        String uid = null;
+        // 解析Token得到uid
+        Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
+        String uid = claims.getSubject();
         // 2.根据JWT-Token获取SecurityContext
-        SecurityContext securityContext = securityContextRepository.loadContext(uid, request, response);
+        SecurityContext securityContext = securityContextRepository.loadContext(uid, claims, request, response);
 
 
         // TODO 是否需要存储 SecurityContext ??
