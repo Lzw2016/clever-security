@@ -34,6 +34,10 @@ public class LoginContext {
      * 用户信息(从数据库或其它服务加载)
      */
     private UserInfo userInfo;
+    /**
+     * JWT-Token
+     */
+    private String jwtToken;
 
     public LoginContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;

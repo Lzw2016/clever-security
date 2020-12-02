@@ -1,7 +1,10 @@
 package org.clever.security.model;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,6 +13,7 @@ import java.util.Map;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 19:27 <br/>
  */
+@Data
 public class UserInfo implements Serializable {
     /**
      * 用户id(系统自动生成且不会变化)
@@ -42,34 +46,5 @@ public class UserInfo implements Serializable {
     /**
      * 用户扩展信息
      */
-    private Map<String, Object> extInfo;
-
-//    /**
-//     * 用户昵称
-//     */
-//    private String nickname;
-//    /**
-//     * 用户头像
-//     */
-//    private String avatar;
-//    /**
-//     * 用户注册渠道，0:管理员，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
-//     */
-//    private Integer registerChannel;
-//    /**
-//     * 用户来源，0:系统注册，1:外部导入(同步)
-//     */
-//    private Integer fromSource;
-//    /**
-//     * 说明
-//     */
-//    private String description;
-//    /**
-//     * 创建时间
-//     */
-//    private Date createAt;
-//    /**
-//     * 更新时间
-//     */
-//    private Date updateAt;
+    private Map<String, Object> extInfo = new HashMap<>();
 }

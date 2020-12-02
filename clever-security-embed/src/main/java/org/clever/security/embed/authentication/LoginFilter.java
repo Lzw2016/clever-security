@@ -14,10 +14,13 @@ import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
+import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.LoginRes;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -109,10 +112,14 @@ public class LoginFilter extends GenericFilterBean {
         LoginContext context = new LoginContext(httpRequest, httpResponse);
         try {
             login(context);
-            // 登录成功 - 返回数据给客户端
-            // TODO 返回数据给客户端
+            // 登录成功 - 返回数据给客户端 TODO -- 登录成功服务器行为策略
+            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginSuccess(context.getUserInfo(), context.getJwtToken()));
+        } catch (LoginException e) {
+            // 登录失败 TODO -- 登录失败服务器行为策略
+            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginFailure(e.getMessage()));
         } catch (Throwable e) {
-            // TODO 登录异常 - 响应登录错误数据
+            // 登录异常 - 响应登录错误数据
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
         }
@@ -192,9 +199,10 @@ public class LoginFilter extends GenericFilterBean {
             loginFailureHandler(context);
             throw context.getLoginException();
         } else {
-            // 登录成功
-            loginSuccessHandler(context);
+            // 登录成功 TODO 生成JWT-Token
             log.debug("### 登录成功 -> {}", userInfo);
+            context.setJwtToken("");
+            loginSuccessHandler(context);
         }
     }
 
