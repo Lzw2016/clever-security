@@ -7,8 +7,12 @@ import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.ISecurityContextRepository;
 import org.clever.security.embed.context.SecurityContextHolder;
+import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.model.SecurityContext;
+import org.clever.security.model.login.LoginRes;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -51,12 +55,20 @@ public class AuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         // TODO 是否需要执行认证逻辑
         // 执行认证逻辑
         try {
-            authentication((HttpServletRequest) request, (HttpServletResponse) response);
-        } catch (Exception e) {
-            // TODO 认证异常 - 抛出异常
+            authentication(httpRequest, httpResponse);
+            // TODO 登录成功 - 写入SecurityContext
+            // SecurityContextHolder.setContext();
+        } catch (AuthenticationException e) {
+            // 授权失败 TODO -- 授权失败服务器行为策略
+            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginFailure(e.getMessage()));
+        } catch (Throwable e) {
+            // 认证异常
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
         try {
             // 处理业务逻辑

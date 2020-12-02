@@ -11,13 +11,18 @@ import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
 import org.clever.security.embed.config.internal.TokenConfig;
+import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.embed.exception.ParserJwtTokenException;
 import org.clever.security.model.UserInfo;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 作者：lizw <br/>
@@ -34,7 +39,7 @@ public class JwtTokenUtils {
      * @param userInfo    用户信息
      * @param rememberMe  使用“记住我”功能
      */
-    public static String createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, boolean rememberMe) {
+    public static String createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, boolean rememberMe, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
         // 获取当前时间戳
         long now = System.currentTimeMillis();
         // Token过期时间
@@ -64,8 +69,22 @@ public class JwtTokenUtils {
         claims.setExpiration(expiration);
         claims.setIssuedAt(new Date());
         claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
-        // TODO 加入自定义信息
-        // claims.put("", "");
+        // 加入自定义信息
+        if (addJwtTokenExtDataList != null && !addJwtTokenExtDataList.isEmpty()) {
+            addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
+            Map<String, Object> extData = new HashMap<>();
+            for (AddJwtTokenExtData addJwtTokenExtData : addJwtTokenExtDataList) {
+                extData = addJwtTokenExtData.addExtData(tokenConfig, userInfo, extData);
+            }
+            if (extData != null) {
+                extData.forEach((key, value) -> {
+                    if (claims.containsKey(key)) {
+                        throw new LoginInnerException("设置Token扩展信息失败，key=[" + key + "]重复(不能覆盖内置数据)");
+                    }
+                    claims.put(key, value);
+                });
+            }
+        }
         // 签名私钥
         Key key = getHmacShaKey(tokenConfig.getSecretKey(), userInfo.getUid());
         return Jwts.builder()

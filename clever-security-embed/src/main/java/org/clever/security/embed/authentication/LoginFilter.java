@@ -118,7 +118,7 @@ public class LoginFilter extends GenericFilterBean {
             // 登录失败 TODO -- 登录失败服务器行为策略
             HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginFailure(e.getMessage()));
         } catch (Throwable e) {
-            // 登录异常 - 响应登录错误数据
+            // 登录异常
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");

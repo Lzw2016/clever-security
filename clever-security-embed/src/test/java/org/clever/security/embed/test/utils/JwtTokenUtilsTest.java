@@ -21,7 +21,7 @@ public class JwtTokenUtilsTest {
         UserInfo userInfo = new UserInfo();
         userInfo.setUid("lizw" + IDCreateUtils.uuid());
         userInfo.setLoginName("lizw");
-        String jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, false);
+        String jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, false, null);
         log.info("jwtToken -> {}", jwtToken);
 
         Claims claims = JwtTokenUtils.parserJwtToken(tokenConfig, jwtToken);
