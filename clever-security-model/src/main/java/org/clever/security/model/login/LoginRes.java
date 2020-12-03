@@ -26,24 +26,29 @@ public class LoginRes extends BaseResponse {
      */
     private final String jwtToken;
     /**
+     * 刷新Token
+     */
+    private final String refreshToken;
+    /**
      * 登录返回消息
      */
     private final String message;
 
-    private LoginRes(boolean success, UserInfo userInfo, String jwtToken, String message) {
+    private LoginRes(boolean success, UserInfo userInfo, String jwtToken, String refreshToken, String message) {
         this.success = success;
         this.userInfo = userInfo;
         this.jwtToken = jwtToken;
+        this.refreshToken = refreshToken;
         this.message = message;
     }
 
-    public static LoginRes loginSuccess(UserInfo userInfo, String jwtToken) {
+    public static LoginRes loginSuccess(UserInfo userInfo, String jwtToken, String refreshToken) {
         Assert.notNull(userInfo, "参数userInfo不能为null");
         Assert.hasText(jwtToken, "参数jwtToken不能为空");
-        return new LoginRes(true, userInfo, jwtToken, "登录成功");
+        return new LoginRes(true, userInfo, jwtToken, refreshToken, "登录成功");
     }
 
     public static LoginRes loginFailure(String message) {
-        return new LoginRes(false, null, null, message);
+        return new LoginRes(false, null, null, null, message);
     }
 }

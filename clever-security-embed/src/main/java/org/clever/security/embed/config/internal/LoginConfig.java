@@ -42,7 +42,7 @@ public class LoginConfig implements Serializable {
     /**
      * 登录失败跳转地址
      */
-    private String loginFailurePage = "/index.html";
+    private String loginFailureRedirectPage = "/index.html";
     /**
      * 登录是否需要验证码
      */
@@ -50,7 +50,7 @@ public class LoginConfig implements Serializable {
     /**
      * 登录失败多少次才需要验证码(小于等于0表示总是需要验证码)
      */
-    private int needCaptchaByLoginFailCount = 3;
+    private int needCaptchaByLoginFailedCount = 3;
     /**
      * 验证码有效时间(默认60秒)
      */

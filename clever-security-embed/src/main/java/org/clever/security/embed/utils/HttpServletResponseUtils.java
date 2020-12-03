@@ -52,4 +52,14 @@ public class HttpServletResponseUtils {
         response.getWriter().flush();
         response.setStatus(httpStatus.value());
     }
+
+    /**
+     * 重定向到指定地址
+     *
+     * @param response 响应对象
+     * @param location 重定向地址
+     */
+    public static void redirect(HttpServletResponse response, String location) throws IOException {
+        response.sendRedirect(location);
+    }
 }

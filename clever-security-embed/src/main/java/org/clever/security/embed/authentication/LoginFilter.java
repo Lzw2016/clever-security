@@ -116,13 +116,21 @@ public class LoginFilter extends GenericFilterBean {
         LoginContext context = new LoginContext(httpRequest, httpResponse);
         try {
             login(context);
-            // 登录成功 - 返回数据给客户端 TODO -- 登录成功服务器行为策略
-            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginSuccess(context.getUserInfo(), context.getJwtToken()));
+            // 登录成功 - 返回数据给客户端
+            onLoginSuccessResponse(context);
         } catch (LoginException e) {
-            // 登录失败 TODO -- 登录失败服务器行为策略
-            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginFailure(e.getMessage()));
+            // 登录失败
+            log.info("### 登录失败", e);
+            // context.setLoginException(e);
+            try {
+                onLoginFailureResponse(context);
+            } catch (Exception innerException) {
+                log.error("登录异常", innerException);
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+            }
         } catch (Throwable e) {
             // 登录异常
+            log.error("登录异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
@@ -263,6 +271,36 @@ public class LoginFilter extends GenericFilterBean {
         );
         for (LoginFailureHandler handler : loginFailureHandlerList) {
             handler.onLoginFailure(context.getRequest(), context.getResponse(), loginFailureEvent);
+        }
+    }
+
+    /**
+     * 当登录成功时响应处理
+     */
+    protected void onLoginSuccessResponse(LoginContext context) throws IOException {
+        LoginConfig login = securityConfig.getLogin();
+        if (login.isLoginSuccessNeedRedirect()) {
+            // 需要重定向
+            HttpServletResponseUtils.redirect(context.getResponse(), login.getLoginSuccessRedirectPage());
+        } else {
+            // 直接返回
+            LoginRes loginRes = LoginRes.loginSuccess(context.getUserInfo(), context.getJwtToken(), context.getRefreshToken());
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes);
+        }
+    }
+
+    /**
+     * 当登录失败时响应处理
+     */
+    protected void onLoginFailureResponse(LoginContext context) throws IOException {
+        LoginConfig login = securityConfig.getLogin();
+        if (login.isLoginFailureNeedRedirect()) {
+            // 需要重定向
+            HttpServletResponseUtils.redirect(context.getResponse(), login.getLoginFailureRedirectPage());
+        } else {
+            // 直接返回
+            LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes);
         }
     }
 }
