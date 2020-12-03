@@ -16,6 +16,10 @@ import org.clever.security.LoginType;
 @Data
 public abstract class AbstractUserLoginReq extends BaseRequest {
     /**
+     * “记住我”参数
+     */
+    private boolean rememberMe = false;
+    /**
      * 登录渠道，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
     private LoginChannel loginChannel;

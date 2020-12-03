@@ -38,6 +38,10 @@ public class LoginContext {
      * JWT-Token
      */
     private String jwtToken;
+    /**
+     * 刷新Token
+     */
+    private String refreshToken;
 
     public LoginContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;

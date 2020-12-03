@@ -7,7 +7,7 @@ import org.springframework.core.Ordered;
 import java.util.Map;
 
 /**
- * 创建JWT-Token是加入扩展数据
+ * 创建JWT-Token时加入扩展数据
  * 作者：lizw <br/>
  * 创建时间：2020/12/02 22:54 <br/>
  */

@@ -2,6 +2,7 @@ package org.clever.security.embed.utils;
 
 import org.springframework.core.Ordered;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +15,10 @@ public class ListSortUtils {
      * 集合排序(Order值从小到大排序)
      */
     public static <T extends Ordered> List<T> sort(List<T> list) {
-        if (list == null || list.isEmpty()) {
+        if (list == null) {
+            return Collections.emptyList();
+        }
+        if (list.isEmpty()) {
             return list;
         }
         list.sort((o1, o2) -> {

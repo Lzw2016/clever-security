@@ -1,10 +1,7 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clever.security.embed.authentication.login.LoadUser;
-import org.clever.security.embed.authentication.login.VerifyLoginData;
-import org.clever.security.embed.authentication.login.VerifyUserInfo;
-import org.clever.security.embed.authentication.login.LoginContext;
+import org.clever.security.embed.authentication.login.*;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
@@ -15,6 +12,7 @@ import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
+import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -63,6 +61,10 @@ public class LoginFilter extends GenericFilterBean {
      */
     private final List<VerifyUserInfo> verifyUserInfoList;
     /**
+     * 创建JWT-Token时加入扩展数据
+     */
+    private final List<AddJwtTokenExtData> addJwtTokenExtDataList;
+    /**
      * 登录成功处理
      */
     private final List<LoginSuccessHandler> loginSuccessHandlerList;
@@ -77,6 +79,7 @@ public class LoginFilter extends GenericFilterBean {
             List<VerifyLoginData> verifyLoginDataList,
             List<LoadUser> loadUserList,
             List<VerifyUserInfo> verifyUserInfoList,
+            List<AddJwtTokenExtData> addJwtTokenExtDataList,
             List<LoginSuccessHandler> loginSuccessHandlerList,
             List<LoginFailureHandler> loginFailureHandlerList) {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
@@ -89,6 +92,7 @@ public class LoginFilter extends GenericFilterBean {
         this.verifyLoginDataList = ListSortUtils.sort(verifyLoginDataList);
         this.loadUserList = ListSortUtils.sort(loadUserList);
         this.verifyUserInfoList = ListSortUtils.sort(verifyUserInfoList);
+        this.addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
         this.loginSuccessHandlerList = ListSortUtils.sort(loginSuccessHandlerList);
         this.loginFailureHandlerList = ListSortUtils.sort(loginFailureHandlerList);
     }
@@ -199,9 +203,13 @@ public class LoginFilter extends GenericFilterBean {
             loginFailureHandler(context);
             throw context.getLoginException();
         } else {
-            // 登录成功 TODO 生成JWT-Token
+            // 登录成功
             log.debug("### 登录成功 -> {}", userInfo);
-            context.setJwtToken("");
+            final String jwtToken = JwtTokenUtils.createJwtToken(securityConfig.getTokenConfig(), userInfo, loginReq.isRememberMe(), addJwtTokenExtDataList);
+            final String refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
+            log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), jwtToken, refreshToken);
+            context.setJwtToken(jwtToken);
+            context.setRefreshToken(refreshToken);
             loginSuccessHandler(context);
         }
     }

@@ -96,11 +96,10 @@ public class JwtTokenUtils {
     /**
      * 创建刷新Token
      *
-     * @param tokenConfig Token配置
-     * @param userInfo    用户信息
+     * @param userInfo 用户信息
      */
-    public static String createRefreshToken(TokenConfig tokenConfig, UserInfo userInfo) {
-        return tokenConfig.getRedisNamespace() + ":" + userInfo.getUid() + ":" + IDCreateUtils.shortUuid();
+    public static String createRefreshToken(UserInfo userInfo) {
+        return userInfo.getUid() + ":" + IDCreateUtils.shortUuid();
     }
 
     /**
