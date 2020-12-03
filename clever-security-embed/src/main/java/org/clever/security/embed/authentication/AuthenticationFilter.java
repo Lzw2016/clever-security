@@ -4,15 +4,18 @@ import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
-import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.context.SecurityContextHolder;
+import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.exception.AuthenticationException;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.model.SecurityContext;
 import org.clever.security.model.login.LoginRes;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -23,6 +26,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -30,6 +35,7 @@ import java.io.IOException;
  */
 @Slf4j
 public class AuthenticationFilter extends GenericFilterBean {
+    private static final AntPathMatcher Ant_Path_Matcher = new AntPathMatcher();
     /**
      * 全局配置
      */
@@ -57,7 +63,12 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        // TODO 是否需要执行认证逻辑
+        if (!isAuthenticationRequest(httpRequest)) {
+            // 不需要身份认证
+            chain.doFilter(request, response);
+            return;
+        }
+        log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
         // 执行认证逻辑
         try {
             authentication(httpRequest, httpResponse);
@@ -74,8 +85,9 @@ public class AuthenticationFilter extends GenericFilterBean {
             // 处理业务逻辑
             chain.doFilter(request, response);
         } finally {
-            // 清理数据防止内存泄漏
+            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
             try {
+                // 清理数据防止内存泄漏
                 clearSecurityContext();
             } catch (Exception e) {
                 log.warn("clearSecurityContext失败", e);
@@ -94,9 +106,35 @@ public class AuthenticationFilter extends GenericFilterBean {
         // 2.根据JWT-Token获取SecurityContext
         SecurityContext securityContext = securityContextRepository.loadContext(uid, claims, request, response);
 
-
         // TODO 是否需要存储 SecurityContext ??
         SecurityContextHolder.setContext(securityContext);
+    }
+
+    /**
+     * 当前请求是否需要身份认证
+     */
+    protected boolean isAuthenticationRequest(HttpServletRequest httpRequest) {
+        LoginConfig login = securityConfig.getLogin();
+        List<String> ignorePaths = securityConfig.getIgnorePaths();
+        // request.getRequestURI()  /a/b/c/xxx.jsp
+        // request.getContextPath() /a
+        // request.getServletPath() /b/c/xxx.jsp
+        String path = httpRequest.getRequestURI();
+        boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
+        if (Objects.equals(login.getLoginPath(), httpRequest.getRequestURI()) && (!login.isPostOnly() || postRequest)) {
+            // 当前请求是登录请求
+            return false;
+        }
+        if (ignorePaths == null || ignorePaths.isEmpty()) {
+            return false;
+        }
+        for (String ignorePath : ignorePaths) {
+            if (Ant_Path_Matcher.match(ignorePath, path)) {
+                // 忽略当前路径
+                return false;
+            }
+        }
+        return true;
     }
 
     protected void clearSecurityContext() {

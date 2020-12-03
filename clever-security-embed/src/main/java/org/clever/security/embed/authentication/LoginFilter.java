@@ -120,7 +120,7 @@ public class LoginFilter extends GenericFilterBean {
             onLoginSuccessResponse(context);
         } catch (LoginException e) {
             // 登录失败
-            log.info("### 登录失败", e);
+            log.debug("### 登录失败", e);
             // context.setLoginException(e);
             try {
                 onLoginFailureResponse(context);
@@ -230,7 +230,10 @@ public class LoginFilter extends GenericFilterBean {
         if (login == null) {
             return false;
         }
-        if (!Objects.equals(login.getLoginPath(), httpRequest.getServletPath())) {
+        // request.getRequestURI()  /a/b/c/xxx.jsp
+        // request.getContextPath() /a
+        // request.getServletPath() /b/c/xxx.jsp
+        if (!Objects.equals(login.getLoginPath(), httpRequest.getRequestURI())) {
             return false;
         }
         boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
