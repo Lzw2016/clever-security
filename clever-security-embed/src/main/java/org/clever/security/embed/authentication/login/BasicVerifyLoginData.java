@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
  * 创建时间：2020/12/01 20:57 <br/>
  */
 @Slf4j
-public class BasicVerifyLoginData implements IVerifyLoginData {
+public class BasicVerifyLoginData implements VerifyLoginData {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) {
         return true;

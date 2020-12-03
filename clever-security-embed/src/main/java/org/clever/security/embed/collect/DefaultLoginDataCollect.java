@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:05 <br/>
  */
-public class DefaultLoginDataCollect implements ILoginDataCollect {
+public class DefaultLoginDataCollect implements LoginDataCollect {
 
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request) {

@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/12/01 21:05 <br/>
  */
-public interface IVerifyUserInfo extends Ordered {
+public interface VerifyUserInfo extends Ordered {
     /**
      * 是否支持验证登录用户信息
      *

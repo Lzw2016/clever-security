@@ -1,11 +1,11 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clever.security.embed.authentication.login.ILoadUser;
-import org.clever.security.embed.authentication.login.IVerifyLoginData;
-import org.clever.security.embed.authentication.login.IVerifyUserInfo;
+import org.clever.security.embed.authentication.login.LoadUser;
+import org.clever.security.embed.authentication.login.VerifyLoginData;
+import org.clever.security.embed.authentication.login.VerifyUserInfo;
 import org.clever.security.embed.authentication.login.LoginContext;
-import org.clever.security.embed.collect.ILoginDataCollect;
+import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.event.LoginFailureEvent;
@@ -49,19 +49,19 @@ public class LoginFilter extends GenericFilterBean {
     /**
      * 收集登录数据
      */
-    private final List<ILoginDataCollect> loginDataCollectList;
+    private final List<LoginDataCollect> loginDataCollectList;
     /**
      * 加载用户前后校验登录数据(字段格式、验证码等等)
      */
-    private final List<IVerifyLoginData> verifyLoginDataList;
+    private final List<VerifyLoginData> verifyLoginDataList;
     /**
      * 加载用户信息
      */
-    private final List<ILoadUser> loadUserList;
+    private final List<LoadUser> loadUserList;
     /**
      * 加载用户之后校验登录数据(密码、验证码等)
      */
-    private final List<IVerifyUserInfo> verifyUserInfoList;
+    private final List<VerifyUserInfo> verifyUserInfoList;
     /**
      * 登录成功处理
      */
@@ -73,10 +73,10 @@ public class LoginFilter extends GenericFilterBean {
 
     public LoginFilter(
             SecurityConfig securityConfig,
-            List<ILoginDataCollect> loginDataCollectList,
-            List<IVerifyLoginData> verifyLoginDataList,
-            List<ILoadUser> loadUserList,
-            List<IVerifyUserInfo> verifyUserInfoList,
+            List<LoginDataCollect> loginDataCollectList,
+            List<VerifyLoginData> verifyLoginDataList,
+            List<LoadUser> loadUserList,
+            List<VerifyUserInfo> verifyUserInfoList,
             List<LoginSuccessHandler> loginSuccessHandlerList,
             List<LoginFailureHandler> loginFailureHandlerList) {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
@@ -130,8 +130,8 @@ public class LoginFilter extends GenericFilterBean {
      */
     protected void login(LoginContext context) throws Exception {
         // 收集登录数据
-        ILoginDataCollect loginDataCollect = null;
-        for (ILoginDataCollect collect : loginDataCollectList) {
+        LoginDataCollect loginDataCollect = null;
+        for (LoginDataCollect collect : loginDataCollectList) {
             if (collect.isSupported(securityConfig, context.getRequest())) {
                 loginDataCollect = collect;
             }
@@ -147,7 +147,7 @@ public class LoginFilter extends GenericFilterBean {
         context.setLoginData(loginReq);
         log.debug("### 收集登录数据 -> {}", loginReq);
         // 加载用户之前校验登录数据
-        for (IVerifyLoginData verifyLoginData : verifyLoginDataList) {
+        for (VerifyLoginData verifyLoginData : verifyLoginDataList) {
             if (!verifyLoginData.isSupported(securityConfig, context.getRequest(), loginReq)) {
                 continue;
             }
@@ -167,8 +167,8 @@ public class LoginFilter extends GenericFilterBean {
             log.debug("### 加载用户之前校验登录数据成功 -> {}", loginReq);
         }
         // 加载用户信息
-        ILoadUser loadUser = null;
-        for (ILoadUser load : loadUserList) {
+        LoadUser loadUser = null;
+        for (LoadUser load : loadUserList) {
             if (load.isSupported(securityConfig, context.getRequest(), loginReq)) {
                 loadUser = load;
                 break;
@@ -182,7 +182,7 @@ public class LoginFilter extends GenericFilterBean {
         context.setUserInfo(userInfo);
         log.debug("### 加载用户信息 -> {}", userInfo);
         // 加载用户之后校验登录数据
-        for (IVerifyUserInfo verifyUserInfo : verifyUserInfoList) {
+        for (VerifyUserInfo verifyUserInfo : verifyUserInfoList) {
             if (!verifyUserInfo.isSupported(securityConfig, context.getRequest(), loginReq, userInfo)) {
                 continue;
             }

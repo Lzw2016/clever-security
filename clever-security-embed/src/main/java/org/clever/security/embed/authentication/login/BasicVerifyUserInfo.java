@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * 创建时间：2020/12/01 21:43 <br/>
  */
 @Slf4j
-public class BasicVerifyUserInfo implements IVerifyUserInfo {
+public class BasicVerifyUserInfo implements VerifyUserInfo {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) {
         return false;

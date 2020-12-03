@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
-import org.clever.security.embed.context.ISecurityContextRepository;
+import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.exception.AuthenticationException;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
@@ -37,11 +37,11 @@ public class AuthenticationFilter extends GenericFilterBean {
     /**
      * 加载用户信息
      */
-    private final ISecurityContextRepository securityContextRepository;
+    private final SecurityContextRepository securityContextRepository;
 
     public AuthenticationFilter(
             SecurityConfig securityConfig,
-            ISecurityContextRepository securityContextRepository) {
+            SecurityContextRepository securityContextRepository) {
         Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
         Assert.notNull(securityContextRepository, "参数securityContextRepository不能null");
         this.securityConfig = securityConfig;

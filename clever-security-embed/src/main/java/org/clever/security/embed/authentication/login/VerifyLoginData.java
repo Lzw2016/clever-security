@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 19:35 <br/>
  */
-public interface IVerifyLoginData extends Ordered {
+public interface VerifyLoginData extends Ordered {
     /**
      * 是否支持验证登录用户信息
      *

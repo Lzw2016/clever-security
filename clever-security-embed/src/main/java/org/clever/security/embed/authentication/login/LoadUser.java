@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 19:23 <br/>
  */
-public interface ILoadUser extends Ordered {
+public interface LoadUser extends Ordered {
     /**
      * 是否支持加载用户信息
      *

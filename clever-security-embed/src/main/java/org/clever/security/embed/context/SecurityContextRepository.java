@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 22:11 <br/>
  */
-public interface ISecurityContextRepository {
+public interface SecurityContextRepository {
     /**
      * 加载安全上下文(用户信息)
      *
