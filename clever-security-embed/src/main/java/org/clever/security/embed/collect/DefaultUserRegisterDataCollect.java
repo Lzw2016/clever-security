@@ -1,7 +1,7 @@
 package org.clever.security.embed.collect;
 
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.register.AbstractUserRegisterReq;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:05 <br/>
  */
-public class DefaultLoginDataCollect implements LoginDataCollect {
+public class DefaultUserRegisterDataCollect implements UserRegisterDataCollect {
 
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request) {
@@ -19,10 +19,10 @@ public class DefaultLoginDataCollect implements LoginDataCollect {
     }
 
     @Override
-    public AbstractUserLoginReq collectLoginData(SecurityConfig securityConfig, HttpServletRequest request) {
-        // TODO collectLoginData
+    public AbstractUserRegisterReq collectRegisterData(SecurityConfig securityConfig, HttpServletRequest request) {
         return null;
     }
+
 
     @Override
     public int getOrder() {
