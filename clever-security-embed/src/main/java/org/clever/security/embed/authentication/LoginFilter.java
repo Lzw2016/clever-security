@@ -8,6 +8,7 @@ import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.embed.event.LoginSuccessEvent;
+import org.clever.security.embed.exception.CollectLoginDataException;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.embed.handler.LoginFailureHandler;
@@ -150,22 +151,27 @@ public class LoginFilter extends GenericFilterBean {
      */
     protected void login(LoginContext context) throws Exception {
         // 收集登录数据
-        LoginDataCollect loginDataCollect = null;
+        AbstractUserLoginReq loginReq = null;
         for (LoginDataCollect collect : loginDataCollectList) {
-            if (collect.isSupported(securityConfig, context.getRequest())) {
-                loginDataCollect = collect;
+            if (!collect.isSupported(securityConfig, context.getRequest())) {
+                continue;
             }
-            if (loginDataCollect != null) {
+            try {
+                loginReq = collect.collectLoginData(securityConfig, context.getRequest());
+            } catch (Exception e) {
+                context.setLoginException(new CollectLoginDataException("读取登录数据失败", e));
+                throw context.getLoginException();
+            }
+            if (loginReq != null) {
                 break;
             }
         }
-        if (loginDataCollect == null) {
+        log.debug("### 收集登录数据 -> {}", loginReq);
+        if (loginReq == null) {
             context.setLoginException(new LoginInnerException("不支持的登录请求(无法获取登录数据)"));
             throw context.getLoginException();
         }
-        AbstractUserLoginReq loginReq = loginDataCollect.collectLoginData(securityConfig, context.getRequest());
         context.setLoginData(loginReq);
-        log.debug("### 收集登录数据 -> {}", loginReq);
         // 加载用户之前校验登录数据
         for (VerifyLoginData verifyLoginData : verifyLoginDataList) {
             if (!verifyLoginData.isSupported(securityConfig, context.getRequest(), loginReq)) {
