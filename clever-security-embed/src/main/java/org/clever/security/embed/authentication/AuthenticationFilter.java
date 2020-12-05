@@ -3,6 +3,7 @@ package org.clever.security.embed.authentication;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
+import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
@@ -98,13 +99,14 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
         log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
         // 执行认证逻辑
+        AuthenticationContext context = new AuthenticationContext(httpRequest, httpResponse);
         try {
-            authentication(httpRequest, httpResponse);
+            authentication(context);
         } catch (AuthenticationException e) {
             // 授权失败
             log.debug("### 认证失败", e);
             try {
-                AuthenticationFailureEvent event = new AuthenticationFailureEvent();
+                AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
                 for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
                     handler.onAuthenticationFailure(httpRequest, httpResponse, event);
                 }
@@ -133,26 +135,29 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
     }
 
-    protected void authentication(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void authentication(AuthenticationContext context) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 获取JWT-Token
-        String jwtToken = CookieUtils.getCookie(request, tokenConfig.getJwtTokenName());
+        String jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
+        context.setJwtToken(jwtToken);
         // 解析Token得到uid
         Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
-        String uid = claims.getSubject();
+        context.setClaims(claims);
+        context.setUid(claims.getSubject());
         // 验证JWT-Token
         for (VerifyJwtToken verifyJwtToken : verifyJwtTokenList) {
-            verifyJwtToken.verify(jwtToken, uid, claims, securityConfig, request, response);
+            verifyJwtToken.verify(jwtToken, context.getUid(), claims, securityConfig, context.getRequest(), context.getResponse());
         }
         // 根据JWT-Token获取SecurityContext
-        SecurityContext securityContext = securityContextRepository.loadContext(uid, claims, request, response);
+        SecurityContext securityContext = securityContextRepository.loadContext(context.getUid(), claims, context.getRequest(), context.getResponse());
         // 把SecurityContext绑定到当前线程和当前请求对象
-        SecurityContextHolder.setContext(securityContext, request);
+        SecurityContextHolder.setContext(securityContext, context.getRequest());
+        context.setSecurityContext(securityContext);
         // 用户身份认成功处理
-        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent();
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(jwtToken, context.getUid(), claims, securityContext);
         for (AuthenticationSuccessHandler handler : authenticationSuccessHandlerList) {
-            handler.onAuthenticationSuccess(request, response, event);
+            handler.onAuthenticationSuccess(context.getRequest(), context.getResponse(), event);
         }
     }
 
