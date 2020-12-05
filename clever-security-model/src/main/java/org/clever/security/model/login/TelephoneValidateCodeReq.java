@@ -13,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TelephoneValidateCodeReq extends AbstractUserLoginReq {
+    public static final String Telephone_ParamName = "telephone";
+    public static final String ValidateCode_ParamName = "validateCode";
     /**
      * 手机号
      */

@@ -13,6 +13,9 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ScanCodeReq extends AbstractUserLoginReq {
+    public static final String BrowseScanCode_ParamName = "browseScanCode";
+    public static final String LoginToken_ParamName = "loginToken";
+
     /**
      * 浏览器扫描码
      */

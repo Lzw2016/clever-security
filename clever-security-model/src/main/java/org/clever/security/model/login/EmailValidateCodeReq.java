@@ -13,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class EmailValidateCodeReq extends AbstractUserLoginReq {
+    public static final String Email_ParamName = "email";
+    public static final String ValidateCode_ParamName = "validateCode";
     /**
      * 邮箱
      */
