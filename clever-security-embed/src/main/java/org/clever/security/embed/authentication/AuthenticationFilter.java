@@ -106,19 +106,24 @@ public class AuthenticationFilter extends GenericFilterBean {
             // 授权失败
             log.debug("### 认证失败", e);
             try {
+                // 用户身份认失败处理
                 AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
                 for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
                     handler.onAuthenticationFailure(httpRequest, httpResponse, event);
                 }
+                // 返回数据给客户端
                 onAuthenticationFailureResponse(httpRequest, httpResponse, e);
             } catch (Exception innerException) {
                 log.error("认证异常", innerException);
+                // 返回数据给客户端
                 HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
             }
+            return;
         } catch (Throwable e) {
-            // 认证异常
+            // 认证异常 - 返回数据给客户端
             log.error("认证异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            return;
         } finally {
             log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
         }
