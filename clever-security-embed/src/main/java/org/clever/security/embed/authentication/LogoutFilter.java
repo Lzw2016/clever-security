@@ -149,6 +149,9 @@ public class LogoutFilter extends GenericFilterBean {
      * 当登出成功时响应处理
      */
     protected void onLogoutSuccessResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         LogoutConfig logout = securityConfig.getLogout();
         if (logout != null && logout.isLogoutNeedRedirect()) {
             // 需要重定向
@@ -168,6 +171,9 @@ public class LogoutFilter extends GenericFilterBean {
      * 当登出失败时响应处理
      */
     protected void onLogoutFailureResponse(HttpServletRequest request, HttpServletResponse response, Throwable e) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         LogoutConfig logout = securityConfig.getLogout();
         if (logout != null && logout.isLogoutNeedRedirect()) {
             // 需要重定向

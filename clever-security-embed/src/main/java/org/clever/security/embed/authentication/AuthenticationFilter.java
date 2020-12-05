@@ -9,7 +9,11 @@ import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
+import org.clever.security.embed.event.AuthenticationFailureEvent;
+import org.clever.security.embed.event.AuthenticationSuccessEvent;
 import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.handler.AuthenticationFailureHandler;
+import org.clever.security.embed.handler.AuthenticationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
@@ -51,17 +55,31 @@ public class AuthenticationFilter extends GenericFilterBean {
      * 加载安全上下文(用户信息)
      */
     private final SecurityContextRepository securityContextRepository;
+    /**
+     * 用户身份认成功处理
+     */
+    private final List<AuthenticationSuccessHandler> authenticationSuccessHandlerList;
+    /**
+     * 用户身份认失败处理
+     */
+    private final List<AuthenticationFailureHandler> authenticationFailureHandlerList;
 
     public AuthenticationFilter(
             SecurityConfig securityConfig,
             List<VerifyJwtToken> verifyJwtTokenList,
-            SecurityContextRepository securityContextRepository) {
+            SecurityContextRepository securityContextRepository,
+            List<AuthenticationSuccessHandler> authenticationSuccessHandlerList,
+            final List<AuthenticationFailureHandler> authenticationFailureHandlerList) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(verifyJwtTokenList, "JWT-Token验证器(VerifyJwtToken)不存在");
         Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
+        Assert.notNull(authenticationSuccessHandlerList, "参数authenticationSuccessHandlerList不能为null");
+        Assert.notNull(authenticationFailureHandlerList, "参数authenticationFailureHandlerList不能为null");
         this.securityConfig = securityConfig;
         this.verifyJwtTokenList = ListSortUtils.sort(verifyJwtTokenList);
         this.securityContextRepository = securityContextRepository;
+        this.authenticationSuccessHandlerList = ListSortUtils.sort(authenticationSuccessHandlerList);
+        this.authenticationFailureHandlerList = ListSortUtils.sort(authenticationFailureHandlerList);
     }
 
     @Override
@@ -86,6 +104,10 @@ public class AuthenticationFilter extends GenericFilterBean {
             // 授权失败
             log.debug("### 认证失败", e);
             try {
+                AuthenticationFailureEvent event = new AuthenticationFailureEvent();
+                for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
+                    handler.onAuthenticationFailure(httpRequest, httpResponse, event);
+                }
                 onAuthenticationFailureResponse(httpRequest, httpResponse, e);
             } catch (Exception innerException) {
                 log.error("认证异常", innerException);
@@ -111,7 +133,7 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
     }
 
-    protected void authentication(HttpServletRequest request, HttpServletResponse response) {
+    protected void authentication(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 获取JWT-Token
@@ -127,6 +149,11 @@ public class AuthenticationFilter extends GenericFilterBean {
         SecurityContext securityContext = securityContextRepository.loadContext(uid, claims, request, response);
         // 把SecurityContext绑定到当前线程和当前请求对象
         SecurityContextHolder.setContext(securityContext, request);
+        // 用户身份认成功处理
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent();
+        for (AuthenticationSuccessHandler handler : authenticationSuccessHandlerList) {
+            handler.onAuthenticationSuccess(request, response, event);
+        }
     }
 
     /**
@@ -160,6 +187,9 @@ public class AuthenticationFilter extends GenericFilterBean {
      * 当认证失败时响应处理
      */
     protected void onAuthenticationFailureResponse(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         if (securityConfig.isNotLoginNeedRedirect()) {
             // 需要重定向
             HttpServletResponseUtils.redirect(response, securityConfig.getNotLoginRedirectPage());
