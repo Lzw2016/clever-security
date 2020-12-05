@@ -11,6 +11,7 @@ import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.common.utils.tuples.TupleTow;
 import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.exception.LoginInnerException;
@@ -39,7 +40,7 @@ public class JwtTokenUtils {
      * @param userInfo    用户信息
      * @param rememberMe  使用“记住我”功能
      */
-    public static String createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, boolean rememberMe, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
+    public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, boolean rememberMe, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
         // 获取当前时间戳
         long now = System.currentTimeMillis();
         // Token过期时间
@@ -87,10 +88,11 @@ public class JwtTokenUtils {
         }
         // 签名私钥
         Key key = getHmacShaKey(tokenConfig.getSecretKey(), userInfo.getUid());
-        return Jwts.builder()
+        String jwtToken = Jwts.builder()
                 .setClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
+        return TupleTow.creat(jwtToken, claims);
     }
 
     /**

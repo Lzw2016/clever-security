@@ -3,6 +3,7 @@ package org.clever.security.embed.test.utils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.IDCreateUtils;
+import org.clever.common.utils.tuples.TupleTow;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.model.UserInfo;
@@ -21,10 +22,10 @@ public class JwtTokenUtilsTest {
         UserInfo userInfo = new UserInfo();
         userInfo.setUid("lizw" + IDCreateUtils.uuid());
         userInfo.setLoginName("lizw");
-        String jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, false, null);
-        log.info("jwtToken -> {}", jwtToken);
+        TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, false, null);
+        log.info("jwtToken -> {}", tokenInfo.getValue1());
 
-        Claims claims = JwtTokenUtils.parserJwtToken(tokenConfig, jwtToken);
+        Claims claims = JwtTokenUtils.parserJwtToken(tokenConfig, tokenInfo.getValue1());
         log.info("Body     -> {}", claims);
     }
 }
