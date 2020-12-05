@@ -56,6 +56,10 @@ public class LoginConfig implements Serializable {
      */
     private Duration captchaEffectiveTime = Duration.ofSeconds(60);
     /**
+     * 是否允许重复登录(在登录状态下登录其他账号)
+     */
+    private boolean allowRepeatLogin = true;
+    /**
      * 同一个用户并发登录次数限制(小于等于0表示不限制)
      */
     private int concurrentLoginCount = 1;

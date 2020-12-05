@@ -14,11 +14,11 @@ public class LogoutConfig {
      */
     private String logoutUrl = "/logout";
     /**
-     * 登出成功 - 是否需要重定向
+     * 登出后 - 是否需要重定向
      */
-    private boolean logoutSuccessNeedRedirect = false;
+    private boolean logoutNeedRedirect = false;
     /**
-     * 登出成功跳转地址
+     * 登出后跳转地址
      */
-    private String logoutSuccessRedirectPage = "/index.html";
+    private String logoutRedirectPage = "/index.html";
 }

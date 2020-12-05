@@ -1,6 +1,7 @@
 package org.clever.security.model;
 
 import lombok.Data;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -12,39 +13,22 @@ import java.util.Set;
  */
 @Data
 public class SecurityContext implements Serializable {
-    // 用户信息
-
-    // 角色信息
-
-    // 权限信息
-
     /**
-     * 权限列表
+     * 用户信息
      */
-    private Set<String> permissions = Collections.emptySet();
-    ;
+    private final UserInfo userInfo;
     /**
      * 角色列表
      */
     private Set<String> roles = Collections.emptySet();
-    ;
-
     /**
-     * 是否拥有指定权限
+     * 权限列表
      */
-    public boolean hasPermissions(String... permissions) {
-        if (permissions == null || permissions.length <= 0) {
-            return true;
-        }
-        if (this.permissions == null) {
-            return false;
-        }
-        for (String permission : permissions) {
-            if (!this.permissions.contains(permission)) {
-                return false;
-            }
-        }
-        return true;
+    private Set<String> permissions = Collections.emptySet();
+
+    public SecurityContext(UserInfo userInfo) {
+        Assert.notNull(userInfo, "参数userInfo不能为null");
+        this.userInfo = userInfo;
     }
 
     /**
@@ -59,6 +43,24 @@ public class SecurityContext implements Serializable {
         }
         for (String role : roles) {
             if (!this.roles.contains(role)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 是否拥有指定权限
+     */
+    public boolean hasPermissions(String... permissions) {
+        if (permissions == null || permissions.length <= 0) {
+            return true;
+        }
+        if (this.permissions == null) {
+            return false;
+        }
+        for (String permission : permissions) {
+            if (!this.permissions.contains(permission)) {
                 return false;
             }
         }

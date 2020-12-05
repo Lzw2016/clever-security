@@ -5,12 +5,14 @@ import org.clever.security.embed.authentication.login.*;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
+import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.embed.exception.CollectLoginDataException;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.LoginInnerException;
+import org.clever.security.embed.exception.RepeatLoginException;
 import org.clever.security.embed.handler.LoginFailureHandler;
 import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
@@ -150,6 +152,11 @@ public class LoginFilter extends GenericFilterBean {
      * 登录流程
      */
     protected void login(LoginContext context) throws Exception {
+        // 判断用户是否重复登录
+        if (!securityConfig.getLogin().isAllowRepeatLogin() && SecurityContextHolder.containsContext(context.getRequest())) {
+            context.setLoginException(new RepeatLoginException("不支持用户重复登录,必须先退出当前账户"));
+            throw context.getLoginException();
+        }
         // 收集登录数据
         AbstractUserLoginReq loginReq = null;
         for (LoginDataCollect collect : loginDataCollectList) {
@@ -298,7 +305,7 @@ public class LoginFilter extends GenericFilterBean {
      */
     protected void onLoginSuccessResponse(LoginContext context) throws IOException {
         LoginConfig login = securityConfig.getLogin();
-        if (login.isLoginSuccessNeedRedirect()) {
+        if (login != null && login.isLoginSuccessNeedRedirect()) {
             // 需要重定向
             HttpServletResponseUtils.redirect(context.getResponse(), login.getLoginSuccessRedirectPage());
         } else {
@@ -319,7 +326,8 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
-            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.UNAUTHORIZED);
+            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.BAD_REQUEST: HttpStatus.UNAUTHORIZED;
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, httpStatus);
         }
     }
 }
