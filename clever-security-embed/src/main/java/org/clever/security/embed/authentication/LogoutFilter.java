@@ -102,7 +102,6 @@ public class LogoutFilter extends GenericFilterBean {
             throw context.getLogoutException();
         }
         // 删除JWT-Token  LogoutContext
-        LogoutException exception = null;
         try {
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
             CookieUtils.delCookieForRooPath(context.getRequest(), context.getResponse(), tokenConfig.getJwtTokenName());
@@ -110,24 +109,24 @@ public class LogoutFilter extends GenericFilterBean {
             context.setSuccess(true);
         } catch (Exception e) {
             log.debug("### 删除JWT-Token失败", e);
-            exception = new LogoutFailedException("登出失败", e);
+            context.setLogoutException(new LogoutFailedException("登出失败", e));
         }
         // 登出成功
-        if (exception == null && logoutSuccessHandlerList != null) {
-            LogoutSuccessEvent logoutSuccessEvent = new LogoutSuccessEvent();
+        if (context.getLogoutException() == null && logoutSuccessHandlerList != null) {
+            LogoutSuccessEvent logoutSuccessEvent = new LogoutSuccessEvent(context.getSecurityContext());
             for (LogoutSuccessHandler handler : logoutSuccessHandlerList) {
                 handler.onLogoutSuccess(context.getRequest(), context.getResponse(), logoutSuccessEvent);
             }
         }
         // 登出失败
-        if (exception != null && logoutFailureHandlerList != null) {
-            LogoutFailureEvent logoutFailureEvent = new LogoutFailureEvent(exception);
+        if (context.getLogoutException() != null && logoutFailureHandlerList != null) {
+            LogoutFailureEvent logoutFailureEvent = new LogoutFailureEvent(context.getLogoutException());
             for (LogoutFailureHandler handler : logoutFailureHandlerList) {
                 handler.onLogoutFailure(context.getRequest(), context.getResponse(), logoutFailureEvent);
             }
         }
-        if (exception != null) {
-            throw exception;
+        if (context.getLogoutException() != null) {
+            throw context.getLogoutException();
         }
     }
 

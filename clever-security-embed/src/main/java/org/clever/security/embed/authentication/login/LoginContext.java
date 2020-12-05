@@ -51,7 +51,7 @@ public class LoginContext {
     }
 
     /**
-     * 是否登录失败
+     * 是否登录失败(无法判断登录成功)
      */
     public boolean isLoginFailure() {
         return loginException != null;
