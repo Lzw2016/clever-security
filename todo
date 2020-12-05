@@ -10,7 +10,7 @@
 
 #================================================================================================================
 
-用户 -> AuthenticationFilter -> LogoutFilter -> LoginFilter -> AuthorizationFilter -> 业务处理
+用户 -> AuthenticationFilter(认证) -> LoginFilter(登录) -> LogoutFilter(登出) -> AuthorizationFilter(授权) -> 业务处理
 
 用户表
     加一个user_id字段
