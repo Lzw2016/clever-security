@@ -3,6 +3,8 @@ package org.clever.security;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 /**
  * 登录方式
  * <p>
@@ -52,10 +54,39 @@ public enum LoginType {
         this.name = name;
     }
 
-//    public static LoginType valueOf(String name) {
-//        if(Objects.equals(LoginType.LoginName_Password.getName(), name) || ) {
-//            return LoginType.LoginName_Password;
-//        }
-//        return null;
-//    }
+    public static LoginType lookup(String name) {
+        if (LoginName_Password.getName().equalsIgnoreCase(name)) {
+            return LoginName_Password;
+        } else if (Telephone_ValidateCode.getName().equalsIgnoreCase(name)) {
+            return Telephone_ValidateCode;
+        } else if (Email_ValidateCode.getName().equalsIgnoreCase(name)) {
+            return Email_ValidateCode;
+        } else if (RememberMe.getName().equalsIgnoreCase(name)) {
+            return RememberMe;
+        } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
+            return WechatSmallProgram;
+        } else if (ScanCode.getName().equalsIgnoreCase(name)) {
+            return ScanCode;
+        } else {
+            return null;
+        }
+    }
+
+    public static LoginType lookup(int id) {
+        if (Objects.equals(LoginName_Password.getId(), id)) {
+            return LoginName_Password;
+        } else if (Objects.equals(Telephone_ValidateCode.getId(), id)) {
+            return Telephone_ValidateCode;
+        } else if (Objects.equals(Email_ValidateCode.getId(), id)) {
+            return Email_ValidateCode;
+        } else if (Objects.equals(RememberMe.getId(), id)) {
+            return RememberMe;
+        } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
+            return WechatSmallProgram;
+        } else if (Objects.equals(ScanCode.getId(), id)) {
+            return ScanCode;
+        } else {
+            return null;
+        }
+    }
 }

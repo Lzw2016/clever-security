@@ -3,6 +3,8 @@ package org.clever.security;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 /**
  * 登录渠道
  * <p>
@@ -52,7 +54,39 @@ public enum LoginChannel {
         this.name = name;
     }
 
-//    public static LoginType valueOf(String name) {
-//
-//    }
+    public static LoginChannel lookup(String name) {
+        if (PC_Admin.getName().equalsIgnoreCase(name)) {
+            return PC_Admin;
+        } else if (PC_Web.getName().equalsIgnoreCase(name)) {
+            return PC_Web;
+        } else if (H5.getName().equalsIgnoreCase(name)) {
+            return H5;
+        } else if (IOS_APP.getName().equalsIgnoreCase(name)) {
+            return IOS_APP;
+        } else if (Android_APP.getName().equalsIgnoreCase(name)) {
+            return Android_APP;
+        } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
+            return WechatSmallProgram;
+        } else {
+            return null;
+        }
+    }
+
+    public static LoginChannel lookup(int id) {
+        if (Objects.equals(PC_Admin.getId(), id)) {
+            return PC_Admin;
+        } else if (Objects.equals(PC_Web.getId(), id)) {
+            return PC_Web;
+        } else if (Objects.equals(H5.getId(), id)) {
+            return H5;
+        } else if (Objects.equals(IOS_APP.getId(), id)) {
+            return IOS_APP;
+        } else if (Objects.equals(Android_APP.getId(), id)) {
+            return Android_APP;
+        } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
+            return WechatSmallProgram;
+        } else {
+            return null;
+        }
+    }
 }

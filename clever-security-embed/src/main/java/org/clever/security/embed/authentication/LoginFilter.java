@@ -221,7 +221,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 登录成功
             log.debug("### 登录成功 -> {}", userInfo);
-            final String jwtToken = JwtTokenUtils.createJwtToken(securityConfig.getTokenConfig(), userInfo, loginReq.isRememberMe(), addJwtTokenExtDataList);
+            final String jwtToken = JwtTokenUtils.createJwtToken(securityConfig.getTokenConfig(), userInfo, loginReq.getRememberMe(), addJwtTokenExtDataList);
             final String refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), jwtToken, refreshToken);
             context.setJwtToken(jwtToken);
