@@ -2,6 +2,7 @@ package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
+import org.clever.security.embed.authentication.logout.LogoutContext;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LogoutConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
@@ -76,29 +77,37 @@ public class LogoutFilter extends GenericFilterBean {
         }
         log.debug("### 开始执行登出逻辑 ---------------------------------------------------------------------->");
         // 执行登出逻辑
+        LogoutContext context = new LogoutContext(httpRequest, httpResponse);
         try {
-            logout(httpRequest, httpResponse);
+            logout(context);
             // 登出成功 - 返回数据给客户端
             onLogoutSuccessResponse(httpRequest, httpResponse);
         } catch (Throwable e) {
             // 登出异常
             log.error("登出异常", e);
-            onLogoutFailureResponse(httpRequest, httpResponse, e);
+            if (context.isSuccess()) {
+                onLogoutSuccessResponse(httpRequest, httpResponse);
+            } else {
+                onLogoutFailureResponse(httpRequest, httpResponse, e);
+            }
         } finally {
             log.debug("### 登出逻辑执行完成 <----------------------------------------------------------------------");
         }
     }
 
-    protected void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (!SecurityContextHolder.containsContext(request)) {
-            throw new UnSupportLogoutException("当前未登录,无法登出");
+    protected void logout(LogoutContext context) throws Exception {
+        context.setSecurityContext(SecurityContextHolder.getContext(context.getRequest()));
+        if (context.getSecurityContext() == null) {
+            context.setLogoutException(new UnSupportLogoutException("当前未登录,无法登出"));
+            throw context.getLogoutException();
         }
-        // 删除JWT-Token
+        // 删除JWT-Token  LogoutContext
         LogoutException exception = null;
         try {
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
-            CookieUtils.delCookieForRooPath(request, response, tokenConfig.getJwtTokenName());
+            CookieUtils.delCookieForRooPath(context.getRequest(), context.getResponse(), tokenConfig.getJwtTokenName());
             log.debug("### 删除JWT-Token成功");
+            context.setSuccess(true);
         } catch (Exception e) {
             log.debug("### 删除JWT-Token失败", e);
             exception = new LogoutFailedException("登出失败", e);
@@ -107,15 +116,18 @@ public class LogoutFilter extends GenericFilterBean {
         if (exception == null && logoutSuccessHandlerList != null) {
             LogoutSuccessEvent logoutSuccessEvent = new LogoutSuccessEvent();
             for (LogoutSuccessHandler handler : logoutSuccessHandlerList) {
-                handler.onLogoutSuccess(request, response, logoutSuccessEvent);
+                handler.onLogoutSuccess(context.getRequest(), context.getResponse(), logoutSuccessEvent);
             }
         }
         // 登出失败
         if (exception != null && logoutFailureHandlerList != null) {
             LogoutFailureEvent logoutFailureEvent = new LogoutFailureEvent(exception);
             for (LogoutFailureHandler handler : logoutFailureHandlerList) {
-                handler.onLogoutFailure(request, response, logoutFailureEvent);
+                handler.onLogoutFailure(context.getRequest(), context.getResponse(), logoutFailureEvent);
             }
+        }
+        if (exception != null) {
+            throw exception;
         }
     }
 
@@ -137,6 +149,9 @@ public class LogoutFilter extends GenericFilterBean {
      * 当登出成功时响应处理
      */
     protected void onLogoutSuccessResponse(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         LogoutConfig logout = securityConfig.getLogout();
         if (logout != null && logout.isLogoutNeedRedirect()) {
             // 需要重定向
@@ -156,6 +171,9 @@ public class LogoutFilter extends GenericFilterBean {
      * 当登出失败时响应处理
      */
     protected void onLogoutFailureResponse(HttpServletRequest request, HttpServletResponse response, Throwable e) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         LogoutConfig logout = securityConfig.getLogout();
         if (logout != null && logout.isLogoutNeedRedirect()) {
             // 需要重定向

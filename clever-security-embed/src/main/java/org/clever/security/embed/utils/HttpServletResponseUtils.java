@@ -22,6 +22,9 @@ public class HttpServletResponseUtils {
      * @param data     响应数据
      */
     public static void sendJson(HttpServletResponse response, Object data, HttpStatus httpStatus) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         if (data != null) {
             response.getWriter().print(JacksonMapper.getInstance().toJson(data));
@@ -49,6 +52,9 @@ public class HttpServletResponseUtils {
      * @param e          异常信息
      */
     public static void sendJson(HttpServletRequest request, HttpServletResponse response, HttpStatus httpStatus, Throwable e) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setPath(request.getRequestURI());
         errorResponse.setException(e.getClass().getName());
@@ -69,6 +75,9 @@ public class HttpServletResponseUtils {
      * @param location 重定向地址
      */
     public static void redirect(HttpServletResponse response, String location) throws IOException {
+        if (response.isCommitted()) {
+            return;
+        }
         response.sendRedirect(location);
     }
 }

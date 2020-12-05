@@ -304,6 +304,9 @@ public class LoginFilter extends GenericFilterBean {
      * 当登录成功时响应处理
      */
     protected void onLoginSuccessResponse(LoginContext context) throws IOException {
+        if (context.getResponse().isCommitted()) {
+            return;
+        }
         LoginConfig login = securityConfig.getLogin();
         if (login != null && login.isLoginSuccessNeedRedirect()) {
             // 需要重定向
@@ -319,6 +322,9 @@ public class LoginFilter extends GenericFilterBean {
      * 当登录失败时响应处理
      */
     protected void onLoginFailureResponse(LoginContext context) throws IOException {
+        if (context.getResponse().isCommitted()) {
+            return;
+        }
         LoginConfig login = securityConfig.getLogin();
         if (login.isLoginFailureNeedRedirect()) {
             // 需要重定向
@@ -326,7 +332,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
-            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.BAD_REQUEST: HttpStatus.UNAUTHORIZED;
+            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.BAD_REQUEST : HttpStatus.UNAUTHORIZED;
             HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, httpStatus);
         }
     }
