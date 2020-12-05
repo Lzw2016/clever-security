@@ -44,7 +44,7 @@ public class LogoutFilter extends GenericFilterBean {
             SecurityConfig securityConfig,
             List<LogoutSuccessHandler> logoutSuccessHandlerList,
             List<LogoutFailureHandler> logoutFailureHandlerList) {
-        Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
+        Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         this.securityConfig = securityConfig;
         this.logoutSuccessHandlerList = ListSortUtils.sort(logoutSuccessHandlerList);
         this.logoutFailureHandlerList = ListSortUtils.sort(logoutFailureHandlerList);

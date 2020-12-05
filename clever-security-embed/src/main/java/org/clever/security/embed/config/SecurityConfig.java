@@ -42,9 +42,13 @@ public class SecurityConfig implements Serializable {
      */
     private boolean hideUserNotFoundException = true;
     /**
-     * 未登录时是否需要重定向到登录页面
+     * 未登录时是否需要重定向到401页面
      */
     private boolean notLoginNeedRedirect = false;
+    /**
+     * 未登录时是否需要重定向
+     */
+    private String notLoginRedirectPage = "/index.html";
     /**
      * 无权访问时是否需要重定向到403页面
      */

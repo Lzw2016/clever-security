@@ -16,7 +16,7 @@ public interface LoginDataCollect extends Ordered {
     /**
      * 是否支持收集当前用户登录信息
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @return 返回true表示支持搜集
      */
@@ -24,7 +24,7 @@ public interface LoginDataCollect extends Ordered {
 
     /***
      * 收集登录请求数据
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request           请求对象
      * @return 登录数据对象
      */

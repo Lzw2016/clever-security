@@ -17,7 +17,7 @@ public interface VerifyUserInfo extends Ordered {
     /**
      * 是否支持验证登录用户信息
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @param loginReq       登录请求参数
      * @param userInfo       用户信息(数据库中的用户数据)
@@ -28,7 +28,7 @@ public interface VerifyUserInfo extends Ordered {
     /**
      * 用户登录验证
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @param loginReq       登录请求参数
      * @param userInfo       用户信息(数据库中的用户数据)

@@ -15,6 +15,20 @@ import java.util.Date;
  * 创建时间：2020/12/02 20:42 <br/>
  */
 public class HttpServletResponseUtils {
+    /**
+     * 发送数据到客户端(200状态码)
+     *
+     * @param response 响应对象
+     * @param data     响应数据
+     */
+    public static void sendJson(HttpServletResponse response, Object data, HttpStatus httpStatus) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        if (data != null) {
+            response.getWriter().print(JacksonMapper.getInstance().toJson(data));
+            response.getWriter().flush();
+        }
+        response.setStatus(httpStatus.value());
+    }
 
     /**
      * 发送数据到客户端(200状态码)
@@ -23,12 +37,7 @@ public class HttpServletResponseUtils {
      * @param data     响应数据
      */
     public static void sendJson(HttpServletResponse response, Object data) throws IOException {
-        response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        if (data != null) {
-            response.getWriter().print(JacksonMapper.getInstance().toJson(data));
-            response.getWriter().flush();
-        }
-        response.setStatus(HttpStatus.OK.value());
+        sendJson(response, data, HttpStatus.OK);
     }
 
     /**

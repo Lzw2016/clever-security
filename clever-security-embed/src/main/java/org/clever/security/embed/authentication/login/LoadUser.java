@@ -17,7 +17,7 @@ public interface LoadUser extends Ordered {
     /**
      * 是否支持加载用户信息
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @param loginReq       登录请求参数
      * @return 返回true表示支持搜集
@@ -27,7 +27,7 @@ public interface LoadUser extends Ordered {
     /**
      * 加载用户信息(从数据库或其他系统中加载)
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @param loginReq       登录请求参数
      * @return 用户信息(不存在返回null)

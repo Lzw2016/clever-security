@@ -5,6 +5,7 @@ import org.clever.security.embed.authentication.login.*;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
+import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.embed.exception.LoginException;
@@ -72,6 +73,10 @@ public class LoginFilter extends GenericFilterBean {
      * 登录失败处理
      */
     private final List<LoginFailureHandler> loginFailureHandlerList;
+    /**
+     * 加载安全上下文(用户信息)
+     */
+    private final SecurityContextRepository securityContextRepository;
 
     public LoginFilter(
             SecurityConfig securityConfig,
@@ -81,12 +86,14 @@ public class LoginFilter extends GenericFilterBean {
             List<VerifyUserInfo> verifyUserInfoList,
             List<AddJwtTokenExtData> addJwtTokenExtDataList,
             List<LoginSuccessHandler> loginSuccessHandlerList,
-            List<LoginFailureHandler> loginFailureHandlerList) {
-        Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
+            List<LoginFailureHandler> loginFailureHandlerList,
+            SecurityContextRepository securityContextRepository) {
+        Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(loginDataCollectList, "登录数据收集器(ILoginDataCollect)不存在");
         Assert.notEmpty(verifyLoginDataList, "用户登录验证器(IVerifyLoginData)不存在");
         Assert.notEmpty(loadUserList, "用户信息加载器(ILoadUser)不存在");
         Assert.notEmpty(verifyUserInfoList, "用户登录验证器(IVerifyUserInfo)不存在");
+        Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
         this.securityConfig = securityConfig;
         this.loginDataCollectList = ListSortUtils.sort(loginDataCollectList);
         this.verifyLoginDataList = ListSortUtils.sort(verifyLoginDataList);
@@ -95,6 +102,7 @@ public class LoginFilter extends GenericFilterBean {
         this.addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
         this.loginSuccessHandlerList = ListSortUtils.sort(loginSuccessHandlerList);
         this.loginFailureHandlerList = ListSortUtils.sort(loginFailureHandlerList);
+        this.securityContextRepository = securityContextRepository;
     }
 
     @Override
@@ -218,6 +226,8 @@ public class LoginFilter extends GenericFilterBean {
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), jwtToken, refreshToken);
             context.setJwtToken(jwtToken);
             context.setRefreshToken(refreshToken);
+            // 保存安全上下文(用户信息)
+            securityContextRepository.saveContext(context, securityConfig, context.getRequest(), context.getResponse());
             loginSuccessHandler(context);
         }
     }
@@ -288,7 +298,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginSuccess(context.getUserInfo(), context.getJwtToken(), context.getRefreshToken());
-            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes);
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -303,7 +313,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
-            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes);
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -14,7 +14,7 @@ public interface UserRegisterDataCollect extends Ordered {
     /**
      * 是否支持收集当前用户注册信息
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @return 返回true表示支持搜集
      */
@@ -23,7 +23,7 @@ public interface UserRegisterDataCollect extends Ordered {
     /**
      * 收集当前用户注册信息
      *
-     * @param securityConfig 系统授权配置
+     * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @return 返回true表示支持搜集
      */

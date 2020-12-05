@@ -71,7 +71,7 @@ public class JwtTokenUtils {
         claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
         // 加入自定义信息
         if (addJwtTokenExtDataList != null && !addJwtTokenExtDataList.isEmpty()) {
-            addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
+            // addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
             Map<String, Object> extData = new HashMap<>();
             for (AddJwtTokenExtData addJwtTokenExtData : addJwtTokenExtDataList) {
                 extData = addJwtTokenExtData.addExtData(tokenConfig, userInfo, extData);

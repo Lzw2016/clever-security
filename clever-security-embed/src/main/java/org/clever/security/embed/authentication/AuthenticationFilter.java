@@ -3,6 +3,7 @@ package org.clever.security.embed.authentication;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
+import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
@@ -11,8 +12,8 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.exception.AuthenticationException;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
+import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.model.SecurityContext;
-import org.clever.security.model.login.LoginRes;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
@@ -30,6 +31,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * 用户身份认证拦截器
+ * <p>
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 21:27 <br/>
  */
@@ -41,16 +44,23 @@ public class AuthenticationFilter extends GenericFilterBean {
      */
     private final SecurityConfig securityConfig;
     /**
-     * 加载用户信息
+     * JWT-Token验证器
+     */
+    private final List<VerifyJwtToken> verifyJwtTokenList;
+    /**
+     * 加载安全上下文(用户信息)
      */
     private final SecurityContextRepository securityContextRepository;
 
     public AuthenticationFilter(
             SecurityConfig securityConfig,
+            List<VerifyJwtToken> verifyJwtTokenList,
             SecurityContextRepository securityContextRepository) {
-        Assert.notNull(securityConfig, "系统授权配置对象(SecurityConfig)不能为null");
-        Assert.notNull(securityContextRepository, "参数securityContextRepository不能null");
+        Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
+        Assert.notEmpty(verifyJwtTokenList, "JWT-Token验证器(VerifyJwtToken)不存在");
+        Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
         this.securityConfig = securityConfig;
+        this.verifyJwtTokenList = ListSortUtils.sort(verifyJwtTokenList);
         this.securityContextRepository = securityContextRepository;
     }
 
@@ -72,23 +82,29 @@ public class AuthenticationFilter extends GenericFilterBean {
         // 执行认证逻辑
         try {
             authentication(httpRequest, httpResponse);
-            // TODO 登录成功 - 写入SecurityContext
-            // SecurityContextHolder.setContext();
         } catch (AuthenticationException e) {
-            // 授权失败 TODO -- 授权失败服务器行为策略
-            HttpServletResponseUtils.sendJson(httpResponse, LoginRes.loginFailure(e.getMessage()));
+            // 授权失败
+            log.debug("### 认证失败", e);
+            try {
+                onAuthenticationFailureResponse(httpRequest, httpResponse, e);
+            } catch (Exception innerException) {
+                log.error("认证异常", innerException);
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+            }
         } catch (Throwable e) {
             // 认证异常
+            log.error("认证异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+        } finally {
+            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
         }
         try {
             // 处理业务逻辑
             chain.doFilter(request, response);
         } finally {
-            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
             try {
                 // 清理数据防止内存泄漏
-                clearSecurityContext();
+                SecurityContextHolder.clearContext();
             } catch (Exception e) {
                 log.warn("clearSecurityContext失败", e);
             }
@@ -98,16 +114,19 @@ public class AuthenticationFilter extends GenericFilterBean {
     protected void authentication(HttpServletRequest request, HttpServletResponse response) {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
-        // 1.获取JWT-Token
+        // 获取JWT-Token
         String jwtToken = CookieUtils.getCookie(request, tokenConfig.getJwtTokenName());
         // 解析Token得到uid
         Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
         String uid = claims.getSubject();
-        // 2.根据JWT-Token获取SecurityContext
+        // 验证JWT-Token
+        for (VerifyJwtToken verifyJwtToken : verifyJwtTokenList) {
+            verifyJwtToken.verify(jwtToken, uid, claims, securityConfig, request, response);
+        }
+        // 根据JWT-Token获取SecurityContext
         SecurityContext securityContext = securityContextRepository.loadContext(uid, claims, request, response);
-
-        // TODO 是否需要存储 SecurityContext ??
-        SecurityContextHolder.setContext(securityContext);
+        // 把SecurityContext绑定到当前线程和当前请求对象
+        SecurityContextHolder.setContext(securityContext, request);
     }
 
     /**
@@ -137,7 +156,16 @@ public class AuthenticationFilter extends GenericFilterBean {
         return true;
     }
 
-    protected void clearSecurityContext() {
-        SecurityContextHolder.clearContext();
+    /**
+     * 当认证失败时响应处理
+     */
+    protected void onAuthenticationFailureResponse(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException {
+        if (securityConfig.isNotLoginNeedRedirect()) {
+            // 需要重定向
+            HttpServletResponseUtils.redirect(response, securityConfig.getNotLoginRedirectPage());
+        } else {
+            // 直接返回
+            HttpServletResponseUtils.sendJson(request, response, HttpStatus.UNAUTHORIZED, e);
+        }
     }
 }
