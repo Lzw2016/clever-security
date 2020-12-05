@@ -1,10 +1,12 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.authentication.login.*;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
+import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.LoginFailureEvent;
@@ -234,13 +236,20 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 登录成功
             log.debug("### 登录成功 -> {}", userInfo);
-            final String jwtToken = JwtTokenUtils.createJwtToken(securityConfig.getTokenConfig(), userInfo, loginReq.getRememberMe(), addJwtTokenExtDataList);
+            TokenConfig tokenConfig = securityConfig.getTokenConfig();
+            final String jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, loginReq.getRememberMe(), addJwtTokenExtDataList);
             final String refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), jwtToken, refreshToken);
             context.setJwtToken(jwtToken);
             context.setRefreshToken(refreshToken);
             // 保存安全上下文(用户信息)
             securityContextRepository.saveContext(context, securityConfig, context.getRequest(), context.getResponse());
+            if (tokenConfig.isUseCookie()) {
+                CookieUtils.setCookieForRooPath(context.getResponse(), tokenConfig.getJwtTokenName(), jwtToken);
+            } else {
+                context.getResponse().addHeader(tokenConfig.getJwtTokenName(), jwtToken);
+            }
+            // 登录成功处理
             loginSuccessHandler(context);
         }
     }
