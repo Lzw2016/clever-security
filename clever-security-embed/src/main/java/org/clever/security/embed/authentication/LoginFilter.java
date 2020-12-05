@@ -248,6 +248,7 @@ public class LoginFilter extends GenericFilterBean {
             context.setRefreshToken(refreshToken);
             // 保存安全上下文(用户信息)
             securityContextRepository.saveContext(context, securityConfig, context.getRequest(), context.getResponse());
+            // 将JWT-Token写入客户端
             if (tokenConfig.isUseCookie()) {
                 int maxAge = DateTimeUtils.pastSeconds(new Date(), tokenInfo.getValue2().getExpiration()) + (60 * 3);
                 CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), tokenInfo.getValue1(), maxAge);
