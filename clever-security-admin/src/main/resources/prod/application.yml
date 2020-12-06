@@ -20,7 +20,7 @@ logging:
 ###################################################################################
 spring:
   profiles.active: dev
-  application.name: clever-security-server
+  application.name: clever-security-admin
   aop.proxy-target-class: true
 
   servlet: #------------------------------------------------------------ 文件上传配置
@@ -52,7 +52,7 @@ spring:
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
-    host: redis.msvc.top
+    host: 172.18.1.1
     port: 6379
     password: lizhiwei1993
     timeout: 10s
@@ -68,7 +68,7 @@ spring:
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql.msvc.top:3306/clever-security
+    url: jdbc:mysql://172.18.1.1:3306/clever-security
     username: clever-security
     password: lizhiwei1993
     hikari:
@@ -86,9 +86,9 @@ spring:
 
   cloud: #------------------------------------------------------------ Spring Cloud
     consul:
-      enabled: false
-      host: consul.msvc.top
-      port: 80
+      enabled: true
+      host: 172.18.1.1
+      port: 18500
       discovery:
         enabled: true
         instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
@@ -162,7 +162,7 @@ mybatis-plus:
 ###################################################################################
 #spring.main.allow-bean-definition-overriding: true
 ## CommonClientConfigKey 实现
-#clever-security-server:
+#clever-security-admin:
 #  ribbon:
 #    listOfServers: '127.0.0.1:28081'
 
