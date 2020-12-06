@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>clever-security-admin</artifactId>
+    <artifactId>clever-security-example</artifactId>
     <packaging>jar</packaging>
 
     <parent>
@@ -12,6 +12,7 @@
         <groupId>org.clever</groupId>
         <version>${revision}</version>
     </parent>
+
 
     <dependencies>
         <dependency>

@@ -54,6 +54,7 @@
         <module>clever-security-embed</module>
         <module>clever-security-server</module>
         <module>clever-security-admin</module>
+        <module>clever-security-example</module>
     </modules>
 
     <properties>
