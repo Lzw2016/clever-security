@@ -16,6 +16,7 @@ import org.clever.security.embed.handler.LogoutFailureHandler;
 import org.clever.security.embed.handler.LogoutSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.ListSortUtils;
+import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.SecurityContext;
 import org.clever.security.model.logout.LogoutRes;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -70,7 +70,7 @@ public class LogoutFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!isLogoutRequest(httpRequest)) {
+        if (!PathFilterUtils.isLogoutRequest(httpRequest, securityConfig)) {
             // 不是登出请求
             chain.doFilter(request, response);
             return;
@@ -128,20 +128,6 @@ public class LogoutFilter extends GenericFilterBean {
         if (context.getLogoutException() != null) {
             throw context.getLogoutException();
         }
-    }
-
-    /**
-     * 当前请求是否是登录请求
-     */
-    protected boolean isLogoutRequest(HttpServletRequest httpRequest) {
-        LogoutConfig logout = securityConfig.getLogout();
-        if (logout == null) {
-            return false;
-        }
-        // request.getRequestURI()  /a/b/c/xxx.jsp
-        // request.getContextPath() /a
-        // request.getServletPath() /b/c/xxx.jsp
-        return Objects.equals(logout.getLogoutUrl(), httpRequest.getRequestURI());
     }
 
     /**

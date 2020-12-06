@@ -23,10 +23,10 @@ import org.clever.security.embed.handler.LoginSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
+import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.LoginRes;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
@@ -40,7 +40,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 登录拦截器
@@ -123,7 +122,7 @@ public class LoginFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!isLoginRequest(httpRequest)) {
+        if (!PathFilterUtils.isLoginRequest(httpRequest, securityConfig)) {
             // 不是登录请求
             chain.doFilter(request, response);
             return;
@@ -258,24 +257,6 @@ public class LoginFilter extends GenericFilterBean {
             // 登录成功处理
             loginSuccessHandler(context);
         }
-    }
-
-    /**
-     * 当前请求是否是登录请求
-     */
-    protected boolean isLoginRequest(HttpServletRequest httpRequest) {
-        LoginConfig login = securityConfig.getLogin();
-        if (login == null) {
-            return false;
-        }
-        // request.getRequestURI()  /a/b/c/xxx.jsp
-        // request.getContextPath() /a
-        // request.getServletPath() /b/c/xxx.jsp
-        if (!Objects.equals(login.getLoginPath(), httpRequest.getRequestURI())) {
-            return false;
-        }
-        boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
-        return !login.isPostOnly() || postRequest;
     }
 
     /**
