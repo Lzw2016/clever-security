@@ -7,6 +7,7 @@ import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
+import org.clever.security.embed.config.internal.LogoutConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
@@ -103,7 +104,7 @@ public class AuthenticationFilter extends GenericFilterBean {
         try {
             authentication(context);
         } catch (AuthenticationException e) {
-            // 授权失败
+            // 认证失败
             log.debug("### 认证失败", e);
             try {
                 // 用户身份认失败处理
@@ -171,14 +172,19 @@ public class AuthenticationFilter extends GenericFilterBean {
      */
     protected boolean isAuthenticationRequest(HttpServletRequest httpRequest) {
         LoginConfig login = securityConfig.getLogin();
+        LogoutConfig logout = securityConfig.getLogout();
         List<String> ignorePaths = securityConfig.getIgnorePaths();
         // request.getRequestURI()  /a/b/c/xxx.jsp
         // request.getContextPath() /a
         // request.getServletPath() /b/c/xxx.jsp
         String path = httpRequest.getRequestURI();
         boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
-        if (Objects.equals(login.getLoginPath(), httpRequest.getRequestURI()) && (!login.isPostOnly() || postRequest)) {
+        if (Objects.equals(login.getLoginPath(), path) && (!login.isPostOnly() || postRequest)) {
             // 当前请求是登录请求
+            return false;
+        }
+        if (Objects.equals(logout.getLogoutUrl(), path)) {
+            // 当前请求是登出请求
             return false;
         }
         if (ignorePaths == null || ignorePaths.isEmpty()) {

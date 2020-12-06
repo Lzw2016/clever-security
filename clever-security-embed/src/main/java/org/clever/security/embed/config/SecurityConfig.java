@@ -30,11 +30,11 @@ public class SecurityConfig implements Serializable {
      */
     private boolean defaultEnableApiAuth = true;
     /**
-     * 不需要认证和授权的API Path(支持Ant风格的Path)
+     * 不需要认证和授权的Path(支持Ant风格的Path)
      */
     private List<String> ignorePaths = new ArrayList<>();
     /**
-     * 不需要授权的API Path(支持Ant风格的Path)
+     * 不需要授权的Path(支持Ant风格的Path)
      */
     private List<String> ignoreAuthPaths = new ArrayList<>();
     /**
