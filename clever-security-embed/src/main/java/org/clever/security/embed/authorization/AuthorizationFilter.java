@@ -1,20 +1,24 @@
 package org.clever.security.embed.authorization;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.embed.authorization.voter.AuthorizationVoter;
+import org.clever.security.embed.authorization.voter.VoterResult;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
-import org.clever.security.embed.exception.AuthorizationException;
+import org.clever.security.embed.event.AuthorizationFailureEvent;
+import org.clever.security.embed.event.AuthorizationSuccessEvent;
 import org.clever.security.embed.exception.AuthorizationInnerException;
+import org.clever.security.embed.handler.AuthorizationFailureHandler;
+import org.clever.security.embed.handler.AuthorizationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.SecurityContext;
+import org.clever.security.model.UserInfo;
+import org.clever.security.model.auth.ForbiddenAccessRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerExecutionChain;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -43,20 +47,27 @@ public class AuthorizationFilter extends GenericFilterBean {
      */
     private final List<AuthorizationVoter> authorizationVoterList;
     /**
-     *
+     * 授权成功的处理
      */
-    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
+    private final List<AuthorizationSuccessHandler> authorizationSuccessHandlerList;
+    /**
+     * 授权失败的处理
+     */
+    private final List<AuthorizationFailureHandler> authorizationFailureHandlerList;
 
     public AuthorizationFilter(
             SecurityConfig securityConfig,
             List<AuthorizationVoter> authorizationVoterList,
-            RequestMappingHandlerMapping requestMappingHandlerMapping) {
+            List<AuthorizationSuccessHandler> authorizationSuccessHandlerList,
+            List<AuthorizationFailureHandler> authorizationFailureHandlerList) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notNull(authorizationVoterList, "授权投票器(AuthorizationVoter)不能为null");
-        Assert.notNull(requestMappingHandlerMapping, "参数requestMappingHandlerMapping不能为null");
+        Assert.notNull(authorizationSuccessHandlerList, "授权成功的处理(AuthorizationSuccessHandler)不能为null");
+        Assert.notNull(authorizationFailureHandlerList, "授权成功的处理(AuthorizationFailureHandler)不能为null");
         this.securityConfig = securityConfig;
         this.authorizationVoterList = ListSortUtils.sort(authorizationVoterList);
-        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
+        this.authorizationSuccessHandlerList = ListSortUtils.sort(authorizationSuccessHandlerList);
+        this.authorizationFailureHandlerList = ListSortUtils.sort(authorizationFailureHandlerList);
     }
 
     @Override
@@ -76,13 +87,9 @@ public class AuthorizationFilter extends GenericFilterBean {
         log.debug("### 开始执行授权逻辑 ---------------------------------------------------------------------->");
         // 执行授权逻辑
         AuthorizationContext context = new AuthorizationContext(httpRequest, httpResponse);
-        boolean pass = false;
+        boolean pass;
         try {
             pass = authorization(context);
-        } catch (AuthorizationException e) {
-            // 授权失败
-            log.debug("### 授权失败", e);
-            // TODO 授权异常
         } catch (Throwable e) {
             // 授权异常
             log.error("授权异常", e);
@@ -91,15 +98,24 @@ public class AuthorizationFilter extends GenericFilterBean {
         } finally {
             log.debug("### 授权逻辑行完成 <----------------------------------------------------------------------");
         }
-        // 处理业务逻辑
-        if (!pass) {
-            // TODO 无权访问 403
-            return;
+        // 执行授权事件
+        try {
+            if (pass) {
+                onAuthorizationSuccess(context);
+            } else {
+                onAuthorizationFailure(context);
+            }
+        } catch (Throwable e) {
+            log.error("授权异常", e);
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
+        // 无权访问 403
+        onAuthorizationFailureResponse(context);
+        // 处理业务逻辑
         chain.doFilter(request, response);
     }
 
-    protected boolean authorization(AuthorizationContext context) throws Exception {
+    protected boolean authorization(AuthorizationContext context) {
         SecurityContext securityContext = SecurityContextHolder.getContext(context.getRequest());
         if (securityContext == null) {
             throw new AuthorizationInnerException("获取SecurityContext失败");
@@ -114,47 +130,61 @@ public class AuthorizationFilter extends GenericFilterBean {
                 throw context.getAuthorizationException();
             } else if (Objects.equals(VoterResult.PASS.getId(), voterResult.getId())) {
                 // 通过
-                log.debug("### 授权通过");
+                log.debug("### 授权通过 | 权重={} | Voter={}", authorizationVoter.getWeight(), authorizationVoter.getClass().getName());
                 passWeight = passWeight + authorizationVoter.getWeight();
             } else if (Objects.equals(VoterResult.REJECT.getId(), voterResult.getId())) {
                 // 驳回
-                log.debug("### 授权驳回");
+                log.debug("### 授权驳回 | 权重={} | Voter={}", authorizationVoter.getWeight(), authorizationVoter.getClass().getName());
                 passWeight = passWeight - authorizationVoter.getWeight();
             } else if (Objects.equals(VoterResult.ABSTAIN.getId(), voterResult.getId())) {
                 // 弃权
-                log.debug("### 放弃授权");
+                log.debug("### 放弃授权 | 权重={} | Voter={}", authorizationVoter.getWeight(), authorizationVoter.getClass().getName());
             } else {
                 throw new AuthorizationInnerException("未知的授权投票结果");
             }
         }
-
-        HandlerExecutionChain handlerExecutionChain = requestMappingHandlerMapping.getHandler(context.getRequest());
-        if (handlerExecutionChain == null) {
-            // TODO
-            throw new AuthorizationInnerException("获取HandlerExecutionChain失败");
-        }
-        HandlerMethod handlerMethod = null;
-        Object handler = handlerExecutionChain.getHandler();
-        if (handler instanceof HandlerMethod) {
-            handlerMethod = (HandlerMethod) handler;
-        }
-        if (handlerMethod == null) {
-            throw new AuthorizationInnerException("不支持的HandlerMethod");
-        }
-        String targetClass = handlerMethod.getBeanType().getName();
-        String targetMethod = handlerMethod.getMethod().getName();
-        // 获取放签名
-        StringBuilder methodParams = new StringBuilder();
-        Class<?>[] paramTypes = handlerMethod.getMethod().getParameterTypes();
-        for (Class<?> clazz : paramTypes) {
-            if (methodParams.length() > 0) {
-                methodParams.append(", ");
-            }
-            methodParams.append(clazz.getName());
-        }
-        // TODO authorization
-
-
         return passWeight >= 0;
+    }
+
+    /**
+     * 当授权成功时处理
+     */
+    protected void onAuthorizationSuccess(AuthorizationContext context) {
+        SecurityContext securityContext = context.getSecurityContext();
+        AuthorizationSuccessEvent event = new AuthorizationSuccessEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        for (AuthorizationSuccessHandler handler : authorizationSuccessHandlerList) {
+            handler.onAuthorizationSuccess(context.getRequest(), context.getResponse(), event);
+        }
+    }
+
+    /**
+     * 当授权失败时处理
+     */
+    protected void onAuthorizationFailure(AuthorizationContext context) {
+        SecurityContext securityContext = context.getSecurityContext();
+        AuthorizationFailureEvent event = new AuthorizationFailureEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        for (AuthorizationFailureHandler handler : authorizationFailureHandlerList) {
+            handler.onAuthorizationFailure(context.getRequest(), context.getResponse(), event);
+        }
+    }
+
+    /**
+     * 当授权失败时响应处理
+     */
+    protected void onAuthorizationFailureResponse(AuthorizationContext context) throws IOException {
+        HttpServletResponse response = context.getResponse();
+        if (response.isCommitted()) {
+            return;
+        }
+        if (securityConfig.isForbiddenNeedRedirect()) {
+            // 需要重定向
+            HttpServletResponseUtils.redirect(response, securityConfig.getNotLoginRedirectPage());
+        } else {
+            // 直接返回
+            SecurityContext securityContext = context.getSecurityContext();
+            UserInfo userInfo = securityContext == null ? null : securityContext.getUserInfo();
+            ForbiddenAccessRes forbiddenAccessRes = new ForbiddenAccessRes(userInfo, "未授权，禁止访问");
+            HttpServletResponseUtils.sendJson(response, forbiddenAccessRes, HttpStatus.FORBIDDEN);
+        }
     }
 }

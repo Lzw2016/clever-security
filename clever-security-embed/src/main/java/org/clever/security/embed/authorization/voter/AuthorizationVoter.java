@@ -1,4 +1,4 @@
-package org.clever.security.embed.authorization;
+package org.clever.security.embed.authorization.voter;
 
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.model.SecurityContext;

@@ -1,4 +1,4 @@
-package org.clever.security.embed.authorization;
+package org.clever.security.embed.authorization.voter;
 
 import lombok.Getter;
 
