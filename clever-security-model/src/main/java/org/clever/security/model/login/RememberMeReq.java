@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RememberMeReq extends AbstractUserLoginReq {
+    public static final String RememberMeToken_ParamName = "rememberMeToken";
     /**
      * “记住我”功能的token
      */

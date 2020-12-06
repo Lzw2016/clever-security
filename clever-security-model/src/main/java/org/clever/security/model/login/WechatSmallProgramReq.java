@@ -12,6 +12,8 @@ import org.clever.security.LoginType;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class WechatSmallProgramReq extends AbstractUserLoginReq {
+    public static final String LoginCode_ParamName = "loginCode";
+
     /**
      * 微信登录code
      */
