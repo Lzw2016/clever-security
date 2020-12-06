@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
- * 收集“用户名/密码”登录数据
+ * 收集“浏览器扫描码/用户登录的Token”登录数据
  * <p>
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:05 <br/>
