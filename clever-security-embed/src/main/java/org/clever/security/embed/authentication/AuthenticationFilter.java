@@ -6,8 +6,6 @@ import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.config.internal.LogoutConfig;
 import org.clever.security.embed.config.internal.TokenConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
@@ -19,10 +17,9 @@ import org.clever.security.embed.handler.AuthenticationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
+import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.SecurityContext;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -34,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 用户身份认证拦截器
@@ -44,7 +40,6 @@ import java.util.Objects;
  */
 @Slf4j
 public class AuthenticationFilter extends GenericFilterBean {
-    private static final AntPathMatcher Ant_Path_Matcher = new AntPathMatcher();
     /**
      * 全局配置
      */
@@ -93,7 +88,7 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!isAuthenticationRequest(httpRequest)) {
+        if (!PathFilterUtils.isAuthenticationRequest(httpRequest, securityConfig)) {
             // 不需要身份认证
             chain.doFilter(request, response);
             return;
@@ -165,38 +160,6 @@ public class AuthenticationFilter extends GenericFilterBean {
         for (AuthenticationSuccessHandler handler : authenticationSuccessHandlerList) {
             handler.onAuthenticationSuccess(context.getRequest(), context.getResponse(), event);
         }
-    }
-
-    /**
-     * 当前请求是否需要身份认证
-     */
-    protected boolean isAuthenticationRequest(HttpServletRequest httpRequest) {
-        LoginConfig login = securityConfig.getLogin();
-        LogoutConfig logout = securityConfig.getLogout();
-        List<String> ignorePaths = securityConfig.getIgnorePaths();
-        // request.getRequestURI()  /a/b/c/xxx.jsp
-        // request.getContextPath() /a
-        // request.getServletPath() /b/c/xxx.jsp
-        String path = httpRequest.getRequestURI();
-        boolean postRequest = HttpMethod.POST.matches(httpRequest.getMethod());
-        if (Objects.equals(login.getLoginPath(), path) && (!login.isPostOnly() || postRequest)) {
-            // 当前请求是登录请求
-            return false;
-        }
-        if (Objects.equals(logout.getLogoutUrl(), path)) {
-            // 当前请求是登出请求
-            return false;
-        }
-        if (ignorePaths == null || ignorePaths.isEmpty()) {
-            return false;
-        }
-        for (String ignorePath : ignorePaths) {
-            if (Ant_Path_Matcher.match(ignorePath, path)) {
-                // 忽略当前路径
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

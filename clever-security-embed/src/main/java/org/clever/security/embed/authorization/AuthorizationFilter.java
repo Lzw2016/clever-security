@@ -2,15 +2,12 @@ package org.clever.security.embed.authorization;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.config.internal.LogoutConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.exception.AuthorizationException;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
+import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.SecurityContext;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
@@ -24,8 +21,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * 用户权限认证拦截器(授权拦截器)
@@ -35,7 +30,6 @@ import java.util.Objects;
  */
 @Slf4j
 public class AuthorizationFilter extends GenericFilterBean {
-    private static final AntPathMatcher Ant_Path_Matcher = new AntPathMatcher();
     /**
      * 全局配置
      */
@@ -61,7 +55,7 @@ public class AuthorizationFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!isAuthorizationRequest(httpRequest)) {
+        if (!PathFilterUtils.isAuthorizationRequest(httpRequest, securityConfig)) {
             // 不需要授权
             chain.doFilter(request, response);
             return;
@@ -69,7 +63,7 @@ public class AuthorizationFilter extends GenericFilterBean {
         log.debug("### 开始执行授权逻辑 ---------------------------------------------------------------------->");
         // 执行授权逻辑
         try {
-            isAuthorizationRequest(httpRequest);
+            authorization(httpRequest, httpResponse);
         } catch (AuthorizationException e) {
             // 授权失败
             log.debug("### 授权失败", e);
@@ -115,47 +109,5 @@ public class AuthorizationFilter extends GenericFilterBean {
             methodParams.append(clazz.getName());
         }
         // TODO authorization
-    }
-
-    /**
-     * 当前请求是否需要授权
-     */
-    public boolean isAuthorizationRequest(HttpServletRequest request) {
-        // request.getRequestURI()  /a/b/c/xxx.jsp
-        // request.getContextPath() /a
-        // request.getServletPath() /b/c/xxx.jsp
-        final String path = request.getRequestURI();
-        List<String> ignorePaths = securityConfig.getIgnorePaths();
-        List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();
-        LoginConfig login = securityConfig.getLogin();
-        LogoutConfig logout = securityConfig.getLogout();
-        // 是否是登录请求
-        boolean postRequest = HttpMethod.POST.matches(request.getMethod());
-        if (Objects.equals(login.getLoginPath(), path) && (!login.isPostOnly() || postRequest)) {
-            return false;
-        }
-        // 是否是登出请求
-        if (Objects.equals(logout.getLogoutUrl(), path)) {
-            return false;
-        }
-        // 不需要认证和授权的Path
-        if (ignorePaths != null && !ignorePaths.isEmpty()) {
-            for (String ignorePath : ignorePaths) {
-                if (Ant_Path_Matcher.match(ignorePath, path)) {
-                    // 忽略当前路径
-                    return false;
-                }
-            }
-        }
-        // 不需要授权的Path
-        if (ignoreAuthPaths != null && !ignoreAuthPaths.isEmpty()) {
-            for (String ignorePath : ignoreAuthPaths) {
-                if (Ant_Path_Matcher.match(ignorePath, path)) {
-                    // 忽略当前路径
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
