@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 public class BasicVerifyUserInfo implements VerifyUserInfo {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) {
-        return false;
+        return loginReq != null && userInfo != null;
     }
 
     @Override
