@@ -19,7 +19,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Slf4j
 public class LoginNameVerifyLoginData implements VerifyLoginData {
-    private BasicVerifyLoginData basicVerifyLoginData;
+    private final BasicVerifyLoginData basicVerifyLoginData;
+
+    public LoginNameVerifyLoginData(BasicVerifyLoginData basicVerifyLoginData) {
+        this.basicVerifyLoginData = basicVerifyLoginData;
+    }
 
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) {
