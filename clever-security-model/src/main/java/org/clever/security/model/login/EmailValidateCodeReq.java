@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.security.LoginType;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -19,6 +20,7 @@ public class EmailValidateCodeReq extends AbstractUserLoginReq {
      * 邮箱
      */
     @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式错误")
     private String email;
     /**
      * 验证码
