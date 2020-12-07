@@ -45,6 +45,11 @@ public class JwtToken implements Serializable {
     private Integer disable;
 
     /**
+     * JWT-Token禁用原因
+     */
+    private String disableReason;
+
+    /**
      * 刷新Token
      */
     private String refreshToken;

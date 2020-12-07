@@ -224,6 +224,7 @@ create table jwt_token
     token                       varchar(1023)   not null                                        comment 'token数据',
     expired_time                datetime(3)                                                     comment 'JWT-Token过期时间(空表示永不过期)',
     disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用, 1:已禁用',
+    disable_reason              varchar(127)                                                    comment 'JWT-Token禁用原因',
     refresh_token               varchar(127)                                                    comment '刷新Token',
     refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
     refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用), 1:有效(未使用)',
