@@ -3,7 +3,6 @@ package org.clever.security.embed.authentication.login;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.LoginInnerException;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -19,13 +18,20 @@ import javax.servlet.http.HttpServletRequest;
  * 创建时间：2020/12/01 20:57 <br/>
  */
 @Slf4j
-public class LoginNameVerifyLoginData extends BasicVerifyLoginData {
+public class LoginNameVerifyLoginData implements VerifyLoginData {
+    private final BasicVerifyLoginData basicVerifyLoginData;
+
+    public LoginNameVerifyLoginData(BasicVerifyLoginData basicVerifyLoginData) {
+        this.basicVerifyLoginData = basicVerifyLoginData;
+    }
+
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) {
         return loginReq instanceof LoginNamePasswordReq;
     }
 
-    public void LoginNameVerify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) throws LoginException {
+    @Override
+    public void verify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) throws LoginException {
         // 登录数据格式校验(空、长度等)
         if (loginReq == null) {
             throw new LoginInnerException("登录数据不能为空");
@@ -37,7 +43,7 @@ public class LoginNameVerifyLoginData extends BasicVerifyLoginData {
         if (StringUtils.isEmpty(req.getPassword())) {
             throw new LoginInnerException("登录密码不能为空");
         }
-        verify(securityConfig, request, loginReq);
+        basicVerifyLoginData.verify(securityConfig, request, loginReq);
     }
 
     @Override
