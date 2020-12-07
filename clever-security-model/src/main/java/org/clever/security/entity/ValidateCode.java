@@ -15,7 +15,7 @@ import java.util.Date;
 public class ValidateCode implements Serializable {
     private static final long serialVersionUID = 757086153879042300L;
     /**
-     * 记住我Token id(系统自动生成且不会变化)
+     * 验证码 id(系统自动生成且不会变化)
      */
     private Long id;
 

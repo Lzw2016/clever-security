@@ -218,16 +218,18 @@ create index ui_permission_permission_id on ui_permission (permission_id);
 ==================================================================================================================== */
 create table jwt_token
 (
-    id                  bigint          not null                                                comment 'JWT-Token id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    uid                 varchar(63)     not null                                                comment '用户id',
-    token               varchar(1023)   not null                                                comment 'token数据',
-    expired_time        datetime(3)                                                             comment 'JWT-Token过期时间(空表示永不过期)',
-    disable             int(1)          not null        default 0                               comment 'JWT-Token是否禁用，0:未禁用, 1:已禁用',
-    refresh_token       varchar(127)    not null                                                comment '刷新Token',
-    refresh_token_state int(1)          not null        default 1                               comment '刷新Token状态，0:无效(未使用), 1:有效(已使用)',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    id                          bigint          not null                                        comment 'JWT-Token id(系统自动生成且不会变化)',
+    domain_id                   bigint          not null                                        comment '域id',
+    uid                         varchar(63)     not null                                        comment '用户id',
+    token                       varchar(1023)   not null                                        comment 'token数据',
+    expired_time                datetime(3)                                                     comment 'JWT-Token过期时间(空表示永不过期)',
+    disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用, 1:已禁用',
+    refresh_token               varchar(127)                                                    comment '刷新Token',
+    refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
+    refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用), 1:有效(未使用)',
+    refresh_token_use_time      datetime(3)                                                     comment '刷新Token使用时间',
+    create_at                   datetime(3)     not null        default current_timestamp(3)    comment '创建时间',
+    update_at                   datetime(3)                     on update current_timestamp(3)  comment '更新时间',
     primary key (id)
 ) comment = 'JWT-Token表';
 create index jwt_token_uid on jwt_token (uid);
@@ -239,32 +241,11 @@ create index jwt_token_refresh_token on jwt_token (refresh_token);
 
 
 /* ====================================================================================================================
-    remember_me_token -- “记住我”功能的token
-==================================================================================================================== */
-create table remember_me_token
-(
-    id                  bigint          not null                                                comment '记住我Token id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    series              varchar(63)     not null        unique                                  comment 'token序列号',
-    uid                 varchar(63)     not null                                                comment '用户id',
-    token               varchar(63)     not null                                                comment 'token数据',
-    last_used           timestamp       not null                                                comment '最后使用时间',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = '“记住我”功能的token';
-create index remember_me_token_uid on remember_me_token (uid);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
     validate_code -- 验证码
 ==================================================================================================================== */
 create table validate_code
 (
-    id                  bigint          not null                                                comment '记住我Token id(系统自动生成且不会变化)',
+    id                  bigint          not null                                                comment '验证码 id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     uid                 varchar(63)     not null                                                comment '用户id',
     code                varchar(15)     not null                                                comment '验证码',
@@ -293,7 +274,7 @@ create table user_login_log
     login_time          datetime(3)     not null                                                comment '登录时间',
     login_ip            varchar(63)     not null                                                comment '登录IP',
     login_channel       int(1)                                                                  comment '登录渠道，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序',
-    login_type          int(1)          not null                                                comment '登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:“记住我”token，5:微信小程序，6:扫码登录',
+    login_type          int(1)          not null                                                comment '登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录',
     login_state         int(1)          not null        default 0                               comment '登录状态，0:登录失败，1:登录成功',
     request_data        varchar(1023)   not null                                                comment '登录请求数据',
     jwt_token_id        bigint                                                                  comment 'JWT-Token id',

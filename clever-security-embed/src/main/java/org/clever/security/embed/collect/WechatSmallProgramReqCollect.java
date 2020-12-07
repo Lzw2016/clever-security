@@ -1,7 +1,5 @@
 package org.clever.security.embed.collect;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.clever.security.LoginType;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
@@ -19,7 +17,7 @@ import java.util.Objects;
  * 作者：lizw <br/>
  * 创建时间：2020/11/29 16:05 <br/>
  */
-public class WechatSmallProgramReqCollect implements LoginDataCollect {
+public class WechatSmallProgramReqCollect extends AbstractLoginDataCollect {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request) {
         String loginType = request.getParameter(AbstractUserLoginReq.LoginType_ParamName);
@@ -50,12 +48,9 @@ public class WechatSmallProgramReqCollect implements LoginDataCollect {
         if (req == null) {
             req = new WechatSmallProgramReq();
         }
-        if (req.getRememberMe() == null) {
-            String rememberMe = request.getParameter(AbstractUserLoginReq.RememberMe_ParamName);
-            if (StringUtils.isNotBlank(rememberMe)) {
-                req.setRememberMe(BooleanUtils.toBoolean(rememberMe));
-            }
-        }
+        // 收集基础数据
+        collectBaseDataByParameter(req, request);
+        // 收集当前登录类型数据
         if (req.getLoginCode() == null) {
             String loginCode = request.getParameter(WechatSmallProgramReq.LoginCode_ParamName);
             if (loginCode != null) {

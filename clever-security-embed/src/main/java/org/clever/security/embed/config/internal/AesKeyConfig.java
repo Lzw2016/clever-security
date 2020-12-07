@@ -10,6 +10,10 @@ import lombok.Data;
 @Data
 public class AesKeyConfig {
     /**
+     * 启用密码加密传输
+     */
+    private boolean enable = true;
+    /**
      * 密码AES加密 key(Hex编码) -- 请求数据，与前端一致
      */
     private String reqPasswordAesKey;

@@ -22,7 +22,7 @@ public class JwtTokenUtilsTest {
         UserInfo userInfo = new UserInfo();
         userInfo.setUid("lizw" + IDCreateUtils.uuid());
         userInfo.setLoginName("lizw");
-        TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, false, null);
+        TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, null);
         log.info("jwtToken -> {}", tokenInfo.getValue1());
 
         Claims claims = JwtTokenUtils.parserJwtToken(tokenConfig, tokenInfo.getValue1());

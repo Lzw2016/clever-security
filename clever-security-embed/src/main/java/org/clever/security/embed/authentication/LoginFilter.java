@@ -240,7 +240,7 @@ public class LoginFilter extends GenericFilterBean {
             // 登录成功
             log.debug("### 登录成功 -> {}", userInfo);
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
-            final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, loginReq.getRememberMe(), addJwtTokenExtDataList);
+            final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, addJwtTokenExtDataList);
             final String refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
             context.setJwtToken(tokenInfo.getValue1());

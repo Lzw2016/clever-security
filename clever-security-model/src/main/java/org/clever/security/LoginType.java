@@ -27,9 +27,9 @@ public enum LoginType {
      */
     Email_ValidateCode(3, "Email-ValidateCode"),
     /**
-     * “记住我”token
+     * 刷新令牌
      */
-    RememberMe(4, "RememberMe"),
+    RefreshToken(4, "RememberMe"),
     /**
      * 微信小程序
      */
@@ -61,8 +61,8 @@ public enum LoginType {
             return Telephone_ValidateCode;
         } else if (Email_ValidateCode.getName().equalsIgnoreCase(name)) {
             return Email_ValidateCode;
-        } else if (RememberMe.getName().equalsIgnoreCase(name)) {
-            return RememberMe;
+        } else if (RefreshToken.getName().equalsIgnoreCase(name)) {
+            return RefreshToken;
         } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
             return WechatSmallProgram;
         } else if (ScanCode.getName().equalsIgnoreCase(name)) {
@@ -79,8 +79,8 @@ public enum LoginType {
             return Telephone_ValidateCode;
         } else if (Objects.equals(Email_ValidateCode.getId(), id)) {
             return Email_ValidateCode;
-        } else if (Objects.equals(RememberMe.getId(), id)) {
-            return RememberMe;
+        } else if (Objects.equals(RefreshToken.getId(), id)) {
+            return RefreshToken;
         } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
             return WechatSmallProgram;
         } else if (Objects.equals(ScanCode.getId(), id)) {

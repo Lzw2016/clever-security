@@ -71,20 +71,15 @@ public class SecurityConfig implements Serializable {
     @NestedConfigurationProperty
     private final LogoutConfig logout = new LogoutConfig();
     /**
-     * 用户登录请求参数加密配置 Aes Key
-     */
-    @NestedConfigurationProperty
-    private final AesKeyConfig loginReqAesKey = new AesKeyConfig();
-    /**
-     * "记住我"相关配置
-     */
-    @NestedConfigurationProperty
-    private final RememberMeConfig rememberMe = new RememberMeConfig();
-    /**
      * token配置(只有JWT Token有效)
      */
     @NestedConfigurationProperty
     private final TokenConfig tokenConfig = new TokenConfig();
+    /**
+     * 用户登录请求参数加密配置 Aes Key
+     */
+    @NestedConfigurationProperty
+    private final AesKeyConfig loginReqAesKey = new AesKeyConfig();
     /**
      * 服务间免登陆Token访问配置
      */

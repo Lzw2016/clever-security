@@ -35,7 +35,7 @@ public class BasicVerifyLoginData implements VerifyLoginData {
             if (count >= login.getNeedCaptchaByLoginFailedCount()) {
                 //todo 验证码验证
                 String loginCaptcha = "系统颁发的正确验证码";
-                if (!loginReq.getLoginCaptcha().equals(loginCaptcha)) {
+                if (!loginReq.getCaptcha().equals(loginCaptcha)) {
                     throw new LoginInnerException("登录验证码错误");
                 }
             }

@@ -24,9 +24,9 @@ public class TokenConfig {
      */
     private Duration tokenValidity = Duration.ofDays(7);
     /**
-     * 登录时启用“记住我”时,Token有效时间(默认：15天)
+     * 启用刷新令牌
      */
-    private Duration tokenValidityForRememberMe = Duration.ofDays(15);
+    private boolean enableRefreshToken = true;
     /**
      * 刷新令牌有效时间
      */

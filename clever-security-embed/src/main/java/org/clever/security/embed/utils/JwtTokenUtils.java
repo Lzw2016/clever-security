@@ -38,18 +38,12 @@ public class JwtTokenUtils {
      *
      * @param tokenConfig Token配置
      * @param userInfo    用户信息
-     * @param rememberMe  使用“记住我”功能
      */
-    public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, boolean rememberMe, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
+    public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo , List<AddJwtTokenExtData> addJwtTokenExtDataList) {
         // 获取当前时间戳
         long now = System.currentTimeMillis();
         // Token过期时间
-        Date expiration;
-        if (rememberMe) {
-            expiration = new Date(now + tokenConfig.getTokenValidityForRememberMe().toMillis());
-        } else {
-            expiration = new Date(now + tokenConfig.getTokenValidity().toMillis());
-        }
+        Date expiration = new Date(now + tokenConfig.getTokenValidity().toMillis());
         // 优化过期时间
         if (StringUtils.isNotBlank(tokenConfig.getHoursInDay())) {
             String date = DateTimeUtils.formatToString(expiration, DateTimeUtils.yyyy_MM_dd);

@@ -50,9 +50,19 @@ public class JwtToken implements Serializable {
     private String refreshToken;
 
     /**
-     * 刷新Token状态，0:无效(未使用), 1:有效(已使用)
+     * 刷新Token过期时间
+     */
+    private Date refreshTokenExpiredTime;
+
+    /**
+     * 刷新Token状态，0:无效(已使用), 1:有效(未使用)
      */
     private Integer refreshTokenState;
+
+    /**
+     * 刷新Token使用时间
+     */
+    private Date refreshTokenUseTime;
 
     /**
      * 创建时间
