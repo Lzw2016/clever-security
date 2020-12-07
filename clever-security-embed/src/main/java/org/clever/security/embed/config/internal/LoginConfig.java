@@ -28,6 +28,10 @@ public class LoginConfig implements Serializable {
      */
     private boolean postOnly = true;
     /**
+     * 隐藏登录用户不存在的异常
+     */
+    private boolean hideUserNotFoundException = true;
+    /**
      * 登录成功 - 是否需要重定向到指定页面
      */
     private boolean loginSuccessNeedRedirect = false;

@@ -29,6 +29,9 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
 
     @Override
     public void verify(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) throws LoginException {
+        if (loginReq == null) {
+            throw new LoginDataValidateException("登录数据为空");
+        }
         LoginConfig loginConfig = securityConfig.getLogin();
         // 登录数据格式校验(空、长度等)
         verifyLoginData(loginReq);

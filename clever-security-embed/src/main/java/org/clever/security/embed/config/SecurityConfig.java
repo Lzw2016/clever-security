@@ -17,10 +17,10 @@ import java.util.List;
 @ConfigurationProperties(prefix = Constant.ConfigPrefix)
 @Data
 public class SecurityConfig implements Serializable {
-    /**
-     * 启用Spring Security调试功能
-     */
-    private boolean enableDebug = false;
+//    /**
+//     * 启用Spring Security调试功能
+//     */
+//    private boolean enableDebug = false;
     /**
      * 域名称(用于数据隔离)
      */
@@ -37,10 +37,6 @@ public class SecurityConfig implements Serializable {
      * 不需要授权的Path(支持Ant风格的Path)
      */
     private List<String> ignoreAuthPaths = new ArrayList<>();
-    /**
-     * 隐藏登录用户不存在的异常
-     */
-    private boolean hideUserNotFoundException = true;
     /**
      * 未登录时是否需要重定向到401页面
      */
