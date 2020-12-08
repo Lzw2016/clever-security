@@ -70,6 +70,11 @@ public class JwtToken implements Serializable {
     private Date refreshTokenUseTime;
 
     /**
+     * 刷新token创建的JWT-Token id
+     */
+    private Long refreshCreateTokenId;
+
+    /**
      * 创建时间
      */
     private Date createAt;

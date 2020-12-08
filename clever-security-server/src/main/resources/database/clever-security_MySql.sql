@@ -229,6 +229,7 @@ create table jwt_token
     refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
     refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用), 1:有效(未使用)',
     refresh_token_use_time      datetime(3)                                                     comment '刷新Token使用时间',
+    refresh_create_token_id     bigint                                                          comment '刷新token创建的JWT-Token id',
     create_at                   datetime(3)     not null        default current_timestamp(3)    comment '创建时间',
     update_at                   datetime(3)                     on update current_timestamp(3)  comment '更新时间',
     primary key (id)
@@ -265,6 +266,35 @@ create index validate_code_code on validate_code (code);
 
 
 /* ====================================================================================================================
+    scan_code_login -- 扫码登录表
+==================================================================================================================== */
+create table scan_code_login
+(
+    id                      bigint          not null                                            comment 'scan code id(系统自动生成且不会变化)',
+    domain_id               bigint          not null                                            comment '域id',
+    scan_code               varchar(63)     not null        unique                              comment '扫描二维码',
+    scan_code_state         int(1)          not null        default 0                           comment '扫描二维码状态，0:已创建(待扫描)，1:已扫描(待确认)，2:已确认(待登录)，3:登录成功，4:已失效',
+    expired_time            datetime(3)     not null                                            comment '扫描二维码过期时间',
+    bind_token              varchar(1023)                                                       comment '绑定的JWT-Token数据',
+    bind_token_time         datetime(3)                                                         comment '(扫描时间)绑定JWT-Token时间',
+    confirm_expired_time    datetime(3)                                                         comment '确认登录过期时间',
+    confirm_time            datetime(3)                                                         comment '确认登录时间',
+    get_token_expired_time  datetime(3)                                                         comment '获取登录JWT-Token过期时间',
+    login_time              datetime(3)                                                         comment '确认登录时间',
+    token_id                bigint                                                              comment '确认登录生成的JWT-Token id',
+    invalid_reason          varchar(63)                                                         comment '扫描二维码失效原因',
+    create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
+    update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',
+    primary key (id)
+) comment = '扫码登录表';
+create index scan_code_login_expired_time on scan_code_login (expired_time);
+create index scan_code_login_token_id on scan_code_login (token_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
     user_login_log -- 用户登录日志
 ==================================================================================================================== */
 create table user_login_log
@@ -289,3 +319,6 @@ create index user_login_jwt_token_id on user_login_log (jwt_token_id);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/
+
+
+

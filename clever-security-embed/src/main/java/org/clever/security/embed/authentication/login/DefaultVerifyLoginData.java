@@ -9,6 +9,9 @@ import org.clever.security.embed.exception.ConcurrentLoginException;
 import org.clever.security.embed.exception.LoginDataValidateException;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.EmailValidateCodeReq;
+import org.clever.security.model.login.ScanCodeReq;
+import org.clever.security.model.login.TelephoneValidateCodeReq;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +42,14 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         verifyLoginCaptcha(loginConfig, loginReq);
         // 登录数量超过最大并发数量错误
         verifyConcurrentLoginCount(loginConfig, loginReq);
+        // 特定的登录方式校验
+        if (loginReq instanceof ScanCodeReq) {
+            verifyScanCode((ScanCodeReq) loginReq);
+        } else if (loginReq instanceof TelephoneValidateCodeReq) {
+            verifyTelephoneValidateCode((TelephoneValidateCodeReq) loginReq);
+        } else if (loginReq instanceof EmailValidateCodeReq) {
+            verifyEmailValidateCode((EmailValidateCodeReq) loginReq);
+        }
     }
 
     /**
@@ -87,6 +98,27 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         } else {
             throw new ConcurrentLoginException("当前用户并发登录次数达到上限");
         }
+    }
+
+    /**
+     * 扫码登录验证
+     */
+    protected void verifyScanCode(ScanCodeReq req) {
+        // TODO 扫码登录验证
+    }
+
+    /**
+     * 手机号验证码登录校验
+     */
+    protected void verifyTelephoneValidateCode(TelephoneValidateCodeReq req) {
+        // TODO 手机号验证码登录校验
+    }
+
+    /**
+     * 邮箱验证码登录校验
+     */
+    protected void verifyEmailValidateCode(EmailValidateCodeReq req) {
+        // TODO 邮箱验证码登录校验
     }
 
     @Override

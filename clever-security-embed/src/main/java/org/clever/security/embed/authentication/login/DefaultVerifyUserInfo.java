@@ -57,12 +57,14 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
         // 密码错误
         if (loginReq instanceof LoginNamePasswordReq) {
             LoginNamePasswordReq loginNamePasswordReq = (LoginNamePasswordReq) loginReq;
-            String realPassword = "";
+            String reqPassword = loginNamePasswordReq.getPassword();
             if (loginReqAesKey.isEnable()) {
-                // TODO 加密密码
-                // realPassword = xxx
+                // TODO 解密密码
+                // reqPassword = xxx
             }
-            if (!Objects.equals(userInfo.getPassword(), loginNamePasswordReq.getPassword())) {
+            // TODO 加密密码
+            // reqPassword = xxx
+            if (!Objects.equals(userInfo.getPassword(), reqPassword)) {
                 throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
             }
         }
