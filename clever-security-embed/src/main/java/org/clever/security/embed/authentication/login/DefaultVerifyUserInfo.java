@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
+import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.exception.*;
 import org.clever.security.entity.User;
 import org.clever.security.model.UserInfo;
@@ -21,6 +22,12 @@ import java.util.Objects;
  */
 @Slf4j
 public class DefaultVerifyUserInfo implements VerifyUserInfo {
+    private final PasswordEncoder passwordEncoder;
+
+    public DefaultVerifyUserInfo(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq, UserInfo userInfo) {
         return true;
@@ -62,9 +69,8 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
                 // TODO 解密密码
                 // reqPassword = xxx
             }
-            // TODO 加密密码
-            // reqPassword = xxx
-            if (!Objects.equals(userInfo.getPassword(), reqPassword)) {
+            // 验证密码
+            if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {
                 throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
             }
         }
