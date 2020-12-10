@@ -8,6 +8,9 @@ import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.exception.ConcurrentLoginException;
 import org.clever.security.embed.exception.LoginDataValidateException;
 import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.ScanCodeLoginException;
+import org.clever.security.entity.EnumConstant;
+import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.EmailValidateCodeReq;
 import org.clever.security.model.login.ScanCodeReq;
@@ -15,6 +18,7 @@ import org.clever.security.model.login.TelephoneValidateCodeReq;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -104,7 +108,21 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      * 扫码登录验证
      */
     protected void verifyScanCode(ScanCodeReq req) {
-        // TODO 扫码登录验证
+        // TODO 根据扫描二维码获取扫码登录信息
+        ScanCodeLogin scanCodeLogin = null;
+        if (scanCodeLogin == null) {
+            throw new ScanCodeLoginException("二维码不存在");
+        }
+        Date now = new Date();
+        if (scanCodeLogin.getExpiredTime() == null || now.compareTo(scanCodeLogin.getExpiredTime()) >= 0) {
+            throw new ScanCodeLoginException("二维码已过期");
+        }
+        if (scanCodeLogin.getGetTokenExpiredTime() == null || now.compareTo(scanCodeLogin.getGetTokenExpiredTime()) >= 0) {
+            throw new ScanCodeLoginException("二维码已过期");
+        }
+        if (StringUtils.isBlank(scanCodeLogin.getBindToken()) || !Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+            throw new ScanCodeLoginException("二维码状态错误");
+        }
     }
 
     /**

@@ -13,19 +13,13 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ScanCodeReq extends AbstractUserLoginReq {
-    public static final String BrowseScanCode_ParamName = "browseScanCode";
-    public static final String LoginToken_ParamName = "loginToken";
+    public static final String ScanCode_ParamName = "scanCode";
 
     /**
      * 浏览器扫描码
      */
     @NotBlank(message = "二维码不能为空")
-    private String browseScanCode;
-    /***
-     * 用户登录的Token
-     */
-    @NotBlank(message = "Token不能为空")
-    private String loginToken;
+    private String scanCode;
 
     @Override
     public LoginType getLoginType() {

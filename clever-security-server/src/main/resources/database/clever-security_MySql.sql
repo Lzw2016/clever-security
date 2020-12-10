@@ -43,7 +43,7 @@ create table user
 ) comment = '用户表';
 create index user_nickname on user (nickname);
 /*------------------------------------------------------------------------------------------------------------------------
-
+TODO user_ext 用户扩展表
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -77,7 +77,7 @@ create table permission
     domain_id           bigint          not null                                                comment '域id',
     str_flag            varchar(255)    not null                                                comment '权限唯一字符串标识',
     title               varchar(255)    not null                                                comment '权限标题',
-    resources_type      int(1)          not null        default 1                               comment '权限类型，1:API权限, 2:菜单权限，3:UI组件权限',
+    resources_type      int(1)          not null        default 1                               comment '权限类型，1:API权限，2:菜单权限，3:UI组件权限',
     enable_auth         int(1)          not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
     description         varchar(1203)                                                           comment '权限说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
@@ -223,11 +223,11 @@ create table jwt_token
     uid                         varchar(63)     not null                                        comment '用户id',
     token                       varchar(1023)   not null                                        comment 'token数据',
     expired_time                datetime(3)                                                     comment 'JWT-Token过期时间(空表示永不过期)',
-    disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用, 1:已禁用',
+    disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用；1:已禁用',
     disable_reason              varchar(127)                                                    comment 'JWT-Token禁用原因',
     refresh_token               varchar(127)                                                    comment '刷新Token',
     refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
-    refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用), 1:有效(未使用)',
+    refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用)；1:有效(未使用)',
     refresh_token_use_time      datetime(3)                                                     comment '刷新Token使用时间',
     refresh_create_token_id     bigint                                                          comment '刷新token创建的JWT-Token id',
     create_at                   datetime(3)     not null        default current_timestamp(3)    comment '创建时间',
@@ -280,8 +280,8 @@ create table scan_code_login
     confirm_expired_time    datetime(3)                                                         comment '确认登录过期时间',
     confirm_time            datetime(3)                                                         comment '确认登录时间',
     get_token_expired_time  datetime(3)                                                         comment '获取登录JWT-Token过期时间',
-    login_time              datetime(3)                                                         comment '确认登录时间',
-    token_id                bigint                                                              comment '确认登录生成的JWT-Token id',
+    login_time              datetime(3)                                                         comment '登录时间',
+    token_id                bigint                                                              comment '登录生成的JWT-Token id',
     invalid_reason          varchar(63)                                                         comment '扫描二维码失效原因',
     create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
     update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',

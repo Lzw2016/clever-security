@@ -65,12 +65,12 @@ public class ScanCodeLogin implements Serializable {
     private Date getTokenExpiredTime;
 
     /**
-     * 确认登录时间
+     * 登录时间
      */
     private Date loginTime;
 
     /**
-     * 确认登录生成的JWT-Token id
+     * 登录生成的JWT-Token id
      */
     private Long tokenId;
 

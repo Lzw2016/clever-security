@@ -51,19 +51,13 @@ public class ScanCodeReqCollect extends AbstractLoginDataCollect {
         // 收集基础数据
         collectBaseDataByParameter(req, request);
         // 收集当前登录类型数据
-        if (req.getBrowseScanCode() == null) {
-            String browseScanCode = request.getParameter(ScanCodeReq.BrowseScanCode_ParamName);
+        if (req.getScanCode() == null) {
+            String browseScanCode = request.getParameter(ScanCodeReq.ScanCode_ParamName);
             if (browseScanCode != null) {
-                req.setBrowseScanCode(browseScanCode);
+                req.setScanCode(browseScanCode);
             }
         }
-        if (req.getLoginToken() == null) {
-            String loginToken = request.getParameter(ScanCodeReq.LoginToken_ParamName);
-            if (loginToken != null) {
-                req.setLoginToken(loginToken);
-            }
-        }
-        if (req.getBrowseScanCode() == null && req.getLoginToken() == null) {
+        if (req.getScanCode() == null) {
             return null;
         }
         return req;

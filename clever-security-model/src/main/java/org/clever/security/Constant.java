@@ -4,12 +4,20 @@ package org.clever.security;
  * 作者： lzw<br/>
  * 创建时间：2019-04-25 19:57 <br/>
  */
-public class Constant {
+public interface Constant {
+    /**
+     * 扫码登录，扫码
+     */
+    int ScanCodeLogin_Action_Scan = 1;
+    /**
+     * 扫码登录，确认登录
+     */
+    int ScanCodeLogin_Action_Confirm = 2;
 
     /**
      * 配置文件前缀
      */
-    public static final String ConfigPrefix = "clever.security";
+    String ConfigPrefix = "clever.security";
 
 //    /**
 //     * 登录请求数据 Key
