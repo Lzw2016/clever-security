@@ -40,6 +40,11 @@ public class ValidateCode implements Serializable {
     private Integer type;
 
     /**
+     * 验证码发送渠道，1:短信，2:email
+     */
+    private Integer sendChannel;
+
+    /**
      * 验证码过期时间
      */
     private Date expiredTime;

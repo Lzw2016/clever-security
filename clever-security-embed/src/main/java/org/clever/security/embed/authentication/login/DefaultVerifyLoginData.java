@@ -5,12 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.exception.ConcurrentLoginException;
-import org.clever.security.embed.exception.LoginDataValidateException;
-import org.clever.security.embed.exception.LoginException;
-import org.clever.security.embed.exception.ScanCodeLoginException;
+import org.clever.security.embed.exception.*;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ScanCodeLogin;
+import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.EmailValidateCodeReq;
 import org.clever.security.model.login.ScanCodeReq;
@@ -129,14 +127,37 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      * 手机号验证码登录校验
      */
     protected void verifyTelephoneValidateCode(TelephoneValidateCodeReq req) {
-        // TODO 手机号验证码登录校验
+        // TODO 获取真实发送的手机验证码
+        ValidateCode realValidateCode = null;
+        verifyValidateCode(realValidateCode, req.getValidateCode());
     }
 
     /**
      * 邮箱验证码登录校验
      */
     protected void verifyEmailValidateCode(EmailValidateCodeReq req) {
-        // TODO 邮箱验证码登录校验
+        // TODO 获取真实发送的邮箱验证码
+        ValidateCode realValidateCode = null;
+        verifyValidateCode(realValidateCode, req.getValidateCode());
+    }
+
+    /**
+     * 校验验证码
+     *
+     * @param realValidateCode 真实的验证码数据
+     * @param validateCode     用户提交的验证码
+     */
+    protected void verifyValidateCode(ValidateCode realValidateCode, String validateCode) {
+        if (realValidateCode == null) {
+            throw new LoginValidateCodeException("登录验证码不存在");
+        }
+        Date now = new Date();
+        if (realValidateCode.getExpiredTime() == null || now.compareTo(realValidateCode.getExpiredTime()) >= 0) {
+            throw new LoginValidateCodeException("登录验证码已过期");
+        }
+        if (!Objects.equals(realValidateCode.getCode(), validateCode)) {
+            throw new LoginValidateCodeException("登录验证码错误");
+        }
     }
 
     @Override
