@@ -1,6 +1,7 @@
 package org.clever.security.embed.event;
 
 import lombok.Data;
+import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 
@@ -24,6 +25,10 @@ public class LoginSuccessEvent {
      */
     private final HttpServletResponse response;
     /**
+     * 用户登录配置
+     */
+    private final LoginConfig loginConfig;
+    /**
      * 用户登录数据
      */
     private final AbstractUserLoginReq loginData;
@@ -32,9 +37,10 @@ public class LoginSuccessEvent {
      */
     private final UserInfo userInfo;
 
-    public LoginSuccessEvent(HttpServletRequest request, HttpServletResponse response, AbstractUserLoginReq loginData, UserInfo userInfo) {
+    public LoginSuccessEvent(HttpServletRequest request, HttpServletResponse response, LoginConfig loginConfig, AbstractUserLoginReq loginData, UserInfo userInfo) {
         this.request = request;
         this.response = response;
+        this.loginConfig = loginConfig;
         this.loginData = loginData;
         this.userInfo = userInfo;
     }

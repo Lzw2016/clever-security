@@ -90,14 +90,12 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         if (loginConfig.getConcurrentLoginCount() <= 0) {
             return;
         }
-        // TODO 获取当前用户并发登录数量
-        int realConcurrentLoginCount = 0;
-        if (realConcurrentLoginCount < loginConfig.getConcurrentLoginCount()) {
+        if (loginConfig.isAllowAfterLogin()) {
             return;
         }
-        if (loginConfig.isAllowAfterLogin()) {
-            // TODO 挤下最早登录的用户
-        } else {
+        // TODO 获取当前用户并发登录数量
+        int realConcurrentLoginCount = 0;
+        if (realConcurrentLoginCount >= loginConfig.getConcurrentLoginCount()) {
             throw new ConcurrentLoginException("当前用户并发登录次数达到上限");
         }
     }

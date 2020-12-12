@@ -6,6 +6,7 @@ import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.exception.*;
+import org.clever.security.embed.utils.AesUtils;
 import org.clever.security.entity.User;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -66,8 +67,8 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
             LoginNamePasswordReq loginNamePasswordReq = (LoginNamePasswordReq) loginReq;
             String reqPassword = loginNamePasswordReq.getPassword();
             if (loginReqAesKey.isEnable()) {
-                // TODO 解密密码
-                // reqPassword = xxx
+                // 解密密码(请求密码加密在客户端)
+                reqPassword = AesUtils.decode(loginReqAesKey.getReqPasswordAesKey(), loginReqAesKey.getReqPasswordAesIv(), reqPassword);
             }
             // 验证密码
             if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {

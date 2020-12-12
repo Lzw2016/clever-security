@@ -2,7 +2,6 @@ package org.clever.security.embed.collect;
 
 import org.clever.security.LoginType;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -42,7 +41,6 @@ public class LoginNamePasswordReqCollect extends AbstractLoginDataCollect {
 
     protected LoginNamePasswordReq getLoginNamePasswordReq(SecurityConfig securityConfig, HttpServletRequest request) {
         LoginConfig login = securityConfig.getLogin();
-        AesKeyConfig loginReqAesKey = securityConfig.getLoginReqAesKey();
         LoginNamePasswordReq req = HttpServletRequestUtils.parseBodyToEntity(request, LoginNamePasswordReq.class);
         if (req == null && login.isPostOnly()) {
             return null;
@@ -67,9 +65,6 @@ public class LoginNamePasswordReqCollect extends AbstractLoginDataCollect {
         }
         if (req.getLoginName() == null && req.getPassword() == null) {
             return null;
-        }
-        if (req.getPassword() != null && loginReqAesKey.isEnable()) {
-            // TODO 密码对称加密需要解密
         }
         return req;
     }

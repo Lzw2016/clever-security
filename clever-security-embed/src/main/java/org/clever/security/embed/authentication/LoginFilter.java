@@ -269,6 +269,7 @@ public class LoginFilter extends GenericFilterBean {
         LoginSuccessEvent loginSuccessEvent = new LoginSuccessEvent(
                 context.getRequest(),
                 context.getResponse(),
+                securityConfig.getLogin(),
                 context.getLoginData(),
                 context.getUserInfo()
         );
