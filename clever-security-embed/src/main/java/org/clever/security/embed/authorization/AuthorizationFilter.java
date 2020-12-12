@@ -90,6 +90,7 @@ public class AuthorizationFilter extends GenericFilterBean {
         boolean pass;
         try {
             pass = authorization(context);
+            log.debug("### 授权完成，结果: [{}]", pass? "通过": "拒绝");
         } catch (Throwable e) {
             // 授权异常
             log.error("授权异常", e);
