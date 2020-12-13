@@ -5,6 +5,7 @@ package org.clever.security;
  * 创建时间：2019-04-25 19:57 <br/>
  */
 public interface Constant {
+    String ServerName = "clever-security-server";
     /**
      * 扫码登录，扫码
      */

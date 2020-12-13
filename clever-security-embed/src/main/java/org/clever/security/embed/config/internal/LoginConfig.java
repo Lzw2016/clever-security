@@ -1,9 +1,9 @@
 package org.clever.security.embed.config.internal;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.io.Serializable;
-import java.time.Duration;
 
 /**
  * 用户登录配置
@@ -20,9 +20,26 @@ public class LoginConfig implements Serializable {
      * 登录请求Path
      */
     private String loginPath = "/login";
-
-    // TODO 手机验证码、邮箱验证码、图片验证码、扫码登录相关配置
-
+    /**
+     * 登录验证码配置
+     */
+    @NestedConfigurationProperty
+    private LoginCaptchaConfig loginCaptcha = new LoginCaptchaConfig();
+    /**
+     * 手机验证码登录配置
+     */
+    @NestedConfigurationProperty
+    private SmsValidateCodeLoginConfig smsValidateCodeLogin = new SmsValidateCodeLoginConfig();
+    /**
+     * 邮箱验证码登录配置
+     */
+    @NestedConfigurationProperty
+    private EmailValidateCodeLoginConfig emailValidateCodeLogin = new EmailValidateCodeLoginConfig();
+    /**
+     * 扫码登录配置
+     */
+    @NestedConfigurationProperty
+    private ScanCodeLoginConfig scanCodeLogin = new ScanCodeLoginConfig();
     /**
      * 登录只支持POST请求
      */
@@ -47,18 +64,6 @@ public class LoginConfig implements Serializable {
      * 登录失败跳转地址
      */
     private String loginFailureRedirectPage = "/index.html";
-    /**
-     * 登录是否需要验证码
-     */
-    private boolean needCaptcha = true;
-    /**
-     * 登录失败多少次才需要验证码(小于等于0表示总是需要验证码)
-     */
-    private int needCaptchaByLoginFailedCount = 3;
-    /**
-     * 验证码有效时间(默认60秒)
-     */
-    private Duration captchaEffectiveTime = Duration.ofSeconds(60);
     /**
      * 是否允许重复登录(在登录状态下登录其他账号)
      */

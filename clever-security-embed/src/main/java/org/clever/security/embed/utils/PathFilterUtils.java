@@ -1,8 +1,7 @@
 package org.clever.security.embed.utils;
 
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.config.internal.LogoutConfig;
+import org.clever.security.embed.config.internal.*;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.AntPathMatcher;
 
@@ -23,6 +22,57 @@ public class PathFilterUtils {
         // request.getServletPath() /b/c/xxx.jsp
         return request.getRequestURI();
     }
+
+    /**
+     * 当前请求是否是登录图片验证码请求
+     */
+    public static boolean isLoginCaptchaPath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        LoginConfig login = securityConfig.getLogin();
+        if (login == null) {
+            return false;
+        }
+        LoginCaptchaConfig loginCaptcha = login.getLoginCaptcha();
+        if (loginCaptcha == null || !loginCaptcha.isNeedCaptcha()) {
+            return false;
+        }
+        return Objects.equals(loginCaptcha.getLoginCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是登录手机验证码请求
+     */
+    public static boolean isLoginSmsValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        LoginConfig login = securityConfig.getLogin();
+        if (login == null) {
+            return false;
+        }
+        SmsValidateCodeLoginConfig smsValidateCodeLogin = login.getSmsValidateCodeLogin();
+        if (smsValidateCodeLogin == null || !smsValidateCodeLogin.isEnable()) {
+            return false;
+        }
+        return Objects.equals(smsValidateCodeLogin.getLoginSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是登录邮箱验证码请求
+     */
+    public static boolean isLoginEmailValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        LoginConfig login = securityConfig.getLogin();
+        if (login == null) {
+            return false;
+        }
+        EmailValidateCodeLoginConfig emailValidateCodeLogin = login.getEmailValidateCodeLogin();
+        if (emailValidateCodeLogin == null || !emailValidateCodeLogin.isEnable()) {
+            return false;
+        }
+        return Objects.equals(emailValidateCodeLogin.getLoginEmailValidateCodePath(), path);
+    }
+
+
+
 
     /**
      * 当前请求是否是登录请求
@@ -54,9 +104,14 @@ public class PathFilterUtils {
     /**
      * 当前请求是否需要身份认证
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“登出请求”
-        if (isLoginRequest(request, securityConfig) || isLogoutRequest(request, securityConfig)) {
+        // 当前请求是“登录请求”或“登出请求”或“验证码请求”
+        if (isLoginRequest(request, securityConfig)
+                || isLogoutRequest(request, securityConfig)
+                || isLoginCaptchaPath(request, securityConfig)
+                || isLoginSmsValidateCodePath(request, securityConfig)
+                || isLoginEmailValidateCodePath(request, securityConfig)) {
             return false;
         }
         // 不需要认证和授权的Path
@@ -78,12 +133,8 @@ public class PathFilterUtils {
      * 当前请求是否需要授权
      */
     public static boolean isAuthorizationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“登出请求”
-        if (isLoginRequest(request, securityConfig) || isLogoutRequest(request, securityConfig)) {
-            return false;
-        }
         // 当前请求不需要身份认证 - 那就更不需要授权了
-        if (isAuthenticationRequest(request, securityConfig)) {
+        if (!isAuthenticationRequest(request, securityConfig)) {
             return false;
         }
         // 不需要授权的Path

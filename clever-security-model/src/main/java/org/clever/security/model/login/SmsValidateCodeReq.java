@@ -13,7 +13,7 @@ import javax.validation.constraints.Pattern;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TelephoneValidateCodeReq extends AbstractUserLoginReq {
+public class SmsValidateCodeReq extends AbstractUserLoginReq {
     public static final String Telephone_ParamName = "telephone";
     public static final String ValidateCode_ParamName = "validateCode";
     /**
@@ -30,6 +30,6 @@ public class TelephoneValidateCodeReq extends AbstractUserLoginReq {
 
     @Override
     public LoginType getLoginType() {
-        return LoginType.Telephone_ValidateCode;
+        return LoginType.Sms_ValidateCode;
     }
 }

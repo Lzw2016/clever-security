@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.LoginCaptchaConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.exception.*;
 import org.clever.security.entity.EnumConstant;
@@ -12,7 +13,7 @@ import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.EmailValidateCodeReq;
 import org.clever.security.model.login.ScanCodeReq;
-import org.clever.security.model.login.TelephoneValidateCodeReq;
+import org.clever.security.model.login.SmsValidateCodeReq;
 import org.springframework.core.Ordered;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,8 +48,8 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 特定的登录方式校验
         if (loginReq instanceof ScanCodeReq) {
             verifyScanCode((ScanCodeReq) loginReq);
-        } else if (loginReq instanceof TelephoneValidateCodeReq) {
-            verifyTelephoneValidateCode((TelephoneValidateCodeReq) loginReq);
+        } else if (loginReq instanceof SmsValidateCodeReq) {
+            verifySmsValidateCode((SmsValidateCodeReq) loginReq);
         } else if (loginReq instanceof EmailValidateCodeReq) {
             verifyEmailValidateCode((EmailValidateCodeReq) loginReq);
         }
@@ -69,13 +70,14 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      * 登录验证码错误校验
      */
     protected void verifyLoginCaptcha(LoginConfig loginConfig, AbstractUserLoginReq loginReq) {
-        if (loginConfig.isNeedCaptcha()) {
+        LoginCaptchaConfig loginCaptcha =   loginConfig.getLoginCaptcha();
+        if (loginCaptcha==null || !loginCaptcha.isNeedCaptcha()) {
             return;
         }
         // TODO 获取当前登录失败次数 和 验证码信息
         int count = 0;
         String realCaptcha = "";
-        if (count <= loginConfig.getNeedCaptchaByLoginFailedCount()) {
+        if (count <= loginCaptcha.getNeedCaptchaByLoginFailedCount()) {
             return;
         }
         if (StringUtils.isBlank(realCaptcha) || !Objects.equals(realCaptcha, loginReq.getCaptcha())) {
@@ -124,7 +126,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
     /**
      * 手机号验证码登录校验
      */
-    protected void verifyTelephoneValidateCode(TelephoneValidateCodeReq req) {
+    protected void verifySmsValidateCode(SmsValidateCodeReq req) {
         // TODO 获取真实发送的手机验证码
         ValidateCode realValidateCode = null;
         verifyValidateCode(realValidateCode, req.getValidateCode());

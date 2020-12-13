@@ -35,7 +35,7 @@ public class ScanCodeLogin implements Serializable {
     private Integer scanCodeState;
 
     /**
-     * 扫描二维码过期时间
+     * 扫描二维码过期时间(生成二维码 -> 扫码请求时间)
      */
     private Date expiredTime;
 
@@ -50,7 +50,7 @@ public class ScanCodeLogin implements Serializable {
     private Date bindTokenTime;
 
     /**
-     * 确认登录过期时间
+     * 确认登录过期时间(扫码二维码 -> 确认登录时间)
      */
     private Date confirmExpiredTime;
 
@@ -60,7 +60,7 @@ public class ScanCodeLogin implements Serializable {
     private Date confirmTime;
 
     /**
-     * 获取登录JWT-Token过期时间
+     * 获取登录JWT-Token过期时间(确认登录 -> 获取登录Token时间)
      */
     private Date getTokenExpiredTime;
 

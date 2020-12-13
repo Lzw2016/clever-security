@@ -10,7 +10,24 @@
 
 #================================================================================================================
 
-用户 -> AuthenticationFilter(认证) -> LoginFilter(登录) -> LogoutFilter(登出) -> AuthorizationFilter(授权) -> 业务处理
+用户
+🡓
+LoginCaptchaFilter(登录图片验证码)
+LoginSmsValidateCodeFilter(登录短信验证码)
+LoginEmailValidateCodeFilter(登录邮箱验证码)
+ScanCodeLoginSupportFilter(扫码登录支持)
+🡓
+AuthenticationFilter(认证)
+🡓
+LoginFilter(登录)
+🡓
+LogoutFilter(登出)
+🡓
+AuthorizationFilter(授权)
+🡓
+业务处理
+
+
 
 用户表
     加一个user_id字段

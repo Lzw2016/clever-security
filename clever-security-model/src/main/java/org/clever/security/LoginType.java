@@ -21,7 +21,7 @@ public enum LoginType {
     /**
      * 手机号验证码
      */
-    Telephone_ValidateCode(2, "Telephone-ValidateCode"),
+    Sms_ValidateCode(2, "Sms-ValidateCode"),
     /**
      * 邮箱验证码
      */
@@ -57,8 +57,8 @@ public enum LoginType {
     public static LoginType lookup(String name) {
         if (LoginName_Password.getName().equalsIgnoreCase(name)) {
             return LoginName_Password;
-        } else if (Telephone_ValidateCode.getName().equalsIgnoreCase(name)) {
-            return Telephone_ValidateCode;
+        } else if (Sms_ValidateCode.getName().equalsIgnoreCase(name)) {
+            return Sms_ValidateCode;
         } else if (Email_ValidateCode.getName().equalsIgnoreCase(name)) {
             return Email_ValidateCode;
         } else if (RefreshToken.getName().equalsIgnoreCase(name)) {
@@ -75,8 +75,8 @@ public enum LoginType {
     public static LoginType lookup(int id) {
         if (Objects.equals(LoginName_Password.getId(), id)) {
             return LoginName_Password;
-        } else if (Objects.equals(Telephone_ValidateCode.getId(), id)) {
-            return Telephone_ValidateCode;
+        } else if (Objects.equals(Sms_ValidateCode.getId(), id)) {
+            return Sms_ValidateCode;
         } else if (Objects.equals(Email_ValidateCode.getId(), id)) {
             return Email_ValidateCode;
         } else if (Objects.equals(RefreshToken.getId(), id)) {
