@@ -1,8 +1,16 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.security.Constant;
+import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.GetLoginCaptchaReq;
+import org.clever.security.dto.response.GetLoginCaptchaRes;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -24,10 +32,16 @@ public class LoginCaptchaFilter extends GenericFilterBean {
      * 全局配置
      */
     private final SecurityConfig securityConfig;
+    /**
+     * 登录支持对象
+     */
+    private final LoginSupportClient loginSupportClient;
 
-    public LoginCaptchaFilter(SecurityConfig securityConfig) {
+    public LoginCaptchaFilter(SecurityConfig securityConfig, LoginSupportClient loginSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
+        Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
         this.securityConfig = securityConfig;
+        this.loginSupportClient = loginSupportClient;
     }
 
     @Override
@@ -44,6 +58,18 @@ public class LoginCaptchaFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        // TODO 发送图片验证码
+        try {
+            // 发送图片验证码
+            GetLoginCaptchaReq req = new GetLoginCaptchaReq(securityConfig.getDomainId());
+            GetLoginCaptchaRes res = loginSupportClient.getLoginCaptcha(req);
+            log.debug("登录图片验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
+            httpResponse.addHeader(Constant.Login_Captcha_Digest_Response_Header, res.getDigest());
+            byte[] image = EncodeDecodeUtils.decodeBase64(res.getCodeContent());
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            response.getOutputStream().write(image);
+        } catch (Exception e) {
+            log.error("获取图片验证码失败", e);
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
 }

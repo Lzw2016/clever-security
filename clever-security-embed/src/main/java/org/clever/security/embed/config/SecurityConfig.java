@@ -24,7 +24,7 @@ public class SecurityConfig implements Serializable {
     /**
      * 域名称(用于数据隔离)
      */
-    private String domainName;
+    private Long domainId;
     /**
      * API权限是否默认启用，默认true(true 启用；false 不启用)
      */

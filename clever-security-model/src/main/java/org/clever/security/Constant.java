@@ -20,6 +20,11 @@ public interface Constant {
      */
     String ConfigPrefix = "clever.security";
 
+    /**
+     * 登录图片验证码签名(响应头 name)
+     */
+    String Login_Captcha_Digest_Response_Header = "image-captcha-digest";
+
 //    /**
 //     * 登录请求数据 Key
 //     */

@@ -25,7 +25,7 @@ public class ValidateCode implements Serializable {
     private Long domainId;
 
     /**
-     * 用户id
+     * 用户id(触发生成验证码的用户)
      */
     private String uid;
 
@@ -35,12 +35,17 @@ public class ValidateCode implements Serializable {
     private String code;
 
     /**
+     * 验证码签名
+     */
+    private String digest;
+
+    /**
      * 验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码
      */
     private Integer type;
 
     /**
-     * 验证码发送渠道，1:短信，2:email
+     * 验证码发送渠道，0:不需要发送，1:短信，2:email
      */
     private Integer sendChannel;
 

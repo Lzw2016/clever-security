@@ -21,10 +21,19 @@ public class LoginConfig implements Serializable {
      */
     private String loginPath = "/login";
     /**
+     * 登录只支持POST请求
+     */
+    private boolean postOnly = true;
+    /**
      * 登录验证码配置
      */
     @NestedConfigurationProperty
     private LoginCaptchaConfig loginCaptcha = new LoginCaptchaConfig();
+    /**
+     * 微信小程序登录配置
+     */
+    @NestedConfigurationProperty
+    private WechatSmallProgramLoginConfig wechatSmallProgramLogin = new WechatSmallProgramLoginConfig();
     /**
      * 手机验证码登录配置
      */
@@ -40,10 +49,6 @@ public class LoginConfig implements Serializable {
      */
     @NestedConfigurationProperty
     private ScanCodeLoginConfig scanCodeLogin = new ScanCodeLoginConfig();
-    /**
-     * 登录只支持POST请求
-     */
-    private boolean postOnly = true;
     /**
      * 隐藏登录用户不存在的异常
      */
