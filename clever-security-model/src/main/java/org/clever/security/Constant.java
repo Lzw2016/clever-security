@@ -24,6 +24,10 @@ public interface Constant {
      * 登录图片验证码签名(响应头 name)
      */
     String Login_Captcha_Digest_Response_Header = "image-captcha-digest";
+    /**
+     * 扫码登录二维码内容(响应头 name)
+     */
+    String Login_Scan_Code_Response_Header = "login-scan-code";
 
 //    /**
 //     * 登录请求数据 Key

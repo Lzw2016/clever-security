@@ -10,6 +10,8 @@ import org.clever.security.model.UserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * 作者：lizw <br/>
@@ -33,6 +35,36 @@ public interface LoginSupportClient {
      */
     @GetMapping("/login_failed_count_and_captcha")
     GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(@Validated GetLoginFailedCountAndCaptchaReq req);
+
+    /**
+     * 发送邮箱登录验证码
+     */
+    @PostMapping("/send_login_validate_code_for_email")
+    SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated SendLoginValidateCodeForEmailReq req);
+
+    /**
+     * 发送邮箱登录验证码
+     */
+    @PostMapping("/send_login_validate_code_for_sms")
+    SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated SendLoginValidateCodeForSmsReq req);
+
+    /**
+     * 创建登录扫码二维码
+     */
+    @PostMapping("/create_login_scan_code")
+    CreateLoginScanCodeRes createLoginScanCode(@Validated @RequestBody CreateLoginScanCodeReq req);
+
+    /**
+     * 绑定扫码登录二维码
+     */
+    @PostMapping("/scan_login_scan_code")
+    BindLoginScanCodeRes bindLoginScanCode(@Validated @RequestBody BindLoginScanCodeReq req);
+
+    /**
+     * 扫码登录-确认登录
+     */
+    @PostMapping("/confirm_login_scan_code")
+    ConfirmLoginScanCodeRes confirmLoginScanCode(@Validated @RequestBody ConfirmLoginScanCodeReq req);
 
     /**
      * 获取扫码登录信息

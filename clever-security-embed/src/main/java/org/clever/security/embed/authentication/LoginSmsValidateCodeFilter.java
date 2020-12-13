@@ -1,8 +1,13 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.SendLoginValidateCodeForSmsReq;
+import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -24,10 +29,13 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
      * 全局配置
      */
     private final SecurityConfig securityConfig;
+    private final LoginSupportClient loginSupportClient;
 
-    public LoginSmsValidateCodeFilter(SecurityConfig securityConfig) {
+    public LoginSmsValidateCodeFilter(SecurityConfig securityConfig, LoginSupportClient loginSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
+        Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
         this.securityConfig = securityConfig;
+        this.loginSupportClient = loginSupportClient;
     }
 
     @Override
@@ -44,6 +52,14 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        // TODO 发送短信验证码
+        // 发送短信验证码
+        SendLoginValidateCodeForSmsReq req = new SendLoginValidateCodeForSmsReq(securityConfig.getDomainId());
+        try {
+            SendLoginValidateCodeForSmsRes res = loginSupportClient.sendLoginValidateCodeForSms(req);
+            HttpServletResponseUtils.sendJson(httpResponse, res);
+        } catch (Exception e) {
+            log.error("发送短信登录验证码失败", e);
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+        }
     }
 }
