@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 扫码登录表(ScanCodeLogin)实体类
+ * 扫码登录表(缓存表)(ScanCodeLogin)实体类
  *
  * @author lizw
  * @since 2020-12-08 21:47:27

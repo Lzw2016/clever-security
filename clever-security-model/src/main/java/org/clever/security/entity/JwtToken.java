@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * JWT-Token表(JwtToken)实体类
+ * JWT-Token表(缓存表)(JwtToken)实体类
  *
  * @author lizw
  * @since 2020-11-28 19:47:39

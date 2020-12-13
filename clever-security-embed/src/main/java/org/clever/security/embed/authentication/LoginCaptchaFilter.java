@@ -65,8 +65,9 @@ public class LoginCaptchaFilter extends GenericFilterBean {
             log.debug("登录图片验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
             httpResponse.addHeader(Constant.Login_Captcha_Digest_Response_Header, res.getDigest());
             byte[] image = EncodeDecodeUtils.decodeBase64(res.getCodeContent());
-            response.setContentType(MediaType.IMAGE_PNG_VALUE);
-            response.getOutputStream().write(image);
+            httpResponse.setContentType(MediaType.IMAGE_PNG_VALUE);
+            httpResponse.getOutputStream().write(image);
+            httpResponse.setStatus(HttpStatus.OK.value());
         } catch (Exception e) {
             log.error("获取图片验证码失败", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);

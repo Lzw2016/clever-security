@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 验证码(ValidateCode)实体类
+ * 验证码(缓存表)(ValidateCode)实体类
  *
  * @author lizw
  * @since 2020-11-28 19:47:43

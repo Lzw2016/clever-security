@@ -214,90 +214,6 @@ create index ui_permission_permission_id on ui_permission (permission_id);
 
 
 /* ====================================================================================================================
-    jwt_token -- JWT-Token表
-==================================================================================================================== */
-create table jwt_token
-(
-    id                          bigint          not null                                        comment 'JWT-Token id(系统自动生成且不会变化)',
-    domain_id                   bigint          not null                                        comment '域id',
-    uid                         varchar(63)     not null                                        comment '用户id',
-    token                       varchar(1023)   not null                                        comment 'token数据',
-    expired_time                datetime(3)                                                     comment 'JWT-Token过期时间(空表示永不过期)',
-    disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用；1:已禁用',
-    disable_reason              varchar(127)                                                    comment 'JWT-Token禁用原因',
-    refresh_token               varchar(127)                                                    comment '刷新Token',
-    refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
-    refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用)；1:有效(未使用)',
-    refresh_token_use_time      datetime(3)                                                     comment '刷新Token使用时间',
-    refresh_create_token_id     bigint                                                          comment '刷新token创建的JWT-Token id',
-    create_at                   datetime(3)     not null        default current_timestamp(3)    comment '创建时间',
-    update_at                   datetime(3)                     on update current_timestamp(3)  comment '更新时间',
-    primary key (id)
-) comment = 'JWT-Token表';
-create index jwt_token_uid on jwt_token (uid);
-create index jwt_token_expired_time on jwt_token (expired_time);
-create index jwt_token_refresh_token on jwt_token (refresh_token);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    validate_code -- 验证码
-==================================================================================================================== */
-create table validate_code
-(
-    id                  bigint          not null                                                comment '验证码 id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    uid                 varchar(63)                                                             comment '用户id(触发生成验证码的用户)',
-    code                varchar(15)     not null                                                comment '验证码',
-    digest              varchar(63)                                                             comment '验证码签名',
-    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码',
-    send_channel        int(1)          not null                                                comment '验证码发送渠道，0:不需要发送，1:短信，2:email',
-    expired_time        datetime(3)     not null                                                comment '验证码过期时间',
-    validate_time       datetime(3)                                                             comment '验证码验证时间(使用时间)',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = '验证码';
-create index validate_code_uid on validate_code (uid);
-create index validate_code_code on validate_code (code);
-create index validate_code_digest on validate_code (digest);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    scan_code_login -- 扫码登录表
-==================================================================================================================== */
-create table scan_code_login
-(
-    id                      bigint          not null                                            comment 'scan code id(系统自动生成且不会变化)',
-    domain_id               bigint          not null                                            comment '域id',
-    scan_code               varchar(63)     not null        unique                              comment '扫描二维码',
-    scan_code_state         int(1)          not null        default 0                           comment '扫描二维码状态，0:已创建(待扫描)，1:已扫描(待确认)，2:已确认(待登录)，3:登录成功，4:已失效',
-    expired_time            datetime(3)     not null                                            comment '扫描二维码过期时间(生成二维码 -> 扫码请求时间)',
-    bind_token              varchar(1023)                                                       comment '绑定的JWT-Token数据',
-    bind_token_time         datetime(3)                                                         comment '(扫描时间)绑定JWT-Token时间',
-    confirm_expired_time    datetime(3)                                                         comment '确认登录过期时间(扫码二维码 -> 确认登录时间)',
-    confirm_time            datetime(3)                                                         comment '确认登录时间',
-    get_token_expired_time  datetime(3)                                                         comment '获取登录JWT-Token过期时间(确认登录 -> 获取登录Token时间)',
-    login_time              datetime(3)                                                         comment '登录时间',
-    token_id                bigint                                                              comment '登录生成的JWT-Token id',
-    invalid_reason          varchar(63)                                                         comment '扫描二维码失效原因',
-    create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
-    update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',
-    primary key (id)
-) comment = '扫码登录表';
-create index scan_code_login_expired_time on scan_code_login (expired_time);
-create index scan_code_login_token_id on scan_code_login (token_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
     user_login_log -- 用户登录日志
 ==================================================================================================================== */
 create table user_login_log
@@ -324,4 +240,127 @@ create index user_login_jwt_token_id on user_login_log (jwt_token_id);
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
+/* ====================================================================================================================
+    jwt_token -- JWT-Token表(缓存表)
+==================================================================================================================== */
+create table jwt_token
+(
+    id                          bigint          not null                                        comment 'JWT-Token id(系统自动生成且不会变化)',
+    domain_id                   bigint          not null                                        comment '域id',
+    uid                         varchar(63)     not null                                        comment '用户id',
+    token                       varchar(1023)   not null                                        comment 'token数据',
+    expired_time                datetime(3)                                                     comment 'JWT-Token过期时间(空表示永不过期)',
+    disable                     int(1)          not null        default 0                       comment 'JWT-Token是否禁用，0:未禁用；1:已禁用',
+    disable_reason              varchar(127)                                                    comment 'JWT-Token禁用原因',
+    refresh_token               varchar(127)                                                    comment '刷新Token',
+    refresh_token_expired_time  datetime(3)                                                     comment '刷新Token过期时间',
+    refresh_token_state         int(1)                                                          comment '刷新Token状态，0:无效(已使用)；1:有效(未使用)',
+    refresh_token_use_time      datetime(3)                                                     comment '刷新Token使用时间',
+    refresh_create_token_id     bigint                                                          comment '刷新token创建的JWT-Token id',
+    create_at                   datetime(3)     not null        default current_timestamp(3)    comment '创建时间',
+    update_at                   datetime(3)                     on update current_timestamp(3)  comment '更新时间',
+    primary key (id)
+) comment = 'JWT-Token表(缓存表)';
+create index jwt_token_uid on jwt_token (uid);
+create index jwt_token_expired_time on jwt_token (expired_time);
+create index jwt_token_refresh_token on jwt_token (refresh_token);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    validate_code -- 验证码(缓存表)
+==================================================================================================================== */
+create table validate_code
+(
+    id                  bigint          not null                                                comment '验证码 id(系统自动生成且不会变化)',
+    domain_id           bigint          not null                                                comment '域id',
+    uid                 varchar(63)                                                             comment '用户id(触发生成验证码的用户)',
+    code                varchar(15)     not null                                                comment '验证码',
+    digest              varchar(63)                                                             comment '验证码签名',
+    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码',
+    send_channel        int(1)          not null                                                comment '验证码发送渠道，0:不需要发送，1:短信，2:email',
+    expired_time        datetime(3)     not null                                                comment '验证码过期时间',
+    validate_time       datetime(3)                                                             comment '验证码验证时间(使用时间)',
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (id)
+) comment = '验证码(缓存表)';
+create index validate_code_uid on validate_code (uid);
+create index validate_code_code on validate_code (code);
+create index validate_code_digest on validate_code (digest);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    scan_code_login -- 扫码登录表(缓存表)
+==================================================================================================================== */
+create table scan_code_login
+(
+    id                      bigint          not null                                            comment 'scan code id(系统自动生成且不会变化)',
+    domain_id               bigint          not null                                            comment '域id',
+    scan_code               varchar(63)     not null        unique                              comment '扫描二维码',
+    scan_code_state         int(1)          not null        default 0                           comment '扫描二维码状态，0:已创建(待扫描)，1:已扫描(待确认)，2:已确认(待登录)，3:登录成功，4:已失效',
+    expired_time            datetime(3)     not null                                            comment '扫描二维码过期时间(生成二维码 -> 扫码请求时间)',
+    bind_token              varchar(1023)                                                       comment '绑定的JWT-Token数据',
+    bind_token_time         datetime(3)                                                         comment '(扫描时间)绑定JWT-Token时间',
+    confirm_expired_time    datetime(3)                                                         comment '确认登录过期时间(扫码二维码 -> 确认登录时间)',
+    confirm_time            datetime(3)                                                         comment '确认登录时间',
+    get_token_expired_time  datetime(3)                                                         comment '获取登录JWT-Token过期时间(确认登录 -> 获取登录Token时间)',
+    login_time              datetime(3)                                                         comment '登录时间',
+    token_id                bigint                                                              comment '登录生成的JWT-Token id',
+    invalid_reason          varchar(63)                                                         comment '扫描二维码失效原因',
+    create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
+    update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',
+    primary key (id)
+) comment = '扫码登录表(缓存表)';
+create index scan_code_login_expired_time on scan_code_login (expired_time);
+create index scan_code_login_token_id on scan_code_login (token_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    login_failed_count -- 用户登录失败计数表(缓存表)
+==================================================================================================================== */
+create table login_failed_count
+(
+    id                      bigint          not null                                            comment 'id(系统自动生成且不会变化)',
+    domain_id               bigint          not null                                            comment '域id',
+    uid                     varchar(63)     not null                                            comment '登录用户id',
+    login_type              int(1)          not null                                            comment '登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录',
+    failed_count            int             not null        default 1                           comment '登录失败次数',
+    last_login_time         datetime(3)                                                         comment '最后登录失败时间',
+    delete_flag             int(1)          not null        default 0                           comment '数据删除标志，0:未删除，1:已删除',
+    create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
+    update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',
+    primary key (id)
+) comment = '用户登录失败计数表(缓存表)';
+create index login_failed_count_uid on login_failed_count (uid);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    user_security_context -- 用户安全上下文(缓存表)
+==================================================================================================================== */
+create table user_security_context
+(
+    id                      bigint          not null                                            comment 'id(系统自动生成且不会变化)',
+    domain_id               bigint          not null                                            comment '域id',
+    uid                     varchar(63)     not null                                            comment '用户id',
+    security_context        mediumtext      not null                                            comment '用户安全信息(安全上下文)',
+    create_at               datetime(3)     not null        default current_timestamp(3)        comment '创建时间',
+    update_at               datetime(3)                     on update current_timestamp(3)      comment '更新时间',
+    primary key (id)
+) comment = '用户安全上下文(缓存表)';
+create index user_security_context_uid on user_security_context (uid);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
 
