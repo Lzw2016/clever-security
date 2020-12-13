@@ -40,7 +40,7 @@ public class LoginCaptchaFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (!PathFilterUtils.isLoginCaptchaPath(httpRequest, securityConfig)) {
-            // 不是登录请求
+            // 不是获取登录图片验证码请求
             chain.doFilter(request, response);
             return;
         }

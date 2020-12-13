@@ -16,16 +16,16 @@ import java.io.IOException;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2020/12/13 11:00 <br/>
+ * 创建时间：2020/12/13 12:24 <br/>
  */
 @Slf4j
-public class ScanCodeLoginSupportFilter extends GenericFilterBean {
+public class GetScanCodeLoginFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
     private final SecurityConfig securityConfig;
 
-    public ScanCodeLoginSupportFilter(SecurityConfig securityConfig) {
+    public GetScanCodeLoginFilter(SecurityConfig securityConfig) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         this.securityConfig = securityConfig;
     }
@@ -39,13 +39,11 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (PathFilterUtils.isScanCodePath(httpRequest, securityConfig)) {
-            // TODO 扫描扫码登录二维码
-        } else if (PathFilterUtils.isScanCodeLoginConfirmPath(httpRequest, securityConfig)) {
-            // TODO 扫码登录确认登录
-        } else {
-            // 不是扫码登录相关请求
+        if (!PathFilterUtils.isGetScanCodeLoginPath(httpRequest, securityConfig)) {
+            // 不是获取扫码登录二维码请求
             chain.doFilter(request, response);
+            return;
         }
+        // TODO 获取扫码登录二维码
     }
 }

@@ -23,8 +23,20 @@ public class PathFilterUtils {
         return request.getRequestURI();
     }
 
+    private static ScanCodeLoginConfig getScanCodeLoginConfig(SecurityConfig securityConfig) {
+        LoginConfig login = securityConfig.getLogin();
+        if (login == null) {
+            return null;
+        }
+        ScanCodeLoginConfig scanCodeLogin = login.getScanCodeLogin();
+        if (scanCodeLogin == null || !scanCodeLogin.isEnable()) {
+            return null;
+        }
+        return scanCodeLogin;
+    }
+
     /**
-     * 当前请求是否是登录图片验证码请求
+     * 当前请求是否是获取图片验证码请求
      */
     public static boolean isLoginCaptchaPath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -40,7 +52,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是登录手机验证码请求
+     * 当前请求是否是获取手机验证码请求
      */
     public static boolean isLoginSmsValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -56,7 +68,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是登录邮箱验证码请求
+     * 当前请求是否是获取邮箱验证码请求
      */
     public static boolean isLoginEmailValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -71,8 +83,41 @@ public class PathFilterUtils {
         return Objects.equals(emailValidateCodeLogin.getLoginEmailValidateCodePath(), path);
     }
 
+    /**
+     * 当前请求是否是获取扫码登录二维码请求
+     */
+    public static boolean isGetScanCodeLoginPath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
+        if (scanCodeLogin == null) {
+            return false;
+        }
+        return Objects.equals(scanCodeLogin.getGetScanCodeLoginPath(), path);
+    }
 
+    /**
+     * 当前请求是否是扫描登录二维码请求
+     */
+    public static boolean isScanCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
+        if (scanCodeLogin == null) {
+            return false;
+        }
+        return Objects.equals(scanCodeLogin.getScanCodePath(), path);
+    }
 
+    /**
+     * 当前请求是否是扫码登录确认登录请求
+     */
+    public static boolean isScanCodeLoginConfirmPath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
+        if (scanCodeLogin == null) {
+            return false;
+        }
+        return Objects.equals(scanCodeLogin.getConfirmLoginPath(), path);
+    }
 
     /**
      * 当前请求是否是登录请求
@@ -111,7 +156,10 @@ public class PathFilterUtils {
                 || isLogoutRequest(request, securityConfig)
                 || isLoginCaptchaPath(request, securityConfig)
                 || isLoginSmsValidateCodePath(request, securityConfig)
-                || isLoginEmailValidateCodePath(request, securityConfig)) {
+                || isLoginEmailValidateCodePath(request, securityConfig)
+                || isGetScanCodeLoginPath(request, securityConfig)
+                || isScanCodePath(request, securityConfig)
+                || isScanCodeLoginConfirmPath(request, securityConfig)) {
             return false;
         }
         // 不需要认证和授权的Path
