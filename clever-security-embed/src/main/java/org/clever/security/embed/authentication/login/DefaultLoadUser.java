@@ -97,7 +97,7 @@ public class DefaultLoadUser implements LoadUser {
                 wechatSmallProgramReq.getLoginCode()
         );
         WeChatCode2SessionRes res = wechatClient.code2Session(wechatcode2SessionReq);
-        log.debug("微信小程序登录结果 -> {}", res);
+        log.debug("微信小程序登录结果: [{}] -> {}", WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode()), res);
         GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq();
         req.setOpenId(res.getOpenId());
         req.setUnionId(req.getUnionId());
