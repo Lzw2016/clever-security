@@ -43,7 +43,27 @@ create table user
 ) comment = '用户表';
 create index user_nickname on user (nickname);
 /*------------------------------------------------------------------------------------------------------------------------
-TODO user_ext 用户扩展表
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    user_ext -- 用户扩展表
+==================================================================================================================== */
+create table user_ext
+(
+    uid                 varchar(63)     not null                                                comment '用户id(系统自动生成且不会变化)',
+    wechat_open_id      varchar(63)     not null                                                comment '微信openId',
+    wechat_union_id     varchar(63)                                                             comment '微信unionId',
+    -- 其他字段
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (uid)
+) comment = '用户扩展表';
+create index user_ext_wechat_open_id on user_ext (wechat_open_id);
+create index user_ext_wechat_union_id on user_ext (wechat_union_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
