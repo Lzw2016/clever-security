@@ -17,6 +17,7 @@ public abstract class AbstractUserLoginReq extends BaseRequest {
     public static final String LoginType_ParamName = "loginType";
     public static final String LoginChannel_ParamName = "loginChannel";
     public static final String LoginCaptcha_ParamName = "captcha";
+    public static final String LoginCaptchaDigest_ParamName = "captchaDigest";
 
     /**
      * 登录渠道，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
@@ -26,7 +27,10 @@ public abstract class AbstractUserLoginReq extends BaseRequest {
      * 登录验证码(登录失败次数超过限制时需要)
      */
     private String captcha;
-
+    /**
+     * 登录验证码签名(校验验证码时需要)
+     */
+    private String captchaDigest;
     /**
      * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录
      */

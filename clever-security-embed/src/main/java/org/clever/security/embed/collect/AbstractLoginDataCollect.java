@@ -28,5 +28,11 @@ public abstract class AbstractLoginDataCollect implements LoginDataCollect {
                 loginData.setCaptcha(captcha);
             }
         }
+        if (loginData.getCaptchaDigest() == null) {
+            String captchaDigest = request.getParameter(AbstractUserLoginReq.LoginCaptchaDigest_ParamName);
+            if (StringUtils.isNotBlank(captchaDigest)) {
+                loginData.setCaptchaDigest(captchaDigest);
+            }
+        }
     }
 }
