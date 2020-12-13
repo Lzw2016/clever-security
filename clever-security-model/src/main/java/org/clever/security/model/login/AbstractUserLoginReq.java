@@ -31,8 +31,9 @@ public abstract class AbstractUserLoginReq extends BaseRequest {
      * 登录验证码签名(校验验证码时需要)
      */
     private String captchaDigest;
+
     /**
      * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录
      */
-    abstract public LoginType getLoginType();
+    public abstract LoginType getLoginType();
 }

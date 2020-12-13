@@ -278,7 +278,7 @@ create table validate_code
     domain_id           bigint          not null                                                comment '域id',
     uid                 varchar(63)                                                             comment '用户id(触发生成验证码的用户)',
     code                varchar(15)     not null                                                comment '验证码',
-    digest              varchar(63)                                                             comment '验证码签名',
+    digest              varchar(63)     not null        unique                                  comment '验证码签名',
     type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码',
     send_channel        int(1)          not null                                                comment '验证码发送渠道，0:不需要发送，1:短信，2:email',
     expired_time        datetime(3)     not null                                                comment '验证码过期时间',
@@ -289,7 +289,6 @@ create table validate_code
 ) comment = '验证码(缓存表)';
 create index validate_code_uid on validate_code (uid);
 create index validate_code_code on validate_code (code);
-create index validate_code_digest on validate_code (digest);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/

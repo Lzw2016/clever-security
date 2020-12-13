@@ -3,18 +3,25 @@ package org.clever.security.embed.authentication.login;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
+import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.GetLoginEmailValidateCodeReq;
+import org.clever.security.dto.request.GetLoginFailedCountAndCaptchaReq;
+import org.clever.security.dto.request.GetLoginSmsValidateCodeReq;
+import org.clever.security.dto.request.GetScanCodeLoginInfoReq;
+import org.clever.security.dto.response.GetLoginFailedCountAndCaptchaRes;
+import org.clever.security.dto.response.GetScanCodeLoginInfoRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginCaptchaConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.exception.*;
+import org.clever.security.embed.exception.LoginDataValidateException;
+import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.LoginValidateCodeException;
+import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.model.login.AbstractUserLoginReq;
-import org.clever.security.model.login.EmailValidateCodeReq;
-import org.clever.security.model.login.ScanCodeReq;
-import org.clever.security.model.login.SmsValidateCodeReq;
+import org.clever.security.model.login.*;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -28,6 +35,13 @@ import java.util.Objects;
  */
 @Slf4j
 public class DefaultVerifyLoginData implements VerifyLoginData {
+    private final LoginSupportClient loginSupportClient;
+
+    public DefaultVerifyLoginData(LoginSupportClient loginSupportClient) {
+        Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
+        this.loginSupportClient = loginSupportClient;
+    }
+
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request, AbstractUserLoginReq loginReq) {
         return true;
@@ -42,16 +56,14 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 登录数据格式校验(空、长度等)
         verifyLoginData(loginReq);
         // 验证码错误
-        verifyLoginCaptcha(loginConfig, loginReq);
-        // 登录数量超过最大并发数量错误
-        verifyConcurrentLoginCount(loginConfig, loginReq);
+        verifyLoginCaptcha(securityConfig.getDomainId(), loginConfig, loginReq);
         // 特定的登录方式校验
         if (loginReq instanceof ScanCodeReq) {
-            verifyScanCode((ScanCodeReq) loginReq);
+            verifyScanCode(securityConfig.getDomainId(), (ScanCodeReq) loginReq);
         } else if (loginReq instanceof SmsValidateCodeReq) {
-            verifySmsValidateCode((SmsValidateCodeReq) loginReq);
+            verifySmsValidateCode(securityConfig.getDomainId(), (SmsValidateCodeReq) loginReq);
         } else if (loginReq instanceof EmailValidateCodeReq) {
-            verifyEmailValidateCode((EmailValidateCodeReq) loginReq);
+            verifyEmailValidateCode(securityConfig.getDomainId(), (EmailValidateCodeReq) loginReq);
         }
     }
 
@@ -69,56 +81,56 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
     /**
      * 登录验证码错误校验
      */
-    protected void verifyLoginCaptcha(LoginConfig loginConfig, AbstractUserLoginReq loginReq) {
-        LoginCaptchaConfig loginCaptcha =   loginConfig.getLoginCaptcha();
-        if (loginCaptcha==null || !loginCaptcha.isNeedCaptcha()) {
+    protected void verifyLoginCaptcha(Long domainId, LoginConfig loginConfig, AbstractUserLoginReq loginReq) {
+        LoginCaptchaConfig loginCaptcha = loginConfig.getLoginCaptcha();
+        if (loginCaptcha == null || !loginCaptcha.isNeedCaptcha()) {
             return;
         }
-        // TODO 获取当前登录失败次数 和 验证码信息
-        int count = 0;
-        String realCaptcha = "";
-        if (count <= loginCaptcha.getNeedCaptchaByLoginFailedCount()) {
+        // 获取当前登录失败次数和验证码信息
+        GetLoginFailedCountAndCaptchaReq req = new GetLoginFailedCountAndCaptchaReq(domainId);
+        req.setCaptchaDigest(loginReq.getCaptchaDigest());
+        req.setLoginTypeId(loginReq.getLoginType().getId());
+        if (loginReq instanceof LoginNamePasswordReq) {
+            req.setLoginUniqueName(((LoginNamePasswordReq) loginReq).getLoginName());
+        } else if (loginReq instanceof SmsValidateCodeReq) {
+            req.setLoginUniqueName(((SmsValidateCodeReq) loginReq).getTelephone());
+        } else if (loginReq instanceof EmailValidateCodeReq) {
+            req.setLoginUniqueName(((EmailValidateCodeReq) loginReq).getEmail());
+        } else {
             return;
         }
-        if (StringUtils.isBlank(realCaptcha) || !Objects.equals(realCaptcha, loginReq.getCaptcha())) {
+        GetLoginFailedCountAndCaptchaRes res = loginSupportClient.getLoginFailedCountAndCaptcha(req);
+        // 不需要验证码
+        if (res.getFailedCount() < loginCaptcha.getNeedCaptchaByLoginFailedCount()) {
+            return;
+        }
+        final Date now = new Date();
+        if (res.getExpiredTime() != null && now.compareTo(res.getExpiredTime()) >= 0) {
+            throw new LoginDataValidateException("验证码已过期");
+        }
+        if (StringUtils.isBlank(res.getCode())
+                || !Objects.equals(res.getDigest(), loginReq.getCaptchaDigest())
+                || !Objects.equals(res.getCode(), loginReq.getCaptcha())) {
             throw new LoginDataValidateException("登录验证码错误");
-        }
-    }
-
-    /**
-     * 登录数量超过最大并发数量校验
-     */
-    protected void verifyConcurrentLoginCount(LoginConfig loginConfig, AbstractUserLoginReq loginReq) {
-        if (loginConfig.getConcurrentLoginCount() <= 0) {
-            return;
-        }
-        if (loginConfig.isAllowAfterLogin()) {
-            return;
-        }
-        // TODO 获取当前用户并发登录数量
-        int realConcurrentLoginCount = 0;
-        if (realConcurrentLoginCount >= loginConfig.getConcurrentLoginCount()) {
-            throw new ConcurrentLoginException("当前用户并发登录次数达到上限");
         }
     }
 
     /**
      * 扫码登录验证
      */
-    protected void verifyScanCode(ScanCodeReq req) {
-        // TODO 根据扫描二维码获取扫码登录信息
-        ScanCodeLogin scanCodeLogin = null;
-        if (scanCodeLogin == null) {
+    protected void verifyScanCode(Long domainId, ScanCodeReq scanCodeReq) {
+        // 根据扫描二维码获取扫码登录信息
+        GetScanCodeLoginInfoReq req = new GetScanCodeLoginInfoReq(domainId);
+        req.setScanCode(scanCodeReq.getScanCode());
+        GetScanCodeLoginInfoRes res = loginSupportClient.getScanCodeLoginInfo(req);
+        if (res == null) {
             throw new ScanCodeLoginException("二维码不存在");
         }
         Date now = new Date();
-        if (scanCodeLogin.getExpiredTime() == null || now.compareTo(scanCodeLogin.getExpiredTime()) >= 0) {
+        if (res.getGetTokenExpiredTime() == null || now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
             throw new ScanCodeLoginException("二维码已过期");
         }
-        if (scanCodeLogin.getGetTokenExpiredTime() == null || now.compareTo(scanCodeLogin.getGetTokenExpiredTime()) >= 0) {
-            throw new ScanCodeLoginException("二维码已过期");
-        }
-        if (StringUtils.isBlank(scanCodeLogin.getBindToken()) || !Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+        if (StringUtils.isBlank(res.getBindToken()) || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
             throw new ScanCodeLoginException("二维码状态错误");
         }
     }
@@ -126,19 +138,23 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
     /**
      * 手机号验证码登录校验
      */
-    protected void verifySmsValidateCode(SmsValidateCodeReq req) {
-        // TODO 获取真实发送的手机验证码
-        ValidateCode realValidateCode = null;
-        verifyValidateCode(realValidateCode, req.getValidateCode());
+    protected void verifySmsValidateCode(Long domainId, SmsValidateCodeReq smsValidateCodeReq) {
+        // 获取真实发送的手机验证码
+        GetLoginSmsValidateCodeReq req = new GetLoginSmsValidateCodeReq(domainId);
+        req.setTelephone(smsValidateCodeReq.getTelephone());
+        ValidateCode realValidateCode = loginSupportClient.getLoginSmsValidateCode(req);
+        verifyValidateCode(realValidateCode, smsValidateCodeReq.getValidateCode());
     }
 
     /**
      * 邮箱验证码登录校验
      */
-    protected void verifyEmailValidateCode(EmailValidateCodeReq req) {
-        // TODO 获取真实发送的邮箱验证码
-        ValidateCode realValidateCode = null;
-        verifyValidateCode(realValidateCode, req.getValidateCode());
+    protected void verifyEmailValidateCode(Long domainId, EmailValidateCodeReq emailValidateCodeReq) {
+        // 获取真实发送的邮箱验证码
+        GetLoginEmailValidateCodeReq req = new GetLoginEmailValidateCodeReq(domainId);
+        req.setEmail(emailValidateCodeReq.getEmail());
+        ValidateCode realValidateCode = loginSupportClient.getLoginEmailValidateCode(req);
+        verifyValidateCode(realValidateCode, emailValidateCodeReq.getValidateCode());
     }
 
     /**
