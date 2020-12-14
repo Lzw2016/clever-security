@@ -2,6 +2,7 @@ package org.clever.security.embed.authentication;
 
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
 import org.clever.common.utils.DateTimeUtils;
 import org.clever.common.utils.tuples.TupleTow;
@@ -241,12 +242,17 @@ public class LoginFilter extends GenericFilterBean {
             log.debug("### 登录成功 -> {}", userInfo);
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
             final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, addJwtTokenExtDataList);
-            final String refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
+            String refreshToken = null;
+            if (tokenConfig.isEnableRefreshToken()) {
+                refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
+                context.setRefreshToken(refreshToken);
+                context.setRefreshTokenExpiredTime(DateTimeUtils.addMilliseconds(new Date(), (int) tokenConfig.getRefreshTokenValidity().toMillis()));
+            }
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
             context.setJwtToken(tokenInfo.getValue1());
-            context.setRefreshToken(refreshToken);
+            context.setClaims(tokenInfo.getValue2());
             // 保存安全上下文(用户信息)
-            securityContextRepository.saveContext(context, securityConfig, context.getRequest(), context.getResponse());
+            securityContextRepository.cacheContext(context, securityConfig, context.getRequest(), context.getResponse());
             // 将JWT-Token写入客户端
             if (tokenConfig.isUseCookie()) {
                 int maxAge = DateTimeUtils.pastSeconds(new Date(), tokenInfo.getValue2().getExpiration()) + (60 * 3);
@@ -269,10 +275,17 @@ public class LoginFilter extends GenericFilterBean {
         LoginSuccessEvent loginSuccessEvent = new LoginSuccessEvent(
                 context.getRequest(),
                 context.getResponse(),
+                securityConfig.getDomainId(),
                 securityConfig.getLogin(),
                 context.getLoginData(),
-                context.getUserInfo()
+                context.getUserInfo(),
+                context.getJwtToken(),
+                context.getClaims()
         );
+        if (StringUtils.isNotBlank(context.getRefreshToken())) {
+            loginSuccessEvent.setRefreshToken(context.getRefreshToken());
+            loginSuccessEvent.setRefreshTokenExpiredTime(context.getRefreshTokenExpiredTime());
+        }
         for (LoginSuccessHandler handler : loginSuccessHandlerList) {
             handler.onLoginSuccess(context.getRequest(), context.getResponse(), loginSuccessEvent);
         }
@@ -288,6 +301,7 @@ public class LoginFilter extends GenericFilterBean {
         LoginFailureEvent loginFailureEvent = new LoginFailureEvent(
                 context.getRequest(),
                 context.getResponse(),
+                securityConfig.getDomainId(),
                 context.getLoginData(),
                 context.getUserInfo(),
                 context.getLoginException()

@@ -1,5 +1,6 @@
 package org.clever.security.embed.authentication.login;
 
+import io.jsonwebtoken.Claims;
 import lombok.Data;
 import org.clever.security.embed.exception.LoginException;
 import org.clever.security.model.UserInfo;
@@ -7,6 +8,7 @@ import org.clever.security.model.login.AbstractUserLoginReq;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * 用户登录上下文
@@ -41,9 +43,17 @@ public class LoginContext {
      */
     private String jwtToken;
     /**
+     * JWT-Token对象
+     */
+    private Claims claims;
+    /**
      * 刷新Token
      */
     private String refreshToken;
+    /**
+     * 刷新Token过期时间
+     */
+    private Date refreshTokenExpiredTime;
 
     public LoginContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;

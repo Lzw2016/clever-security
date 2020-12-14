@@ -1,10 +1,12 @@
 package org.clever.security.embed.authorization.voter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.client.AuthSupportClient;
+import org.clever.security.dto.request.GetApiPermissionReq;
+import org.clever.security.dto.response.GetApiPermissionRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.AuthorizationInnerException;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.Permission;
 import org.clever.security.model.SecurityContext;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
@@ -23,13 +25,16 @@ import java.util.Objects;
  */
 @Slf4j
 public class ControllerAuthorizationVoter implements AuthorizationVoter {
+    private final AuthSupportClient authSupportClient;
     /**
      * Spring内置的根据request获取Controller Method的工具对象
      */
     private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    public ControllerAuthorizationVoter(RequestMappingHandlerMapping requestMappingHandlerMapping) {
+    public ControllerAuthorizationVoter(AuthSupportClient authSupportClient, RequestMappingHandlerMapping requestMappingHandlerMapping) {
+        Assert.notNull(authSupportClient, "参数authSupportClient不能为null");
         Assert.notNull(requestMappingHandlerMapping, "参数requestMappingHandlerMapping不能为null");
+        this.authSupportClient = authSupportClient;
         this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
@@ -69,21 +74,25 @@ public class ControllerAuthorizationVoter implements AuthorizationVoter {
             }
             methodParams.append(clazz.getName());
         }
-        // TODO 根据targetClass、targetMethod、methodParams得到权限元数据
-        Permission permission = null;
-        if (permission == null) {
-            // log.info("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+        // 根据targetClass、targetMethod、methodParams得到权限元数据
+        GetApiPermissionReq req = new GetApiPermissionReq(securityConfig.getDomainId());
+        req.setClassName(targetClass);
+        req.setMethodName(targetMethod);
+        req.setMethodParams(methodParams.toString());
+        GetApiPermissionRes res = authSupportClient.getApiPermission(req);
+        if (res == null) {
+            log.debug("### 授权通过(当前资源未配置权限) [{}#{}] -> [{}]", targetClass, targetMethod, request.getRequestURI());
             return VoterResult.PASS;
         }
-        if (Objects.equals(permission.getEnableAuth(), EnumConstant.Permission_EnableAuth_0)) {
-            // log.info("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+        if (Objects.equals(res.getEnableAuth(), EnumConstant.Permission_EnableAuth_0)) {
+            log.debug("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, res.getApiPath(), request.getRequestURI());
             return VoterResult.PASS;
         }
-        if (!securityContext.hasPermissions(permission.getStrFlag())) {
-            // log.info("### 授权失败(未授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+        if (!securityContext.hasPermissions(res.getStrFlag())) {
+            log.debug("### 授权失败(未授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, res.getApiPath(), request.getRequestURI());
             return VoterResult.REJECT;
         }
-        // log.info("### 授权通过(已授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, webPermissionModel.getResourcesUrl(), filterInvocation.getRequestUrl());
+        log.debug("### 授权通过(已授权) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, res.getApiPath(), request.getRequestURI());
         return VoterResult.PASS;
     }
 }

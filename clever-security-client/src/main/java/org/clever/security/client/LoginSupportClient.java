@@ -40,13 +40,13 @@ public interface LoginSupportClient {
      * 发送邮箱登录验证码
      */
     @PostMapping("/send_login_validate_code_for_email")
-    SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated SendLoginValidateCodeForEmailReq req);
+    SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated @RequestBody SendLoginValidateCodeForEmailReq req);
 
     /**
      * 发送邮箱登录验证码
      */
     @PostMapping("/send_login_validate_code_for_sms")
-    SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated SendLoginValidateCodeForSmsReq req);
+    SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated @RequestBody SendLoginValidateCodeForSmsReq req);
 
     /**
      * 创建登录扫码二维码
@@ -131,4 +131,34 @@ public interface LoginSupportClient {
      */
     @GetMapping("/get_user_info_by_scan_code")
     UserInfo getUserInfoByScanCode(@Validated GetUserInfoByScanCodeReq req);
+
+    /**
+     * 新增登录日志
+     */
+    @PostMapping("/user_login_log")
+    AddUserLoginLogRes addUserLoginLog(@Validated @RequestBody AddUserLoginLogReq req);
+
+    /**
+     * 增加用户连续登录失败次数
+     */
+    @PostMapping("/add_login_failed_count")
+    AddLoginFailedCountRes addLoginFailedCount(@Validated @RequestBody AddLoginFailedCountReq req);
+
+    /**
+     * 清除用户连续登录失败次数
+     */
+    @PostMapping("/clear_login_failed_count")
+    ClearLoginFailedCountRes clearLoginFailedCount(@Validated @RequestBody ClearLoginFailedCountReq req);
+
+    /**
+     * 新增JWT-Token
+     */
+    @PostMapping("/jwt_token")
+    AddJwtTokenRes addJwtToken(@Validated @RequestBody AddJwtTokenReq req);
+
+    /**
+     * 禁用JWT-Token
+     */
+    @PostMapping("/disable_first_jwt_token")
+    DisableFirstJwtTokenRes disableFirstJwtToken(@Validated @RequestBody DisableFirstJwtTokenReq req);
 }

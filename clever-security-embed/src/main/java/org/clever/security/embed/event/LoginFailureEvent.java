@@ -25,6 +25,10 @@ public class LoginFailureEvent {
      */
     private final HttpServletResponse response;
     /**
+     * 域id
+     */
+    private final Long domainId;
+    /**
      * 用户登录数据
      */
     private final AbstractUserLoginReq loginData;
@@ -37,9 +41,10 @@ public class LoginFailureEvent {
      */
     private final LoginException loginException;
 
-    public LoginFailureEvent(HttpServletRequest request, HttpServletResponse response, AbstractUserLoginReq loginData, UserInfo userInfo, LoginException loginException) {
+    public LoginFailureEvent(HttpServletRequest request, HttpServletResponse response, Long domainId, AbstractUserLoginReq loginData, UserInfo userInfo, LoginException loginException) {
         this.request = request;
         this.response = response;
+        this.domainId = domainId;
         this.loginData = loginData;
         this.userInfo = userInfo;
         this.loginException = loginException;

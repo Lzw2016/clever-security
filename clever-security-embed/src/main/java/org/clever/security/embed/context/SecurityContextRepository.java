@@ -16,14 +16,14 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface SecurityContextRepository {
     /**
-     * 保存安全上下文(用户信息)
+     * 缓存安全上下文(用户信息)
      *
      * @param context        用户登录上下文
      * @param securityConfig 权限系统配置
      * @param request        请求对象
      * @param response       响应对象
      */
-    void saveContext(LoginContext context, SecurityConfig securityConfig, HttpServletRequest request, HttpServletResponse response);
+    void cacheContext(LoginContext context, SecurityConfig securityConfig, HttpServletRequest request, HttpServletResponse response);
 
     /**
      * 加载安全上下文(用户信息)
