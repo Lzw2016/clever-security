@@ -24,4 +24,9 @@ public interface AuthSupportClient {
      */
     @GetMapping("/api_permission")
     GetApiPermissionRes getApiPermission(@Validated GetApiPermissionReq req);
+
+//    /**
+//     * 获取getJwtToken数据
+//     */
+
 }
