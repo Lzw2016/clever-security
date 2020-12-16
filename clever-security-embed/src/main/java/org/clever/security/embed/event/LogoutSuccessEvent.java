@@ -1,5 +1,6 @@
 package org.clever.security.embed.event;
 
+import io.jsonwebtoken.Claims;
 import lombok.Data;
 import org.clever.security.model.SecurityContext;
 
@@ -12,11 +13,21 @@ import org.clever.security.model.SecurityContext;
 @Data
 public class LogoutSuccessEvent {
     /**
+     * 域ID
+     */
+    private final Long domainId;
+    /**
      * 安全上下文(用户信息)
      */
     private final SecurityContext securityContext;
+    /**
+     * JWT-Token对象
+     */
+    private final Claims claims;
 
-    public LogoutSuccessEvent(SecurityContext securityContext) {
+    public LogoutSuccessEvent(Long domainId, SecurityContext securityContext, Claims claims) {
+        this.domainId = domainId;
         this.securityContext = securityContext;
+        this.claims = claims;
     }
 }

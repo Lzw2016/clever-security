@@ -4,10 +4,12 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
+import org.clever.security.entity.JwtToken;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.UserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,13 +30,13 @@ public interface LoginSupportClient {
      * 获取登录图片验证码
      */
     @GetMapping("/login_captcha")
-    GetLoginCaptchaRes getLoginCaptcha(@Validated GetLoginCaptchaReq req);
+    GetLoginCaptchaRes getLoginCaptcha(@Validated @SpringQueryMap GetLoginCaptchaReq req);
 
     /**
      * 获取用户登录失败次数和验证码信息
      */
     @GetMapping("/login_failed_count_and_captcha")
-    GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(@Validated GetLoginFailedCountAndCaptchaReq req);
+    GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(@Validated @SpringQueryMap GetLoginFailedCountAndCaptchaReq req);
 
     /**
      * 发送邮箱登录验证码
@@ -70,67 +72,67 @@ public interface LoginSupportClient {
      * 获取扫码登录信息
      */
     @GetMapping("/scan_code_login_info")
-    GetScanCodeLoginInfoRes getScanCodeLoginInfo(@Validated GetScanCodeLoginInfoReq req);
+    GetScanCodeLoginInfoRes getScanCodeLoginInfo(@Validated @SpringQueryMap GetScanCodeLoginInfoReq req);
 
     /**
      * 获取发送的手机验证码
      */
     @GetMapping("/login_sms_validate_code")
-    ValidateCode getLoginSmsValidateCode(@Validated GetLoginSmsValidateCodeReq req);
+    ValidateCode getLoginSmsValidateCode(@Validated @SpringQueryMap GetLoginSmsValidateCodeReq req);
 
     /**
      * 获取发送的邮箱验证码
      */
     @GetMapping("/login_email_validate_code")
-    ValidateCode getLoginEmailValidateCode(@Validated GetLoginEmailValidateCodeReq req);
+    ValidateCode getLoginEmailValidateCode(@Validated @SpringQueryMap GetLoginEmailValidateCodeReq req);
 
     /**
      * 获取用户在指定域中
      */
     @GetMapping("/domain_exists_user")
-    DomainExistsUserRes domainExistsUser(@Validated DomainExistsUserReq req);
+    DomainExistsUserRes domainExistsUser(@Validated @SpringQueryMap DomainExistsUserReq req);
 
     /**
      * 获取发送的邮箱验证码
      */
     @GetMapping("/user")
-    User getUser(@Validated GetUserReq req);
+    User getUser(@Validated @SpringQueryMap GetUserReq req);
 
     /**
      * 获取当前用户并发登录数量
      */
     @GetMapping("/concurrent_login_count")
-    GetConcurrentLoginCountRes getConcurrentLoginCount(@Validated GetConcurrentLoginCountReq req);
+    GetConcurrentLoginCountRes getConcurrentLoginCount(@Validated @SpringQueryMap GetConcurrentLoginCountReq req);
 
     /**
      * 根据LoginName获取用户名
      */
     @GetMapping("/get_user_info_by_login_name")
-    UserInfo getUserInfoByLoginName(@Validated GetUserInfoByLoginNameReq req);
+    UserInfo getUserInfoByLoginName(@Validated @SpringQueryMap GetUserInfoByLoginNameReq req);
 
     /**
      * 根据Telephone获取用户名
      */
     @GetMapping("/get_user_info_by_telephone")
-    UserInfo getUserInfoByTelephone(@Validated GetUserInfoByTelephoneReq req);
+    UserInfo getUserInfoByTelephone(@Validated @SpringQueryMap GetUserInfoByTelephoneReq req);
 
     /**
      * 根据Email获取用户名
      */
     @GetMapping("/get_user_info_by_email")
-    UserInfo getUserInfoByEmail(@Validated GetUserInfoByEmailReq req);
+    UserInfo getUserInfoByEmail(@Validated @SpringQueryMap GetUserInfoByEmailReq req);
 
     /**
      * 根据WechatOpenId获取用户名
      */
     @GetMapping("/get_user_info_by_wechat_open_id")
-    UserInfo getUserInfoByWechatOpenId(@Validated GetUserInfoByWechatOpenIdReq req);
+    UserInfo getUserInfoByWechatOpenId(@Validated @SpringQueryMap GetUserInfoByWechatOpenIdReq req);
 
     /**
      * 根据ScanCode获取用户名
      */
     @GetMapping("/get_user_info_by_scan_code")
-    UserInfo getUserInfoByScanCode(@Validated GetUserInfoByScanCodeReq req);
+    UserInfo getUserInfoByScanCode(@Validated @SpringQueryMap GetUserInfoByScanCodeReq req);
 
     /**
      * 新增登录日志
@@ -161,4 +163,17 @@ public interface LoginSupportClient {
      */
     @PostMapping("/disable_first_jwt_token")
     DisableFirstJwtTokenRes disableFirstJwtToken(@Validated @RequestBody DisableFirstJwtTokenReq req);
+
+    /**
+     * 获取JWT-Token
+     */
+    @GetMapping("/jwt_token")
+    JwtToken getJwtToken(@Validated @SpringQueryMap GetJwtTokenReq req);
+
+    /**
+     * 禁用JWT-Token
+     */
+    @PostMapping("/disable_first_jwt_token")
+    JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req);
+
 }

@@ -1,5 +1,6 @@
 package org.clever.security.embed.authentication;
 
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.authentication.logout.LogoutContext;
@@ -113,7 +114,8 @@ public class LogoutFilter extends GenericFilterBean {
         }
         // 登出成功
         if (context.getLogoutException() == null && logoutSuccessHandlerList != null) {
-            LogoutSuccessEvent logoutSuccessEvent = new LogoutSuccessEvent(context.getSecurityContext());
+            Claims claims = (Claims) context.getRequest().getAttribute(AuthenticationFilter.JWT_Object_Request_Attribute);
+            LogoutSuccessEvent logoutSuccessEvent = new LogoutSuccessEvent(securityConfig.getDomainId(), context.getSecurityContext(), claims);
             for (LogoutSuccessHandler handler : logoutSuccessHandlerList) {
                 handler.onLogoutSuccess(context.getRequest(), context.getResponse(), logoutSuccessEvent);
             }

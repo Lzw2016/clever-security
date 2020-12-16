@@ -40,6 +40,7 @@ import java.util.List;
  */
 @Slf4j
 public class AuthenticationFilter extends GenericFilterBean {
+    public final static String JWT_Object_Request_Attribute = AuthenticationFilter.class.getName() + "_JWT_Object";
     /**
      * 全局配置
      */
@@ -146,6 +147,7 @@ public class AuthenticationFilter extends GenericFilterBean {
         Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
         context.setClaims(claims);
         context.setUid(claims.getSubject());
+        context.getRequest().setAttribute(JWT_Object_Request_Attribute, claims);
         // 验证JWT-Token
         for (VerifyJwtToken verifyJwtToken : verifyJwtTokenList) {
             verifyJwtToken.verify(jwtToken, context.getUid(), claims, securityConfig, context.getRequest(), context.getResponse());

@@ -11,7 +11,6 @@ public abstract class AuthenticationException extends RuntimeException {
         super(msg, t);
     }
 
-
     public AuthenticationException(String msg) {
         super(msg);
     }

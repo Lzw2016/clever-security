@@ -114,7 +114,7 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
                 // 挤下最早登录的用户
                 DisableFirstJwtTokenReq req2 = new DisableFirstJwtTokenReq(event.getDomainId());
                 req2.setUid(userInfo.getUid());
-                req2.setDisableReason("");
+                req2.setDisableReason("并发登录当数量超限，被挤下线");
                 DisableFirstJwtTokenRes res2 = loginSupportClient.disableFirstJwtToken(req2);
                 log.debug("### 挤下最早登录的用户 -> uid={} | ExpiredTime={} | CreateAt={}", res2.getUid(), res2.getExpiredTime(), res2.getCreateAt());
             }

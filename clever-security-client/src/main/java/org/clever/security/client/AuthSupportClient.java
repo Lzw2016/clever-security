@@ -5,6 +5,7 @@ import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.GetApiPermissionReq;
 import org.clever.security.dto.response.GetApiPermissionRes;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -23,7 +24,7 @@ public interface AuthSupportClient {
      * 获取API权限信息
      */
     @GetMapping("/api_permission")
-    GetApiPermissionRes getApiPermission(@Validated GetApiPermissionReq req);
+    GetApiPermissionRes getApiPermission(@Validated @SpringQueryMap GetApiPermissionReq req);
 
 //    /**
 //     * 获取getJwtToken数据
