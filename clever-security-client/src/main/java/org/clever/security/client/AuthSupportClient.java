@@ -2,8 +2,11 @@ package org.clever.security.client;
 
 import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
+import org.clever.security.dto.request.CacheContextReq;
 import org.clever.security.dto.request.GetApiPermissionReq;
+import org.clever.security.dto.request.LoadContextReq;
 import org.clever.security.dto.response.GetApiPermissionRes;
+import org.clever.security.model.SecurityContext;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
@@ -26,8 +29,15 @@ public interface AuthSupportClient {
     @GetMapping("/api_permission")
     GetApiPermissionRes getApiPermission(@Validated @SpringQueryMap GetApiPermissionReq req);
 
-//    /**
-//     * 获取getJwtToken数据
-//     */
+    /**
+     * 缓存SecurityConfig对象
+     */
+    @GetMapping("/cache_security_context")
+    void cacheContext(@Validated @SpringQueryMap CacheContextReq req);
 
+    /**
+     * 加载SecurityConfig对象
+     */
+    @GetMapping("/load_security_context")
+    SecurityContext loadContext(@Validated @SpringQueryMap LoadContextReq req);
 }

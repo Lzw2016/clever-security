@@ -28,10 +28,11 @@ public interface SecurityContextRepository {
     /**
      * 加载安全上下文(用户信息)
      *
+     * @param domainId 域id
      * @param uid      用户id
      * @param claims   JWT-Token Body内容
      * @param request  请求对象
      * @param response 响应对象
      */
-    SecurityContext loadContext(String uid, Claims claims, HttpServletRequest request, HttpServletResponse response);
+    SecurityContext loadContext(Long domainId, String uid, Claims claims, HttpServletRequest request, HttpServletResponse response);
 }

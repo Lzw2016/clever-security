@@ -153,7 +153,7 @@ public class AuthenticationFilter extends GenericFilterBean {
             verifyJwtToken.verify(jwtToken, context.getUid(), claims, securityConfig, context.getRequest(), context.getResponse());
         }
         // 根据JWT-Token获取SecurityContext
-        SecurityContext securityContext = securityContextRepository.loadContext(context.getUid(), claims, context.getRequest(), context.getResponse());
+        SecurityContext securityContext = securityContextRepository.loadContext(securityConfig.getDomainId(), context.getUid(), claims, context.getRequest(), context.getResponse());
         // 把SecurityContext绑定到当前线程和当前请求对象
         SecurityContextHolder.setContext(securityContext, context.getRequest());
         context.setSecurityContext(securityContext);
