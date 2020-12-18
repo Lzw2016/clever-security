@@ -93,7 +93,7 @@ public interface LoginSupportClient {
     DomainExistsUserRes domainExistsUser(@Validated @SpringQueryMap DomainExistsUserReq req);
 
     /**
-     * 获取发送的邮箱验证码
+     * 获取用户信息
      */
     @GetMapping("/user")
     User getUser(@Validated @SpringQueryMap GetUserReq req);

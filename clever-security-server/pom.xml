@@ -38,6 +38,11 @@
             <groupId>org.clever</groupId>
             <artifactId>clever-security-model</artifactId>
         </dependency>
+        <!--clever-security-->
+        <dependency>
+            <groupId>org.clever</groupId>
+            <artifactId>clever-security-client</artifactId>
+        </dependency>
         <!--orm-->
         <dependency>
             <groupId>mysql</groupId>

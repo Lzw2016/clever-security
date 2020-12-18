@@ -1,4 +1,4 @@
-package org.clever.security.embed.recovery;
+package org.clever.security.embed.expand;
 
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -9,14 +9,15 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 
 /**
- * 密码找回过滤器
+ * 用户注册过滤器
  * <p>
  * 作者：lizw <br/>
- * 创建时间：2020-12-16 22:27 <br/>
+ * 创建时间：2020-12-16 22:25 <br/>
  */
-public class PasswordRecoveryFilter extends GenericFilterBean {
+public class UserRegisterFilter extends GenericFilterBean {
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // TODO 密码找回
+        // TODO 用户注册
     }
 }

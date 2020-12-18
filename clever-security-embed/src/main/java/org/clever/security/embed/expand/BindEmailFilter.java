@@ -1,4 +1,4 @@
-package org.clever.security.embed.register;
+package org.clever.security.embed.expand;
 
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -9,15 +9,12 @@ import javax.servlet.ServletResponse;
 import java.io.IOException;
 
 /**
- * 用户注册过滤器
- * <p>
  * 作者：lizw <br/>
- * 创建时间：2020-12-16 22:25 <br/>
+ * 创建时间：2020/12/18 22:14 <br/>
  */
-public class UserRegisterFilter extends GenericFilterBean {
-
+public class BindEmailFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // TODO 用户注册
+        // TODO 邮箱绑定/换绑
     }
 }

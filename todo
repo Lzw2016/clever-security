@@ -25,6 +25,9 @@ ScanCodeLoginSupportFilter(扫描登录二维码、确认登录)
 🡓
 LoginFilter(登录)
 🡓
+BindTelephoneFilter(手机号绑定/换绑)
+BindEmailFilter(邮箱绑定/换绑)
+🡓
 LogoutFilter(登出)
 🡓
 AuthorizationFilter(授权)
