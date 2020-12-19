@@ -2,8 +2,11 @@ package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.clever.security.entity.Permission;
 import org.springframework.stereotype.Repository;
+
+import java.util.Set;
 
 /**
  * 作者：lizw <br/>
@@ -12,4 +15,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface PermissionMapper extends BaseMapper<Permission> {
+    Set<String> findPermissionByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 }

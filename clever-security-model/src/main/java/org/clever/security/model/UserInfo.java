@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -46,5 +46,5 @@ public class UserInfo implements Serializable {
     /**
      * 用户扩展信息
      */
-    private Map<String, Object> extInfo = new HashMap<>();
+    private final Map<String, Object> extInfo = new LinkedHashMap<>();
 }

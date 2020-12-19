@@ -2,6 +2,8 @@ package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.clever.security.entity.User;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
+
+    @Select("select * from user where uid=#{uid}")
+    User getByUid(@Param("uid") String uid);
 }

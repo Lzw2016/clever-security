@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 作者：lizw <br/>
  * 创建时间：2020/12/18 22:23 <br/>
  */
-@Transactional(readOnly = true)
+@Transactional
 @Primary
 @Service
 public class LoginSupportService implements LoginSupportClient {
