@@ -1,4 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-org.clever.security.embed.autoconfigure.AutoConfigureSecurity,\
-org.clever.security.embed.config.JwtWebSecurityConfig,\
-org.clever.security.embed.config.SessionWebSecurityConfig
+org.clever.security.embed.autoconfigure.AutoConfigureBaseBeans,\
+org.clever.security.embed.autoconfigure.AutoConfigureSecurityFilter
