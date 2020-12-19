@@ -57,6 +57,12 @@ public class EmailValidateCodeReqCollect extends AbstractLoginDataCollect {
                 req.setEmail(email);
             }
         }
+        if (req.getValidateCodeDigest() == null) {
+            String validateCodeDigest = request.getParameter(EmailValidateCodeReq.ValidateCodeDigest_ParamName);
+            if (validateCodeDigest != null) {
+                req.setValidateCodeDigest(validateCodeDigest);
+            }
+        }
         if (req.getValidateCode() == null) {
             String validateCode = request.getParameter(EmailValidateCodeReq.ValidateCode_ParamName);
             if (validateCode != null) {

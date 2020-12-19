@@ -40,9 +40,9 @@ public class ScanCodeLogin implements Serializable {
     private Date expiredTime;
 
     /**
-     * 绑定的JWT-Token数据
+     * 绑定的JWT-Token id
      */
-    private String bindToken;
+    private Long bindTokenId;
 
     /**
      * (扫描时间)绑定JWT-Token时间

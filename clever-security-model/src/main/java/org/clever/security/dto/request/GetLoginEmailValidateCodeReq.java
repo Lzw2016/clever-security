@@ -22,6 +22,11 @@ public class GetLoginEmailValidateCodeReq extends BaseRequest {
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式错误")
     private String email;
+    /**
+     * 验证码签名
+     */
+    @NotBlank(message = "验证码签名不能为空")
+    private String validateCodeDigest;
 
     public GetLoginEmailValidateCodeReq(Long domainId) {
         this.domainId = domainId;

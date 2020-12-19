@@ -61,6 +61,7 @@ public class LoginCaptchaFilter extends GenericFilterBean {
         try {
             // 发送图片验证码
             GetLoginCaptchaReq req = new GetLoginCaptchaReq(securityConfig.getDomainId());
+            req.setEffectiveTimeMilli((int) securityConfig.getLogin().getLoginCaptcha().getEffectiveTime().toMillis());
             GetLoginCaptchaRes res = loginSupportClient.getLoginCaptcha(req);
             log.debug("登录图片验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
             httpResponse.addHeader(Constant.Login_Captcha_Digest_Response_Header, res.getDigest());

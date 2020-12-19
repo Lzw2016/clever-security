@@ -5,6 +5,7 @@ import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.SendLoginValidateCodeForEmailReq;
 import org.clever.security.dto.response.SendLoginValidateCodeForEmailRes;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.exception.LoginNameNotFoundException;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,15 @@ public class LoginEmailValidateCodeFilter extends GenericFilterBean {
         }
         // 发送邮箱验证码
         SendLoginValidateCodeForEmailReq req = new SendLoginValidateCodeForEmailReq(securityConfig.getDomainId());
+        // TODO 设置邮箱
+        req.setEmail("");
+        req.setEffectiveTimeMilli((int) securityConfig.getLogin().getEmailValidateCodeLogin().getEffectiveTime().toMillis());
+        req.setMaxSendNumInDay(securityConfig.getLogin().getEmailValidateCodeLogin().getMaxSendNumInDay());
         try {
             SendLoginValidateCodeForEmailRes res = loginSupportClient.sendLoginValidateCodeForEmail(req);
+            if (res == null) {
+                throw new LoginNameNotFoundException("当前邮箱未注册");
+            }
             HttpServletResponseUtils.sendJson(httpResponse, res);
         } catch (Exception e) {
             log.error("发送邮箱登录验证码失败", e);

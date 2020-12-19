@@ -54,6 +54,10 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
         }
         // 发送短信验证码
         SendLoginValidateCodeForSmsReq req = new SendLoginValidateCodeForSmsReq(securityConfig.getDomainId());
+        // TODO 设置手机号
+        req.setTelephone("");
+        req.setEffectiveTimeMilli((int) securityConfig.getLogin().getSmsValidateCodeLogin().getEffectiveTime().toMillis());
+        req.setMaxSendNumInDay(securityConfig.getLogin().getSmsValidateCodeLogin().getMaxSendNumInDay());
         try {
             SendLoginValidateCodeForSmsRes res = loginSupportClient.sendLoginValidateCodeForSms(req);
             HttpServletResponseUtils.sendJson(httpResponse, res);

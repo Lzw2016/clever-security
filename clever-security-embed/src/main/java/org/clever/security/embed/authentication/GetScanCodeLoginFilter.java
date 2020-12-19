@@ -57,6 +57,9 @@ public class GetScanCodeLoginFilter extends GenericFilterBean {
         }
         // 获取扫码登录二维码
         CreateLoginScanCodeReq req = new CreateLoginScanCodeReq(securityConfig.getDomainId());
+        req.setExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getExpiredTime().toMillis());
+        req.setConfirmExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getConfirmExpiredTime().toMillis());
+        req.setGetTokenExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getGetTokenExpiredTime().toMillis());
         try {
             CreateLoginScanCodeRes res = loginSupportClient.createLoginScanCode(req);
             byte[] image = EncodeDecodeUtils.decodeBase64(res.getScanCodeContent());

@@ -13,9 +13,15 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GetUserInfoByScanCodeReq extends BaseRequest {
+    @NotBlank(message = "域id不能为空")
+    private Long domainId;
     /**
      * 浏览器扫描码
      */
     @NotBlank(message = "二维码不能为空")
     private String scanCode;
+
+    public GetUserInfoByScanCodeReq(Long domainId) {
+        this.domainId = domainId;
+    }
 }

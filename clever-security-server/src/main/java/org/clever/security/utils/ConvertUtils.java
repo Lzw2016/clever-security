@@ -10,6 +10,9 @@ import org.clever.security.model.UserInfo;
 public class ConvertUtils {
 
     public static UserInfo convertToUserInfo(User user) {
+        if (user == null) {
+            return null;
+        }
         UserInfo userInfo = new UserInfo();
         userInfo.setUid(user.getUid());
         userInfo.setLoginName(user.getLoginName());

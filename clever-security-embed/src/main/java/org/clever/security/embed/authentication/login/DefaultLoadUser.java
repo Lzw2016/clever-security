@@ -98,7 +98,7 @@ public class DefaultLoadUser implements LoadUser {
         );
         WeChatCode2SessionRes res = wechatClient.code2Session(wechatcode2SessionReq);
         log.debug("微信小程序登录结果: [{}] -> {}", WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode()), res);
-        GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq();
+        GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq(securityConfig.getDomainId());
         req.setOpenId(res.getOpenId());
         req.setUnionId(req.getUnionId());
         return loginSupportClient.getUserInfoByWechatOpenId(req);
@@ -113,7 +113,7 @@ public class DefaultLoadUser implements LoadUser {
 
     protected UserInfo loadUser(SecurityConfig securityConfig, HttpServletRequest request, ScanCodeReq scanCodeReq) {
         // 根据“scanCode”加载用户信息
-        GetUserInfoByScanCodeReq req = new GetUserInfoByScanCodeReq();
+        GetUserInfoByScanCodeReq req = new GetUserInfoByScanCodeReq(securityConfig.getDomainId());
         req.setScanCode(scanCodeReq.getScanCode());
         return loginSupportClient.getUserInfoByScanCode(req);
     }

@@ -45,7 +45,7 @@ public interface LoginSupportClient {
     SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated @RequestBody SendLoginValidateCodeForEmailReq req);
 
     /**
-     * 发送邮箱登录验证码
+     * 发送短信登录验证码
      */
     @PostMapping("/send_login_validate_code_for_sms")
     SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated @RequestBody SendLoginValidateCodeForSmsReq req);
@@ -105,7 +105,7 @@ public interface LoginSupportClient {
     GetConcurrentLoginCountRes getConcurrentLoginCount(@Validated @SpringQueryMap GetConcurrentLoginCountReq req);
 
     /**
-     * 根据LoginName获取用户名
+     * 根据LoginName获取用户信息
      */
     @GetMapping("/get_user_info_by_login_name")
     UserInfo getUserInfoByLoginName(@Validated @SpringQueryMap GetUserInfoByLoginNameReq req);

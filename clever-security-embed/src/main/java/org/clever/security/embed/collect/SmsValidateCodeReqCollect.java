@@ -57,6 +57,12 @@ public class SmsValidateCodeReqCollect extends AbstractLoginDataCollect {
                 req.setTelephone(telephone);
             }
         }
+        if (req.getValidateCodeDigest() == null) {
+            String validateCodeDigest = request.getParameter(SmsValidateCodeReq.ValidateCodeDigest_ParamName);
+            if (validateCodeDigest != null) {
+                req.setValidateCodeDigest(validateCodeDigest);
+            }
+        }
         if (req.getValidateCode() == null) {
             String validateCode = request.getParameter(SmsValidateCodeReq.ValidateCode_ParamName);
             if (validateCode != null) {

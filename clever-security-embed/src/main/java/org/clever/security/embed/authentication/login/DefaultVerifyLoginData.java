@@ -130,7 +130,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         if (res.getGetTokenExpiredTime() == null || now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
             throw new ScanCodeLoginException("二维码已过期");
         }
-        if (StringUtils.isBlank(res.getBindToken()) || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+        if (res.getBindTokenId() == null || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
             throw new ScanCodeLoginException("二维码状态错误");
         }
     }
@@ -142,6 +142,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 获取真实发送的手机验证码
         GetLoginSmsValidateCodeReq req = new GetLoginSmsValidateCodeReq(domainId);
         req.setTelephone(smsValidateCodeReq.getTelephone());
+        req.setValidateCodeDigest(smsValidateCodeReq.getValidateCodeDigest());
         ValidateCode realValidateCode = loginSupportClient.getLoginSmsValidateCode(req);
         verifyValidateCode(realValidateCode, smsValidateCodeReq.getValidateCode());
     }
@@ -153,6 +154,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 获取真实发送的邮箱验证码
         GetLoginEmailValidateCodeReq req = new GetLoginEmailValidateCodeReq(domainId);
         req.setEmail(emailValidateCodeReq.getEmail());
+        req.setValidateCodeDigest(emailValidateCodeReq.getValidateCodeDigest());
         ValidateCode realValidateCode = loginSupportClient.getLoginEmailValidateCode(req);
         verifyValidateCode(realValidateCode, emailValidateCodeReq.getValidateCode());
     }

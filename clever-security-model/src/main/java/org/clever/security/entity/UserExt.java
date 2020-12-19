@@ -15,6 +15,10 @@ import java.util.Date;
 public class UserExt implements Serializable {
     private static final long serialVersionUID = -28090812452997640L;
     /**
+     * 域id
+     */
+    private Long domainId;
+    /**
      * 用户id(系统自动生成且不会变化)
      */
     private String uid;
