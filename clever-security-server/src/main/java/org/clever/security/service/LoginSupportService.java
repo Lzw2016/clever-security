@@ -8,6 +8,7 @@ import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
+import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.common.utils.zxing.ZxingCreateImageUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
@@ -46,6 +47,8 @@ public class LoginSupportService implements LoginSupportClient {
     private UserDomainMapper userDomainMapper;
     @Autowired
     private UserExtMapper userExtMapper;
+    @Autowired
+    private UserLoginLogMapper userLoginLogMapper;
 
     @Override
     public GetLoginCaptchaRes getLoginCaptcha(GetLoginCaptchaReq req) {
@@ -406,36 +409,94 @@ public class LoginSupportService implements LoginSupportClient {
 
     @Override
     public AddUserLoginLogRes addUserLoginLog(AddUserLoginLogReq req) {
-        return null;
+        UserLoginLog userLoginLog = BeanMapper.mapper(req, UserLoginLog.class);
+        userLoginLog.setId(SnowFlake.SNOW_FLAKE.nextId());
+        userLoginLogMapper.insert(userLoginLog);
+        userLoginLog = userLoginLogMapper.selectById(userLoginLog.getId());
+        return BeanMapper.mapper(userLoginLog, AddUserLoginLogRes.class);
     }
 
     @Override
     public AddLoginFailedCountRes addLoginFailedCount(AddLoginFailedCountReq req) {
-        return null;
+        final Date now = new Date();
+        LoginFailedCount loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), req.getUid(), req.getLoginType());
+        if (loginFailedCount == null) {
+            // 新增数据
+            loginFailedCount = new LoginFailedCount();
+            loginFailedCount.setId(SnowFlake.SNOW_FLAKE.nextId());
+            loginFailedCount.setDomainId(req.getDomainId());
+            loginFailedCount.setUid(req.getUid());
+            loginFailedCount.setLoginType(req.getLoginType());
+            loginFailedCount.setFailedCount(1);
+            loginFailedCount.setLastLoginTime(now);
+            loginFailedCount.setDeleteFlag(EnumConstant.LoginFailedCount_DeleteFlag_0);
+            loginFailedCountMapper.insert(loginFailedCount);
+        } else {
+            // 更新数据
+            loginFailedCountMapper.addLoginFailedCount(req.getDomainId(), req.getUid(), req.getLoginType());
+            loginFailedCount.setFailedCount(loginFailedCount.getFailedCount() + 1);
+        }
+        AddLoginFailedCountRes res = new AddLoginFailedCountRes();
+        res.setUid(loginFailedCount.getUid());
+        res.setLoginType(loginFailedCount.getLoginType());
+        res.setFailedCount(loginFailedCount.getFailedCount());
+        res.setLastLoginTime(now);
+        return res;
     }
 
     @Override
     public ClearLoginFailedCountRes clearLoginFailedCount(ClearLoginFailedCountReq req) {
-        return null;
+        ClearLoginFailedCountRes res = new ClearLoginFailedCountRes();
+        LoginFailedCount loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), req.getUid(), req.getLoginType());
+        if (loginFailedCount != null) {
+            loginFailedCountMapper.clearLoginFailedCount(req.getDomainId(), req.getUid(), req.getLoginType());
+            res.setUid(loginFailedCount.getUid());
+            res.setLoginType(loginFailedCount.getLoginType());
+            res.setFailedCount(loginFailedCount.getFailedCount());
+        }
+        return res;
     }
 
     @Override
     public AddJwtTokenRes addJwtToken(AddJwtTokenReq req) {
-        return null;
+        JwtToken jwtToken = BeanMapper.mapper(req, JwtToken.class);
+        jwtToken.setDisable(EnumConstant.JwtToken_Disable_0);
+        jwtToken.setRefreshTokenState(EnumConstant.JwtToken_RefreshTokenState_1);
+        jwtTokenMapper.insert(jwtToken);
+        jwtToken = jwtTokenMapper.selectById(jwtToken.getId());
+        return BeanMapper.mapper(jwtToken, AddJwtTokenRes.class);
     }
 
     @Override
     public DisableFirstJwtTokenRes disableFirstJwtToken(DisableFirstJwtTokenReq req) {
-        return null;
+        JwtToken jwtToken = jwtTokenMapper.getFirstJwtToken(req.getDomainId(), req.getUid());
+        if (jwtToken == null) {
+            return null;
+        }
+        JwtToken update = new JwtToken();
+        update.setId(jwtToken.getId());
+        update.setDisable(EnumConstant.JwtToken_Disable_1);
+        update.setDisableReason(req.getDisableReason());
+        jwtTokenMapper.updateById(update);
+        jwtToken = jwtTokenMapper.selectById(jwtToken.getId());
+        return BeanMapper.mapper(jwtToken, DisableFirstJwtTokenRes.class);
     }
 
     @Override
     public JwtToken getJwtToken(GetJwtTokenReq req) {
-        return null;
+        JwtToken jwtToken = jwtTokenMapper.selectById(req.getId());
+        if (!Objects.equals(req.getDomainId(), jwtToken.getDomainId())) {
+            return null;
+        }
+        return jwtToken;
     }
 
     @Override
     public JwtToken disableJwtToken(DisableJwtTokenReq req) {
-        return null;
+        int count = jwtTokenMapper.disableJwtToken(req.getDomainId(), req.getId(), req.getDisableReason());
+        if (count <= 0) {
+            return null;
+        }
+        return jwtTokenMapper.selectById(req.getId());
     }
 }

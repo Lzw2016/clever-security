@@ -208,4 +208,13 @@ public interface EnumConstant {
      * 验证码发送渠道，2:email
      */
     int ValidateCode_SendChannel_2 = 2;
+
+    /**
+     * 数据删除标志，0:未删除
+     */
+    int LoginFailedCount_DeleteFlag_0 = 0;
+    /**
+     * 数据删除标志，1:已删除
+     */
+    int LoginFailedCount_DeleteFlag_1 = 1;
 }

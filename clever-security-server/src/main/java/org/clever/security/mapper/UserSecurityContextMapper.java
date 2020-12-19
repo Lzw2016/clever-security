@@ -20,8 +20,8 @@ public interface UserSecurityContextMapper extends BaseMapper<UserSecurityContex
     UserSecurityContext getByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 
     @Select("delete from user_security_context where domain_id=#{domainId} and uid=#{uid}")
-    void deleteByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
+    int deleteByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 
     @Update("update user_security_context set security_context=#{securityContext} where id=#{id}")
-    void updateSecurityContextById(@Param("id") Long id, @Param("securityContext") String securityContext);
+    int updateSecurityContextById(@Param("id") Long id, @Param("securityContext") String securityContext);
 }

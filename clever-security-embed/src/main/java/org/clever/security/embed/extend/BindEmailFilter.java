@@ -1,4 +1,4 @@
-package org.clever.security.embed.expand;
+package org.clever.security.embed.extend;
 
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -10,11 +10,11 @@ import java.io.IOException;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2020/12/18 22:12 <br/>
+ * 创建时间：2020/12/18 22:14 <br/>
  */
-public class BindTelephoneFilter extends GenericFilterBean {
+public class BindEmailFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        // TODO 手机号绑定/换绑
+        // TODO 邮箱绑定/换绑
     }
 }
