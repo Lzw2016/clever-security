@@ -3,7 +3,7 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
-import org.clever.security.client.WeChatClient;
+import org.clever.security.third.client.WeChatClient;
 import org.clever.security.embed.authentication.login.DefaultLoadUser;
 import org.clever.security.embed.authentication.login.DefaultVerifyLoginData;
 import org.clever.security.embed.authentication.login.DefaultVerifyUserInfo;

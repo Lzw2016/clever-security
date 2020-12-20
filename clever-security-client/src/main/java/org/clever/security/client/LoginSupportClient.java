@@ -173,7 +173,7 @@ public interface LoginSupportClient {
     /**
      * 禁用JWT-Token
      */
-    @PostMapping("/disable_first_jwt_token")
+    @PostMapping("/disable_jwt_token")
     JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req);
 
 }

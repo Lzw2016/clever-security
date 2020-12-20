@@ -3,7 +3,7 @@ package org.clever.security.embed.authentication.login;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.client.LoginSupportClient;
-import org.clever.security.client.WeChatClient;
+import org.clever.security.third.client.WeChatClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.WeChatCode2SessionRes;
 import org.clever.security.embed.config.SecurityConfig;

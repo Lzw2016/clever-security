@@ -241,7 +241,7 @@ public class LoginSupportController implements LoginSupportClient {
     /**
      * 禁用JWT-Token
      */
-    @PostMapping("/disable_first_jwt_token")
+    @PostMapping("/disable_jwt_token")
     @Override
     public JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req) {
         return loginSupportService.disableJwtToken(req);

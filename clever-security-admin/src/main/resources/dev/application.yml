@@ -68,9 +68,9 @@ spring:
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql.msvc.top:3306/clever-security
-    username: clever-security
-    password: lizhiwei1993
+    url: jdbc:mysql://mysql.msvc.top:3306/hinny-security
+    username: hinny-security
+    password: a123456
     hikari:
       data-source-properties:
         serverTimezone: GMT+8

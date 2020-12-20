@@ -1,4 +1,4 @@
-package org.clever.security;
+package org.clever.security.embed;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 /**
  * Swagger2配置
@@ -17,18 +17,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * 作者：lizw <br/>
  * 创建时间：2017/6/12 9:28 <br/>
  */
-@Profile({"dev", "test"})
+@Profile({"local", "dev", "test", "pre"})
 @Configuration
-@EnableSwagger2
-public class SecuritySwaggerConfig {
-
+@EnableSwagger2WebMvc
+public class SecurityEmbedSwagger2Config {
     @Bean
-    public Docket createApi() {
+    public Docket createSecurityEmbedApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()
-                .title("clever-security-server")
+                .title("clever-security-embed")
                 // .description("description")
                 // .termsOfServiceUrl("termsOfServiceUrl")
-                .version("0.0.1-SNAPSHOT")
+                .version("3.0.0-SNAPSHOT")
                 // .license("license")
                 // .licenseUrl("licenseUrl")
                 // .termsOfServiceUrl("termsOfServiceUrl")
@@ -37,9 +36,9 @@ public class SecuritySwaggerConfig {
                 .build();
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo)
-                .groupName("clever-security-server")
+                .groupName("clever-security-embed")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("org.clever.security.controller"))
+                .apis(RequestHandlerSelectors.basePackage("org.clever.security.embed.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
