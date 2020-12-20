@@ -158,16 +158,96 @@ mybatis-plus:
 ###################################################################################
 clever:
   security:
+    domain-id: 1
+    default-enable-api-auth: true
+    ignore-paths:
+      # swagger
+      - '/swagger-ui*/**'
+      - '/webjars/springfox*/**'
+      - '/swagger-resources*/**'
+      - '/v2/api-docs'
+      - '/csrf'
+      - '/error'
+      # 静态资源
+      - '/favicon.ico'
+      - '/dist/**'
+      - '/static/**'
+      - '/*.png'
+      - '/*.js'
+      - '/*.css'
+      - '/*.html'
+      # 基本请求
+      - '/actuator/**'
+      - '/'
+      - '/login/captcha.png'
+      - '/login/refresh_token.json'
+      # - '/api/**'
+    ignore-auth-paths:
+      - '/login/user_info.json'
+      - '/api/**'
+    not-login-need-redirect: false
+    not-login-redirect-page: '/index.html'
+    forbidden-need-redirect: false
+    forbidden-redirect-page: '/403.html'
     login:
+      login-page: '/index.html'
+      login-path: '/login'
+      post-only: true
       login-captcha:
         need-captcha: true
+        login-captcha-path: '/captcha'
+        need-captcha-by-login-failed-count: 3
+        effective-time: 60s
+      wechat-small-program-login:
+        enable: true
+        app-id: 'appId'
+        app-secret: 'appSecret'
       sms-validate-code-login:
         enable: true
+        login-sms-validate-code-path: '/sms_code'
+        effective-time: 120s
+        max-send-num-in-day: 32
       email-validate-code-login:
         enable: true
+        login-email-validate-code-path: '/email_code'
+        effective-time: 300s
+        max-send-num-in-day: 64
       scan-code-login:
         enable: true
-
+        get-scan-code-login-path: '/scan_code/get'
+        scan-code-path: '/scan_code/scan'
+        confirm-login-path: '/scan_code/confirm'
+        expired-time: 60s
+        confirm-expired-time: 30s
+        get-token-expired-time: 30s
+      hide-user-not-found-exception: true
+      login-success-need-redirect: true
+      login-success-redirect-page: '/home.html'
+      login-failure-need-redirect: true
+      login-failure-redirect-page: '/index.html'
+      allow-repeat-login: true
+      concurrent-login-count: 1
+      allow-after-login: true
+    logout:
+      logout-url: '/logout'
+      logout-need-redirect: false
+      logout-redirect-page: '/index.html'
+    token-config:
+      redis-namespace: 'jwt'
+      secret-key: 'clever-security-jwt'
+      token-validity: 7d
+      enable-refresh-token: true
+      refresh-token-validity: 30d
+      hours-in-day: '03:45:00'
+      use-cookie: true
+      jwt-token-name: 'Authorization'
+    login-req-aes-key:
+      enable: true
+      req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'
+      req-password-aes-iv: '47e2cf4f8ee69fd9d7f3cad475682df8'
+    server-api-access-token:
+      token-name: 'server-api-token'
+      token-value: '512f6b74f8ee69fd9049bb512f635b9bf9e6d7fe2cf4f8ee69fd949bb512f6b7768d9d7f3cad4756'
 
 ###################################################################################
 ### Feign配置
@@ -177,12 +257,6 @@ clever:
 #clever-security-admin:
 #  ribbon:
 #    listOfServers: '127.0.0.1:28081'
-
-
-
-
-
-
 
 
 

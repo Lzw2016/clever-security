@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.clever.security.embed.autoconfigure.AutoConfigureBaseBeans,\
-org.clever.security.embed.autoconfigure.AutoConfigureSecurityFilter
+org.clever.security.embed.autoconfigure.AutoConfigureSecurityFilter,\
+org.clever.security.embed.autoconfigure.SecurityInitApiPermission
