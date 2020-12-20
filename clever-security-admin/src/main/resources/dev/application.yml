@@ -34,7 +34,7 @@ spring:
       preferred-json-mapper: jackson
     encoding:
       charset: UTF-8
-      force: true
+      force: false
 
   jackson: #------------------------------------------------------------ jackson配置
     date-format: yyyy-MM-dd HH:mm:ss
@@ -50,25 +50,11 @@ spring:
       period: 31536000s
     static-locations: ['classpath:/static/']
 
-  redis: #---------------------------------------------------------------- Redis配置
-    ssl: false
-    host: redis.msvc.top
-    port: 6379
-    password: lizhiwei1993
-    timeout: 10s
-    database: 0
-    lettuce:
-      pool:
-        max-active: 16
-        max-idle: 8
-        min-idle: 1
-        max-wait: 1s
-      shutdown-timeout: 1000ms
-
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql.msvc.top:3306/hinny-security
+    #url: jdbc:mysql://mysql.msvc.top:3306/hinny-security
+    url: jdbc:mysql://192.168.31.40:3306/hinny-security
     username: hinny-security
     password: a123456
     hikari:
@@ -168,6 +154,7 @@ clever:
       - '/v2/api-docs'
       - '/csrf'
       - '/error'
+      - '/webjars/**'
       # 静态资源
       - '/favicon.ico'
       - '/dist/**'
@@ -181,7 +168,7 @@ clever:
       - '/'
       - '/login/captcha.png'
       - '/login/refresh_token.json'
-      # - '/api/**'
+      # - '/**'
     ignore-auth-paths:
       - '/login/user_info.json'
       - '/api/**'

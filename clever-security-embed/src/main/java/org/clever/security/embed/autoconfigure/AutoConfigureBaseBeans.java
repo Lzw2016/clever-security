@@ -3,7 +3,6 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
-import org.clever.security.third.client.WeChatClient;
 import org.clever.security.embed.authentication.login.DefaultLoadUser;
 import org.clever.security.embed.authentication.login.DefaultVerifyLoginData;
 import org.clever.security.embed.authentication.login.DefaultVerifyUserInfo;
@@ -16,6 +15,7 @@ import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.handler.DefaultLoginFailureHandler;
 import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
 import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
+import org.clever.security.third.client.WeChatClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -42,31 +42,31 @@ public class AutoConfigureBaseBeans {
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户登录信息
 
     @Bean("loginNamePasswordReqCollect")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public LoginNamePasswordReqCollect loginNamePasswordReqCollect() {
         return new LoginNamePasswordReqCollect();
     }
 
     @Bean("smsValidateCodeReqCollect")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public SmsValidateCodeReqCollect smsValidateCodeReqCollect() {
         return new SmsValidateCodeReqCollect();
     }
 
     @Bean("emailValidateCodeReqCollect")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public EmailValidateCodeReqCollect emailValidateCodeReqCollect() {
         return new EmailValidateCodeReqCollect();
     }
 
     @Bean("wechatSmallProgramReqCollect")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public WechatSmallProgramReqCollect wechatSmallProgramReqCollect() {
         return new WechatSmallProgramReqCollect();
     }
 
     @Bean("scanCodeReqCollect")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public ScanCodeReqCollect scanCodeReqCollect() {
         return new ScanCodeReqCollect();
     }
@@ -74,19 +74,19 @@ public class AutoConfigureBaseBeans {
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 验证用户登录信息
 
     @Bean("defaultVerifyLoginData")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultVerifyLoginData")
     public DefaultVerifyLoginData defaultVerifyLoginData(LoginSupportClient loginSupportClient) {
         return new DefaultVerifyLoginData(loginSupportClient);
     }
 
     @Bean("defaultVerifyUserInfo")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultVerifyUserInfo")
     public DefaultVerifyUserInfo defaultVerifyUserInfo(PasswordEncoder passwordEncoder, LoginSupportClient loginSupportClient) {
         return new DefaultVerifyUserInfo(passwordEncoder, loginSupportClient);
     }
 
     @Bean("defaultVerifyJwtToken")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultVerifyJwtToken")
     public DefaultVerifyJwtToken defaultVerifyJwtToken(LoginSupportClient loginSupportClient) {
         return new DefaultVerifyJwtToken(loginSupportClient);
     }
@@ -94,19 +94,19 @@ public class AutoConfigureBaseBeans {
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 登录、登出、授权Handler
 
     @Bean("defaultLoginSuccessHandler")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultLoginSuccessHandler")
     public DefaultLoginSuccessHandler defaultLoginSuccessHandler(LoginSupportClient loginSupportClient) {
         return new DefaultLoginSuccessHandler(loginSupportClient);
     }
 
     @Bean("defaultLoginFailureHandler")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultLoginFailureHandler")
     public DefaultLoginFailureHandler defaultLoginFailureHandler(LoginSupportClient loginSupportClient) {
         return new DefaultLoginFailureHandler(loginSupportClient);
     }
 
     @Bean("defaultLogoutSuccessHandler")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultLogoutSuccessHandler")
     public DefaultLogoutSuccessHandler defaultLogoutSuccessHandler(LoginSupportClient loginSupportClient) {
         return new DefaultLogoutSuccessHandler(loginSupportClient);
     }
@@ -114,13 +114,13 @@ public class AutoConfigureBaseBeans {
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 加载UserInfo、SecurityContext、
 
     @Bean("defaultLoadUser")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultLoadUser")
     public DefaultLoadUser defaultLoadUser(LoginSupportClient loginSupportClient, ObjectProvider<WeChatClient> wechatClient) {
         return new DefaultLoadUser(loginSupportClient, wechatClient.getIfAvailable());
     }
 
     @Bean("defaultSecurityContextRepository")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "defaultSecurityContextRepository")
     public DefaultSecurityContextRepository defaultSecurityContextRepository(AuthSupportClient authSupportClient) {
         return new DefaultSecurityContextRepository(authSupportClient);
     }
@@ -128,7 +128,7 @@ public class AutoConfigureBaseBeans {
     // ------------------------------------------------------------------------------------------------------------------------------------------------- Controller API接口授权
 
     @Bean("controllerAuthorizationVoter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "controllerAuthorizationVoter")
     public ControllerAuthorizationVoter controllerAuthorizationVoter(AuthSupportClient authSupportClient, RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return new ControllerAuthorizationVoter(authSupportClient, requestMappingHandlerMapping);
     }

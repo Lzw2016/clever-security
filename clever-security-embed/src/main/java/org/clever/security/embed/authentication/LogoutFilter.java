@@ -77,6 +77,7 @@ public class LogoutFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行登出逻辑 ---------------------------------------------------------------------->");
+        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
         // 执行登出逻辑
         LogoutContext context = new LogoutContext(httpRequest, httpResponse);
         try {

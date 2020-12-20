@@ -129,6 +129,7 @@ public class LoginFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行登录逻辑 ---------------------------------------------------------------------->");
+        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
         // 执行登录逻辑
         LoginContext context = new LoginContext(httpRequest, httpResponse);
         try {

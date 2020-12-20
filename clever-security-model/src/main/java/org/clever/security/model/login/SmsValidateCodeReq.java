@@ -24,15 +24,15 @@ public class SmsValidateCodeReq extends AbstractUserLoginReq {
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;
     /**
-     * 验证码签名
-     */
-    @NotBlank(message = "验证码签名不能为空")
-    private String validateCodeDigest;
-    /**
      * 验证码
      */
     @NotBlank(message = "验证码不能为空")
     private String validateCode;
+    /**
+     * 验证码签名
+     */
+    @NotBlank(message = "验证码签名不能为空")
+    private String validateCodeDigest;
 
     @Override
     public LoginType getLoginType() {

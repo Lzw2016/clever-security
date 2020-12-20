@@ -2,6 +2,7 @@ package org.clever.security.embed.authentication;
 
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
 import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
@@ -12,6 +13,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.AuthenticationFailureEvent;
 import org.clever.security.embed.event.AuthenticationSuccessEvent;
 import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.exception.ParserJwtTokenException;
 import org.clever.security.embed.handler.AuthenticationFailureHandler;
 import org.clever.security.embed.handler.AuthenticationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
@@ -95,6 +97,7 @@ public class AuthenticationFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
+        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
         // 执行认证逻辑
         AuthenticationContext context = new AuthenticationContext(httpRequest, httpResponse);
         try {
@@ -142,6 +145,9 @@ public class AuthenticationFilter extends GenericFilterBean {
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 获取JWT-Token
         String jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
+        if (StringUtils.isBlank(jwtToken)) {
+            throw new ParserJwtTokenException("当前用户未登录");
+        }
         context.setJwtToken(jwtToken);
         // 解析Token得到uid
         Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);

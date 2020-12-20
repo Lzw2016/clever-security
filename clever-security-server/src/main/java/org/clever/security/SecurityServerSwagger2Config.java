@@ -9,7 +9,7 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * Swagger2配置
@@ -17,9 +17,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
  * 作者：lizw <br/>
  * 创建时间：2017/6/12 9:28 <br/>
  */
-@Profile({"dev", "test"})
+@Profile({"local", "dev", "test", "pre"})
 @Configuration
-@EnableSwagger2WebMvc
+@EnableSwagger2
 public class SecurityServerSwagger2Config {
 
     @Bean
