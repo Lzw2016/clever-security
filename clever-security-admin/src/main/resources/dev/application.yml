@@ -166,8 +166,6 @@ clever:
       # 基本请求
       - '/actuator/**'
       - '/'
-      - '/login/captcha.png'
-      - '/login/refresh_token.json'
       # - '/**'
     ignore-auth-paths:
       - '/login/user_info.json'
