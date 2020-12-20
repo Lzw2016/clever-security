@@ -18,5 +18,6 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // TODO 密码找回
+        chain.doFilter(request, response);
     }
 }

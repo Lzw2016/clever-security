@@ -4,22 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.client.WeChatClient;
-import org.clever.security.embed.authentication.login.DefaultAddJwtTokenExtData;
 import org.clever.security.embed.authentication.login.DefaultLoadUser;
 import org.clever.security.embed.authentication.login.DefaultVerifyLoginData;
 import org.clever.security.embed.authentication.login.DefaultVerifyUserInfo;
 import org.clever.security.embed.authentication.token.DefaultVerifyJwtToken;
 import org.clever.security.embed.authorization.voter.ControllerAuthorizationVoter;
 import org.clever.security.embed.collect.*;
-import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.context.DefaultSecurityContextRepository;
 import org.clever.security.embed.crypto.BCryptPasswordEncoder;
 import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.handler.DefaultLoginFailureHandler;
 import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
 import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -33,18 +31,8 @@ import java.security.SecureRandom;
  */
 @Order
 @Configuration
-@EnableConfigurationProperties({SecurityConfig.class})
 @Slf4j
 public class AutoConfigureBaseBeans {
-    /**
-     * 全局配置
-     */
-    private final SecurityConfig securityConfig;
-
-    public AutoConfigureBaseBeans(SecurityConfig securityConfig) {
-        this.securityConfig = securityConfig;
-    }
-
     @Bean("passwordEncoder")
     @ConditionalOnMissingBean(PasswordEncoder.class)
     public PasswordEncoder passwordEncoder() {
@@ -83,18 +71,12 @@ public class AutoConfigureBaseBeans {
         return new ScanCodeReqCollect();
     }
 
-    // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户登录信息
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 验证用户登录信息
 
     @Bean("defaultVerifyLoginData")
     @ConditionalOnMissingBean
     public DefaultVerifyLoginData defaultVerifyLoginData(LoginSupportClient loginSupportClient) {
         return new DefaultVerifyLoginData(loginSupportClient);
-    }
-
-    @Bean("defaultLoadUser")
-    @ConditionalOnMissingBean
-    public DefaultLoadUser defaultLoadUser(LoginSupportClient loginSupportClient, WeChatClient wechatClient) {
-        return new DefaultLoadUser(loginSupportClient, wechatClient);
     }
 
     @Bean("defaultVerifyUserInfo")
@@ -103,11 +85,13 @@ public class AutoConfigureBaseBeans {
         return new DefaultVerifyUserInfo(passwordEncoder, loginSupportClient);
     }
 
-    @Bean("defaultAddJwtTokenExtData")
+    @Bean("defaultVerifyJwtToken")
     @ConditionalOnMissingBean
-    public DefaultAddJwtTokenExtData defaultAddJwtTokenExtData() {
-        return new DefaultAddJwtTokenExtData();
+    public DefaultVerifyJwtToken defaultVerifyJwtToken(LoginSupportClient loginSupportClient) {
+        return new DefaultVerifyJwtToken(loginSupportClient);
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 登录、登出、授权Handler
 
     @Bean("defaultLoginSuccessHandler")
     @ConditionalOnMissingBean
@@ -121,23 +105,27 @@ public class AutoConfigureBaseBeans {
         return new DefaultLoginFailureHandler(loginSupportClient);
     }
 
+    @Bean("defaultLogoutSuccessHandler")
+    @ConditionalOnMissingBean
+    public DefaultLogoutSuccessHandler defaultLogoutSuccessHandler(LoginSupportClient loginSupportClient) {
+        return new DefaultLogoutSuccessHandler(loginSupportClient);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 加载UserInfo、SecurityContext、
+
+    @Bean("defaultLoadUser")
+    @ConditionalOnMissingBean
+    public DefaultLoadUser defaultLoadUser(LoginSupportClient loginSupportClient, ObjectProvider<WeChatClient> wechatClient) {
+        return new DefaultLoadUser(loginSupportClient, wechatClient.getIfAvailable());
+    }
+
     @Bean("defaultSecurityContextRepository")
     @ConditionalOnMissingBean
     public DefaultSecurityContextRepository defaultSecurityContextRepository(AuthSupportClient authSupportClient) {
         return new DefaultSecurityContextRepository(authSupportClient);
     }
 
-    @Bean("defaultVerifyJwtToken")
-    @ConditionalOnMissingBean
-    public DefaultVerifyJwtToken defaultVerifyJwtToken(LoginSupportClient loginSupportClient) {
-        return new DefaultVerifyJwtToken(loginSupportClient);
-    }
-
-    @Bean("defaultLogoutSuccessHandler")
-    @ConditionalOnMissingBean
-    public DefaultLogoutSuccessHandler defaultLogoutSuccessHandler(LoginSupportClient loginSupportClient) {
-        return new DefaultLogoutSuccessHandler(loginSupportClient);
-    }
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- Controller API接口授权
 
     @Bean("controllerAuthorizationVoter")
     @ConditionalOnMissingBean

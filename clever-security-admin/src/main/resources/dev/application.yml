@@ -156,6 +156,18 @@ mybatis-plus:
 ###################################################################################
 ### clever security配置
 ###################################################################################
+clever:
+  security:
+    login:
+      login-captcha:
+        need-captcha: true
+      sms-validate-code-login:
+        enable: true
+      email-validate-code-login:
+        enable: true
+      scan-code-login:
+        enable: true
+
 
 ###################################################################################
 ### Feign配置

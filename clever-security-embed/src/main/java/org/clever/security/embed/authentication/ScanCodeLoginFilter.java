@@ -27,14 +27,14 @@ import java.io.IOException;
  * 创建时间：2020/12/13 12:24 <br/>
  */
 @Slf4j
-public class GetScanCodeLoginFilter extends GenericFilterBean {
+public class ScanCodeLoginFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
     private final SecurityConfig securityConfig;
     private final LoginSupportClient loginSupportClient;
 
-    public GetScanCodeLoginFilter(SecurityConfig securityConfig, LoginSupportClient loginSupportClient) {
+    public ScanCodeLoginFilter(SecurityConfig securityConfig, LoginSupportClient loginSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
         this.securityConfig = securityConfig;

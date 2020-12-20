@@ -15,9 +15,9 @@ import java.io.IOException;
  * 创建时间：2020-12-16 22:25 <br/>
  */
 public class UserRegisterFilter extends GenericFilterBean {
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // TODO 用户注册
+        chain.doFilter(request, response);
     }
 }

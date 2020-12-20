@@ -16,5 +16,6 @@ public class BindTelephoneFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // TODO 手机号绑定/换绑
+        chain.doFilter(request, response);
     }
 }

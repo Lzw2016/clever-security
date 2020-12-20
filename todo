@@ -15,7 +15,7 @@
 LoginCaptchaFilter(登录图片验证码)
 LoginSmsValidateCodeFilter(登录短信验证码)
 LoginEmailValidateCodeFilter(登录邮箱验证码)
-GetScanCodeLoginFilter(获取扫码登录二维码)
+ScanCodeLoginFilter(获取扫码登录二维码)
 UserRegisterFilter(用户注册)
 PasswordRecoveryFilter(密码找回)
 🡓
