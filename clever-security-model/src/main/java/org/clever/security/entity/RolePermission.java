@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,11 +19,13 @@ public class RolePermission implements Serializable {
     /**
      * 角色id
      */
+    @TableId(type = IdType.INPUT)
     private Long roleId;
 
     /**
      * 权限id
      */
+    // @TableId(type = IdType.INPUT)
     private Long permissionId;
 
     /**

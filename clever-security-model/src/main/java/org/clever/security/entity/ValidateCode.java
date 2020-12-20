@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ public class ValidateCode implements Serializable {
     /**
      * 验证码 id(系统自动生成且不会变化)
      */
+    @TableId(type = IdType.INPUT)
     private Long id;
 
     /**
