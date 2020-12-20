@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ import java.util.List;
 @AutoConfigureAfter({AutoConfigureBaseBeans.class})
 @Slf4j
 public class AutoConfigureSecurityFilter {
-    private static final int Base_Order = 0;
+    private static final int Base_Order = Ordered.HIGHEST_PRECEDENCE;
     /**
      * 全局配置
      */
@@ -81,7 +82,7 @@ public class AutoConfigureSecurityFilter {
      * 登录图片验证码
      */
     @Bean("loginCaptchaFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "loginCaptchaFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login.login-captcha.need-captcha", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<LoginCaptchaFilter> loginCaptchaFilter(ObjectProvider<LoginSupportClient> loginSupportClient) {
         LoginCaptchaFilter filter = new LoginCaptchaFilter(this.securityConfig, loginSupportClient.getIfAvailable());
@@ -96,7 +97,7 @@ public class AutoConfigureSecurityFilter {
      * 登录短信验证码
      */
     @Bean("loginSmsValidateCodeFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "loginSmsValidateCodeFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login.sms-validate-code-login.enable", havingValue = "true")
     public FilterRegistrationBean<LoginSmsValidateCodeFilter> loginSmsValidateCodeFilter(ObjectProvider<LoginSupportClient> loginSupportClient) {
         LoginSmsValidateCodeFilter filter = new LoginSmsValidateCodeFilter(this.securityConfig, loginSupportClient.getIfAvailable());
@@ -111,7 +112,7 @@ public class AutoConfigureSecurityFilter {
      * 登录邮箱验证码
      */
     @Bean("loginEmailValidateCodeFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "loginEmailValidateCodeFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login.email-validate-code-login.enable", havingValue = "true")
     public FilterRegistrationBean<LoginEmailValidateCodeFilter> loginEmailValidateCodeFilter(ObjectProvider<LoginSupportClient> loginSupportClient) {
         LoginEmailValidateCodeFilter filter = new LoginEmailValidateCodeFilter(this.securityConfig, loginSupportClient.getIfAvailable());
@@ -126,7 +127,7 @@ public class AutoConfigureSecurityFilter {
      * 获取扫码登录二维码
      */
     @Bean("scanCodeLoginFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "scanCodeLoginFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login.scan-code-login.enable", havingValue = "true")
     public FilterRegistrationBean<ScanCodeLoginFilter> scanCodeLoginFilter(ObjectProvider<LoginSupportClient> loginSupportClient) {
         ScanCodeLoginFilter filter = new ScanCodeLoginFilter(this.securityConfig, loginSupportClient.getIfAvailable());
@@ -141,7 +142,7 @@ public class AutoConfigureSecurityFilter {
      * TODO 用户注册
      */
     @Bean("userRegisterFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "userRegisterFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
     public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter() {
         UserRegisterFilter filter = new UserRegisterFilter();
@@ -156,7 +157,7 @@ public class AutoConfigureSecurityFilter {
      * TODO 密码找回
      */
     @Bean("passwordRecoveryFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "passwordRecoveryFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
     public FilterRegistrationBean<PasswordRecoveryFilter> passwordRecoveryFilter() {
         PasswordRecoveryFilter filter = new PasswordRecoveryFilter();
@@ -171,7 +172,7 @@ public class AutoConfigureSecurityFilter {
      * ###认证
      */
     @Bean("authenticationFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "authenticationFilter")
     public FilterRegistrationBean<AuthenticationFilter> authenticationFilter(
             List<VerifyJwtToken> verifyJwtTokenList,
             SecurityContextRepository securityContextRepository,
@@ -195,7 +196,7 @@ public class AutoConfigureSecurityFilter {
      * 扫描登录二维码、确认登录
      */
     @Bean("scanCodeLoginSupportFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "scanCodeLoginSupportFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "login.scan-code-login.enable", havingValue = "true")
     public FilterRegistrationBean<ScanCodeLoginSupportFilter> scanCodeLoginSupportFilter(ObjectProvider<LoginSupportClient> loginSupportClient) {
         ScanCodeLoginSupportFilter filter = new ScanCodeLoginSupportFilter(this.securityConfig, loginSupportClient.getIfAvailable());
@@ -213,7 +214,7 @@ public class AutoConfigureSecurityFilter {
      * ###登录
      */
     @Bean("loginFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "loginFilter")
     public FilterRegistrationBean<LoginFilter> loginFilter(
             List<LoginDataCollect> loginDataCollectList,
             List<VerifyLoginData> verifyLoginDataList,
@@ -235,7 +236,7 @@ public class AutoConfigureSecurityFilter {
                 securityContextRepository
         );
         FilterRegistrationBean<LoginFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns("/*");
+        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getLoginPath());
         filterRegistration.setName("loginFilter");
         filterRegistration.setOrder(Base_Order + 200);
         return filterRegistration;
@@ -245,14 +246,14 @@ public class AutoConfigureSecurityFilter {
      * TODO 手机号绑定/换绑
      */
     @Bean("bindTelephoneFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "bindTelephoneFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
     public FilterRegistrationBean<BindTelephoneFilter> bindTelephoneFilter() {
         BindTelephoneFilter filter = new BindTelephoneFilter();
         FilterRegistrationBean<BindTelephoneFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
         filterRegistration.setName("bindTelephoneFilter");
-        filterRegistration.setOrder(Base_Order + 5);
+        filterRegistration.setOrder(Base_Order + 200 + 1);
         return filterRegistration;
     }
 
@@ -260,14 +261,14 @@ public class AutoConfigureSecurityFilter {
      * TODO 邮箱绑定/换绑
      */
     @Bean("bindEmailFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "bindEmailFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
     public FilterRegistrationBean<BindEmailFilter> bindEmailFilter() {
         BindEmailFilter filter = new BindEmailFilter();
         FilterRegistrationBean<BindEmailFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
         filterRegistration.setName("bindEmailFilter");
-        filterRegistration.setOrder(Base_Order + 5);
+        filterRegistration.setOrder(Base_Order + 200 + 2);
         return filterRegistration;
     }
 
@@ -275,7 +276,7 @@ public class AutoConfigureSecurityFilter {
      * ###登出
      */
     @Bean("logoutFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "")
     public FilterRegistrationBean<LogoutFilter> logoutFilter(
             List<LogoutSuccessHandler> logoutSuccessHandlerList,
             ObjectProvider<List<LogoutFailureHandler>> logoutFailureHandlerList) {
@@ -285,7 +286,7 @@ public class AutoConfigureSecurityFilter {
                 logoutFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : logoutFailureHandlerList.getIfAvailable()
         );
         FilterRegistrationBean<LogoutFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns("/*");
+        filterRegistration.addUrlPatterns(this.securityConfig.getLogout().getLogoutUrl());
         filterRegistration.setName("logoutFilter");
         filterRegistration.setOrder(Base_Order + 300);
         return filterRegistration;
@@ -295,7 +296,7 @@ public class AutoConfigureSecurityFilter {
      * ###授权
      */
     @Bean("authorizationFilter")
-    @ConditionalOnMissingBean
+    @ConditionalOnMissingBean(name = "authorizationFilter")
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilter(
             List<AuthorizationVoter> authorizationVoterList,
             ObjectProvider<List<AuthorizationSuccessHandler>> authorizationSuccessHandlerList,

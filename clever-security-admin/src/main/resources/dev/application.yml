@@ -221,9 +221,9 @@ clever:
         confirm-expired-time: 30s
         get-token-expired-time: 30s
       hide-user-not-found-exception: true
-      login-success-need-redirect: true
+      login-success-need-redirect: false
       login-success-redirect-page: '/home.html'
-      login-failure-need-redirect: true
+      login-failure-need-redirect: false
       login-failure-redirect-page: '/index.html'
       allow-repeat-login: true
       concurrent-login-count: 1
