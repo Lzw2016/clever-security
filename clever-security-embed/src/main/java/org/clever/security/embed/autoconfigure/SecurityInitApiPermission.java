@@ -43,6 +43,9 @@ public class SecurityInitApiPermission implements CommandLineRunner {
         JacksonMapper.getInstance().getMapper().registerModule(CleverSecurityJackson2Module.instance);
         if (objectMapperList != null) {
             for (ObjectMapper objectMapper : objectMapperList) {
+                if (objectMapper == JacksonMapper.getInstance().getMapper()) {
+                    continue;
+                }
                 objectMapper.registerModule(CleverSecurityJackson2Module.instance);
             }
         }
