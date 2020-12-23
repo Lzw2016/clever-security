@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -14,7 +15,7 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GetLoginSmsValidateCodeReq extends BaseRequest {
-    @NotBlank(message = "域id不能为空")
+    @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
      * 手机号

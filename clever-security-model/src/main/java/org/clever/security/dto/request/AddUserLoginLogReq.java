@@ -20,7 +20,7 @@ public class AddUserLoginLogReq extends BaseRequest {
     /**
      * 域id
      */
-    @NotBlank(message = "域id不能为null")
+    @NotNull(message = "域id不能为null")
     private Long domainId;
 
     /**

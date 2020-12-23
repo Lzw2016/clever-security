@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class BindLoginScanCodeReq extends BaseRequest {
-    @NotBlank(message = "域id不能为空")
+    @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
      * 扫描二维码
