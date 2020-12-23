@@ -97,7 +97,7 @@ public class AuthorizationFilter extends GenericFilterBean {
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
             return;
         } finally {
-            log.debug("### 授权逻辑行完成 <----------------------------------------------------------------------");
+            log.debug("### 授权逻辑执行完成 <----------------------------------------------------------------------");
         }
         // 执行授权事件
         try {
