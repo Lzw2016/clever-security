@@ -90,7 +90,7 @@ public class AuthorizationFilter extends GenericFilterBean {
         boolean pass;
         try {
             pass = authorization(context);
-            log.debug("### 授权完成，结果: [{}]", pass? "通过": "拒绝");
+            log.debug("### 授权完成，结果: [{}]", pass ? "通过" : "拒绝");
         } catch (Throwable e) {
             // 授权异常
             log.error("授权异常", e);
@@ -105,13 +105,13 @@ public class AuthorizationFilter extends GenericFilterBean {
                 onAuthorizationSuccess(context);
             } else {
                 onAuthorizationFailure(context);
+                // 无权访问 403
+                onAuthorizationFailureResponse(context);
             }
         } catch (Throwable e) {
             log.error("授权异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
-        // 无权访问 403
-        onAuthorizationFailureResponse(context);
         // 处理业务逻辑
         chain.doFilter(request, response);
     }
