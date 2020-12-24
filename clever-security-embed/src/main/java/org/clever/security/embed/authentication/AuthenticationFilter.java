@@ -143,7 +143,10 @@ public class AuthenticationFilter extends GenericFilterBean {
     protected void authentication(AuthenticationContext context) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
-        // 获取JWT-Token
+        // 获取JWT-Token todo cookie还是header
+//        if (tokenConfig.isUseCookie()) {
+//            String jwtToken = context.getRequest().getHeader(tokenConfig.getJwtTokenName());
+//        }else {}
         String jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
         if (StringUtils.isBlank(jwtToken)) {
             throw new ParserJwtTokenException("当前用户未登录");

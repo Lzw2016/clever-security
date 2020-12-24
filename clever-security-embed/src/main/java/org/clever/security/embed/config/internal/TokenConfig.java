@@ -51,4 +51,8 @@ public class TokenConfig {
      * JWT-Token名称(Cookie或Header中的key)
      */
     private String jwtTokenName = "Authorization";
+    /**
+     * Refresh-Token名称(Cookie或Header中的key)
+     */
+    private String refreshTokenName = "Refresh-Authorization";
 }
