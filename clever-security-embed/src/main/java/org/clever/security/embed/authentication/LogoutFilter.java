@@ -77,7 +77,7 @@ public class LogoutFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行登出逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
+        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
         // 执行登出逻辑
         LogoutContext context = new LogoutContext(httpRequest, httpResponse);
         try {
@@ -107,6 +107,9 @@ public class LogoutFilter extends GenericFilterBean {
         try {
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
             CookieUtils.delCookieForRooPath(context.getRequest(), context.getResponse(), tokenConfig.getJwtTokenName());
+            if (tokenConfig.isEnableRefreshToken()) {
+                CookieUtils.delCookieForRooPath(context.getRequest(), context.getResponse(), tokenConfig.getRefreshTokenName());
+            }
             log.debug("### 删除JWT-Token成功");
             context.setSuccess(true);
         } catch (Exception e) {

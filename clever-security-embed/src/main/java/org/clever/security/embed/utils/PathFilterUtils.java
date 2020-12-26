@@ -151,9 +151,8 @@ public class PathFilterUtils {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“登出请求”或“验证码请求”
+        // 当前请求是“登录请求”或“验证码请求”
         if (isLoginRequest(request, securityConfig)
-                || isLogoutRequest(request, securityConfig)
                 || isLoginCaptchaPath(request, securityConfig)
                 || isLoginSmsValidateCodePath(request, securityConfig)
                 || isLoginEmailValidateCodePath(request, securityConfig)
