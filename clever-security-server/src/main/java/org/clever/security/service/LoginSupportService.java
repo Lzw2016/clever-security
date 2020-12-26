@@ -535,6 +535,7 @@ public class LoginSupportService implements LoginSupportClient {
         update.setRefreshTokenState(EnumConstant.JwtToken_RefreshTokenState_0);
         update.setRefreshTokenUseTime(now);
         update.setRefreshCreateTokenId(add.getId());
+        jwtTokenMapper.updateById(update);
         // 返回新增的Token
         return jwtTokenMapper.selectById(add.getId());
     }
