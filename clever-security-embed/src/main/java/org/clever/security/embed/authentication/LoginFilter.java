@@ -129,7 +129,7 @@ public class LoginFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行登录逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
+        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
         // 执行登录逻辑
         LoginContext context = new LoginContext(httpRequest, httpResponse);
         try {
@@ -241,13 +241,14 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 登录成功
             log.debug("### 登录成功 -> {}", userInfo);
+            final Date now = new Date();
             TokenConfig tokenConfig = securityConfig.getTokenConfig();
             final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, addJwtTokenExtDataList);
             String refreshToken = null;
             if (tokenConfig.isEnableRefreshToken()) {
-                refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
+                refreshToken = JwtTokenUtils.createRefreshToken(userInfo.getUid());
                 context.setRefreshToken(refreshToken);
-                context.setRefreshTokenExpiredTime(DateTimeUtils.addDays(new Date(), (int) tokenConfig.getRefreshTokenValidity().toDays()));
+                context.setRefreshTokenExpiredTime(new Date(now.getTime() + tokenConfig.getRefreshTokenValidity().toMillis()));
             }
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
             context.setJwtToken(tokenInfo.getValue1());
@@ -256,10 +257,17 @@ public class LoginFilter extends GenericFilterBean {
             securityContextRepository.cacheContext(context, securityConfig, context.getRequest(), context.getResponse());
             // 将JWT-Token写入客户端
             if (tokenConfig.isUseCookie()) {
-                int maxAge = DateTimeUtils.pastSeconds(new Date(), tokenInfo.getValue2().getExpiration()) + (60 * 3);
+                int maxAge = DateTimeUtils.pastSeconds(now, tokenInfo.getValue2().getExpiration()) + (60 * 3);
                 CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), tokenInfo.getValue1(), maxAge);
+                if (tokenConfig.isEnableRefreshToken() && refreshToken != null) {
+                    int refreshTokenMaxAge = DateTimeUtils.pastSeconds(now, context.getRefreshTokenExpiredTime()) + (60 * 3);
+                    CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getRefreshTokenName(), refreshToken, Integer.max(refreshTokenMaxAge, maxAge));
+                }
             } else {
                 context.getResponse().addHeader(tokenConfig.getJwtTokenName(), tokenInfo.getValue1());
+                if (tokenConfig.isEnableRefreshToken()) {
+                    context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), refreshToken);
+                }
             }
             // 登录成功处理
             loginSuccessHandler(context);

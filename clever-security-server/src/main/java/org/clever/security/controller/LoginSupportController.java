@@ -248,11 +248,11 @@ public class LoginSupportController implements LoginSupportClient {
     }
 
     /**
-     * 使用refresh_jwt_token
+     * 使用刷新Token(刷新Token无效返回null)
      */
-    @PostMapping("/use_refresh_jwt_token")
+    @PostMapping("/use_jwt_refresh_token")
     @Override
-    public JwtToken useRefreshJwtToken(@Validated @RequestBody UseRefreshJwtToken req) {
-        return loginSupportService.useRefreshJwtToken(req);
+    public JwtToken useJwtRefreshToken(@Validated @RequestBody UseJwtRefreshTokenReq req) {
+        return loginSupportService.useJwtRefreshToken(req);
     }
 }

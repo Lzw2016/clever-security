@@ -177,13 +177,15 @@ public class AutoConfigureSecurityFilter {
             List<VerifyJwtToken> verifyJwtTokenList,
             SecurityContextRepository securityContextRepository,
             ObjectProvider<List<AuthenticationSuccessHandler>> authenticationSuccessHandlerList,
-            ObjectProvider<List<AuthenticationFailureHandler>> authenticationFailureHandlerList) {
+            ObjectProvider<List<AuthenticationFailureHandler>> authenticationFailureHandlerList,
+            LoginSupportClient loginSupportClient) {
         AuthenticationFilter filter = new AuthenticationFilter(
                 this.securityConfig,
                 verifyJwtTokenList,
                 securityContextRepository,
                 authenticationSuccessHandlerList.getIfAvailable() == null ? new ArrayList<>() : authenticationSuccessHandlerList.getIfAvailable(),
-                authenticationFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : authenticationFailureHandlerList.getIfAvailable()
+                authenticationFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : authenticationFailureHandlerList.getIfAvailable(),
+                loginSupportClient
         );
         FilterRegistrationBean<AuthenticationFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns("/*");

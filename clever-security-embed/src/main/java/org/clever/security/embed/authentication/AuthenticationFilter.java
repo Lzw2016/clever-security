@@ -1,9 +1,13 @@
 package org.clever.security.embed.authentication;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
+import org.clever.common.utils.DateTimeUtils;
+import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.UseJwtRefreshTokenReq;
 import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
@@ -13,6 +17,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.AuthenticationFailureEvent;
 import org.clever.security.embed.event.AuthenticationSuccessEvent;
 import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.exception.InvalidJwtRefreshTokenException;
 import org.clever.security.embed.exception.ParserJwtTokenException;
 import org.clever.security.embed.handler.AuthenticationFailureHandler;
 import org.clever.security.embed.handler.AuthenticationSuccessHandler;
@@ -20,6 +25,7 @@ import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.clever.security.entity.JwtToken;
 import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
@@ -32,6 +38,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,23 +70,30 @@ public class AuthenticationFilter extends GenericFilterBean {
      * 用户身份认失败处理
      */
     private final List<AuthenticationFailureHandler> authenticationFailureHandlerList;
+    /**
+     * 登录支持对象
+     */
+    private final LoginSupportClient loginSupportClient;
 
     public AuthenticationFilter(
             SecurityConfig securityConfig,
             List<VerifyJwtToken> verifyJwtTokenList,
             SecurityContextRepository securityContextRepository,
             List<AuthenticationSuccessHandler> authenticationSuccessHandlerList,
-            final List<AuthenticationFailureHandler> authenticationFailureHandlerList) {
+            List<AuthenticationFailureHandler> authenticationFailureHandlerList,
+            LoginSupportClient loginSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(verifyJwtTokenList, "JWT-Token验证器(VerifyJwtToken)不存在");
         Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
         Assert.notNull(authenticationSuccessHandlerList, "参数authenticationSuccessHandlerList不能为null");
         Assert.notNull(authenticationFailureHandlerList, "参数authenticationFailureHandlerList不能为null");
+        Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
         this.securityConfig = securityConfig;
         this.verifyJwtTokenList = ListSortUtils.sort(verifyJwtTokenList);
         this.securityContextRepository = securityContextRepository;
         this.authenticationSuccessHandlerList = ListSortUtils.sort(authenticationSuccessHandlerList);
         this.authenticationFailureHandlerList = ListSortUtils.sort(authenticationFailureHandlerList);
+        this.loginSupportClient = loginSupportClient;
     }
 
     @Override
@@ -97,7 +111,7 @@ public class AuthenticationFilter extends GenericFilterBean {
             return;
         }
         log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]",httpRequest.getRequestURI());
+        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
         // 执行认证逻辑
         AuthenticationContext context = new AuthenticationContext(httpRequest, httpResponse);
         try {
@@ -143,17 +157,65 @@ public class AuthenticationFilter extends GenericFilterBean {
     protected void authentication(AuthenticationContext context) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
-        // 获取JWT-Token todo cookie还是header
-//        if (tokenConfig.isUseCookie()) {
-//            String jwtToken = context.getRequest().getHeader(tokenConfig.getJwtTokenName());
-//        }else {}
-        String jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
+        // 获取JWT-Token
+        String jwtToken;
+        String refreshToken;
+        if (tokenConfig.isUseCookie()) {
+            jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
+            refreshToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getRefreshTokenName());
+        } else {
+            jwtToken = context.getRequest().getHeader(tokenConfig.getJwtTokenName());
+            refreshToken = context.getRequest().getHeader(tokenConfig.getRefreshTokenName());
+        }
         if (StringUtils.isBlank(jwtToken)) {
             throw new ParserJwtTokenException("当前用户未登录");
         }
         context.setJwtToken(jwtToken);
+        context.setRefreshToken(refreshToken);
         // 解析Token得到uid
-        Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
+        Claims claims;
+        try {
+            claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
+        } catch (ParserJwtTokenException e) {
+            if (!tokenConfig.isEnableRefreshToken() || !(e.getCause() instanceof ExpiredJwtException)) {
+                throw e;
+            }
+            // 验证刷新Token - 重新生成JWT-Token
+            log.debug("开始验证刷新Token | refresh-token={}", refreshToken);
+            if (StringUtils.isBlank(refreshToken)) {
+                throw new InvalidJwtRefreshTokenException("刷新Token为空", e);
+            }
+            // 使用刷新Token创建新的JWT-Token
+            UseJwtRefreshTokenReq req = new UseJwtRefreshTokenReq(securityConfig.getDomainId());
+            claims = JwtTokenUtils.readClaims(jwtToken);
+            req.setUseJwtId(Long.parseLong(claims.getId()));
+            req.setUseRefreshToken(refreshToken);
+            // 创建新的JWT-Token
+            final Date now = new Date();
+            jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, claims);
+            refreshToken = JwtTokenUtils.createRefreshToken(claims.getSubject());
+            req.setJwtId(Long.parseLong(claims.getId()));
+            req.setToken(jwtToken);
+            req.setExpiredTime(claims.getExpiration());
+            req.setRefreshToken(refreshToken);
+            req.setRefreshTokenExpiredTime(new Date(now.getTime() + tokenConfig.getRefreshTokenValidity().toMillis()));
+            // 使用刷新Token
+            JwtToken newJwtToken = loginSupportClient.useJwtRefreshToken(req);
+            if (newJwtToken == null) {
+                throw new InvalidJwtRefreshTokenException("无效的刷新Token");
+            }
+            log.debug("刷新Token验证成功 | uid={} | jwt-token={} | refresh-token={}", newJwtToken.getUid(), newJwtToken.getToken(), newJwtToken.getRefreshToken());
+            // 更新客户端Token数据
+            if (tokenConfig.isUseCookie()) {
+                int maxAge = DateTimeUtils.pastSeconds(now, newJwtToken.getExpiredTime()) + (60 * 3);
+                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), newJwtToken.getToken(), maxAge);
+                int refreshTokenMaxAge = DateTimeUtils.pastSeconds(now, newJwtToken.getRefreshTokenExpiredTime()) + (60 * 3);
+                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getRefreshTokenName(), newJwtToken.getRefreshToken(), Integer.max(refreshTokenMaxAge, maxAge));
+            } else {
+                context.getResponse().addHeader(tokenConfig.getJwtTokenName(), newJwtToken.getToken());
+                context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), newJwtToken.getRefreshToken());
+            }
+        }
         context.setClaims(claims);
         context.setUid(claims.getSubject());
         context.getRequest().setAttribute(JWT_Object_Request_Attribute, claims);

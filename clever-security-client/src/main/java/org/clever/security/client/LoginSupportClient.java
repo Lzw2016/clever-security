@@ -111,25 +111,25 @@ public interface LoginSupportClient {
     UserInfo getUserInfoByLoginName(@Validated @SpringQueryMap GetUserInfoByLoginNameReq req);
 
     /**
-     * 根据Telephone获取用户名
+     * 根据Telephone获取用户信息
      */
     @GetMapping("/get_user_info_by_telephone")
     UserInfo getUserInfoByTelephone(@Validated @SpringQueryMap GetUserInfoByTelephoneReq req);
 
     /**
-     * 根据Email获取用户名
+     * 根据Email获取用户信息
      */
     @GetMapping("/get_user_info_by_email")
     UserInfo getUserInfoByEmail(@Validated @SpringQueryMap GetUserInfoByEmailReq req);
 
     /**
-     * 根据WechatOpenId获取用户名
+     * 根据WechatOpenId获取用户信息
      */
     @GetMapping("/get_user_info_by_wechat_open_id")
     UserInfo getUserInfoByWechatOpenId(@Validated @SpringQueryMap GetUserInfoByWechatOpenIdReq req);
 
     /**
-     * 根据ScanCode获取用户名
+     * 根据ScanCode获取用户信息
      */
     @GetMapping("/get_user_info_by_scan_code")
     UserInfo getUserInfoByScanCode(@Validated @SpringQueryMap GetUserInfoByScanCodeReq req);
@@ -177,8 +177,8 @@ public interface LoginSupportClient {
     JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req);
 
     /**
-     * 使用refresh_jwt_token
+     * 使用刷新Token(刷新Token无效返回null)
      */
-    @PostMapping("/use_refresh_jwt_token")
-    JwtToken useRefreshJwtToken(@Validated @RequestBody UseRefreshJwtToken req);
+    @PostMapping("/use_jwt_refresh_token")
+    JwtToken useJwtRefreshToken(@Validated @RequestBody UseJwtRefreshTokenReq req);
 }

@@ -1,6 +1,7 @@
 package org.clever.security.service;
 
 import com.google.zxing.BarcodeFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.DateTimeUtils;
 import org.clever.common.utils.IDCreateUtils;
@@ -61,7 +62,7 @@ public class LoginSupportService implements LoginSupportClient {
         validateCode.setDigest(IDCreateUtils.uuid());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_0);
-        validateCode.setExpiredTime(DateTimeUtils.addMilliseconds(new Date(), req.getEffectiveTimeMilli()));
+        validateCode.setExpiredTime(new Date(System.currentTimeMillis() + req.getEffectiveTimeMilli()));
         validateCodeMapper.insert(validateCode);
         GetLoginCaptchaRes res = new GetLoginCaptchaRes();
         res.setCode(code);
@@ -142,7 +143,7 @@ public class LoginSupportService implements LoginSupportClient {
         validateCode.setDigest(IDCreateUtils.uuid());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_2);
-        validateCode.setExpiredTime(DateTimeUtils.addMilliseconds(new Date(), req.getEffectiveTimeMilli()));
+        validateCode.setExpiredTime(new Date(now.getTime() + req.getEffectiveTimeMilli()));
         validateCodeMapper.insert(validateCode);
         // 返回
         SendLoginValidateCodeForEmailRes res = new SendLoginValidateCodeForEmailRes();
@@ -184,7 +185,7 @@ public class LoginSupportService implements LoginSupportClient {
         validateCode.setDigest(IDCreateUtils.uuid());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_1);
-        validateCode.setExpiredTime(DateTimeUtils.addMilliseconds(new Date(), req.getEffectiveTimeMilli()));
+        validateCode.setExpiredTime(new Date(now.getTime() + req.getEffectiveTimeMilli()));
         validateCodeMapper.insert(validateCode);
         // 返回
         SendLoginValidateCodeForSmsRes res = new SendLoginValidateCodeForSmsRes();
@@ -202,7 +203,7 @@ public class LoginSupportService implements LoginSupportClient {
         scanCodeLogin.setDomainId(req.getDomainId());
         scanCodeLogin.setScanCode(IDCreateUtils.shortUuid());
         scanCodeLogin.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_0);
-        scanCodeLogin.setExpiredTime(DateTimeUtils.addMilliseconds(now, req.getExpiredTime()));
+        scanCodeLogin.setExpiredTime(new Date(now.getTime() + req.getExpiredTime()));
         scanCodeLoginMapper.insert(scanCodeLogin);
         // 返回
         byte[] image = ZxingCreateImageUtils.createImage(scanCodeLogin.getScanCode(), BarcodeFormat.QR_CODE);
@@ -236,7 +237,7 @@ public class LoginSupportService implements LoginSupportClient {
         update.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_1);
         update.setBindTokenId(jwtToken.getId());
         update.setBindTokenTime(now);
-        update.setConfirmExpiredTime(DateTimeUtils.addMilliseconds(now, req.getConfirmExpiredTime()));
+        update.setConfirmExpiredTime(new Date(now.getTime() + req.getConfirmExpiredTime()));
         scanCodeLoginMapper.updateById(update);
         // 返回
         BindLoginScanCodeRes res = new BindLoginScanCodeRes();
@@ -268,7 +269,7 @@ public class LoginSupportService implements LoginSupportClient {
         update.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_2);
         update.setBindTokenId(jwtToken.getId());
         update.setConfirmTime(now);
-        update.setGetTokenExpiredTime(DateTimeUtils.addMilliseconds(now, req.getGetTokenExpiredTime()));
+        update.setGetTokenExpiredTime(new Date(now.getTime() + req.getGetTokenExpiredTime()));
         scanCodeLoginMapper.updateById(update);
         // 返回
         ConfirmLoginScanCodeRes res = new ConfirmLoginScanCodeRes();
@@ -501,11 +502,40 @@ public class LoginSupportService implements LoginSupportClient {
     }
 
     @Override
-    public JwtToken useRefreshJwtToken(UseRefreshJwtToken req) {
-        int count = jwtTokenMapper.useRefreshJwtToken(req.getDomainId(), req.getId(), req.getRefreshCreateTokenId());
-        if (count <= 0) {
+    public JwtToken useJwtRefreshToken(UseJwtRefreshTokenReq req) {
+        final Date now = new Date();
+        JwtToken useToken = jwtTokenMapper.selectById(req.getUseJwtId());
+        // 验证当前Token，异常场景 --> 1.不存在，2.未过期，3.被禁用，4.刷新Token值为空，5.刷新Token内容不一致，6.刷新Token已过期，7.刷新Token无效
+        if (useToken == null
+                || (useToken.getExpiredTime() != null && now.compareTo(useToken.getExpiredTime()) < 0)
+                || !Objects.equals(useToken.getDisable(), EnumConstant.JwtToken_Disable_0)
+                || StringUtils.isBlank(useToken.getRefreshToken())
+                || !Objects.equals(req.getUseRefreshToken(), useToken.getRefreshToken())
+                || (useToken.getRefreshTokenExpiredTime() != null && now.compareTo(useToken.getRefreshTokenExpiredTime()) >= 0)
+                || !Objects.equals(useToken.getRefreshTokenState(), EnumConstant.JwtToken_RefreshTokenState_1)) {
             return null;
         }
-        return jwtTokenMapper.selectById(req.getId());
+        // 新增Token
+        JwtToken add = new JwtToken();
+        add.setId(req.getJwtId());
+        add.setDomainId(req.getDomainId());
+        add.setUid(useToken.getUid());
+        add.setToken(req.getToken());
+        add.setExpiredTime(req.getExpiredTime());
+        add.setDisable(EnumConstant.JwtToken_Disable_0);
+        add.setRefreshToken(req.getRefreshToken());
+        add.setRefreshTokenExpiredTime(req.getRefreshTokenExpiredTime());
+        add.setRefreshTokenState(EnumConstant.JwtToken_RefreshTokenState_1);
+        jwtTokenMapper.insert(add);
+        // 更新Token
+        JwtToken update = new JwtToken();
+        update.setId(useToken.getId());
+        update.setDisable(EnumConstant.JwtToken_Disable_1);
+        update.setDisableReason("使用RefreshToken");
+        update.setRefreshTokenState(EnumConstant.JwtToken_RefreshTokenState_0);
+        update.setRefreshTokenUseTime(now);
+        update.setRefreshCreateTokenId(add.getId());
+        // 返回新增的Token
+        return jwtTokenMapper.selectById(add.getId());
     }
 }

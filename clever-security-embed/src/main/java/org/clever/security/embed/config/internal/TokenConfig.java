@@ -20,17 +20,13 @@ public class TokenConfig {
      */
     private String secretKey = "clever-security-jwt";
     /**
+     * 使用Cookie传输JWT-Token(false表示使用Http Header传输JWT-Token)
+     */
+    private boolean useCookie = true;
+    /**
      * Token有效时间(默认：7天)
      */
     private Duration tokenValidity = Duration.ofDays(7);
-    /**
-     * 启用刷新令牌
-     */
-    private boolean enableRefreshToken = true;
-    /**
-     * 刷新令牌有效时间
-     */
-    private Duration refreshTokenValidity = Duration.ofDays(30);
     /**
      * 设置密钥过期时间(格式 HH:mm:ss)
      */
@@ -44,15 +40,19 @@ public class TokenConfig {
      */
     private String audience = "clever-*";
     /**
-     * 使用Cookie传输JWT-Token(false表示使用Http Header传输JWT-Token)
-     */
-    private boolean useCookie = true;
-    /**
      * JWT-Token名称(Cookie或Header中的key)
      */
-    private String jwtTokenName = "Authorization";
+    private String jwtTokenName = "authorization";
     /**
-     * Refresh-Token名称(Cookie或Header中的key)
+     * 启用刷新令牌
      */
-    private String refreshTokenName = "Refresh-Authorization";
+    private boolean enableRefreshToken = true;
+    /**
+     * 刷新令牌有效时间
+     */
+    private Duration refreshTokenValidity = Duration.ofDays(30);
+    /**
+     * 刷新Token名称(Cookie或Header中的key)
+     */
+    private String refreshTokenName = "refresh-token";
 }

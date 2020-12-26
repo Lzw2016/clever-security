@@ -36,34 +36,16 @@ public class JwtTokenUtils {
     /**
      * 创建JWT-Token
      *
-     * @param tokenConfig Token配置
-     * @param userInfo    用户信息
+     * @param tokenConfig            Token配置
+     * @param userInfo               用户信息
+     * @param addJwtTokenExtDataList 用户扩展JWT-Token实现
      */
-    public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo , List<AddJwtTokenExtData> addJwtTokenExtDataList) {
-        // 获取当前时间戳
-        long now = System.currentTimeMillis();
-        // Token过期时间
-        Date expiration = new Date(now + tokenConfig.getTokenValidity().toMillis());
-        // 优化过期时间
-        if (StringUtils.isNotBlank(tokenConfig.getHoursInDay())) {
-            String date = DateTimeUtils.formatToString(expiration, DateTimeUtils.yyyy_MM_dd);
-            try {
-                expiration = DateTimeUtils.parseDate(date + " " + StringUtils.trim(tokenConfig.getHoursInDay()), DateTimeUtils.yyyy_MM_dd_HH_mm_ss);
-            } catch (Throwable e) {
-                log.warn("### TokenConfig.hoursInDay配置错误", e);
-            }
-            if (expiration.getTime() <= now) {
-                expiration = DateTimeUtils.addDays(expiration, 1);
-            }
-        }
+    public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
         //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）, jti（JWT ID）
         DefaultClaims claims = new DefaultClaims();
         claims.setIssuer(tokenConfig.getIssuer());
         claims.setAudience(tokenConfig.getAudience());
         claims.setSubject(userInfo.getUid());
-        claims.setExpiration(expiration);
-        claims.setIssuedAt(new Date());
-        claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
         // 加入自定义信息
         if (addJwtTokenExtDataList != null && !addJwtTokenExtDataList.isEmpty()) {
             // addJwtTokenExtDataList = ListSortUtils.sort(addJwtTokenExtDataList);
@@ -80,22 +62,52 @@ public class JwtTokenUtils {
                 });
             }
         }
+        String jwtToken = createJwtToken(tokenConfig, claims);
+        return TupleTow.creat(jwtToken, claims);
+    }
+
+    /**
+     * 创建JWT-Token(会更新claims对象属性)
+     *
+     * @param tokenConfig Token配置
+     * @param claims      Token内容Claims(会更新属性值)
+     */
+    public static String createJwtToken(TokenConfig tokenConfig, Claims claims) {
+        // 获取当前时间戳
+        long now = System.currentTimeMillis();
+        // Token过期时间
+        Date expiration = new Date(now + tokenConfig.getTokenValidity().toMillis());
+        // 优化过期时间
+        if (StringUtils.isNotBlank(tokenConfig.getHoursInDay())) {
+            String date = DateTimeUtils.formatToString(expiration, DateTimeUtils.yyyy_MM_dd);
+            try {
+                expiration = DateTimeUtils.parseDate(date + " " + StringUtils.trim(tokenConfig.getHoursInDay()), DateTimeUtils.yyyy_MM_dd_HH_mm_ss);
+            } catch (Throwable e) {
+                log.warn("### TokenConfig.hoursInDay配置错误", e);
+            }
+            if (expiration.getTime() <= now) {
+                expiration = DateTimeUtils.addDays(expiration, 1);
+            }
+        }
+        // 更新claims信息
+        claims.setExpiration(expiration);
+        claims.setIssuedAt(new Date());
+        claims.setId(String.valueOf(SnowFlake.SNOW_FLAKE.nextId()));
         // 签名私钥
-        Key key = getHmacShaKey(tokenConfig.getSecretKey(), userInfo.getUid());
-        String jwtToken = Jwts.builder()
+        Key key = getHmacShaKey(tokenConfig.getSecretKey(), claims.getSubject());
+        return Jwts.builder()
                 .setClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
-        return TupleTow.creat(jwtToken, claims);
     }
 
     /**
      * 创建刷新Token
      *
-     * @param userInfo 用户信息
+     * @param uid 用户id
      */
-    public static String createRefreshToken(UserInfo userInfo) {
-        return userInfo.getUid() + ":" + IDCreateUtils.shortUuid();
+    public static String createRefreshToken(String uid) {
+        return uid + ":" + IDCreateUtils.shortUuid();
     }
 
     /**
@@ -105,14 +117,7 @@ public class JwtTokenUtils {
      * @param jwtToken    JWT-Token字符串
      */
     public static Claims parserJwtToken(TokenConfig tokenConfig, String jwtToken) {
-        String[] strArray = jwtToken.split("\\.");
-        if (strArray.length != 3) {
-            throw new MalformedJwtException("Token格式不正确");
-        }
-        // 解析获得签名私钥
-        String payload = strArray[1];
-        payload = new String(EncodeDecodeUtils.decodeBase64(payload));
-        DefaultClaims claims = JacksonMapper.getInstance().fromJson(payload, DefaultClaims.class);
+        Claims claims = readClaims(jwtToken);
         String uid = claims.getSubject();
         Key key = getHmacShaKey(tokenConfig.getSecretKey(), uid);
         try {
@@ -121,6 +126,7 @@ public class JwtTokenUtils {
                     // .requireIssuer(tokenConfig.getIssuer())
                     // .requireAudience(tokenConfig.getAudience())
                     // .requireSubject(uid)
+                    .setAllowedClockSkewSeconds(60)
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(jwtToken).getBody();
@@ -142,6 +148,20 @@ public class JwtTokenUtils {
             // 参数错误异常
             throw new ParserJwtTokenException("Token参数错误异常", e);
         }
+    }
+
+    /**
+     * 从JWT-Token中读取Claims(不校验Token)
+     */
+    public static Claims readClaims(String jwtToken) {
+        String[] strArray = jwtToken.split("\\.");
+        if (strArray.length != 3) {
+            throw new ParserJwtTokenException("Token格式不正确");
+        }
+        // 解析获得签名私钥
+        String payload = strArray[1];
+        payload = new String(EncodeDecodeUtils.decodeBase64(payload));
+        return JacksonMapper.getInstance().fromJson(payload, DefaultClaims.class);
     }
 
     /**
