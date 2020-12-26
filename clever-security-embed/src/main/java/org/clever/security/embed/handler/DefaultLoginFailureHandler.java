@@ -18,7 +18,6 @@ import org.springframework.util.Assert;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -41,6 +40,7 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         addLoginFailedCount(event);
     }
 
+    @SuppressWarnings("DuplicatedCode")
     protected void addUserLoginLog(HttpServletRequest request, LoginFailureEvent event) {
         // 记录登录失败日志user_login_log
         AbstractUserLoginReq loginData = event.getLoginData();
@@ -52,7 +52,10 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         req.setUid(userInfo.getUid());
         req.setLoginTime(new Date());
         req.setLoginIp(request.getRemoteAddr());
-        req.setLoginChannel(Objects.requireNonNull(LoginChannel.lookup(loginData.getLoginChannel())).getId());
+        LoginChannel loginChannel = LoginChannel.lookup(loginData.getLoginChannel());
+        if (loginChannel != null) {
+            req.setLoginChannel(loginChannel.getId());
+        }
         req.setLoginType(loginData.getLoginType().getId());
         req.setLoginState(EnumConstant.UserLoginLog_LoginState_0);
         req.setRequestData(JacksonMapper.getInstance().toJson(loginData));

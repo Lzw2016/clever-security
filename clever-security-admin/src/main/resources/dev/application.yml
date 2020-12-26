@@ -220,12 +220,13 @@ clever:
     token-config:
       redis-namespace: 'jwt'
       secret-key: 'clever-security-jwt'
+      use-cookie: true
       token-validity: 7d
+      hours-in-day: '03:45:00'
+      jwt-token-name: 'authorization'
       enable-refresh-token: true
       refresh-token-validity: 30d
-      hours-in-day: '03:45:00'
-      use-cookie: true
-      jwt-token-name: 'Authorization'
+      refresh-token-name: 'refresh-token'
     login-req-aes-key:
       enable: true
       req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'
