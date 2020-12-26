@@ -223,6 +223,8 @@ clever:
       use-cookie: true
       token-validity: 7d
       hours-in-day: '03:45:00'
+      issuer: 'clever-security-jwt'
+      audience: 'clever-*'
       jwt-token-name: 'authorization'
       enable-refresh-token: true
       refresh-token-validity: 30d
