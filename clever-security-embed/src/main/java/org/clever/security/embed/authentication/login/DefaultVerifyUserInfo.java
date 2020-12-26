@@ -82,7 +82,11 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
             String reqPassword = loginNamePasswordReq.getPassword();
             if (loginReqAesKey.isEnable()) {
                 // 解密密码(请求密码加密在客户端)
-                reqPassword = AesUtils.decode(loginReqAesKey.getReqPasswordAesKey(), loginReqAesKey.getReqPasswordAesIv(), reqPassword);
+                try {
+                    reqPassword = AesUtils.decode(loginReqAesKey.getReqPasswordAesKey(), loginReqAesKey.getReqPasswordAesIv(), reqPassword);
+                } catch (Exception e) {
+                    throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误", e);
+                }
             }
             // 验证密码
             if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {
