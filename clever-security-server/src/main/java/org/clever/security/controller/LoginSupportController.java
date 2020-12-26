@@ -246,4 +246,13 @@ public class LoginSupportController implements LoginSupportClient {
     public JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req) {
         return loginSupportService.disableJwtToken(req);
     }
+
+    /**
+     * 使用refresh_jwt_token
+     */
+    @PostMapping("/use_refresh_jwt_token")
+    @Override
+    public JwtToken useRefreshJwtToken(@Validated @RequestBody UseRefreshJwtToken req) {
+        return loginSupportService.useRefreshJwtToken(req);
+    }
 }

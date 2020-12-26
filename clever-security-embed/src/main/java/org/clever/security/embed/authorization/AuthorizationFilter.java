@@ -152,7 +152,7 @@ public class AuthorizationFilter extends GenericFilterBean {
      */
     protected void onAuthorizationSuccess(AuthorizationContext context) {
         SecurityContext securityContext = context.getSecurityContext();
-        AuthorizationSuccessEvent event = new AuthorizationSuccessEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        AuthorizationSuccessEvent event = new AuthorizationSuccessEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getPermissions());
         for (AuthorizationSuccessHandler handler : authorizationSuccessHandlerList) {
             handler.onAuthorizationSuccess(context.getRequest(), context.getResponse(), event);
         }
@@ -163,7 +163,7 @@ public class AuthorizationFilter extends GenericFilterBean {
      */
     protected void onAuthorizationFailure(AuthorizationContext context) {
         SecurityContext securityContext = context.getSecurityContext();
-        AuthorizationFailureEvent event = new AuthorizationFailureEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        AuthorizationFailureEvent event = new AuthorizationFailureEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getPermissions());
         for (AuthorizationFailureHandler handler : authorizationFailureHandlerList) {
             handler.onAuthorizationFailure(context.getRequest(), context.getResponse(), event);
         }

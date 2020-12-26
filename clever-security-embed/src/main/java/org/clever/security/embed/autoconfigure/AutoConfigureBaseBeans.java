@@ -87,8 +87,8 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultVerifyJwtToken")
     @ConditionalOnMissingBean(name = "defaultVerifyJwtToken")
-    public DefaultVerifyJwtToken defaultVerifyJwtToken(LoginSupportClient loginSupportClient) {
-        return new DefaultVerifyJwtToken(loginSupportClient);
+    public DefaultVerifyJwtToken defaultVerifyJwtToken(LoginSupportClient loginSupportClient/*, AuthSupportClient authSupportClient*/) {
+        return new DefaultVerifyJwtToken(loginSupportClient/*, authSupportClient*/);
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 登录、登出、授权Handler

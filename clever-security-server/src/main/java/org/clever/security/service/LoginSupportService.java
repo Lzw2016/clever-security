@@ -499,4 +499,13 @@ public class LoginSupportService implements LoginSupportClient {
         }
         return jwtTokenMapper.selectById(req.getId());
     }
+
+    @Override
+    public JwtToken useRefreshJwtToken(UseRefreshJwtToken req) {
+        int count = jwtTokenMapper.useRefreshJwtToken(req.getDomainId(), req.getId(), req.getRefreshCreateTokenId());
+        if (count <= 0) {
+            return null;
+        }
+        return jwtTokenMapper.selectById(req.getId());
+    }
 }

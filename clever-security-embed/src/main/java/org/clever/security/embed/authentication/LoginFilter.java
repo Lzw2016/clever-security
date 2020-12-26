@@ -247,7 +247,7 @@ public class LoginFilter extends GenericFilterBean {
             if (tokenConfig.isEnableRefreshToken()) {
                 refreshToken = JwtTokenUtils.createRefreshToken(userInfo);
                 context.setRefreshToken(refreshToken);
-                context.setRefreshTokenExpiredTime(DateTimeUtils.addMilliseconds(new Date(), (int) tokenConfig.getRefreshTokenValidity().toMillis()));
+                context.setRefreshTokenExpiredTime(DateTimeUtils.addDays(new Date(), (int) tokenConfig.getRefreshTokenValidity().toDays()));
             }
             log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
             context.setJwtToken(tokenInfo.getValue1());

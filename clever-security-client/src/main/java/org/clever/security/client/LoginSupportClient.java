@@ -176,4 +176,9 @@ public interface LoginSupportClient {
     @PostMapping("/disable_jwt_token")
     JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req);
 
+    /**
+     * 使用refresh_jwt_token
+     */
+    @PostMapping("/use_refresh_jwt_token")
+    JwtToken useRefreshJwtToken(@Validated @RequestBody UseRefreshJwtToken req);
 }
