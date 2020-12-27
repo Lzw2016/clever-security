@@ -4,6 +4,7 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
+import org.clever.security.entity.Domain;
 import org.clever.security.entity.JwtToken;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
@@ -26,6 +27,12 @@ import org.springframework.web.bind.annotation.RequestBody;
         configuration = CleverSecurityFeignConfiguration.class
 )
 public interface LoginSupportClient {
+    /**
+     * 获取域信息
+     */
+    @GetMapping("/domain")
+    Domain getDomain(@Validated @SpringQueryMap GetDomainReq req);
+
     /**
      * 获取登录图片验证码
      */

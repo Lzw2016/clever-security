@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.Objects;
@@ -34,6 +35,8 @@ import java.util.Objects;
 @Primary
 @Service
 public class LoginSupportService implements LoginSupportClient {
+    @Autowired
+    private DomainMapper domainMapper;
     @Autowired
     private ValidateCodeMapper validateCodeMapper;
     @Autowired
@@ -50,6 +53,11 @@ public class LoginSupportService implements LoginSupportClient {
     private UserExtMapper userExtMapper;
     @Autowired
     private UserLoginLogMapper userLoginLogMapper;
+
+    @Override
+    public Domain getDomain(@Validated GetDomainReq req) {
+        return domainMapper.selectById(req.getDomainId());
+    }
 
     @Override
     public GetLoginCaptchaRes getLoginCaptcha(GetLoginCaptchaReq req) {

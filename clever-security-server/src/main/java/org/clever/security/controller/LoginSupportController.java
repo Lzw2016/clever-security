@@ -3,6 +3,7 @@ package org.clever.security.controller;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
+import org.clever.security.entity.Domain;
 import org.clever.security.entity.JwtToken;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
@@ -21,6 +22,15 @@ import org.springframework.web.bind.annotation.*;
 public class LoginSupportController implements LoginSupportClient {
     @Autowired
     private LoginSupportService loginSupportService;
+
+    /**
+     * 获取域信息
+     */
+    @GetMapping("/domain")
+    @Override
+    public Domain getDomain(@Validated GetDomainReq req) {
+        return loginSupportService.getDomain(req);
+    }
 
     /**
      * 获取登录图片验证码
