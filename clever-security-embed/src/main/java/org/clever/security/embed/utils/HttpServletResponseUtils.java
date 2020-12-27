@@ -2,6 +2,10 @@ package org.clever.security.embed.utils;
 
 import org.clever.common.model.response.ErrorResponse;
 import org.clever.common.utils.mapper.JacksonMapper;
+import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.exception.AuthorizationException;
+import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.LogoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -25,12 +29,12 @@ public class HttpServletResponseUtils {
         if (response.isCommitted()) {
             return;
         }
+        response.setStatus(httpStatus.value());
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         if (data != null) {
             response.getWriter().print(JacksonMapper.getInstance().toJson(data));
             response.getWriter().flush();
         }
-        response.setStatus(httpStatus.value());
     }
 
     /**
@@ -59,13 +63,17 @@ public class HttpServletResponseUtils {
         errorResponse.setPath(request.getRequestURI());
         errorResponse.setException(e.getClass().getName());
         errorResponse.setError(e.getMessage());
-        errorResponse.setMessage("服务器内部错误");
+        if (e instanceof AuthenticationException || e instanceof AuthorizationException || e instanceof LoginException || e instanceof LogoutException) {
+            errorResponse.setMessage(e.getMessage());
+        } else {
+            errorResponse.setMessage("服务器内部错误");
+        }
         errorResponse.setStatus(httpStatus.value());
         errorResponse.setTimestamp(new Date());
+        response.setStatus(httpStatus.value());
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
         response.getWriter().print(JacksonMapper.getInstance().toJson(errorResponse));
         response.getWriter().flush();
-        response.setStatus(httpStatus.value());
     }
 
     /**
