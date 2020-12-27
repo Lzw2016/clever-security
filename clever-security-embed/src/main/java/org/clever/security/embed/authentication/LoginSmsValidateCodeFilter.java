@@ -6,6 +6,7 @@ import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.SendLoginValidateCodeForSmsReq;
 import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.SendValidateCodeException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
@@ -60,7 +61,11 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
             sendSmsValidateCode(httpRequest, httpResponse);
         } catch (Exception e) {
             log.error("发送短信登录验证码失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            if (e instanceof LoginException) {
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
+            } else {
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
         }
     }
 
