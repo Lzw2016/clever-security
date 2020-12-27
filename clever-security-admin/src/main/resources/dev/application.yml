@@ -175,7 +175,6 @@ clever:
     forbidden-need-redirect: false
     forbidden-redirect-page: '/403.html'
     login:
-      login-page: '/index.html'
       login-path: '/login'
       post-only: true
       login-captcha:
