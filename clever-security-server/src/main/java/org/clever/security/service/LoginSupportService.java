@@ -18,6 +18,7 @@ import org.clever.security.entity.*;
 import org.clever.security.mapper.*;
 import org.clever.security.model.UserInfo;
 import org.clever.security.utils.ConvertUtils;
+import org.clever.security.utils.UserNameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -396,10 +397,32 @@ public class LoginSupportService implements LoginSupportClient {
     @Override
     public UserInfo getUserInfoByWechatOpenId(GetUserInfoByWechatOpenIdReq req) {
         UserExt userExt = userExtMapper.getByWechatOpenId(req.getDomainId(), req.getOpenId());
+        String uid;
         if (userExt == null) {
-            return null;
+            // 微信未绑定用户信息则注册新用户
+            uid = UserNameUtils.generateUid();
+            User addUser = new User();
+            addUser.setUid(uid);
+            addUser.setLoginName(UserNameUtils.generateLoginName());
+            addUser.setEnabled(EnumConstant.User_Enabled_1);
+            addUser.setNickname(addUser.getLoginName());
+            addUser.setRegisterChannel(EnumConstant.User_RegisterChannel_5);
+            addUser.setFromSource(EnumConstant.User_FromSource_0);
+            userMapper.insert(addUser);
+            UserDomain addUserDomain = new UserDomain();
+            addUserDomain.setDomainId(req.getDomainId());
+            addUserDomain.setUid(uid);
+            userDomainMapper.insert(addUserDomain);
+            UserExt addUserExt = new UserExt();
+            addUserExt.setDomainId(req.getDomainId());
+            addUserExt.setUid(uid);
+            addUserExt.setWechatOpenId(req.getOpenId());
+            addUserExt.setWechatUnionId(req.getUnionId());
+            userExtMapper.insert(addUserExt);
+        } else {
+            uid = userExt.getUid();
         }
-        User user = userMapper.getByUid(userExt.getUid());
+        User user = userMapper.getByUid(uid);
         return ConvertUtils.convertToUserInfo(user);
     }
 

@@ -3,7 +3,6 @@ package org.clever.security.embed.authentication.login;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.client.LoginSupportClient;
-import org.clever.security.third.client.WeChatClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.WeChatCode2SessionRes;
 import org.clever.security.embed.config.SecurityConfig;
@@ -12,6 +11,7 @@ import org.clever.security.embed.config.internal.WechatSmallProgramLoginConfig;
 import org.clever.security.embed.exception.UnsupportedLoginTypeException;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.*;
+import org.clever.security.third.client.WeChatClient;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
