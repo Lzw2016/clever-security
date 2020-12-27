@@ -114,8 +114,9 @@ public class AuthenticationFilter extends GenericFilterBean {
             innerDoFilter(request, response, chain);
             return;
         }
-        doAuthentication(httpRequest, httpResponse, true);
-        innerDoFilter(request, response, chain);
+        if (doAuthentication(httpRequest, httpResponse, true)) {
+            innerDoFilter(request, response, chain);
+        }
     }
 
     protected void innerDoFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -138,8 +139,9 @@ public class AuthenticationFilter extends GenericFilterBean {
      * @param request      请求对象
      * @param response     响应对象
      * @param sendResponse 是否需要返回数据给客户端
+     * @return true:认证成功, false:认证失败
      */
-    protected void doAuthentication(HttpServletRequest request, HttpServletResponse response, boolean sendResponse) throws IOException {
+    protected boolean doAuthentication(HttpServletRequest request, HttpServletResponse response, boolean sendResponse) throws IOException {
         log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
         log.debug("当前请求 -> [{}]", request.getRequestURI());
         // 执行认证逻辑
@@ -165,15 +167,18 @@ public class AuthenticationFilter extends GenericFilterBean {
                     HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
                 }
             }
+            return false;
         } catch (Throwable e) {
             // 认证异常 - 返回数据给客户端
             log.error("认证异常", e);
             if (sendResponse) {
                 HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
+            return false;
         } finally {
             log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
         }
+        return true;
     }
 
     /**
