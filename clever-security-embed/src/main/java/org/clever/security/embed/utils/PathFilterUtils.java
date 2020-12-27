@@ -156,9 +156,7 @@ public class PathFilterUtils {
                 || isLoginCaptchaPath(request, securityConfig)
                 || isLoginSmsValidateCodePath(request, securityConfig)
                 || isLoginEmailValidateCodePath(request, securityConfig)
-                || isGetScanCodeLoginPath(request, securityConfig)
-                || isScanCodePath(request, securityConfig)
-                || isScanCodeLoginConfirmPath(request, securityConfig)) {
+                || isGetScanCodeLoginPath(request, securityConfig)) {
             return false;
         }
         // 不需要认证和授权的Path
