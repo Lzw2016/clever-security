@@ -321,15 +321,20 @@ public class LoginSupportService implements LoginSupportClient {
             return null;
         }
         ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
-        if (validateCode != null) {
-            if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1) || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)) {
-                return null;
-            }
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(new Date());
-            validateCodeMapper.updateById(update);
+        if (validateCode == null) {
+            return null;
         }
+        final Date now = new Date();
+        if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
+                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)
+                || validateCode.getValidateTime() != null
+                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+            return null;
+        }
+        ValidateCode update = new ValidateCode();
+        update.setId(validateCode.getId());
+        update.setValidateTime(new Date());
+        validateCodeMapper.updateById(update);
         return validateCode;
     }
 
