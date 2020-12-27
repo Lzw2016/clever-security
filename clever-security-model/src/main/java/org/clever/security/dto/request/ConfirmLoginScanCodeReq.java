@@ -31,6 +31,9 @@ public class ConfirmLoginScanCodeReq extends BaseRequest {
      */
     private int getTokenExpiredTime = 30 * 1000;
 
+    public ConfirmLoginScanCodeReq() {
+    }
+
     public ConfirmLoginScanCodeReq(Long domainId) {
         this.domainId = domainId;
     }
