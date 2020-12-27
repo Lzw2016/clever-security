@@ -9,6 +9,7 @@ import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.config.internal.WechatSmallProgramLoginConfig;
 import org.clever.security.embed.exception.UnsupportedLoginTypeException;
+import org.clever.security.embed.exception.WeChatLoginException;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.*;
 import org.clever.security.third.client.WeChatClient;
@@ -97,7 +98,14 @@ public class DefaultLoadUser implements LoadUser {
                 wechatSmallProgramReq.getLoginCode()
         );
         WeChatCode2SessionRes res = wechatClient.code2Session(wechatcode2SessionReq);
-        log.debug("微信小程序登录结果: [{}] -> {}", WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode()), res);
+        String errMsg = StringUtils.isNotBlank(res.getErrMsg()) ? res.getErrMsg() : WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode());
+        if (StringUtils.isBlank(errMsg)) {
+            errMsg = String.valueOf(res.getErrCode());
+        }
+        log.debug("微信小程序登录结果: [{}] -> {}", errMsg, res);
+        if (StringUtils.isBlank(res.getOpenId())) {
+            throw new WeChatLoginException(String.format("微信小程序登录失败: %s", errMsg));
+        }
         GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq(securityConfig.getDomainId());
         req.setOpenId(res.getOpenId());
         req.setUnionId(req.getUnionId());

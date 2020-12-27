@@ -142,6 +142,9 @@ public class LoginFilter extends GenericFilterBean {
         } catch (LoginException e) {
             // 登录失败
             log.debug("### 登录失败", e);
+            if (context.getLoginException() == null) {
+                context.setLoginException(e);
+            }
             try {
                 // 登录失败处理
                 loginFailureHandler(context);
