@@ -185,7 +185,6 @@ public class LoginSupportService implements LoginSupportClient {
         }
         String code = ValidateCodeSourceUtils.getRandString(6);
         // TODO 发送短信验证码 - 可多线程异步发送
-        byte[] image = ImageValidateCageUtils.createImage(code);
         // 验证码数据写入数据库
         ValidateCode validateCode = new ValidateCode();
         validateCode.setId(SnowFlake.SNOW_FLAKE.nextId());
