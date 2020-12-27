@@ -142,6 +142,17 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
+        // 上一次短信验证码有效就直接返回
+        ValidateCode lastEffective = validateCodeMapper.getLastEffective(
+                req.getDomainId(),
+                user.getUid(),
+                EnumConstant.ValidateCode_Type_1,
+                EnumConstant.ValidateCode_SendChannel_2
+        );
+        if (lastEffective != null) {
+            // 返回
+            return ConvertUtils.convertToSendLoginValidateCodeForEmailRes(lastEffective);
+        }
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
@@ -150,7 +161,7 @@ public class LoginSupportService implements LoginSupportClient {
                 dayStart,
                 dayEnd
         );
-        if (req.getMaxSendNumInDay() > 0 && sendCount > req.getMaxSendNumInDay()) {
+        if (req.getMaxSendNumInDay() > 0 && sendCount >= req.getMaxSendNumInDay()) {
             throw new BusinessException("邮件验证码发送次数超限");
         }
         // 发送邮件验证码 - 可多线程异步发送
@@ -168,11 +179,7 @@ public class LoginSupportService implements LoginSupportClient {
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_2);
         validateCodeMapper.insert(validateCode);
         // 返回
-        SendLoginValidateCodeForEmailRes res = new SendLoginValidateCodeForEmailRes();
-        res.setCode(validateCode.getCode());
-        res.setDigest(validateCode.getDigest());
-        res.setExpiredTime(validateCode.getExpiredTime());
-        return res;
+        return ConvertUtils.convertToSendLoginValidateCodeForEmailRes(validateCode);
     }
 
     @Override
@@ -352,15 +359,20 @@ public class LoginSupportService implements LoginSupportClient {
             return null;
         }
         ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
-        if (validateCode != null) {
-            if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1) || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_2)) {
-                return null;
-            }
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(new Date());
-            validateCodeMapper.updateById(update);
+        if (validateCode == null) {
+            return null;
         }
+        final Date now = new Date();
+        if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
+                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_2)
+                || validateCode.getValidateTime() != null
+                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+            return null;
+        }
+        ValidateCode update = new ValidateCode();
+        update.setId(validateCode.getId());
+        update.setValidateTime(new Date());
+        validateCodeMapper.updateById(update);
         return validateCode;
     }
 
