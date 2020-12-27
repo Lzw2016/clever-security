@@ -87,6 +87,10 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
     }
 
     protected void clearLoginFailedCount(LoginSuccessEvent event) {
+        LoginConfig loginConfig = event.getLoginConfig();
+        if (!loginConfig.getLoginCaptcha().isNeedCaptcha()) {
+            return;
+        }
         AbstractUserLoginReq loginData = event.getLoginData();
         UserInfo userInfo = event.getUserInfo();
         Assert.notNull(loginData, "loginData不能为null");
@@ -113,13 +117,15 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
             req.setUid(userInfo.getUid());
             GetConcurrentLoginCountRes res = loginSupportClient.getConcurrentLoginCount(req);
             int realConcurrentLoginCount = res == null ? 0 : res.getConcurrentLoginCount();
-            if (realConcurrentLoginCount > loginConfig.getConcurrentLoginCount()) {
+            int disableCount = realConcurrentLoginCount - loginConfig.getConcurrentLoginCount();
+            if (disableCount >= 1) {
                 // 挤下最早登录的用户
                 DisableFirstJwtTokenReq req2 = new DisableFirstJwtTokenReq(event.getDomainId());
                 req2.setUid(userInfo.getUid());
                 req2.setDisableReason("并发登录当数量超限，被挤下线");
+                req2.setDisableCount(disableCount);
                 DisableFirstJwtTokenRes res2 = loginSupportClient.disableFirstJwtToken(req2);
-                log.debug("### 挤下最早登录的用户 -> uid={} | ExpiredTime={} | CreateAt={}", res2.getUid(), res2.getExpiredTime(), res2.getCreateAt());
+                log.debug("### 挤下最早登录的用户 -> uid={} | disableCount={}", res2.getUid(), res2.getDisableCount());
             }
         }
     }

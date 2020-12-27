@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -478,17 +479,22 @@ public class LoginSupportService implements LoginSupportClient {
 
     @Override
     public DisableFirstJwtTokenRes disableFirstJwtToken(DisableFirstJwtTokenReq req) {
-        JwtToken jwtToken = jwtTokenMapper.getFirstJwtToken(req.getDomainId(), req.getUid());
-        if (jwtToken == null) {
+        List<JwtToken> jwtTokenList = jwtTokenMapper.getFirstJwtToken(req.getDomainId(), req.getUid(), req.getDisableCount());
+        if (jwtTokenList == null || jwtTokenList.isEmpty()) {
             return null;
         }
-        JwtToken update = new JwtToken();
-        update.setId(jwtToken.getId());
-        update.setDisable(EnumConstant.JwtToken_Disable_1);
-        update.setDisableReason(req.getDisableReason());
-        jwtTokenMapper.updateById(update);
-        jwtToken = jwtTokenMapper.selectById(jwtToken.getId());
-        return BeanMapper.mapper(jwtToken, DisableFirstJwtTokenRes.class);
+        int disableCount = 0;
+        for (JwtToken jwtToken : jwtTokenList) {
+            JwtToken update = new JwtToken();
+            update.setId(jwtToken.getId());
+            update.setDisable(EnumConstant.JwtToken_Disable_1);
+            update.setDisableReason(req.getDisableReason());
+            disableCount += jwtTokenMapper.updateById(update);
+        }
+        DisableFirstJwtTokenRes res = new DisableFirstJwtTokenRes();
+        res.setUid(req.getUid());
+        res.setDisableCount(disableCount);
+        return res;
     }
 
     @Override
