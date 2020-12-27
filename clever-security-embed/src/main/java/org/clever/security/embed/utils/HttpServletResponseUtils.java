@@ -1,5 +1,6 @@
 package org.clever.security.embed.utils;
 
+import org.clever.common.exception.BusinessException;
 import org.clever.common.model.response.ErrorResponse;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.embed.exception.AuthenticationException;
@@ -63,7 +64,11 @@ public class HttpServletResponseUtils {
         errorResponse.setPath(request.getRequestURI());
         errorResponse.setException(e.getClass().getName());
         errorResponse.setError(e.getMessage());
-        if (e instanceof AuthenticationException || e instanceof AuthorizationException || e instanceof LoginException || e instanceof LogoutException) {
+        if (e instanceof AuthenticationException
+                || e instanceof AuthorizationException
+                || e instanceof LoginException
+                || e instanceof LogoutException
+                || e instanceof BusinessException) {
             errorResponse.setMessage(e.getMessage());
         } else {
             errorResponse.setMessage("服务器内部错误");
