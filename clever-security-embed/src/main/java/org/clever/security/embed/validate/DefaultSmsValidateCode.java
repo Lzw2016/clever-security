@@ -12,6 +12,6 @@ public class DefaultSmsValidateCode implements SmsValidateCode {
     @Override
     public void sendSms(int type, String telephone, String code) {
         // TODO 发送短信验证码
-        log.info("### 发送短信验证码-> | telephone={} | code={}", telephone, code);
+        log.info("### 发送短信验证码-> | type={} | telephone={} | code={}", type, telephone, code);
     }
 }

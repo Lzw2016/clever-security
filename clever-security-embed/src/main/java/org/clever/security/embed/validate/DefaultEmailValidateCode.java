@@ -12,6 +12,6 @@ public class DefaultEmailValidateCode implements EmailValidateCode {
     @Override
     public void sendEmail(int type, String email, String code, byte[] image) {
         // TODO 发送邮件验证码
-        log.info("### 发送邮件验证码-> | email={} | code={}", email, code);
+        log.info("### 发送邮件验证码-> | type={} | email={} | code={}", type, email, code);
     }
 }

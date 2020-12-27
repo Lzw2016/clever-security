@@ -29,4 +29,15 @@ public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
             @Param("start") Date start,
             @Param("end") Date end
     );
+
+    @Select({
+            "select * from validate_code where validate_time is null and expired_time>=date_add(now(), interval 15 second) ",
+            "and domain_id=#{domainId} and uid=#{uid} and type=#{type} and send_channel=#{sendChannel} order by create_at desc limit 1"
+    })
+    ValidateCode getLastEffective(
+            @Param("domainId") Long domainId,
+            @Param("uid") String uid,
+            @Param("type") Integer type,
+            @Param("sendChannel") Integer sendChannel
+    );
 }
