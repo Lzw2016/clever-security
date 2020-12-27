@@ -134,13 +134,17 @@ public class LoginFilter extends GenericFilterBean {
         LoginContext context = new LoginContext(httpRequest, httpResponse);
         try {
             login(context);
+            // 登录成功处理
+            loginSuccessHandler(context);
             // 登录成功 - 返回数据给客户端
             onLoginSuccessResponse(context);
         } catch (LoginException e) {
             // 登录失败
             log.debug("### 登录失败", e);
-            // context.setLoginException(e);
             try {
+                // 登录失败处理
+                loginFailureHandler(context);
+                // 返回数据给客户端
                 onLoginFailureResponse(context);
             } catch (Exception innerException) {
                 log.error("登录异常", innerException);
@@ -201,11 +205,9 @@ public class LoginFilter extends GenericFilterBean {
         // 登录失败
         if (context.isLoginFailure()) {
             log.debug("### 加载用户之前校验登录数据失败(登录失败) -> {}", loginReq, context.getLoginException());
-            loginFailureHandler(context);
             throw context.getLoginException();
-        } else {
-            log.debug("### 加载用户之前校验登录数据成功 -> {}", loginReq);
         }
+        log.debug("### 加载用户之前校验登录数据成功 -> {}", loginReq);
         // 加载用户信息
         LoadUser loadUser = null;
         for (LoadUser load : loadUserList) {
@@ -236,41 +238,37 @@ public class LoginFilter extends GenericFilterBean {
         if (context.isLoginFailure()) {
             // 登录失败
             log.debug("### 加载用户之后校验登录数据失败(登录失败) -> {}", userInfo, context.getLoginException());
-            loginFailureHandler(context);
             throw context.getLoginException();
+        }
+        // 登录成功
+        log.debug("### 登录成功 -> {}", userInfo);
+        final Date now = new Date();
+        TokenConfig tokenConfig = securityConfig.getTokenConfig();
+        final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, addJwtTokenExtDataList);
+        String refreshToken = null;
+        if (tokenConfig.isEnableRefreshToken()) {
+            refreshToken = JwtTokenUtils.createRefreshToken(userInfo.getUid());
+            context.setRefreshToken(refreshToken);
+            context.setRefreshTokenExpiredTime(new Date(now.getTime() + tokenConfig.getRefreshTokenValidity().toMillis()));
+        }
+        log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
+        context.setJwtToken(tokenInfo.getValue1());
+        context.setClaims(tokenInfo.getValue2());
+        // 保存安全上下文(用户信息)
+        securityContextRepository.cacheContext(context, securityConfig, context.getRequest(), context.getResponse());
+        // 将JWT-Token写入客户端
+        if (tokenConfig.isUseCookie()) {
+            int maxAge = DateTimeUtils.pastSeconds(now, tokenInfo.getValue2().getExpiration()) + (60 * 3);
+            CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), tokenInfo.getValue1(), maxAge);
+            if (tokenConfig.isEnableRefreshToken() && refreshToken != null) {
+                int refreshTokenMaxAge = DateTimeUtils.pastSeconds(now, context.getRefreshTokenExpiredTime()) + (60 * 3);
+                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getRefreshTokenName(), refreshToken, Integer.max(refreshTokenMaxAge, maxAge));
+            }
         } else {
-            // 登录成功
-            log.debug("### 登录成功 -> {}", userInfo);
-            final Date now = new Date();
-            TokenConfig tokenConfig = securityConfig.getTokenConfig();
-            final TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, addJwtTokenExtDataList);
-            String refreshToken = null;
+            context.getResponse().addHeader(tokenConfig.getJwtTokenName(), tokenInfo.getValue1());
             if (tokenConfig.isEnableRefreshToken()) {
-                refreshToken = JwtTokenUtils.createRefreshToken(userInfo.getUid());
-                context.setRefreshToken(refreshToken);
-                context.setRefreshTokenExpiredTime(new Date(now.getTime() + tokenConfig.getRefreshTokenValidity().toMillis()));
+                context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), refreshToken);
             }
-            log.debug("### 登录成功 | uid={} | jwt-token={} | refresh-token={}", userInfo.getUid(), tokenInfo.getValue1(), refreshToken);
-            context.setJwtToken(tokenInfo.getValue1());
-            context.setClaims(tokenInfo.getValue2());
-            // 保存安全上下文(用户信息)
-            securityContextRepository.cacheContext(context, securityConfig, context.getRequest(), context.getResponse());
-            // 将JWT-Token写入客户端
-            if (tokenConfig.isUseCookie()) {
-                int maxAge = DateTimeUtils.pastSeconds(now, tokenInfo.getValue2().getExpiration()) + (60 * 3);
-                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), tokenInfo.getValue1(), maxAge);
-                if (tokenConfig.isEnableRefreshToken() && refreshToken != null) {
-                    int refreshTokenMaxAge = DateTimeUtils.pastSeconds(now, context.getRefreshTokenExpiredTime()) + (60 * 3);
-                    CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getRefreshTokenName(), refreshToken, Integer.max(refreshTokenMaxAge, maxAge));
-                }
-            } else {
-                context.getResponse().addHeader(tokenConfig.getJwtTokenName(), tokenInfo.getValue1());
-                if (tokenConfig.isEnableRefreshToken()) {
-                    context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), refreshToken);
-                }
-            }
-            // 登录成功处理
-            loginSuccessHandler(context);
         }
     }
 

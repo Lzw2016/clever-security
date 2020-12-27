@@ -107,40 +107,18 @@ public class AuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (!PathFilterUtils.isAuthenticationRequest(httpRequest, securityConfig)) {
             // 不需要身份认证
-            chain.doFilter(request, response);
-            return;
-        }
-        log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
-        // 执行认证逻辑
-        AuthenticationContext context = new AuthenticationContext(httpRequest, httpResponse);
-        try {
-            authentication(context);
-        } catch (AuthenticationException e) {
-            // 认证失败
-            log.debug("### 认证失败", e);
-            try {
-                // 用户身份认失败处理
-                AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
-                for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
-                    handler.onAuthenticationFailure(httpRequest, httpResponse, event);
-                }
-                // 返回数据给客户端
-                onAuthenticationFailureResponse(httpRequest, httpResponse, e);
-            } catch (Exception innerException) {
-                log.error("认证异常", innerException);
-                // 返回数据给客户端
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+            if (!securityConfig.getLogin().isAllowRepeatLogin() && PathFilterUtils.isLoginRequest(httpRequest, securityConfig)) {
+                // 当前请求是登录请求且不允许重复登录时，需要判断当前用户是否已经登录
+                doAuthentication(httpRequest, httpResponse, false);
             }
+            innerDoFilter(request, response, chain);
             return;
-        } catch (Throwable e) {
-            // 认证异常 - 返回数据给客户端
-            log.error("认证异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-            return;
-        } finally {
-            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
         }
+        doAuthentication(httpRequest, httpResponse, true);
+        innerDoFilter(request, response, chain);
+    }
+
+    protected void innerDoFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             // 处理业务逻辑
             chain.doFilter(request, response);
@@ -154,6 +132,53 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
     }
 
+    /**
+     * 执行用户身份认证
+     *
+     * @param request      请求对象
+     * @param response     响应对象
+     * @param sendResponse 是否需要返回数据给客户端
+     */
+    protected void doAuthentication(HttpServletRequest request, HttpServletResponse response, boolean sendResponse) throws IOException {
+        log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
+        log.debug("当前请求 -> [{}]", request.getRequestURI());
+        // 执行认证逻辑
+        AuthenticationContext context = new AuthenticationContext(request, response);
+        try {
+            authentication(context);
+            // 用户身份认成功处理
+            authenticationSuccessHandler(context);
+        } catch (AuthenticationException e) {
+            // 认证失败
+            log.debug("### 认证失败", e);
+            try {
+                // 用户身份认失败处理
+                authenticationFailureHandler(context);
+                // 返回数据给客户端
+                if (sendResponse) {
+                    onAuthenticationFailureResponse(request, response, e);
+                }
+            } catch (Exception innerException) {
+                log.error("认证异常", innerException);
+                // 返回数据给客户端
+                if (sendResponse) {
+                    HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+                }
+            }
+        } catch (Throwable e) {
+            // 认证异常 - 返回数据给客户端
+            log.error("认证异常", e);
+            if (sendResponse) {
+                HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+        } finally {
+            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
+        }
+    }
+
+    /**
+     * 认证流程
+     */
     protected void authentication(AuthenticationContext context) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
@@ -170,8 +195,6 @@ public class AuthenticationFilter extends GenericFilterBean {
         if (StringUtils.isBlank(jwtToken)) {
             throw new ParserJwtTokenException("当前用户未登录");
         }
-        context.setJwtToken(jwtToken);
-        context.setRefreshToken(refreshToken);
         // 解析Token得到uid
         Claims claims;
         try {
@@ -216,6 +239,8 @@ public class AuthenticationFilter extends GenericFilterBean {
                 context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), newJwtToken.getRefreshToken());
             }
         }
+        context.setJwtToken(jwtToken);
+        context.setRefreshToken(refreshToken);
         context.setClaims(claims);
         context.setUid(claims.getSubject());
         context.getRequest().setAttribute(JWT_Object_Request_Attribute, claims);
@@ -228,10 +253,36 @@ public class AuthenticationFilter extends GenericFilterBean {
         // 把SecurityContext绑定到当前线程和当前请求对象
         SecurityContextHolder.setContext(securityContext, context.getRequest());
         context.setSecurityContext(securityContext);
-        // 用户身份认成功处理
-        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(jwtToken, context.getUid(), claims, securityContext);
+    }
+
+    /**
+     * 用户身份认成功处理
+     */
+    protected void authenticationSuccessHandler(AuthenticationContext context) throws Exception {
+        if (authenticationSuccessHandlerList == null) {
+            return;
+        }
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(
+                context.getJwtToken(),
+                context.getUid(),
+                context.getClaims(),
+                context.getSecurityContext()
+        );
         for (AuthenticationSuccessHandler handler : authenticationSuccessHandlerList) {
             handler.onAuthenticationSuccess(context.getRequest(), context.getResponse(), event);
+        }
+    }
+
+    /**
+     * 用户身份认失败处理
+     */
+    protected void authenticationFailureHandler(AuthenticationContext context) throws Exception {
+        if (authenticationFailureHandlerList == null) {
+            return;
+        }
+        AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
+        for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
+            handler.onAuthenticationFailure(context.getRequest(), context.getResponse(), event);
         }
     }
 

@@ -164,7 +164,7 @@ public class AutoConfigureSecurityFilter {
         FilterRegistrationBean<PasswordRecoveryFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
         filterRegistration.setName("passwordRecoveryFilter");
-        filterRegistration.setOrder(Base_Order + 5);
+        filterRegistration.setOrder(Base_Order + 6);
         return filterRegistration;
     }
 
@@ -278,7 +278,7 @@ public class AutoConfigureSecurityFilter {
      * ###登出
      */
     @Bean("logoutFilter")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "logoutFilter")
     public FilterRegistrationBean<LogoutFilter> logoutFilter(
             List<LogoutSuccessHandler> logoutSuccessHandlerList,
             ObjectProvider<List<LogoutFailureHandler>> logoutFailureHandlerList) {
