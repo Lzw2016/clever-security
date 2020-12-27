@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
 import org.clever.common.utils.DateTimeUtils;
+import org.clever.common.utils.mapper.CgLibBeanMapper;
 import org.clever.common.utils.tuples.TupleTow;
 import org.clever.security.embed.authentication.login.*;
 import org.clever.security.embed.collect.LoginDataCollect;
@@ -331,7 +332,10 @@ public class LoginFilter extends GenericFilterBean {
             HttpServletResponseUtils.redirect(context.getResponse(), login.getLoginSuccessRedirectPage());
         } else {
             // 直接返回
-            LoginRes loginRes = LoginRes.loginSuccess(context.getUserInfo(), context.getJwtToken(), context.getRefreshToken());
+            UserInfo userInfo = CgLibBeanMapper.mapper(context.getUserInfo(), UserInfo.class);
+            userInfo.setPassword("******");
+            userInfo.getExtInfo().putAll(context.getUserInfo().getExtInfo());
+            LoginRes loginRes = LoginRes.loginSuccess(userInfo, context.getJwtToken(), context.getRefreshToken());
             HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.UNAUTHORIZED);
         }
     }
