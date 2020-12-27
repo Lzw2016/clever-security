@@ -192,7 +192,7 @@ public class LoginSupportService implements LoginSupportClient {
                 dayStart,
                 dayEnd
         );
-        if (req.getMaxSendNumInDay() > 0 && sendCount > req.getMaxSendNumInDay()) {
+        if (req.getMaxSendNumInDay() > 0 && sendCount >= req.getMaxSendNumInDay()) {
             throw new BusinessException("短信验证码发送次数超限");
         }
         // 发送短信验证码 - 可多线程异步发送
