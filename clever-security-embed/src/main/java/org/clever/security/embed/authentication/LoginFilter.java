@@ -357,7 +357,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
-            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.BAD_REQUEST : HttpStatus.UNAUTHORIZED;
+            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
             HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, httpStatus);
         }
     }

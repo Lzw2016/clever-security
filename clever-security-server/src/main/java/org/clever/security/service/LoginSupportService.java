@@ -464,10 +464,10 @@ public class LoginSupportService implements LoginSupportClient {
     @Override
     public UserInfo getUserInfoByScanCode(GetUserInfoByScanCodeReq req) {
         ScanCodeLogin scanCodeLogin = scanCodeLoginMapper.getByScanCode(req.getDomainId(), req.getScanCode());
-        if (scanCodeLogin == null || scanCodeLogin.getTokenId() == null) {
+        if (scanCodeLogin == null || scanCodeLogin.getBindTokenId() == null) {
             return null;
         }
-        JwtToken jwtToken = jwtTokenMapper.selectById(scanCodeLogin.getTokenId());
+        JwtToken jwtToken = jwtTokenMapper.selectById(scanCodeLogin.getBindTokenId());
         if (jwtToken == null) {
             return null;
         }

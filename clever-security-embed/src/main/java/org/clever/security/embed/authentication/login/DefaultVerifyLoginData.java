@@ -126,8 +126,17 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         if (res == null) {
             throw new ScanCodeLoginException("二维码不存在");
         }
+        if (Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_0)) {
+            throw new ScanCodeLoginException("二维码等待扫描");
+        }
+        if (Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_1)) {
+            throw new ScanCodeLoginException("二维码等待确认");
+        }
+        if (res.getGetTokenExpiredTime() == null) {
+            throw new ScanCodeLoginException("二维码等待扫描和确认");
+        }
         Date now = new Date();
-        if (res.getGetTokenExpiredTime() == null || now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
+        if (now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
             throw new ScanCodeLoginException("二维码已过期");
         }
         if (res.getBindTokenId() == null || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {

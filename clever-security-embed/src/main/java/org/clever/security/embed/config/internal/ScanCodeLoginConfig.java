@@ -28,6 +28,10 @@ public class ScanCodeLoginConfig {
      * 确认登录请求Path
      */
     private String confirmLoginPath = "/scan_code/confirm";
+//    /**
+//     * 确认登录请求Path
+//     */
+//    private String confirmLoginPath = "/scan_code/confirm";
 
     /**
      * 扫码登录二维码有效时间(生成二维码 -> 扫码请求时间，默认60秒)

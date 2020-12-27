@@ -52,13 +52,11 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
         }
         LoginConfig loginConfig = securityConfig.getLogin();
         AesKeyConfig loginReqAesKey = securityConfig.getLoginReqAesKey();
-        // 登录用户不存在
-        // 密码错误
+        // 登录用户不存在 | 密码错误
         verifyUserInfo(loginConfig, loginReqAesKey, loginReq, userInfo);
         // 不支持登录域错误
         verifyUserDomain(securityConfig.getDomainId(), loginConfig, userInfo);
-        // 用户过期错误
-        // 用户禁用错误
+        // 用户过期错误 | 用户禁用错误
         verifyUserStatus(securityConfig.getDomainId(), userInfo);
         // 登录数量超过最大并发数量错误
         verifyConcurrentLoginCount(securityConfig.getDomainId(), loginConfig, userInfo);
