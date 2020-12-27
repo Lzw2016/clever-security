@@ -12,6 +12,7 @@ import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.ScanCodeReq;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -36,6 +37,10 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
     public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, LoginSuccessEvent event) {
         // 保存JWT-Token
         long jwtTokenId = addJwtToken(event);
+        // 扫码登录 - 回写扫码登录状态
+        if (event.getLoginData() instanceof ScanCodeReq) {
+            // TODO 回写扫码登录状态
+        }
         // 记录登录成功日志
         addUserLoginLog(jwtTokenId, request, event);
         // 清除连续登录失败次数
@@ -129,6 +134,8 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
             }
         }
     }
+
+//    protected void
 
     @Override
     public int getOrder() {

@@ -96,6 +96,18 @@ public class PathFilterUtils {
     }
 
     /**
+     * 当前请求是否是获取登录二维码状态请求
+     */
+    public static boolean isScanCodeStatePath(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
+        if (scanCodeLogin == null) {
+            return false;
+        }
+        return Objects.equals(scanCodeLogin.getScanCodeStatePath(), path);
+    }
+
+    /**
      * 当前请求是否是扫描登录二维码请求
      */
     public static boolean isScanCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
@@ -156,7 +168,8 @@ public class PathFilterUtils {
                 || isLoginCaptchaPath(request, securityConfig)
                 || isLoginSmsValidateCodePath(request, securityConfig)
                 || isLoginEmailValidateCodePath(request, securityConfig)
-                || isGetScanCodeLoginPath(request, securityConfig)) {
+                || isGetScanCodeLoginPath(request, securityConfig)
+                || isScanCodeStatePath(request, securityConfig)) {
             return false;
         }
         // 不需要认证和授权的Path

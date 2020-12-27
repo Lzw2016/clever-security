@@ -133,6 +133,7 @@ public class AutoConfigureSecurityFilter {
         ScanCodeLoginFilter filter = new ScanCodeLoginFilter(this.securityConfig, loginSupportClient.getIfAvailable());
         FilterRegistrationBean<ScanCodeLoginFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getScanCodeLogin().getGetScanCodeLoginPath());
+        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getScanCodeLogin().getScanCodeStatePath());
         filterRegistration.setName("scanCodeLoginFilter");
         filterRegistration.setOrder(Base_Order + 4);
         return filterRegistration;

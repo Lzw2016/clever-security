@@ -22,6 +22,9 @@ public class GetScanCodeLoginInfoReq extends BaseRequest {
     @NotBlank(message = "二维码不能为空")
     private String scanCode;
 
+    public GetScanCodeLoginInfoReq() {
+    }
+
     public GetScanCodeLoginInfoReq(Long domainId) {
         this.domainId = domainId;
     }
