@@ -184,6 +184,17 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
+        // 上一次短信验证码有效就直接返回
+        ValidateCode lastEffective = validateCodeMapper.getLastEffective(
+                req.getDomainId(),
+                user.getUid(),
+                EnumConstant.ValidateCode_Type_1,
+                EnumConstant.ValidateCode_SendChannel_1
+        );
+        if (lastEffective != null) {
+            // 返回
+            return ConvertUtils.convertToSendLoginValidateCodeForSmsRes(lastEffective);
+        }
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
@@ -209,11 +220,7 @@ public class LoginSupportService implements LoginSupportClient {
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_1);
         validateCodeMapper.insert(validateCode);
         // 返回
-        SendLoginValidateCodeForSmsRes res = new SendLoginValidateCodeForSmsRes();
-        res.setCode(validateCode.getCode());
-        res.setDigest(validateCode.getDigest());
-        res.setExpiredTime(validateCode.getExpiredTime());
-        return res;
+        return ConvertUtils.convertToSendLoginValidateCodeForSmsRes(validateCode);
     }
 
     @Override
