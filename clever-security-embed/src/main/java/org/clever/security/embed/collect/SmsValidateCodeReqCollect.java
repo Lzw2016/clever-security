@@ -69,7 +69,7 @@ public class SmsValidateCodeReqCollect extends AbstractLoginDataCollect {
                 req.setValidateCode(validateCode);
             }
         }
-        if (req.getTelephone() == null && req.getValidateCode() == null) {
+        if (req.getTelephone() == null) {
             return null;
         }
         return req;
