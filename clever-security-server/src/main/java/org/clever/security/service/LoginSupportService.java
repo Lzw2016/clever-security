@@ -1,6 +1,7 @@
 package org.clever.security.service;
 
 import com.google.zxing.BarcodeFormat;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.DateTimeUtils;
@@ -17,6 +18,8 @@ import org.clever.security.dto.response.*;
 import org.clever.security.entity.*;
 import org.clever.security.mapper.*;
 import org.clever.security.model.UserInfo;
+import org.clever.security.third.validate.EmailValidateCode;
+import org.clever.security.third.validate.SmsValidateCode;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.UserNameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,9 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 作者：lizw <br/>
@@ -36,7 +42,9 @@ import java.util.Objects;
 @Transactional
 @Primary
 @Service
+@Slf4j
 public class LoginSupportService implements LoginSupportClient {
+    protected static final ThreadPoolExecutor Executor_Service = new ThreadPoolExecutor(256, 256, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     @Autowired
     private DomainMapper domainMapper;
     @Autowired
@@ -55,6 +63,10 @@ public class LoginSupportService implements LoginSupportClient {
     private UserExtMapper userExtMapper;
     @Autowired
     private UserLoginLogMapper userLoginLogMapper;
+    @Autowired
+    private SmsValidateCode smsValidateCode;
+    @Autowired
+    private EmailValidateCode emailValidateCode;
 
     @Override
     public Domain getDomain(@Validated GetDomainReq req) {
@@ -141,23 +153,23 @@ public class LoginSupportService implements LoginSupportClient {
         if (req.getMaxSendNumInDay() > 0 && sendCount > req.getMaxSendNumInDay()) {
             throw new BusinessException("邮件验证码发送次数超限");
         }
-        String code = ValidateCodeSourceUtils.getRandString(6);
-        // TODO 发送邮件验证码 - 可多线程异步发送
-        byte[] image = ImageValidateCageUtils.createImage(code);
+        // 发送邮件验证码 - 可多线程异步发送
+        ValidateCode validateCode = ConvertUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
+        Executor_Service.execute(() -> {
+            try {
+                emailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, req.getEmail(), validateCode.getCode(), image);
+            } catch (Exception e) {
+                log.error("登录邮件验证码发送失败", e);
+            }
+        });
         // 验证码数据写入数据库
-        ValidateCode validateCode = new ValidateCode();
-        validateCode.setId(SnowFlake.SNOW_FLAKE.nextId());
-        validateCode.setDomainId(req.getDomainId());
-        validateCode.setUid(user.getUid());
-        validateCode.setCode(code);
-        validateCode.setDigest(IDCreateUtils.uuid());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_2);
-        validateCode.setExpiredTime(new Date(now.getTime() + req.getEffectiveTimeMilli()));
         validateCodeMapper.insert(validateCode);
         // 返回
         SendLoginValidateCodeForEmailRes res = new SendLoginValidateCodeForEmailRes();
-        res.setCode(code);
+        res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
         return res;
@@ -180,25 +192,25 @@ public class LoginSupportService implements LoginSupportClient {
                 dayStart,
                 dayEnd
         );
-        if (req.getMaxSendNumInDay() > 0 && sendCount > req.getMaxSendNumInDay()) {
+        if (req.getMaxSendNumInDay() > 0 && sendCount >= req.getMaxSendNumInDay()) {
             throw new BusinessException("短信验证码发送次数超限");
         }
-        String code = ValidateCodeSourceUtils.getRandString(6);
-        // TODO 发送短信验证码 - 可多线程异步发送
+        // 发送短信验证码 - 可多线程异步发送
+        ValidateCode validateCode = ConvertUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        Executor_Service.execute(() -> {
+            try {
+                smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, req.getTelephone(), validateCode.getCode());
+            } catch (Exception e) {
+                log.error("登录短信验证码发送失败", e);
+            }
+        });
         // 验证码数据写入数据库
-        ValidateCode validateCode = new ValidateCode();
-        validateCode.setId(SnowFlake.SNOW_FLAKE.nextId());
-        validateCode.setDomainId(req.getDomainId());
-        validateCode.setUid(user.getUid());
-        validateCode.setCode(code);
-        validateCode.setDigest(IDCreateUtils.uuid());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_1);
-        validateCode.setExpiredTime(new Date(now.getTime() + req.getEffectiveTimeMilli()));
         validateCodeMapper.insert(validateCode);
         // 返回
         SendLoginValidateCodeForSmsRes res = new SendLoginValidateCodeForSmsRes();
-        res.setCode(code);
+        res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
         return res;
@@ -309,15 +321,20 @@ public class LoginSupportService implements LoginSupportClient {
             return null;
         }
         ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
-        if (validateCode != null) {
-            if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1) || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)) {
-                return null;
-            }
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(new Date());
-            validateCodeMapper.updateById(update);
+        if (validateCode == null) {
+            return null;
         }
+        final Date now = new Date();
+        if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
+                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)
+                || validateCode.getValidateTime() != null
+                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+            return null;
+        }
+        ValidateCode update = new ValidateCode();
+        update.setId(validateCode.getId());
+        update.setValidateTime(new Date());
+        validateCodeMapper.updateById(update);
         return validateCode;
     }
 

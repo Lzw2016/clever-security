@@ -167,7 +167,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      */
     protected void verifyValidateCode(ValidateCode realValidateCode, String validateCode) {
         if (realValidateCode == null) {
-            throw new LoginValidateCodeException("登录验证码不存在");
+            throw new LoginValidateCodeException("登录验证码已过期");
         }
         Date now = new Date();
         if (realValidateCode.getExpiredTime() == null || now.compareTo(realValidateCode.getExpiredTime()) >= 0) {

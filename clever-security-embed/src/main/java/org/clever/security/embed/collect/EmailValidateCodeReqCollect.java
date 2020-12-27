@@ -69,7 +69,7 @@ public class EmailValidateCodeReqCollect extends AbstractLoginDataCollect {
                 req.setValidateCode(validateCode);
             }
         }
-        if (req.getEmail() == null && req.getValidateCode() == null) {
+        if (req.getEmail() == null) {
             return null;
         }
         return req;

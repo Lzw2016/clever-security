@@ -15,7 +15,11 @@ import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.handler.DefaultLoginFailureHandler;
 import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
 import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
+import org.clever.security.embed.validate.DefaultEmailValidateCode;
+import org.clever.security.embed.validate.DefaultSmsValidateCode;
 import org.clever.security.third.client.WeChatClient;
+import org.clever.security.third.validate.EmailValidateCode;
+import org.clever.security.third.validate.SmsValidateCode;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -34,39 +38,51 @@ import java.security.SecureRandom;
 @Slf4j
 public class AutoConfigureBaseBeans {
     @Bean("passwordEncoder")
-    @ConditionalOnMissingBean(PasswordEncoder.class)
+    @ConditionalOnMissingBean(name = "passwordEncoder")
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
+    }
+
+    @Bean("emailValidateCode")
+    @ConditionalOnMissingBean(name = "emailValidateCode")
+    public EmailValidateCode emailValidateCode() {
+        return new DefaultEmailValidateCode();
+    }
+
+    @Bean("smsValidateCode")
+    @ConditionalOnMissingBean(name = "smsValidateCode")
+    public SmsValidateCode smsValidateCode() {
+        return new DefaultSmsValidateCode();
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户登录信息
 
     @Bean("loginNamePasswordReqCollect")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "loginNamePasswordReqCollect")
     public LoginNamePasswordReqCollect loginNamePasswordReqCollect() {
         return new LoginNamePasswordReqCollect();
     }
 
     @Bean("smsValidateCodeReqCollect")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "smsValidateCodeReqCollect")
     public SmsValidateCodeReqCollect smsValidateCodeReqCollect() {
         return new SmsValidateCodeReqCollect();
     }
 
     @Bean("emailValidateCodeReqCollect")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "emailValidateCodeReqCollect")
     public EmailValidateCodeReqCollect emailValidateCodeReqCollect() {
         return new EmailValidateCodeReqCollect();
     }
 
     @Bean("wechatSmallProgramReqCollect")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "wechatSmallProgramReqCollect")
     public WechatSmallProgramReqCollect wechatSmallProgramReqCollect() {
         return new WechatSmallProgramReqCollect();
     }
 
     @Bean("scanCodeReqCollect")
-    @ConditionalOnMissingBean(name = "")
+    @ConditionalOnMissingBean(name = "scanCodeReqCollect")
     public ScanCodeReqCollect scanCodeReqCollect() {
         return new ScanCodeReqCollect();
     }
