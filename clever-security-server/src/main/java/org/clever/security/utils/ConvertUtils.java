@@ -3,6 +3,7 @@ package org.clever.security.utils;
 import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
+import org.clever.security.dto.response.SendLoginValidateCodeForEmailRes;
 import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
@@ -40,6 +41,14 @@ public class ConvertUtils {
 
     public static SendLoginValidateCodeForSmsRes convertToSendLoginValidateCodeForSmsRes(ValidateCode validateCode) {
         SendLoginValidateCodeForSmsRes res = new SendLoginValidateCodeForSmsRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendLoginValidateCodeForEmailRes convertToSendLoginValidateCodeForEmailRes(ValidateCode validateCode) {
+        SendLoginValidateCodeForEmailRes res = new SendLoginValidateCodeForEmailRes();
         res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
