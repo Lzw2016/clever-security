@@ -48,7 +48,7 @@ spring:
       compressed: true
     cache:
       period: 31536000s
-    static-locations: ['classpath:/static/']
+    static-locations: [ 'classpath:/static/' ]
 
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
@@ -201,6 +201,7 @@ clever:
         get-scan-code-login-path: '/scan_code/get'
         scan-code-path: '/scan_code/scan'
         confirm-login-path: '/scan_code/confirm'
+        scan-code-state-path: '/scan_code/state'
         expired-time: 60s
         confirm-expired-time: 30s
         get-token-expired-time: 30s
