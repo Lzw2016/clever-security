@@ -4,10 +4,7 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.Domain;
-import org.clever.security.entity.JwtToken;
-import org.clever.security.entity.User;
-import org.clever.security.entity.ValidateCode;
+import org.clever.security.entity.*;
 import org.clever.security.model.UserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -80,6 +77,12 @@ public interface LoginSupportClient {
      */
     @GetMapping("/scan_code_login_info")
     GetScanCodeLoginInfoRes getScanCodeLoginInfo(@Validated @SpringQueryMap GetScanCodeLoginInfoReq req);
+
+    /**
+     * 回写扫码登录状态
+     */
+    @PostMapping("/write_back_scan_code_login")
+    ScanCodeLogin writeBackScanCodeLogin(@Validated @SpringQueryMap WriteBackScanCodeLoginReq req);
 
     /**
      * 获取发送的手机验证码

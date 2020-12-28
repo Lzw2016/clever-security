@@ -3,10 +3,7 @@ package org.clever.security.controller;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.Domain;
-import org.clever.security.entity.JwtToken;
-import org.clever.security.entity.User;
-import org.clever.security.entity.ValidateCode;
+import org.clever.security.entity.*;
 import org.clever.security.model.UserInfo;
 import org.clever.security.service.LoginSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +99,14 @@ public class LoginSupportController implements LoginSupportClient {
     @Override
     public GetScanCodeLoginInfoRes getScanCodeLoginInfo(@Validated GetScanCodeLoginInfoReq req) {
         return loginSupportService.getScanCodeLoginInfo(req);
+    }
+
+    /**
+     * 回写扫码登录状态
+     */
+    @PostMapping("/write_back_scan_code_login")
+    public ScanCodeLogin writeBackScanCodeLogin(@Validated WriteBackScanCodeLoginReq req) {
+        return loginSupportService.writeBackScanCodeLogin(req);
     }
 
     /**

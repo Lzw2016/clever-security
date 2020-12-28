@@ -6,10 +6,12 @@ import org.clever.security.LoginChannel;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.AddLoginFailedCountReq;
 import org.clever.security.dto.request.AddUserLoginLogReq;
+import org.clever.security.dto.request.WriteBackScanCodeLoginReq;
 import org.clever.security.dto.response.AddLoginFailedCountRes;
 import org.clever.security.dto.response.AddUserLoginLogRes;
 import org.clever.security.embed.event.LoginFailureEvent;
 import org.clever.security.entity.EnumConstant;
+import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.ScanCodeReq;
@@ -38,6 +40,7 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         // 扫码登录 - 回写扫码登录状态
         if (event.getLoginData() instanceof ScanCodeReq) {
             // TODO 回写扫码登录状态
+            writeBackScanCodeLogin(event);
         }
         // 记录登录失败日志
         addUserLoginLog(request, event);
@@ -79,6 +82,19 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         req.setLoginType(loginData.getLoginType().getId());
         AddLoginFailedCountRes res = loginSupportClient.addLoginFailedCount(req);
         log.debug("### 增加用户连续登录失败次数: {} | uid = [{}]", res.getFailedCount(), res.getUid());
+    }
+
+    protected void writeBackScanCodeLogin(LoginFailureEvent event) {
+        ScanCodeReq scanCodeReq = (ScanCodeReq) event.getLoginData();
+        WriteBackScanCodeLoginReq req = new WriteBackScanCodeLoginReq(event.getDomainId());
+        req.setScanCode(scanCodeReq.getScanCode());
+        req.setLoginTime(new Date());
+        req.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_4);
+        req.setInvalidReason(event.getLoginException().getMessage());
+        ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
+        if (res != null) {
+            log.debug("### 登录失败回写扫码登录状态 res->{}", res);
+        }
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.clever.security.dto.response.*;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.entity.EnumConstant;
+import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.ScanCodeReq;
@@ -40,6 +41,7 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         // 扫码登录 - 回写扫码登录状态
         if (event.getLoginData() instanceof ScanCodeReq) {
             // TODO 回写扫码登录状态
+            writeBackScanCodeLogin(event);
         }
         // 记录登录成功日志
         addUserLoginLog(jwtTokenId, request, event);
@@ -132,6 +134,19 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
                 DisableFirstJwtTokenRes res2 = loginSupportClient.disableFirstJwtToken(req2);
                 log.debug("### 挤下最早登录的用户 -> uid={} | disableCount={}", res2.getUid(), res2.getDisableCount());
             }
+        }
+    }
+
+    protected void writeBackScanCodeLogin(LoginSuccessEvent event) {
+        ScanCodeReq scanCodeReq = (ScanCodeReq) event.getLoginData();
+        WriteBackScanCodeLoginReq req = new WriteBackScanCodeLoginReq(event.getDomainId());
+        req.setScanCode(scanCodeReq.getScanCode());
+        req.setLoginTime(new Date());
+        req.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_3);
+        req.setTokenId(Long.parseLong(event.getClaims().getId()));
+        ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
+        if (res != null) {
+            log.debug("### 登陆成功回写扫码登录状态成功 res->{}", res);
         }
     }
 

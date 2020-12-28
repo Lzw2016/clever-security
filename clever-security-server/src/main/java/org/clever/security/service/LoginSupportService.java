@@ -285,7 +285,7 @@ public class LoginSupportService implements LoginSupportClient {
     @Override
     public ConfirmLoginScanCodeRes confirmLoginScanCode(ConfirmLoginScanCodeReq req) {
         ScanCodeLogin scanCodeLogin = scanCodeLoginMapper.getByScanCode(req.getDomainId(), req.getScanCode());
-        if (scanCodeLogin == null) {
+        if (scanCodeLogin == null || !Objects.equals(scanCodeLogin.getBindTokenId(), req.getBindTokenId())) {
             return null;
         }
         if (!Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_1)) {
@@ -326,6 +326,18 @@ public class LoginSupportService implements LoginSupportClient {
         res.setBindTokenId(scanCodeLogin.getBindTokenId());
         res.setGetTokenExpiredTime(scanCodeLogin.getGetTokenExpiredTime());
         return res;
+    }
+
+    @Override
+    public ScanCodeLogin writeBackScanCodeLogin(WriteBackScanCodeLoginReq req) {
+        ScanCodeLogin scanCodeLogin = scanCodeLoginMapper.getByScanCode(req.getDomainId(), req.getScanCode());
+        if (scanCodeLogin == null || !Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+            return null;
+        }
+        ScanCodeLogin update = BeanMapper.mapper(req, ScanCodeLogin.class);
+        update.setId(scanCodeLogin.getId());
+        scanCodeLoginMapper.updateById(update);
+        return scanCodeLoginMapper.selectById(update.getId());
     }
 
     @Override
