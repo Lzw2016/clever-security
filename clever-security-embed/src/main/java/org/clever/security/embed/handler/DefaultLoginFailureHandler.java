@@ -88,7 +88,7 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         req.setScanCode(scanCodeReq.getScanCode());
         req.setLoginTime(new Date());
         req.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_4);
-        req.setInvalidReason("扫码登录失败");
+        req.setInvalidReason(String.format("扫码登录失败(%s)", event.getLoginException().getMessage()));
         ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
         if (res != null) {
             log.debug("### 登录失败回写扫码登录状态 | scanCode={} | scanCodeState={}", res.getScanCode(), res.getScanCodeState());

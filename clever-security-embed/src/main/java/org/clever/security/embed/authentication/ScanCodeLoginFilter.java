@@ -11,7 +11,7 @@ import org.clever.security.dto.response.CreateLoginScanCodeRes;
 import org.clever.security.dto.response.GetScanCodeLoginInfoRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.LoginException;
-import org.clever.security.embed.exception.LoginInnerException;
+import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -104,15 +104,15 @@ public class ScanCodeLoginFilter extends GenericFilterBean {
     protected void getLoginScanCodeState(HttpServletRequest request, HttpServletResponse response) throws IOException {
         GetScanCodeLoginInfoReq req = HttpServletRequestUtils.parseBodyToEntity(request, GetScanCodeLoginInfoReq.class);
         if (req == null) {
-            throw new LoginInnerException("请求参数错误");
+            throw new ScanCodeLoginException("请求参数错误");
         }
         if (StringUtils.isBlank(req.getScanCode())) {
-            throw new LoginInnerException("参数scanCode不能为空");
+            throw new ScanCodeLoginException("参数scanCode不能为空");
         }
         req.setDomainId(securityConfig.getDomainId());
         GetScanCodeLoginInfoRes res = loginSupportClient.getScanCodeLoginInfo(req);
         if (res == null) {
-            throw new LoginInnerException("二维码不存在或者已过期");
+            throw new ScanCodeLoginException("二维码不存在或者已过期");
         }
         Map<String, Object> map = new LinkedHashMap<>(2);
         map.put("scanCode", res.getScanCode());

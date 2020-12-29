@@ -320,6 +320,22 @@ public class LoginSupportService implements LoginSupportClient {
         if (scanCodeLogin == null) {
             return null;
         }
+        if (Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_0)
+                || Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_1)
+                || Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+            final Date now = new Date();
+            if ((scanCodeLogin.getExpiredTime() != null && now.compareTo(scanCodeLogin.getExpiredTime()) >= 0)
+                    || (scanCodeLogin.getConfirmExpiredTime() != null && now.compareTo(scanCodeLogin.getConfirmExpiredTime()) >= 0)
+                    || (scanCodeLogin.getGetTokenExpiredTime() != null && now.compareTo(scanCodeLogin.getGetTokenExpiredTime()) >= 0)) {
+                // ScanCodeLogin 已过期失效
+                ScanCodeLogin update = new ScanCodeLogin();
+                update.setId(scanCodeLogin.getId());
+                update.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_4);
+                update.setInvalidReason("过期失效");
+                scanCodeLoginMapper.updateById(update);
+                scanCodeLogin = scanCodeLoginMapper.getByScanCode(req.getDomainId(), req.getScanCode());
+            }
+        }
         GetScanCodeLoginInfoRes res = new GetScanCodeLoginInfoRes();
         res.setScanCode(scanCodeLogin.getScanCode());
         res.setScanCodeState(scanCodeLogin.getScanCodeState());
@@ -331,7 +347,9 @@ public class LoginSupportService implements LoginSupportClient {
     @Override
     public ScanCodeLogin writeBackScanCodeLogin(WriteBackScanCodeLoginReq req) {
         ScanCodeLogin scanCodeLogin = scanCodeLoginMapper.getByScanCode(req.getDomainId(), req.getScanCode());
-        if (scanCodeLogin == null || !Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+        if (scanCodeLogin == null
+                || Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_3)
+                || Objects.equals(scanCodeLogin.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_4)) {
             return null;
         }
         ScanCodeLogin update = BeanMapper.mapper(req, ScanCodeLogin.class);
