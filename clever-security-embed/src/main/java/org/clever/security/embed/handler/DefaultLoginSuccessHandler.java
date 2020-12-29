@@ -40,8 +40,7 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         long jwtTokenId = addJwtToken(event);
         // 扫码登录 - 回写扫码登录状态
         if (event.getLoginData() instanceof ScanCodeReq) {
-            // TODO 回写扫码登录状态
-            writeBackScanCodeLogin(event);
+            writeBackScanCodeLogin(event, (ScanCodeReq) event.getLoginData());
         }
         // 记录登录成功日志
         addUserLoginLog(jwtTokenId, request, event);
@@ -137,8 +136,7 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         }
     }
 
-    protected void writeBackScanCodeLogin(LoginSuccessEvent event) {
-        ScanCodeReq scanCodeReq = (ScanCodeReq) event.getLoginData();
+    protected void writeBackScanCodeLogin(LoginSuccessEvent event, ScanCodeReq scanCodeReq) {
         WriteBackScanCodeLoginReq req = new WriteBackScanCodeLoginReq(event.getDomainId());
         req.setScanCode(scanCodeReq.getScanCode());
         req.setLoginTime(new Date());
@@ -146,11 +144,9 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         req.setTokenId(Long.parseLong(event.getClaims().getId()));
         ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
         if (res != null) {
-            log.debug("### 登陆成功回写扫码登录状态成功 res->{}", res);
+            log.debug("### 登陆成功回写扫码登录状态成功 | scanCode={} | scanCodeState={}", res.getScanCode(), res.getScanCodeState());
         }
     }
-
-//    protected void
 
     @Override
     public int getOrder() {

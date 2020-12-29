@@ -9,7 +9,7 @@ import org.clever.security.dto.response.BindLoginScanCodeRes;
 import org.clever.security.dto.response.ConfirmLoginScanCodeRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.exception.LoginException;
-import org.clever.security.embed.exception.LoginInnerException;
+import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -87,14 +87,14 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
     protected void bindLoginScanCode(Claims claims, HttpServletRequest request, HttpServletResponse response) throws IOException {
         BindLoginScanCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, BindLoginScanCodeReq.class);
         if (req == null) {
-            throw new LoginInnerException("请求参数错误");
+            throw new ScanCodeLoginException("请求参数错误");
         }
         req.setDomainId(securityConfig.getDomainId());
         req.setBindTokenId(Long.parseLong(claims.getId()));
         req.setConfirmExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getConfirmExpiredTime().toMillis());
         BindLoginScanCodeRes res = loginSupportClient.bindLoginScanCode(req);
         if (res == null) {
-            throw new LoginInnerException("二维码不存在或者已过期");
+            throw new ScanCodeLoginException("二维码不存在或者已过期");
         }
         HttpServletResponseUtils.sendJson(response, res);
     }
@@ -102,14 +102,14 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
     protected void confirmLoginScanCode(Claims claims, HttpServletRequest request, HttpServletResponse response) throws IOException {
         ConfirmLoginScanCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, ConfirmLoginScanCodeReq.class);
         if (req == null) {
-            throw new LoginInnerException("请求参数错误");
+            throw new ScanCodeLoginException("请求参数错误");
         }
         req.setDomainId(securityConfig.getDomainId());
         req.setBindTokenId(Long.parseLong(claims.getId()));
         req.setGetTokenExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getGetTokenExpiredTime().toMillis());
         ConfirmLoginScanCodeRes res = loginSupportClient.confirmLoginScanCode(req);
         if (res == null) {
-            throw new LoginInnerException("二维码不存在或者已过期");
+            throw new ScanCodeLoginException("二维码不存在或者已过期");
         }
         HttpServletResponseUtils.sendJson(response, res);
     }
