@@ -208,7 +208,7 @@ public class LoginFilter extends GenericFilterBean {
         }
         // 登录失败
         if (context.isLoginFailure()) {
-            log.debug("### 加载用户之前校验登录数据失败(登录失败) -> {}", loginReq, context.getLoginException());
+            log.debug("### 加载用户之前校验登录数据失败(登录失败) -> {}", loginReq);
             throw context.getLoginException();
         }
         log.debug("### 加载用户之前校验登录数据成功 -> {}", loginReq);
@@ -241,7 +241,7 @@ public class LoginFilter extends GenericFilterBean {
         }
         if (context.isLoginFailure()) {
             // 登录失败
-            log.debug("### 加载用户之后校验登录数据失败(登录失败) -> {}", userInfo, context.getLoginException());
+            log.debug("### 加载用户之后校验登录数据失败(登录失败) -> {}", userInfo);
             throw context.getLoginException();
         }
         // 登录成功
