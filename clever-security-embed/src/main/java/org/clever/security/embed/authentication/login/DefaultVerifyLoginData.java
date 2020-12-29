@@ -19,7 +19,11 @@ import org.clever.security.embed.exception.LoginValidateCodeException;
 import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.model.login.*;
+import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.EmailValidateCodeReq;
+import org.clever.security.model.login.ScanCodeReq;
+import org.clever.security.model.login.SmsValidateCodeReq;
+import org.clever.security.utils.LoginUniqueNameUtils;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -90,13 +94,8 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         GetLoginFailedCountAndCaptchaReq req = new GetLoginFailedCountAndCaptchaReq(domainId);
         req.setCaptchaDigest(loginReq.getCaptchaDigest());
         req.setLoginTypeId(loginReq.getLoginType().getId());
-        if (loginReq instanceof LoginNamePasswordReq) {
-            req.setLoginUniqueName(((LoginNamePasswordReq) loginReq).getLoginName());
-        } else if (loginReq instanceof SmsValidateCodeReq) {
-            req.setLoginUniqueName(((SmsValidateCodeReq) loginReq).getTelephone());
-        } else if (loginReq instanceof EmailValidateCodeReq) {
-            req.setLoginUniqueName(((EmailValidateCodeReq) loginReq).getEmail());
-        } else {
+        req.setLoginUniqueName(LoginUniqueNameUtils.getLoginUniqueName(loginReq));
+        if (StringUtils.isBlank(req.getLoginUniqueName())) {
             return;
         }
         GetLoginFailedCountAndCaptchaRes res = loginSupportClient.getLoginFailedCountAndCaptcha(req);

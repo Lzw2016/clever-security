@@ -26,7 +26,6 @@ public class AddUserLoginLogReq extends BaseRequest {
     /**
      * 用户id
      */
-    @NotBlank(message = "用户id不能为null")
     private String uid;
 
     /**
@@ -82,6 +81,16 @@ public class AddUserLoginLogReq extends BaseRequest {
      * JWT-Token id
      */
     private Long jwtTokenId;
+
+    /**
+     * 登录唯一名称(查询用户条件)
+     * <pre>
+     *     1.用户名密码   -> loginName
+     *     2.手机号验证码 -> telephone
+     *     3.邮箱验证码   -> email
+     * </pre>
+     */
+    private String loginUniqueName;
 
     public AddUserLoginLogReq(Long domainId) {
         this.domainId = domainId;

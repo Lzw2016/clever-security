@@ -1,6 +1,7 @@
 package org.clever.security.embed.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.LoginChannel;
 import org.clever.security.client.LoginSupportClient;
@@ -15,6 +16,7 @@ import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.ScanCodeReq;
+import org.clever.security.utils.LoginUniqueNameUtils;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -47,42 +49,6 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         addLoginFailedCount(event);
     }
 
-    @SuppressWarnings("DuplicatedCode")
-    protected void addUserLoginLog(HttpServletRequest request, LoginFailureEvent event) {
-        // 记录登录失败日志user_login_log
-        AbstractUserLoginReq loginData = event.getLoginData();
-        UserInfo userInfo = event.getUserInfo();
-        if (loginData == null || userInfo == null) {
-            return;
-        }
-        AddUserLoginLogReq req = new AddUserLoginLogReq(event.getDomainId());
-        req.setUid(userInfo.getUid());
-        req.setLoginTime(new Date());
-        req.setLoginIp(request.getRemoteAddr());
-        LoginChannel loginChannel = LoginChannel.lookup(loginData.getLoginChannel());
-        if (loginChannel != null) {
-            req.setLoginChannel(loginChannel.getId());
-        }
-        req.setLoginType(loginData.getLoginType().getId());
-        req.setLoginState(EnumConstant.UserLoginLog_LoginState_0);
-        req.setRequestData(JacksonMapper.getInstance().toJson(loginData));
-        AddUserLoginLogRes res = loginSupportClient.addUserLoginLog(req);
-        log.debug("### 登录失败 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
-    }
-
-    protected void addLoginFailedCount(LoginFailureEvent event) {
-        AbstractUserLoginReq loginData = event.getLoginData();
-        UserInfo userInfo = event.getUserInfo();
-        if (loginData == null || userInfo == null) {
-            return;
-        }
-        AddLoginFailedCountReq req = new AddLoginFailedCountReq(event.getDomainId());
-        req.setUid(userInfo.getUid());
-        req.setLoginType(loginData.getLoginType().getId());
-        AddLoginFailedCountRes res = loginSupportClient.addLoginFailedCount(req);
-        log.debug("### 增加用户连续登录失败次数: {} | uid = [{}]", res.getFailedCount(), res.getUid());
-    }
-
     protected void writeBackScanCodeLogin(LoginFailureEvent event, ScanCodeReq scanCodeReq) {
         WriteBackScanCodeLoginReq req = new WriteBackScanCodeLoginReq(event.getDomainId());
         req.setScanCode(scanCodeReq.getScanCode());
@@ -92,6 +58,57 @@ public class DefaultLoginFailureHandler implements LoginFailureHandler {
         ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
         if (res != null) {
             log.debug("### 登录失败回写扫码登录状态 | scanCode={} | scanCodeState={}", res.getScanCode(), res.getScanCodeState());
+        }
+    }
+
+    protected void addUserLoginLog(HttpServletRequest request, LoginFailureEvent event) {
+        // 记录登录失败日志user_login_log
+        AbstractUserLoginReq loginData = event.getLoginData();
+        UserInfo userInfo = event.getUserInfo();
+        if (loginData == null) {
+            return;
+        }
+        AddUserLoginLogReq req = new AddUserLoginLogReq(event.getDomainId());
+        req.setLoginUniqueName(LoginUniqueNameUtils.getLoginUniqueName(loginData));
+        if (userInfo != null) {
+            req.setUid(userInfo.getUid());
+        }
+        if (StringUtils.isBlank(req.getUid()) && StringUtils.isBlank(req.getLoginUniqueName())) {
+            return;
+        }
+        LoginChannel loginChannel = LoginChannel.lookup(loginData.getLoginChannel());
+        if (loginChannel != null) {
+            req.setLoginChannel(loginChannel.getId());
+        }
+        req.setLoginTime(new Date());
+        req.setLoginIp(request.getRemoteAddr());
+        req.setLoginType(loginData.getLoginType().getId());
+        req.setLoginState(EnumConstant.UserLoginLog_LoginState_0);
+        req.setRequestData(JacksonMapper.getInstance().toJson(loginData));
+        AddUserLoginLogRes res = loginSupportClient.addUserLoginLog(req);
+        if (res != null) {
+            log.debug("### 登录失败 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
+        }
+    }
+
+    protected void addLoginFailedCount(LoginFailureEvent event) {
+        AbstractUserLoginReq loginData = event.getLoginData();
+        UserInfo userInfo = event.getUserInfo();
+        if (loginData == null) {
+            return;
+        }
+        AddLoginFailedCountReq req = new AddLoginFailedCountReq(event.getDomainId());
+        req.setLoginUniqueName(LoginUniqueNameUtils.getLoginUniqueName(loginData));
+        if (userInfo != null) {
+            req.setUid(userInfo.getUid());
+        }
+        if (StringUtils.isBlank(req.getUid()) && StringUtils.isBlank(req.getLoginUniqueName())) {
+            return;
+        }
+        req.setLoginType(loginData.getLoginType().getId());
+        AddLoginFailedCountRes res = loginSupportClient.addLoginFailedCount(req);
+        if (res != null) {
+            log.debug("### 增加用户连续登录失败次数: {} | uid = [{}]", res.getFailedCount(), res.getUid());
         }
     }
 

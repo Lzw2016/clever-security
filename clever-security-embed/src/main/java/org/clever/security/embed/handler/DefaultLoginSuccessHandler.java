@@ -69,7 +69,6 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         return res.getId();
     }
 
-    @SuppressWarnings("DuplicatedCode")
     protected void addUserLoginLog(long jwtTokenId, HttpServletRequest request, LoginSuccessEvent event) {
         // 记录登录成功日志user_login_log
         AbstractUserLoginReq loginData = event.getLoginData();
@@ -89,7 +88,9 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         req.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
         req.setRequestData(JacksonMapper.getInstance().toJson(loginData));
         AddUserLoginLogRes res = loginSupportClient.addUserLoginLog(req);
-        log.debug("### 登录成功 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
+        if (res != null) {
+            log.debug("### 登录成功 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
+        }
     }
 
     protected void clearLoginFailedCount(LoginSuccessEvent event) {

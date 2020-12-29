@@ -6,7 +6,6 @@ import org.clever.common.model.request.BaseRequest;
 import org.clever.common.validation.ValidIntegerStatus;
 import org.clever.security.entity.EnumConstant;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -24,7 +23,6 @@ public class AddLoginFailedCountReq extends BaseRequest {
     /**
      * 用户id
      */
-    @NotBlank(message = "用户id不能为null")
     private String uid;
 
     /**
@@ -43,6 +41,16 @@ public class AddLoginFailedCountReq extends BaseRequest {
             message = "不支持的登录方式值"
     )
     private Integer loginType;
+
+    /**
+     * 登录唯一名称(查询用户条件)
+     * <pre>
+     *     1.用户名密码   -> loginName
+     *     2.手机号验证码 -> telephone
+     *     3.邮箱验证码   -> email
+     * </pre>
+     */
+    private String loginUniqueName;
 
     public AddLoginFailedCountReq(Long domainId) {
         this.domainId = domainId;

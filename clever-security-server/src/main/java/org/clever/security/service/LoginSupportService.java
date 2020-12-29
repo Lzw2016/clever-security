@@ -22,6 +22,7 @@ import org.clever.security.third.validate.EmailValidateCode;
 import org.clever.security.third.validate.SmsValidateCode;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.UserNameUtils;
+import org.clever.security.utils.ValidateCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -111,18 +112,7 @@ public class LoginSupportService implements LoginSupportClient {
             update.setValidateTime(now);
             validateCodeMapper.updateById(update);
         }
-        User user = null;
-        switch (req.getLoginTypeId()) {
-            case EnumConstant.UserLoginLog_LoginType_1:
-                user = userMapper.getByLoginName(req.getLoginUniqueName());
-                break;
-            case EnumConstant.UserLoginLog_LoginType_2:
-                user = userMapper.getByTelephone(req.getLoginUniqueName());
-                break;
-            case EnumConstant.UserLoginLog_LoginType_3:
-                user = userMapper.getByEmail(req.getLoginUniqueName());
-                break;
-        }
+        User user = getUser(req.getLoginTypeId(), req.getLoginUniqueName());
         if (user != null) {
             LoginFailedCount loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), user.getUid(), req.getLoginTypeId());
             if (loginFailedCount != null) {
@@ -165,7 +155,7 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("邮件验证码发送次数超限");
         }
         // 发送邮件验证码 - 可多线程异步发送
-        ValidateCode validateCode = ConvertUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
         byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
         Executor_Service.execute(() -> {
             try {
@@ -214,7 +204,7 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("短信验证码发送次数超限");
         }
         // 发送短信验证码 - 可多线程异步发送
-        ValidateCode validateCode = ConvertUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
         Executor_Service.execute(() -> {
             try {
                 smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, req.getTelephone(), validateCode.getCode());
@@ -507,6 +497,16 @@ public class LoginSupportService implements LoginSupportClient {
 
     @Override
     public AddUserLoginLogRes addUserLoginLog(AddUserLoginLogReq req) {
+        if (StringUtils.isBlank(req.getUid()) && StringUtils.isBlank(req.getLoginUniqueName())) {
+            return null;
+        }
+        if (StringUtils.isBlank(req.getUid())) {
+            User user = getUser(req.getLoginType(), req.getLoginUniqueName());
+            if (user == null) {
+                return null;
+            }
+            req.setUid(user.getUid());
+        }
         UserLoginLog userLoginLog = BeanMapper.mapper(req, UserLoginLog.class);
         userLoginLog.setId(SnowFlake.SNOW_FLAKE.nextId());
         userLoginLogMapper.insert(userLoginLog);
@@ -516,6 +516,16 @@ public class LoginSupportService implements LoginSupportClient {
 
     @Override
     public AddLoginFailedCountRes addLoginFailedCount(AddLoginFailedCountReq req) {
+        if (StringUtils.isBlank(req.getUid()) && StringUtils.isNotBlank(req.getLoginUniqueName())) {
+            User user = getUser(req.getLoginType(), req.getLoginUniqueName());
+            if (user == null) {
+                return null;
+            }
+            req.setUid(user.getUid());
+        }
+        if (StringUtils.isBlank(req.getUid())) {
+            return null;
+        }
         final Date now = new Date();
         LoginFailedCount loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), req.getUid(), req.getLoginType());
         if (loginFailedCount == null) {
@@ -640,5 +650,27 @@ public class LoginSupportService implements LoginSupportClient {
         jwtTokenMapper.updateById(update);
         // 返回新增的Token
         return jwtTokenMapper.selectById(add.getId());
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param loginTypeId     登录方式ID(1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录)
+     * @param loginUniqueName 登录唯一名称(查询用户条件) 1.用户名密码   -> loginName | 2.手机号验证码 -> telephone | 3.邮箱验证码   -> email
+     */
+    protected User getUser(int loginTypeId, String loginUniqueName) {
+        User user = null;
+        switch (loginTypeId) {
+            case EnumConstant.UserLoginLog_LoginType_1:
+                user = userMapper.getByLoginName(loginUniqueName);
+                break;
+            case EnumConstant.UserLoginLog_LoginType_2:
+                user = userMapper.getByTelephone(loginUniqueName);
+                break;
+            case EnumConstant.UserLoginLog_LoginType_3:
+                user = userMapper.getByEmail(loginUniqueName);
+                break;
+        }
+        return user;
     }
 }
