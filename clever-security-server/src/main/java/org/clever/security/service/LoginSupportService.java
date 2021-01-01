@@ -147,7 +147,6 @@ public class LoginSupportService implements LoginSupportClient {
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
-                user.getEmail(),
                 EnumConstant.ValidateCode_Type_1,
                 EnumConstant.ValidateCode_SendChannel_2,
                 dayStart,
@@ -198,7 +197,6 @@ public class LoginSupportService implements LoginSupportClient {
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
-                user.getTelephone(),
                 EnumConstant.ValidateCode_Type_1,
                 EnumConstant.ValidateCode_SendChannel_1,
                 dayStart,

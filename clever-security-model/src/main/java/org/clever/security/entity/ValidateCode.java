@@ -53,7 +53,7 @@ public class ValidateCode implements Serializable {
     private Integer sendChannel;
 
     /**
-     * 发送目标
+     * 发送目标手机号或邮箱
      */
     private String sendTarget;
 
