@@ -302,6 +302,7 @@ create table validate_code
     digest              varchar(63)     not null        unique                                  comment '验证码签名',
     type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码',
     send_channel        int(1)          not null                                                comment '验证码发送渠道，0:不需要发送，1:短信，2:email',
+    send_target         varchar(63)                                                             comment '发送目标',
     expired_time        datetime(3)     not null                                                comment '验证码过期时间',
     validate_time       datetime(3)                                                             comment '验证码验证时间(使用时间)',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
