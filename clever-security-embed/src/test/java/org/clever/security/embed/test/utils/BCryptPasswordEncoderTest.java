@@ -32,10 +32,10 @@ public class BCryptPasswordEncoderTest {
     @Test
     public void t02() {
         log.info("-> {}", EncodeDecodeUtils.encodeHex(CryptoUtils.generateAesKey()));
-        String key = "bb6de39cb39ebb1358adaa89a1f72842";
-        String iv = "f254cdb4ff0f9224d01a82c66c95e940";
+        String key = "b9049bb512f6b776835b9bf9e6c44c45";
+        String iv = "47e2cf4f8ee69fd9d7f3cad475682df8";
         AesPasswordEncoder passwordEncoder = new AesPasswordEncoder(key, iv);
-        String password = "123";
+        String password = "112233";
         String after = passwordEncoder.encode(password);
         log.info("-> {}", after);
         log.info("-> {}", passwordEncoder.encode(password));

@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,8 +17,14 @@ import java.util.Date;
 public class UserExt implements Serializable {
     private static final long serialVersionUID = -28090812452997640L;
     /**
+     * 域id
+     */
+    @TableId(type = IdType.INPUT)
+    private Long domainId;
+    /**
      * 用户id(系统自动生成且不会变化)
      */
+    // @TableId(type = IdType.INPUT)
     private String uid;
 
     /**

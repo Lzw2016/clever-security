@@ -17,10 +17,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * 作者：lizw <br/>
  * 创建时间：2017/6/12 9:28 <br/>
  */
-@Profile({"dev", "test"})
+@Profile({"local", "dev", "test", "pre"})
 @Configuration
 @EnableSwagger2
-public class SecuritySwaggerConfig {
+public class SecurityServerSwagger2Config {
 
     @Bean
     public Docket createApi() {

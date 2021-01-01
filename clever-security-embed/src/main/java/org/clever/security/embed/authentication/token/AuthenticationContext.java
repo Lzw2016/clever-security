@@ -26,6 +26,10 @@ public class AuthenticationContext {
      */
     private String jwtToken;
     /**
+     * JWT刷新Token
+     */
+    private String refreshToken;
+    /**
      * 用户id
      */
     private String uid;

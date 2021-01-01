@@ -17,10 +17,6 @@ import java.util.List;
 @ConfigurationProperties(prefix = Constant.ConfigPrefix)
 @Data
 public class SecurityConfig implements Serializable {
-//    /**
-//     * 启用Spring Security调试功能
-//     */
-//    private boolean enableDebug = false;
     /**
      * 域名称(用于数据隔离)
      */

@@ -20,7 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Profile({"local", "dev", "test", "pre"})
 @Configuration
 @EnableSwagger2
-public class SecuritySwagger2Config {
+public class SecurityEmbedSwagger2Config {
     @Bean
     public Docket createSecurityEmbedApi() {
         ApiInfo apiInfo = new ApiInfoBuilder()

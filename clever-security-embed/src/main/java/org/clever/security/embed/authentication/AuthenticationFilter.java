@@ -1,8 +1,13 @@
 package org.clever.security.embed.authentication;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
+import org.clever.common.utils.DateTimeUtils;
+import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.UseJwtRefreshTokenReq;
 import org.clever.security.embed.authentication.token.AuthenticationContext;
 import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.config.SecurityConfig;
@@ -12,12 +17,15 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.AuthenticationFailureEvent;
 import org.clever.security.embed.event.AuthenticationSuccessEvent;
 import org.clever.security.embed.exception.AuthenticationException;
+import org.clever.security.embed.exception.InvalidJwtRefreshTokenException;
+import org.clever.security.embed.exception.ParserJwtTokenException;
 import org.clever.security.embed.handler.AuthenticationFailureHandler;
 import org.clever.security.embed.handler.AuthenticationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.clever.security.entity.JwtToken;
 import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
@@ -30,6 +38,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,23 +70,30 @@ public class AuthenticationFilter extends GenericFilterBean {
      * 用户身份认失败处理
      */
     private final List<AuthenticationFailureHandler> authenticationFailureHandlerList;
+    /**
+     * 登录支持对象
+     */
+    private final LoginSupportClient loginSupportClient;
 
     public AuthenticationFilter(
             SecurityConfig securityConfig,
             List<VerifyJwtToken> verifyJwtTokenList,
             SecurityContextRepository securityContextRepository,
             List<AuthenticationSuccessHandler> authenticationSuccessHandlerList,
-            final List<AuthenticationFailureHandler> authenticationFailureHandlerList) {
+            List<AuthenticationFailureHandler> authenticationFailureHandlerList,
+            LoginSupportClient loginSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notEmpty(verifyJwtTokenList, "JWT-Token验证器(VerifyJwtToken)不存在");
         Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
         Assert.notNull(authenticationSuccessHandlerList, "参数authenticationSuccessHandlerList不能为null");
         Assert.notNull(authenticationFailureHandlerList, "参数authenticationFailureHandlerList不能为null");
+        Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
         this.securityConfig = securityConfig;
         this.verifyJwtTokenList = ListSortUtils.sort(verifyJwtTokenList);
         this.securityContextRepository = securityContextRepository;
         this.authenticationSuccessHandlerList = ListSortUtils.sort(authenticationSuccessHandlerList);
         this.authenticationFailureHandlerList = ListSortUtils.sort(authenticationFailureHandlerList);
+        this.loginSupportClient = loginSupportClient;
     }
 
     @Override
@@ -91,39 +107,19 @@ public class AuthenticationFilter extends GenericFilterBean {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         if (!PathFilterUtils.isAuthenticationRequest(httpRequest, securityConfig)) {
             // 不需要身份认证
-            chain.doFilter(request, response);
-            return;
-        }
-        log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
-        // 执行认证逻辑
-        AuthenticationContext context = new AuthenticationContext(httpRequest, httpResponse);
-        try {
-            authentication(context);
-        } catch (AuthenticationException e) {
-            // 认证失败
-            log.debug("### 认证失败", e);
-            try {
-                // 用户身份认失败处理
-                AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
-                for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
-                    handler.onAuthenticationFailure(httpRequest, httpResponse, event);
-                }
-                // 返回数据给客户端
-                onAuthenticationFailureResponse(httpRequest, httpResponse, e);
-            } catch (Exception innerException) {
-                log.error("认证异常", innerException);
-                // 返回数据给客户端
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+            if (!securityConfig.getLogin().isAllowRepeatLogin() && PathFilterUtils.isLoginRequest(httpRequest, securityConfig)) {
+                // 当前请求是登录请求且不允许重复登录时，需要判断当前用户是否已经登录
+                doAuthentication(httpRequest, httpResponse, false);
             }
+            innerDoFilter(request, response, chain);
             return;
-        } catch (Throwable e) {
-            // 认证异常 - 返回数据给客户端
-            log.error("认证异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-            return;
-        } finally {
-            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
         }
+        if (doAuthentication(httpRequest, httpResponse, true)) {
+            innerDoFilter(request, response, chain);
+        }
+    }
+
+    protected void innerDoFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             // 处理业务逻辑
             chain.doFilter(request, response);
@@ -137,14 +133,119 @@ public class AuthenticationFilter extends GenericFilterBean {
         }
     }
 
+    /**
+     * 执行用户身份认证
+     *
+     * @param request      请求对象
+     * @param response     响应对象
+     * @param sendResponse 是否需要返回数据给客户端
+     * @return true:认证成功, false:认证失败
+     */
+    protected boolean doAuthentication(HttpServletRequest request, HttpServletResponse response, boolean sendResponse) throws IOException {
+        log.debug("### 开始执行认证逻辑 ---------------------------------------------------------------------->");
+        log.debug("当前请求 -> [{}]", request.getRequestURI());
+        // 执行认证逻辑
+        AuthenticationContext context = new AuthenticationContext(request, response);
+        try {
+            authentication(context);
+            // 用户身份认成功处理
+            authenticationSuccessHandler(context);
+        } catch (AuthenticationException e) {
+            // 认证失败
+            log.debug("### 认证失败", e);
+            try {
+                // 用户身份认失败处理
+                authenticationFailureHandler(context);
+                // 返回数据给客户端
+                if (sendResponse) {
+                    onAuthenticationFailureResponse(request, response, e);
+                }
+            } catch (Exception innerException) {
+                log.error("认证异常", innerException);
+                // 返回数据给客户端
+                if (sendResponse) {
+                    HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+                }
+            }
+            return false;
+        } catch (Throwable e) {
+            // 认证异常 - 返回数据给客户端
+            log.error("认证异常", e);
+            if (sendResponse) {
+                HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
+            return false;
+        } finally {
+            log.debug("### 认证逻辑执行完成 <----------------------------------------------------------------------");
+        }
+        return true;
+    }
+
+    /**
+     * 认证流程
+     */
     protected void authentication(AuthenticationContext context) throws Exception {
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 获取JWT-Token
-        String jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
-        context.setJwtToken(jwtToken);
+        String jwtToken;
+        String refreshToken;
+        if (tokenConfig.isUseCookie()) {
+            jwtToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getJwtTokenName());
+            refreshToken = CookieUtils.getCookie(context.getRequest(), tokenConfig.getRefreshTokenName());
+        } else {
+            jwtToken = context.getRequest().getHeader(tokenConfig.getJwtTokenName());
+            refreshToken = context.getRequest().getHeader(tokenConfig.getRefreshTokenName());
+        }
+        if (StringUtils.isBlank(jwtToken)) {
+            throw new ParserJwtTokenException("当前用户未登录");
+        }
         // 解析Token得到uid
-        Claims claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
+        Claims claims;
+        try {
+            claims = JwtTokenUtils.parserJwtToken(securityConfig.getTokenConfig(), jwtToken);
+        } catch (ParserJwtTokenException e) {
+            if (!tokenConfig.isEnableRefreshToken() || !(e.getCause() instanceof ExpiredJwtException)) {
+                throw e;
+            }
+            // 验证刷新Token - 重新生成JWT-Token
+            log.debug("开始验证刷新Token | refresh-token={}", refreshToken);
+            if (StringUtils.isBlank(refreshToken)) {
+                throw new InvalidJwtRefreshTokenException("刷新Token为空", e);
+            }
+            // 使用刷新Token创建新的JWT-Token
+            UseJwtRefreshTokenReq req = new UseJwtRefreshTokenReq(securityConfig.getDomainId());
+            claims = JwtTokenUtils.readClaims(jwtToken);
+            req.setUseJwtId(Long.parseLong(claims.getId()));
+            req.setUseRefreshToken(refreshToken);
+            // 创建新的JWT-Token
+            final Date now = new Date();
+            jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, claims);
+            refreshToken = JwtTokenUtils.createRefreshToken(claims.getSubject());
+            req.setJwtId(Long.parseLong(claims.getId()));
+            req.setToken(jwtToken);
+            req.setExpiredTime(claims.getExpiration());
+            req.setRefreshToken(refreshToken);
+            req.setRefreshTokenExpiredTime(new Date(now.getTime() + tokenConfig.getRefreshTokenValidity().toMillis()));
+            // 使用刷新Token
+            JwtToken newJwtToken = loginSupportClient.useJwtRefreshToken(req);
+            if (newJwtToken == null) {
+                throw new InvalidJwtRefreshTokenException("无效的刷新Token");
+            }
+            log.debug("刷新Token验证成功 | uid={} | jwt-token={} | refresh-token={}", newJwtToken.getUid(), newJwtToken.getToken(), newJwtToken.getRefreshToken());
+            // 更新客户端Token数据
+            if (tokenConfig.isUseCookie()) {
+                int maxAge = DateTimeUtils.pastSeconds(now, newJwtToken.getExpiredTime()) + (60 * 3);
+                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getJwtTokenName(), newJwtToken.getToken(), maxAge);
+                int refreshTokenMaxAge = DateTimeUtils.pastSeconds(now, newJwtToken.getRefreshTokenExpiredTime()) + (60 * 3);
+                CookieUtils.setCookie(context.getResponse(), "/", tokenConfig.getRefreshTokenName(), newJwtToken.getRefreshToken(), Integer.max(refreshTokenMaxAge, maxAge));
+            } else {
+                context.getResponse().addHeader(tokenConfig.getJwtTokenName(), newJwtToken.getToken());
+                context.getResponse().addHeader(tokenConfig.getRefreshTokenName(), newJwtToken.getRefreshToken());
+            }
+        }
+        context.setJwtToken(jwtToken);
+        context.setRefreshToken(refreshToken);
         context.setClaims(claims);
         context.setUid(claims.getSubject());
         context.getRequest().setAttribute(JWT_Object_Request_Attribute, claims);
@@ -157,10 +258,36 @@ public class AuthenticationFilter extends GenericFilterBean {
         // 把SecurityContext绑定到当前线程和当前请求对象
         SecurityContextHolder.setContext(securityContext, context.getRequest());
         context.setSecurityContext(securityContext);
-        // 用户身份认成功处理
-        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(jwtToken, context.getUid(), claims, securityContext);
+    }
+
+    /**
+     * 用户身份认成功处理
+     */
+    protected void authenticationSuccessHandler(AuthenticationContext context) throws Exception {
+        if (authenticationSuccessHandlerList == null) {
+            return;
+        }
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(
+                context.getJwtToken(),
+                context.getUid(),
+                context.getClaims(),
+                context.getSecurityContext()
+        );
         for (AuthenticationSuccessHandler handler : authenticationSuccessHandlerList) {
             handler.onAuthenticationSuccess(context.getRequest(), context.getResponse(), event);
+        }
+    }
+
+    /**
+     * 用户身份认失败处理
+     */
+    protected void authenticationFailureHandler(AuthenticationContext context) throws Exception {
+        if (authenticationFailureHandlerList == null) {
+            return;
+        }
+        AuthenticationFailureEvent event = new AuthenticationFailureEvent(context.getJwtToken(), context.getUid(), context.getClaims());
+        for (AuthenticationFailureHandler handler : authenticationFailureHandlerList) {
+            handler.onAuthenticationFailure(context.getRequest(), context.getResponse(), event);
         }
     }
 

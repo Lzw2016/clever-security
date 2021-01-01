@@ -4,9 +4,7 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.JwtToken;
-import org.clever.security.entity.User;
-import org.clever.security.entity.ValidateCode;
+import org.clever.security.entity.*;
 import org.clever.security.model.UserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -27,6 +25,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface LoginSupportClient {
     /**
+     * 获取域信息
+     */
+    @GetMapping("/domain")
+    Domain getDomain(@Validated @SpringQueryMap GetDomainReq req);
+
+    /**
      * 获取登录图片验证码
      */
     @GetMapping("/login_captcha")
@@ -45,7 +49,7 @@ public interface LoginSupportClient {
     SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated @RequestBody SendLoginValidateCodeForEmailReq req);
 
     /**
-     * 发送邮箱登录验证码
+     * 发送短信登录验证码
      */
     @PostMapping("/send_login_validate_code_for_sms")
     SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated @RequestBody SendLoginValidateCodeForSmsReq req);
@@ -75,6 +79,12 @@ public interface LoginSupportClient {
     GetScanCodeLoginInfoRes getScanCodeLoginInfo(@Validated @SpringQueryMap GetScanCodeLoginInfoReq req);
 
     /**
+     * 回写扫码登录状态
+     */
+    @PostMapping("/write_back_scan_code_login")
+    ScanCodeLogin writeBackScanCodeLogin(@Validated @SpringQueryMap WriteBackScanCodeLoginReq req);
+
+    /**
      * 获取发送的手机验证码
      */
     @GetMapping("/login_sms_validate_code")
@@ -93,7 +103,7 @@ public interface LoginSupportClient {
     DomainExistsUserRes domainExistsUser(@Validated @SpringQueryMap DomainExistsUserReq req);
 
     /**
-     * 获取发送的邮箱验证码
+     * 获取用户信息
      */
     @GetMapping("/user")
     User getUser(@Validated @SpringQueryMap GetUserReq req);
@@ -105,31 +115,31 @@ public interface LoginSupportClient {
     GetConcurrentLoginCountRes getConcurrentLoginCount(@Validated @SpringQueryMap GetConcurrentLoginCountReq req);
 
     /**
-     * 根据LoginName获取用户名
+     * 根据LoginName获取用户信息
      */
     @GetMapping("/get_user_info_by_login_name")
     UserInfo getUserInfoByLoginName(@Validated @SpringQueryMap GetUserInfoByLoginNameReq req);
 
     /**
-     * 根据Telephone获取用户名
+     * 根据Telephone获取用户信息
      */
     @GetMapping("/get_user_info_by_telephone")
     UserInfo getUserInfoByTelephone(@Validated @SpringQueryMap GetUserInfoByTelephoneReq req);
 
     /**
-     * 根据Email获取用户名
+     * 根据Email获取用户信息
      */
     @GetMapping("/get_user_info_by_email")
     UserInfo getUserInfoByEmail(@Validated @SpringQueryMap GetUserInfoByEmailReq req);
 
     /**
-     * 根据WechatOpenId获取用户名
+     * 根据WechatOpenId获取用户信息
      */
     @GetMapping("/get_user_info_by_wechat_open_id")
     UserInfo getUserInfoByWechatOpenId(@Validated @SpringQueryMap GetUserInfoByWechatOpenIdReq req);
 
     /**
-     * 根据ScanCode获取用户名
+     * 根据ScanCode获取用户信息
      */
     @GetMapping("/get_user_info_by_scan_code")
     UserInfo getUserInfoByScanCode(@Validated @SpringQueryMap GetUserInfoByScanCodeReq req);
@@ -173,7 +183,12 @@ public interface LoginSupportClient {
     /**
      * 禁用JWT-Token
      */
-    @PostMapping("/disable_first_jwt_token")
+    @PostMapping("/disable_jwt_token")
     JwtToken disableJwtToken(@Validated @RequestBody DisableJwtTokenReq req);
 
+    /**
+     * 使用刷新Token(刷新Token无效返回null)
+     */
+    @PostMapping("/use_jwt_refresh_token")
+    JwtToken useJwtRefreshToken(@Validated @RequestBody UseJwtRefreshTokenReq req);
 }

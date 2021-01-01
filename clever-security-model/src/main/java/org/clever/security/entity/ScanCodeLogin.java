@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,6 +19,7 @@ public class ScanCodeLogin implements Serializable {
     /**
      * scan code id(系统自动生成且不会变化)
      */
+    @TableId(type = IdType.INPUT)
     private Long id;
 
     /**
@@ -40,9 +43,9 @@ public class ScanCodeLogin implements Serializable {
     private Date expiredTime;
 
     /**
-     * 绑定的JWT-Token数据
+     * 绑定的JWT-Token id
      */
-    private String bindToken;
+    private Long bindTokenId;
 
     /**
      * (扫描时间)绑定JWT-Token时间

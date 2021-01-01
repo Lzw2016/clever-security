@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者：lizw <br/>
@@ -13,6 +14,8 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GetUserInfoByWechatOpenIdReq extends BaseRequest {
+    @NotNull(message = "域id不能为空")
+    private Long domainId;
     @NotBlank(message = "微信openId不能为空")
     private String openId;
 
@@ -20,4 +23,8 @@ public class GetUserInfoByWechatOpenIdReq extends BaseRequest {
      * 微信unionId
      */
     private String unionId;
+
+    public GetUserInfoByWechatOpenIdReq(Long domainId) {
+        this.domainId = domainId;
+    }
 }

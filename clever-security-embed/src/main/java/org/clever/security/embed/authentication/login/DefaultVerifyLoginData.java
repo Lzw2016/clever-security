@@ -19,7 +19,11 @@ import org.clever.security.embed.exception.LoginValidateCodeException;
 import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.model.login.*;
+import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.EmailValidateCodeReq;
+import org.clever.security.model.login.ScanCodeReq;
+import org.clever.security.model.login.SmsValidateCodeReq;
+import org.clever.security.utils.LoginUniqueNameUtils;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -90,13 +94,8 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         GetLoginFailedCountAndCaptchaReq req = new GetLoginFailedCountAndCaptchaReq(domainId);
         req.setCaptchaDigest(loginReq.getCaptchaDigest());
         req.setLoginTypeId(loginReq.getLoginType().getId());
-        if (loginReq instanceof LoginNamePasswordReq) {
-            req.setLoginUniqueName(((LoginNamePasswordReq) loginReq).getLoginName());
-        } else if (loginReq instanceof SmsValidateCodeReq) {
-            req.setLoginUniqueName(((SmsValidateCodeReq) loginReq).getTelephone());
-        } else if (loginReq instanceof EmailValidateCodeReq) {
-            req.setLoginUniqueName(((EmailValidateCodeReq) loginReq).getEmail());
-        } else {
+        req.setLoginUniqueName(LoginUniqueNameUtils.getLoginUniqueName(loginReq));
+        if (StringUtils.isBlank(req.getLoginUniqueName())) {
             return;
         }
         GetLoginFailedCountAndCaptchaRes res = loginSupportClient.getLoginFailedCountAndCaptcha(req);
@@ -126,11 +125,20 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         if (res == null) {
             throw new ScanCodeLoginException("二维码不存在");
         }
+        if (Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_0)) {
+            throw new ScanCodeLoginException("二维码等待扫描");
+        }
+        if (Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_1)) {
+            throw new ScanCodeLoginException("二维码等待确认");
+        }
+        if (res.getGetTokenExpiredTime() == null) {
+            throw new ScanCodeLoginException("二维码等待扫描和确认");
+        }
         Date now = new Date();
-        if (res.getGetTokenExpiredTime() == null || now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
+        if (now.compareTo(res.getGetTokenExpiredTime()) >= 0) {
             throw new ScanCodeLoginException("二维码已过期");
         }
-        if (StringUtils.isBlank(res.getBindToken()) || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
+        if (res.getBindTokenId() == null || !Objects.equals(res.getScanCodeState(), EnumConstant.ScanCodeLogin_ScanCodeState_2)) {
             throw new ScanCodeLoginException("二维码状态错误");
         }
     }
@@ -142,6 +150,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 获取真实发送的手机验证码
         GetLoginSmsValidateCodeReq req = new GetLoginSmsValidateCodeReq(domainId);
         req.setTelephone(smsValidateCodeReq.getTelephone());
+        req.setValidateCodeDigest(smsValidateCodeReq.getValidateCodeDigest());
         ValidateCode realValidateCode = loginSupportClient.getLoginSmsValidateCode(req);
         verifyValidateCode(realValidateCode, smsValidateCodeReq.getValidateCode());
     }
@@ -153,6 +162,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 获取真实发送的邮箱验证码
         GetLoginEmailValidateCodeReq req = new GetLoginEmailValidateCodeReq(domainId);
         req.setEmail(emailValidateCodeReq.getEmail());
+        req.setValidateCodeDigest(emailValidateCodeReq.getValidateCodeDigest());
         ValidateCode realValidateCode = loginSupportClient.getLoginEmailValidateCode(req);
         verifyValidateCode(realValidateCode, emailValidateCodeReq.getValidateCode());
     }
@@ -165,7 +175,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      */
     protected void verifyValidateCode(ValidateCode realValidateCode, String validateCode) {
         if (realValidateCode == null) {
-            throw new LoginValidateCodeException("登录验证码不存在");
+            throw new LoginValidateCodeException("登录验证码已过期");
         }
         Date now = new Date();
         if (realValidateCode.getExpiredTime() == null || now.compareTo(realValidateCode.getExpiredTime()) >= 0) {

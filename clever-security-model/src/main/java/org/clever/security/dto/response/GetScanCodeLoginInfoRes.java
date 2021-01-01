@@ -22,9 +22,9 @@ public class GetScanCodeLoginInfoRes extends BaseResponse {
      */
     private Integer scanCodeState;
     /**
-     * 绑定的JWT-Token数据
+     * 绑定的JWT-Token id
      */
-    private String bindToken;
+    private Long bindTokenId;
     /**
      * 获取登录JWT-Token过期时间(确认登录 -> 获取登录Token时间)
      */

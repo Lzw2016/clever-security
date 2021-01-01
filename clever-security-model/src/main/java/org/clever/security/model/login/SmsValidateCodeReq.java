@@ -15,6 +15,7 @@ import javax.validation.constraints.Pattern;
 @Data
 public class SmsValidateCodeReq extends AbstractUserLoginReq {
     public static final String Telephone_ParamName = "telephone";
+    public static final String ValidateCodeDigest_ParamName = "validateCodeDigest";
     public static final String ValidateCode_ParamName = "validateCode";
     /**
      * 手机号
@@ -27,6 +28,11 @@ public class SmsValidateCodeReq extends AbstractUserLoginReq {
      */
     @NotBlank(message = "验证码不能为空")
     private String validateCode;
+    /**
+     * 验证码签名
+     */
+    @NotBlank(message = "验证码签名不能为空")
+    private String validateCodeDigest;
 
     @Override
     public LoginType getLoginType() {

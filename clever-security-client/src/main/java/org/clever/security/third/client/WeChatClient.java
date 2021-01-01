@@ -1,4 +1,4 @@
-package org.clever.security.client;
+package org.clever.security.third.client;
 
 import org.clever.security.Constant;
 import org.clever.security.dto.request.WeChatCode2SessionReq;

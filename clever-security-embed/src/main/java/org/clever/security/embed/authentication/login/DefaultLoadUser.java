@@ -3,15 +3,16 @@ package org.clever.security.embed.authentication.login;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.client.LoginSupportClient;
-import org.clever.security.client.WeChatClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.WeChatCode2SessionRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.config.internal.WechatSmallProgramLoginConfig;
 import org.clever.security.embed.exception.UnsupportedLoginTypeException;
+import org.clever.security.embed.exception.WeChatLoginException;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.*;
+import org.clever.security.third.client.WeChatClient;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
@@ -97,8 +98,15 @@ public class DefaultLoadUser implements LoadUser {
                 wechatSmallProgramReq.getLoginCode()
         );
         WeChatCode2SessionRes res = wechatClient.code2Session(wechatcode2SessionReq);
-        log.debug("微信小程序登录结果: [{}] -> {}", WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode()), res);
-        GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq();
+        String errMsg = StringUtils.isNotBlank(res.getErrMsg()) ? res.getErrMsg() : WeChatClient.Code2SessionErrMsgMap.get(res.getErrCode());
+        if (StringUtils.isBlank(errMsg)) {
+            errMsg = String.valueOf(res.getErrCode());
+        }
+        log.debug("微信小程序登录结果: [{}] -> {}", errMsg, res);
+        if (StringUtils.isBlank(res.getOpenId())) {
+            throw new WeChatLoginException(String.format("微信小程序登录失败: %s", errMsg));
+        }
+        GetUserInfoByWechatOpenIdReq req = new GetUserInfoByWechatOpenIdReq(securityConfig.getDomainId());
         req.setOpenId(res.getOpenId());
         req.setUnionId(req.getUnionId());
         return loginSupportClient.getUserInfoByWechatOpenId(req);
@@ -113,7 +121,7 @@ public class DefaultLoadUser implements LoadUser {
 
     protected UserInfo loadUser(SecurityConfig securityConfig, HttpServletRequest request, ScanCodeReq scanCodeReq) {
         // 根据“scanCode”加载用户信息
-        GetUserInfoByScanCodeReq req = new GetUserInfoByScanCodeReq();
+        GetUserInfoByScanCodeReq req = new GetUserInfoByScanCodeReq(securityConfig.getDomainId());
         req.setScanCode(scanCodeReq.getScanCode());
         return loginSupportClient.getUserInfoByScanCode(req);
     }

@@ -12,7 +12,7 @@ public class ServerApiAccessToken {
     /**
      * 请求头Token名称
      */
-    private String tokenName = "ServerApiToken";
+    private String tokenName = "server-api-token";
     /**
      * 请求头Token值
      */

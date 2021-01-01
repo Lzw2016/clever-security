@@ -52,6 +52,7 @@ create index user_nickname on user (nickname);
 ==================================================================================================================== */
 create table user_ext
 (
+    domain_id           bigint          not null                                                comment '域id',
     uid                 varchar(63)     not null                                                comment '用户id(系统自动生成且不会变化)',
     wechat_open_id      varchar(63)     not null                                                comment '微信openId',
     wechat_union_id     varchar(63)                                                             comment '微信unionId',
@@ -324,7 +325,7 @@ create table scan_code_login
     scan_code               varchar(63)     not null        unique                              comment '扫描二维码',
     scan_code_state         int(1)          not null        default 0                           comment '扫描二维码状态，0:已创建(待扫描)，1:已扫描(待确认)，2:已确认(待登录)，3:登录成功，4:已失效',
     expired_time            datetime(3)     not null                                            comment '扫描二维码过期时间(生成二维码 -> 扫码请求时间)',
-    bind_token              varchar(1023)                                                       comment '绑定的JWT-Token数据',
+    bind_token_id           bigint                                                              comment '绑定的JWT-Token id',
     bind_token_time         datetime(3)                                                         comment '(扫描时间)绑定JWT-Token时间',
     confirm_expired_time    datetime(3)                                                         comment '确认登录过期时间(扫码二维码 -> 确认登录时间)',
     confirm_time            datetime(3)                                                         comment '确认登录时间',

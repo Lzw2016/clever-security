@@ -4,7 +4,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者：lizw <br/>
@@ -13,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class DisableFirstJwtTokenReq extends BaseRequest {
-    @NotBlank(message = "域id不能为空")
+    @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
      * 用户id
@@ -25,6 +27,12 @@ public class DisableFirstJwtTokenReq extends BaseRequest {
      * JWT-Token禁用原因
      */
     private String disableReason;
+    /**
+     * 禁用Token数量
+     */
+    @Min(value = 1, message = "禁用Token数量必须大于等于1")
+    @NotNull(message = "禁用Token数量不能为null")
+    private Integer disableCount;
 
     public DisableFirstJwtTokenReq(Long domainId) {
         this.domainId = domainId;

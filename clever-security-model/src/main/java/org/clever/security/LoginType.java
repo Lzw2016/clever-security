@@ -29,7 +29,7 @@ public enum LoginType {
     /**
      * 刷新令牌
      */
-    RefreshToken(4, "RememberMe"),
+    RefreshToken(4, "RefreshToken"),
     /**
      * 微信小程序
      */
@@ -41,11 +41,11 @@ public enum LoginType {
     ;
 
     /**
-     * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:“记住我”token，5:微信小程序，6:扫码登录
+     * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录
      */
     private final int id;
     /**
-     * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:“记住我”token，5:微信小程序，6:扫码登录
+     * 登录方式，1:用户名密码，2:手机号验证码，3:邮箱验证码，4:刷新令牌，5:微信小程序，6:扫码登录
      */
     private final String name;
 

@@ -20,7 +20,7 @@ public class DomainExistsUserRes extends BaseResponse {
      */
     private String uid;
     /**
-     * 用户登录名(允许修改)
+     * 用户登录名
      */
     private String loginName;
 }

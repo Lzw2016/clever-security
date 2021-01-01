@@ -1,5 +1,6 @@
 package org.clever.security.embed.authentication;
 
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.BindLoginScanCodeReq;
@@ -7,12 +8,11 @@ import org.clever.security.dto.request.ConfirmLoginScanCodeReq;
 import org.clever.security.dto.response.BindLoginScanCodeRes;
 import org.clever.security.dto.response.ConfirmLoginScanCodeRes;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.context.SecurityContextHolder;
-import org.clever.security.embed.exception.LoginInnerException;
+import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
-import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
@@ -53,25 +53,30 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
         }
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        SecurityContext securityContext = SecurityContextHolder.getContext(httpRequest);
-        if (securityContext == null) {
-            throw new LoginInnerException("当前用户还未登录");
-        }
+        Claims claims = (Claims) request.getAttribute(AuthenticationFilter.JWT_Object_Request_Attribute);
         if (PathFilterUtils.isScanCodePath(httpRequest, securityConfig)) {
             // 扫描扫码登录二维码
             try {
-                bindLoginScanCode(securityContext, httpRequest, httpResponse);
+                bindLoginScanCode(claims, httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("扫描扫码登录二维码处理失败", e);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                if (e instanceof LoginException) {
+                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
+                } else {
+                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                }
             }
         } else if (PathFilterUtils.isScanCodeLoginConfirmPath(httpRequest, securityConfig)) {
             // 扫码登录确认登录
             try {
-                confirmLoginScanCode(securityContext, httpRequest, httpResponse);
+                confirmLoginScanCode(claims, httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("扫码登录确认登录处理失败", e);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                if (e instanceof LoginException) {
+                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
+                } else {
+                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                }
             }
         } else {
             // 不是扫码登录相关请求
@@ -79,25 +84,33 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
         }
     }
 
-    protected void bindLoginScanCode(SecurityContext securityContext, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void bindLoginScanCode(Claims claims, HttpServletRequest request, HttpServletResponse response) throws IOException {
         BindLoginScanCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, BindLoginScanCodeReq.class);
         if (req == null) {
-            throw new LoginInnerException("请求参数错误");
+            throw new ScanCodeLoginException("请求参数错误");
         }
         req.setDomainId(securityConfig.getDomainId());
-        req.setUid(securityContext.getUserInfo().getUid());
+        req.setBindTokenId(Long.parseLong(claims.getId()));
+        req.setConfirmExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getConfirmExpiredTime().toMillis());
         BindLoginScanCodeRes res = loginSupportClient.bindLoginScanCode(req);
+        if (res == null) {
+            throw new ScanCodeLoginException("二维码不存在或者已过期");
+        }
         HttpServletResponseUtils.sendJson(response, res);
     }
 
-    protected void confirmLoginScanCode(SecurityContext securityContext, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void confirmLoginScanCode(Claims claims, HttpServletRequest request, HttpServletResponse response) throws IOException {
         ConfirmLoginScanCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, ConfirmLoginScanCodeReq.class);
         if (req == null) {
-            throw new LoginInnerException("请求参数错误");
+            throw new ScanCodeLoginException("请求参数错误");
         }
         req.setDomainId(securityConfig.getDomainId());
-        req.setUid(securityContext.getUserInfo().getUid());
+        req.setBindTokenId(Long.parseLong(claims.getId()));
+        req.setGetTokenExpiredTime((int) securityConfig.getLogin().getScanCodeLogin().getGetTokenExpiredTime().toMillis());
         ConfirmLoginScanCodeRes res = loginSupportClient.confirmLoginScanCode(req);
+        if (res == null) {
+            throw new ScanCodeLoginException("二维码不存在或者已过期");
+        }
         HttpServletResponseUtils.sendJson(response, res);
     }
 }

@@ -90,14 +90,14 @@ public class AuthorizationFilter extends GenericFilterBean {
         boolean pass;
         try {
             pass = authorization(context);
-            log.debug("### 授权完成，结果: [{}]", pass? "通过": "拒绝");
+            log.debug("### 授权完成，结果: [{}]", pass ? "通过" : "拒绝");
         } catch (Throwable e) {
             // 授权异常
             log.error("授权异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
             return;
         } finally {
-            log.debug("### 授权逻辑行完成 <----------------------------------------------------------------------");
+            log.debug("### 授权逻辑执行完成 <----------------------------------------------------------------------");
         }
         // 执行授权事件
         try {
@@ -105,13 +105,13 @@ public class AuthorizationFilter extends GenericFilterBean {
                 onAuthorizationSuccess(context);
             } else {
                 onAuthorizationFailure(context);
+                // 无权访问 403
+                onAuthorizationFailureResponse(context);
             }
         } catch (Throwable e) {
             log.error("授权异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
-        // 无权访问 403
-        onAuthorizationFailureResponse(context);
         // 处理业务逻辑
         chain.doFilter(request, response);
     }
@@ -152,7 +152,7 @@ public class AuthorizationFilter extends GenericFilterBean {
      */
     protected void onAuthorizationSuccess(AuthorizationContext context) {
         SecurityContext securityContext = context.getSecurityContext();
-        AuthorizationSuccessEvent event = new AuthorizationSuccessEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        AuthorizationSuccessEvent event = new AuthorizationSuccessEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getPermissions());
         for (AuthorizationSuccessHandler handler : authorizationSuccessHandlerList) {
             handler.onAuthorizationSuccess(context.getRequest(), context.getResponse(), event);
         }
@@ -163,7 +163,7 @@ public class AuthorizationFilter extends GenericFilterBean {
      */
     protected void onAuthorizationFailure(AuthorizationContext context) {
         SecurityContext securityContext = context.getSecurityContext();
-        AuthorizationFailureEvent event = new AuthorizationFailureEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getRoles());
+        AuthorizationFailureEvent event = new AuthorizationFailureEvent(securityContext.getUserInfo(), securityContext.getRoles(), securityContext.getPermissions());
         for (AuthorizationFailureHandler handler : authorizationFailureHandlerList) {
             handler.onAuthorizationFailure(context.getRequest(), context.getResponse(), event);
         }

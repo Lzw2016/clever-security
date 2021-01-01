@@ -13,10 +13,6 @@ import java.io.Serializable;
 @Data
 public class LoginConfig implements Serializable {
     /**
-     * 登录页面
-     */
-    private String loginPage = "/index.html";
-    /**
      * 登录请求Path
      */
     private String loginPath = "/login";

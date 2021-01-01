@@ -16,13 +16,7 @@ import java.util.TimeZone;
  */
 @Slf4j
 @EnableDiscoveryClient
-//@EnableFeignClients(basePackages = {"org.clever.security.client"})
-//@EnableRedisHttpSession(
-//        cleanupCron = "0/5 * * * * *",
-//        maxInactiveIntervalInSeconds = 60 * 60,
-//        redisNamespace = "spring:session:clever-security",
-//        redisFlushMode = RedisFlushMode.ON_SAVE
-//)
+//@EnableFeignClients(basePackages = {"org.clever.security.third.client"})
 @EnableTransactionManagement
 @MapperScan("org.clever.security.mapper")
 @SpringBootApplication(scanBasePackages = {"org.clever"})

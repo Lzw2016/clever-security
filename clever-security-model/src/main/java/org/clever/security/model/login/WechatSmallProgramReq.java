@@ -34,6 +34,6 @@ public class WechatSmallProgramReq extends AbstractUserLoginReq {
 
     @Override
     public void setLoginChannel(String loginChannel) {
-        throw new UnsupportedOperationException("微信小程序登录，不支持设置登录渠道");
+        // throw new UnsupportedOperationException("微信小程序登录，不支持设置登录渠道");
     }
 }

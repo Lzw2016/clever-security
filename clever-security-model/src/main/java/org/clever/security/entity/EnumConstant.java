@@ -196,4 +196,25 @@ public interface EnumConstant {
      * 验证码类型，3:重置密码(修改密码)验证码
      */
     int ValidateCode_Type_3 = 3;
+    /**
+     * 验证码发送渠道，0:不需要发送
+     */
+    int ValidateCode_SendChannel_0 = 0;
+    /**
+     * 验证码发送渠道，1:短信
+     */
+    int ValidateCode_SendChannel_1 = 1;
+    /**
+     * 验证码发送渠道，2:email
+     */
+    int ValidateCode_SendChannel_2 = 2;
+
+    /**
+     * 数据删除标志，0:未删除
+     */
+    int LoginFailedCount_DeleteFlag_0 = 0;
+    /**
+     * 数据删除标志，1:已删除
+     */
+    int LoginFailedCount_DeleteFlag_1 = 1;
 }

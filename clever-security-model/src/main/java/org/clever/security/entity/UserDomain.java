@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,11 +19,13 @@ public class UserDomain implements Serializable {
     /**
      * 域id
      */
+    @TableId(type = IdType.INPUT)
     private Long domainId;
 
     /**
      * 用户id
      */
+    // @TableId(type = IdType.INPUT)
     private String uid;
 
     /**

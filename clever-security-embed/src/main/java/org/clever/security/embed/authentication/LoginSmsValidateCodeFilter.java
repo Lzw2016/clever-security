@@ -1,10 +1,14 @@
 package org.clever.security.embed.authentication;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.SendLoginValidateCodeForSmsReq;
 import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.exception.LoginException;
+import org.clever.security.embed.exception.SendValidateCodeException;
+import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.http.HttpStatus;
@@ -18,6 +22,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 作者：lizw <br/>
@@ -52,14 +57,37 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        // 发送短信验证码
-        SendLoginValidateCodeForSmsReq req = new SendLoginValidateCodeForSmsReq(securityConfig.getDomainId());
         try {
-            SendLoginValidateCodeForSmsRes res = loginSupportClient.sendLoginValidateCodeForSms(req);
-            HttpServletResponseUtils.sendJson(httpResponse, res);
+            sendSmsValidateCode(httpRequest, httpResponse);
         } catch (Exception e) {
             log.error("发送短信登录验证码失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            if (e instanceof LoginException) {
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
+            } else {
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            }
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void sendSmsValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Map<String, Object> body = (Map<String, Object>) HttpServletRequestUtils.parseBodyToEntity(request, Map.class);
+        if (body == null) {
+            throw new SendValidateCodeException("请求参数错误");
+        }
+        String telephone = (String) body.get("telephone");
+        if (StringUtils.isBlank(telephone)) {
+            throw new SendValidateCodeException("手机号不能为空");
+        }
+        // 发送短信验证码
+        SendLoginValidateCodeForSmsReq req = new SendLoginValidateCodeForSmsReq(securityConfig.getDomainId());
+        req.setTelephone(telephone);
+        req.setEffectiveTimeMilli((int) securityConfig.getLogin().getSmsValidateCodeLogin().getEffectiveTime().toMillis());
+        req.setMaxSendNumInDay(securityConfig.getLogin().getSmsValidateCodeLogin().getMaxSendNumInDay());
+        SendLoginValidateCodeForSmsRes res = loginSupportClient.sendLoginValidateCodeForSms(req);
+        if (res == null) {
+            throw new SendValidateCodeException("手机号未注册");
+        }
+        HttpServletResponseUtils.sendJson(response, res);
     }
 }

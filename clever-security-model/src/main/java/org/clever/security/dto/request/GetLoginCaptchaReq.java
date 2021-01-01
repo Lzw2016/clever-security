@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者：lizw <br/>
@@ -13,8 +14,12 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GetLoginCaptchaReq extends BaseRequest {
-    @NotBlank(message = "域id不能为空")
+    @NotNull(message = "域id不能为空")
     private Long domainId;
+    /**
+     * 验证码过期时间
+     */
+    private int effectiveTimeMilli = 60 * 1000;
 
     public GetLoginCaptchaReq(Long domainId) {
         this.domainId = domainId;

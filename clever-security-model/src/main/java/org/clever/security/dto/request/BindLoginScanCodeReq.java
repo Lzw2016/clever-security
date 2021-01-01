@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者：lizw <br/>
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class BindLoginScanCodeReq extends BaseRequest {
-    @NotBlank(message = "域id不能为空")
+    @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
      * 扫描二维码
@@ -21,10 +22,15 @@ public class BindLoginScanCodeReq extends BaseRequest {
     @NotBlank(message = "扫描登录二维码不能为空")
     private String scanCode;
     /**
-     * 用户id
+     * 绑定的JWT-Token id
      */
-    @NotBlank(message = "用户id不能为空")
-    private String uid;
+    @NotNull(message = "绑定的JWT-Token id不能为null")
+    private Long bindTokenId;
+
+    /**
+     * 确认登录过期时间(扫码二维码 -> 确认登录时间，默认30秒)
+     */
+    private int confirmExpiredTime = 30 * 1000;
 
     public BindLoginScanCodeReq() {
     }

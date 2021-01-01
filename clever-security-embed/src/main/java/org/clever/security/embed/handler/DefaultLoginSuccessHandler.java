@@ -10,15 +10,16 @@ import org.clever.security.dto.response.*;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.event.LoginSuccessEvent;
 import org.clever.security.entity.EnumConstant;
+import org.clever.security.entity.ScanCodeLogin;
 import org.clever.security.model.UserInfo;
 import org.clever.security.model.login.AbstractUserLoginReq;
+import org.clever.security.model.login.ScanCodeReq;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -37,6 +38,10 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
     public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response, LoginSuccessEvent event) {
         // 保存JWT-Token
         long jwtTokenId = addJwtToken(event);
+        // 扫码登录 - 回写扫码登录状态
+        if (event.getLoginData() instanceof ScanCodeReq) {
+            writeBackScanCodeLogin(event, (ScanCodeReq) event.getLoginData());
+        }
         // 记录登录成功日志
         addUserLoginLog(jwtTokenId, request, event);
         // 清除连续登录失败次数
@@ -75,15 +80,24 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
         req.setUid(userInfo.getUid());
         req.setLoginTime(new Date());
         req.setLoginIp(request.getRemoteAddr());
-        req.setLoginChannel(Objects.requireNonNull(LoginChannel.lookup(loginData.getLoginChannel())).getId());
+        LoginChannel loginChannel = LoginChannel.lookup(loginData.getLoginChannel());
+        if (loginChannel != null) {
+            req.setLoginChannel(loginChannel.getId());
+        }
         req.setLoginType(loginData.getLoginType().getId());
         req.setLoginState(EnumConstant.UserLoginLog_LoginState_1);
         req.setRequestData(JacksonMapper.getInstance().toJson(loginData));
         AddUserLoginLogRes res = loginSupportClient.addUserLoginLog(req);
-        log.debug("### 登录成功 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
+        if (res != null) {
+            log.debug("### 登录成功 -> LoginTime={} | LoginIp={}", res.getLoginTime(), res.getLoginIp());
+        }
     }
 
     protected void clearLoginFailedCount(LoginSuccessEvent event) {
+        LoginConfig loginConfig = event.getLoginConfig();
+        if (!loginConfig.getLoginCaptcha().isNeedCaptcha()) {
+            return;
+        }
         AbstractUserLoginReq loginData = event.getLoginData();
         UserInfo userInfo = event.getUserInfo();
         Assert.notNull(loginData, "loginData不能为null");
@@ -110,14 +124,28 @@ public class DefaultLoginSuccessHandler implements LoginSuccessHandler {
             req.setUid(userInfo.getUid());
             GetConcurrentLoginCountRes res = loginSupportClient.getConcurrentLoginCount(req);
             int realConcurrentLoginCount = res == null ? 0 : res.getConcurrentLoginCount();
-            if (realConcurrentLoginCount > loginConfig.getConcurrentLoginCount()) {
+            int disableCount = realConcurrentLoginCount - loginConfig.getConcurrentLoginCount();
+            if (disableCount >= 1) {
                 // 挤下最早登录的用户
                 DisableFirstJwtTokenReq req2 = new DisableFirstJwtTokenReq(event.getDomainId());
                 req2.setUid(userInfo.getUid());
                 req2.setDisableReason("并发登录当数量超限，被挤下线");
+                req2.setDisableCount(disableCount);
                 DisableFirstJwtTokenRes res2 = loginSupportClient.disableFirstJwtToken(req2);
-                log.debug("### 挤下最早登录的用户 -> uid={} | ExpiredTime={} | CreateAt={}", res2.getUid(), res2.getExpiredTime(), res2.getCreateAt());
+                log.debug("### 挤下最早登录的用户 -> uid={} | disableCount={}", res2.getUid(), res2.getDisableCount());
             }
+        }
+    }
+
+    protected void writeBackScanCodeLogin(LoginSuccessEvent event, ScanCodeReq scanCodeReq) {
+        WriteBackScanCodeLoginReq req = new WriteBackScanCodeLoginReq(event.getDomainId());
+        req.setScanCode(scanCodeReq.getScanCode());
+        req.setLoginTime(new Date());
+        req.setScanCodeState(EnumConstant.ScanCodeLogin_ScanCodeState_3);
+        req.setTokenId(Long.parseLong(event.getClaims().getId()));
+        ScanCodeLogin res = loginSupportClient.writeBackScanCodeLogin(req);
+        if (res != null) {
+            log.debug("### 登陆成功回写扫码登录状态成功 | scanCode={} | scanCodeState={}", res.getScanCode(), res.getScanCodeState());
         }
     }
 
