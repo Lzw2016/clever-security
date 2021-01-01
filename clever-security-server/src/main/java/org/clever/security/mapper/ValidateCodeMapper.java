@@ -20,10 +20,11 @@ public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
     @Select("select * from validate_code where domain_id=#{domainId} and digest=#{digest}")
     ValidateCode getByDigest(@Param("domainId") Long domainId, @Param("digest") String digest);
 
-    @Select("select count(1) from validate_code where domain_id=#{domainId} and uid=#{uid} and type=#{type} and send_channel=#{sendChannel} and create_at>=#{start} and create_at<=#{end}")
+    @Select("select count(1) from validate_code where domain_id=#{domainId} and uid=#{uid} and send_target=#{sendTarget} and type=#{type} and send_channel=#{sendChannel} and create_at>=#{start} and create_at<=#{end}")
     int getSendCount(
             @Param("domainId") Long domainId,
             @Param("uid") String uid,
+            @Param("sendTarget") String sendTarget,
             @Param("type") Integer type,
             @Param("sendChannel") Integer sendChannel,
             @Param("start") Date start,
@@ -32,12 +33,13 @@ public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
 
     @Select({
             "select * from validate_code where validate_time is null and expired_time>=date_add(now(), interval 15 second) ",
-            "and domain_id=#{domainId} and uid=#{uid} and type=#{type} and send_channel=#{sendChannel} order by create_at desc limit 1"
+            "and domain_id=#{domainId} and uid=#{uid} and type=#{type} and send_channel=#{sendChannel} and send_target=#{sendTarget} order by create_at desc limit 1"
     })
     ValidateCode getLastEffective(
             @Param("domainId") Long domainId,
             @Param("uid") String uid,
             @Param("type") Integer type,
-            @Param("sendChannel") Integer sendChannel
+            @Param("sendChannel") Integer sendChannel,
+            @Param("sendTarget") String sendTarget
     );
 }

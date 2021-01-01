@@ -132,12 +132,13 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
-        // 上一次短信验证码有效就直接返回
+        // 上一次邮箱验证码有效就直接返回
         ValidateCode lastEffective = validateCodeMapper.getLastEffective(
                 req.getDomainId(),
                 user.getUid(),
                 EnumConstant.ValidateCode_Type_1,
-                EnumConstant.ValidateCode_SendChannel_2
+                EnumConstant.ValidateCode_SendChannel_2,
+                user.getEmail()
         );
         if (lastEffective != null) {
             // 返回
@@ -146,6 +147,7 @@ public class LoginSupportService implements LoginSupportClient {
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
+                user.getEmail(),
                 EnumConstant.ValidateCode_Type_1,
                 EnumConstant.ValidateCode_SendChannel_2,
                 dayStart,
@@ -155,11 +157,11 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("邮件验证码发送次数超限");
         }
         // 发送邮件验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), user.getEmail(), req.getEffectiveTimeMilli());
         byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
         Executor_Service.execute(() -> {
             try {
-                emailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, req.getEmail(), validateCode.getCode(), image);
+                emailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode(), image);
             } catch (Exception e) {
                 log.error("登录邮件验证码发送失败", e);
             }
@@ -186,7 +188,8 @@ public class LoginSupportService implements LoginSupportClient {
                 req.getDomainId(),
                 user.getUid(),
                 EnumConstant.ValidateCode_Type_1,
-                EnumConstant.ValidateCode_SendChannel_1
+                EnumConstant.ValidateCode_SendChannel_1,
+                user.getTelephone()
         );
         if (lastEffective != null) {
             // 返回
@@ -195,6 +198,7 @@ public class LoginSupportService implements LoginSupportClient {
         int sendCount = validateCodeMapper.getSendCount(
                 req.getDomainId(),
                 user.getUid(),
+                user.getTelephone(),
                 EnumConstant.ValidateCode_Type_1,
                 EnumConstant.ValidateCode_SendChannel_1,
                 dayStart,
@@ -204,10 +208,10 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("短信验证码发送次数超限");
         }
         // 发送短信验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), user.getTelephone(), req.getEffectiveTimeMilli());
         Executor_Service.execute(() -> {
             try {
-                smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, req.getTelephone(), validateCode.getCode());
+                smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
             } catch (Exception e) {
                 log.error("登录短信验证码发送失败", e);
             }
@@ -359,7 +363,8 @@ public class LoginSupportService implements LoginSupportClient {
             return null;
         }
         final Date now = new Date();
-        if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
+        if (!Objects.equals(validateCode.getSendTarget(), user.getTelephone())
+                || !Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
                 || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)
                 || validateCode.getValidateTime() != null
                 || now.compareTo(validateCode.getExpiredTime()) >= 0) {
@@ -383,7 +388,8 @@ public class LoginSupportService implements LoginSupportClient {
             return null;
         }
         final Date now = new Date();
-        if (!Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
+        if (!Objects.equals(validateCode.getSendTarget(), user.getEmail())
+                || !Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
                 || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_2)
                 || validateCode.getValidateTime() != null
                 || now.compareTo(validateCode.getExpiredTime()) >= 0) {

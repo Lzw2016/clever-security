@@ -13,7 +13,7 @@ import java.util.Date;
  */
 public class ValidateCodeUtils {
 
-    public static ValidateCode newValidateCode(Date now, long domainId, String uid, int effectiveTimeMilli) {
+    public static ValidateCode newValidateCode(Date now, long domainId, String uid, String sendTarget, int effectiveTimeMilli) {
         String code = ValidateCodeSourceUtils.getRandString(6);
         ValidateCode validateCode = new ValidateCode();
         validateCode.setId(SnowFlake.SNOW_FLAKE.nextId());
@@ -21,6 +21,7 @@ public class ValidateCodeUtils {
         validateCode.setUid(uid);
         validateCode.setCode(code);
         validateCode.setDigest(IDCreateUtils.uuid());
+        validateCode.setSendTarget(sendTarget);
         validateCode.setExpiredTime(new Date(now.getTime() + effectiveTimeMilli));
         return validateCode;
     }

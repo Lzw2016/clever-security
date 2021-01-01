@@ -53,6 +53,11 @@ public class ValidateCode implements Serializable {
     private Integer sendChannel;
 
     /**
+     * 发送目标
+     */
+    private String sendTarget;
+
+    /**
      * 验证码过期时间
      */
     private Date expiredTime;
