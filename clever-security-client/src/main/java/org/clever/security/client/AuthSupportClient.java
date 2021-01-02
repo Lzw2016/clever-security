@@ -2,10 +2,8 @@ package org.clever.security.client;
 
 import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
-import org.clever.security.dto.request.CacheContextReq;
-import org.clever.security.dto.request.GetApiPermissionReq;
-import org.clever.security.dto.request.LoadContextReq;
-import org.clever.security.dto.request.RegisterApiPermissionReq;
+import org.clever.security.dto.request.*;
+import org.clever.security.dto.response.GetAllApiPermissionRes;
 import org.clever.security.dto.response.GetApiPermissionRes;
 import org.clever.security.dto.response.RegisterApiPermissionRes;
 import org.clever.security.model.SecurityContext;
@@ -44,6 +42,12 @@ public interface AuthSupportClient {
      */
     @GetMapping("/load_security_context")
     SecurityContext loadContext(@Validated @SpringQueryMap LoadContextReq req);
+
+    /**
+     * 获取系统所有的API权限
+     */
+    @GetMapping("/all_api_permission")
+    GetAllApiPermissionRes getAllApiPermission(@Validated @SpringQueryMap GetAllApiPermissionReq req);
 
     /**
      * 注册系统API权限

@@ -5,6 +5,8 @@ import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.UserInfo;
+import org.clever.security.model.auth.ApiPermissionEntity;
+import org.clever.security.model.auth.ApiPermissionModel;
 
 /**
  * 作者：lizw <br/>
@@ -48,5 +50,18 @@ public class ConvertUtils {
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
         return res;
+    }
+
+    public static ApiPermissionModel convertToApiPermissionModel(ApiPermissionEntity apiPermissionEntity) {
+        ApiPermissionModel apiPermissionModel = new ApiPermissionModel();
+        apiPermissionModel.setStrFlag(apiPermissionEntity.getStrFlag());
+        apiPermissionModel.setTitle(apiPermissionEntity.getTitle());
+        apiPermissionModel.setEnableAuth(apiPermissionEntity.getEnableAuth());
+        apiPermissionModel.setDescription(apiPermissionEntity.getDescription());
+        apiPermissionModel.setClassName(apiPermissionEntity.getClassName());
+        apiPermissionModel.setMethodName(apiPermissionEntity.getMethodName());
+        apiPermissionModel.setMethodParams(apiPermissionEntity.getMethodParams());
+        apiPermissionModel.setApiPath(apiPermissionEntity.getApiPath());
+        return apiPermissionModel;
     }
 }

@@ -21,4 +21,24 @@
           and a.method_params = #{methodParams}
           and b.domain_id = #{domainId}
     </select>
+
+    <select id="findApiPermissionBydDomainId" resultType="org.clever.security.model.auth.ApiPermissionEntity">
+        select
+            a.id as permission_id,
+            a.parent_id as parent_permission_id,
+            a.domain_id,
+            a.str_flag,
+            a.title,
+            a.resources_type,
+            a.enable_auth,
+            a.description,
+            b.id as api_permission_id,
+            b.class_name,
+            b.method_name,
+            b.method_params,
+            b.api_path,
+            b.api_exist
+        from permission a left join api_permission b on (a.id = b.permission_id)
+        where a.resources_type=1 and domain_id=#{domainId}
+    </select>
 </mapper>

@@ -5,13 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.mapper.JacksonMapper;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
+import org.clever.security.dto.request.GetAllApiPermissionReq;
 import org.clever.security.dto.request.GetDomainReq;
 import org.clever.security.dto.request.RegisterApiPermissionReq;
+import org.clever.security.dto.response.GetAllApiPermissionRes;
 import org.clever.security.dto.response.RegisterApiPermissionRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.utils.ApiPermissionUtils;
 import org.clever.security.entity.Domain;
 import org.clever.security.jackson2.CleverSecurityJackson2Module;
+import org.clever.security.model.auth.ApiPermissionEntity;
 import org.clever.security.model.auth.ApiPermissionModel;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.CommandLineRunner;
@@ -91,6 +94,9 @@ public class SecurityInitApiPermission implements CommandLineRunner {
             System.exit(-1);
         }
         log.info("### 当前系统domain信息 | domain-id={} | name={} | redis-name-space={}", domain.getId(), domain.getName(), domain.getRedisNameSpace());
+        // 查询当前所有的API权限数据
+        GetAllApiPermissionRes getAllApiPermissionRes = authSupportClient.getAllApiPermission(new GetAllApiPermissionReq(domain.getId()));
+        List<ApiPermissionEntity> allApiPermissionList = getAllApiPermissionRes.getAllApiPermissionList();
         // 初始化API权限信息
         List<ApiPermissionModel> allApiPermission = new ArrayList<>();
         Map<RequestMappingInfo, HandlerMethod> handlerMap = handlerMapping.getHandlerMethods();
@@ -98,7 +104,7 @@ public class SecurityInitApiPermission implements CommandLineRunner {
             RequestMappingInfo requestMappingInfo = entry.getKey();
             HandlerMethod handlerMethod = entry.getValue();
             // 获取URL路由信息
-            ApiPermissionModel apiPermissionModel = ApiPermissionUtils.parseApiPermission(securityConfig, requestMappingInfo, handlerMethod);
+            ApiPermissionModel apiPermissionModel = ApiPermissionUtils.parseApiPermission(securityConfig, allApiPermissionList, requestMappingInfo, handlerMethod);
             if (apiPermissionModel == null) {
                 continue;
             }

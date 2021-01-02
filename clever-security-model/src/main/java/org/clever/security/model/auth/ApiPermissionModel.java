@@ -13,7 +13,7 @@ import java.io.Serializable;
  * 创建时间：2021-01-02 10:50 <br/>
  */
 @Data
-public class ApiPermissionModel implements Serializable {
+public class ApiPermissionModel implements Serializable, Comparable<ApiPermissionModel> {
     /**
      * 权限唯一字符串标识
      */
@@ -61,4 +61,28 @@ public class ApiPermissionModel implements Serializable {
      */
     @NotBlank(message = "API接口地址不能为空")
     private String apiPath;
+
+    /**
+     * 定义排序规则
+     */
+    @Override
+    public int compareTo(ApiPermissionModel permission) {
+        // targetClass targetMethod targetMethodParams title
+        String format = "%1$-255s|%2$-255s|%3$-255s|%4$-255s";
+        String strA = String.format(
+                format,
+                this.getClassName(),
+                this.getMethodName(),
+                this.getMethodParams(),
+                this.getTitle()
+        );
+        String strB = String.format(
+                format,
+                permission.getClassName(),
+                permission.getMethodName(),
+                permission.getMethodParams(),
+                permission.getTitle()
+        );
+        return strA.compareTo(strB);
+    }
 }

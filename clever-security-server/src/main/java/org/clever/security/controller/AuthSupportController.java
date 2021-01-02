@@ -1,19 +1,15 @@
 package org.clever.security.controller;
 
 import org.clever.security.client.AuthSupportClient;
-import org.clever.security.dto.request.CacheContextReq;
-import org.clever.security.dto.request.GetApiPermissionReq;
-import org.clever.security.dto.request.LoadContextReq;
-import org.clever.security.dto.request.RegisterApiPermissionReq;
+import org.clever.security.dto.request.*;
+import org.clever.security.dto.response.GetAllApiPermissionRes;
 import org.clever.security.dto.response.GetApiPermissionRes;
 import org.clever.security.dto.response.RegisterApiPermissionRes;
 import org.clever.security.model.SecurityContext;
 import org.clever.security.service.AuthSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 作者：lizw <br/>
@@ -52,8 +48,21 @@ public class AuthSupportController implements AuthSupportClient {
         return authSupportService.loadContext(req);
     }
 
+    /**
+     * 获取系统所有的API权限
+     */
+    @GetMapping("/all_api_permission")
     @Override
-    public RegisterApiPermissionRes registerApiPermission(RegisterApiPermissionReq req) {
+    public GetAllApiPermissionRes getAllApiPermission(@Validated GetAllApiPermissionReq req) {
         return null;
+    }
+
+    /**
+     * 注册系统API权限
+     */
+    @PostMapping("/register_api_permission")
+    @Override
+    public RegisterApiPermissionRes registerApiPermission(@Validated @RequestBody RegisterApiPermissionReq req) {
+        return authSupportService.registerApiPermission(req);
     }
 }

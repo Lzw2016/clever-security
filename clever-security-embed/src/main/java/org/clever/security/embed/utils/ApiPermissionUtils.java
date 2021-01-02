@@ -3,15 +3,18 @@ package org.clever.security.embed.utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.clever.common.utils.IDCreateUtils;
 import org.clever.security.annotation.UrlAuthorization;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.entity.EnumConstant;
+import org.clever.security.model.auth.ApiPermissionEntity;
 import org.clever.security.model.auth.ApiPermissionModel;
+import org.clever.security.utils.PermissionStrFlagUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -21,7 +24,7 @@ import java.util.Set;
 public class ApiPermissionUtils {
 
     @SuppressWarnings("deprecation")
-    public static ApiPermissionModel parseApiPermission(SecurityConfig securityConfig, RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) {
+    public static ApiPermissionModel parseApiPermission(SecurityConfig securityConfig, List<ApiPermissionEntity> allApiPermissionList, RequestMappingInfo requestMappingInfo, HandlerMethod handlerMethod) {
         // 提取MVC路由信息
         Class<?> beanType = handlerMethod.getBeanType();
         Method method = handlerMethod.getMethod();
@@ -54,7 +57,7 @@ public class ApiPermissionUtils {
             description = apiOperation.notes();
         }
         // 获取资源字符串
-        String strFlag = "[auto]:" + IDCreateUtils.shortUuid();
+        String strFlag = null;
         String permissionStrPrefix = "";
         if (urlAuthorizationForClass != null && StringUtils.isNotBlank(urlAuthorizationForClass.strFlag())) {
             permissionStrPrefix = urlAuthorizationForClass.strFlag();
@@ -67,13 +70,13 @@ public class ApiPermissionUtils {
             }
         }
         // 获取方法参数签名
-        StringBuilder methodParams = new StringBuilder();
+        StringBuilder methodParamSb = new StringBuilder();
         Class<?>[] paramTypes = method.getParameterTypes();
         for (Class<?> clazz : paramTypes) {
-            if (methodParams.length() > 0) {
-                methodParams.append(", ");
+            if (methodParamSb.length() > 0) {
+                methodParamSb.append(", ");
             }
-            methodParams.append(clazz.getName());
+            methodParamSb.append(clazz.getName());
         }
         // 请求Url
         StringBuilder apiPath = new StringBuilder();
@@ -89,15 +92,31 @@ public class ApiPermissionUtils {
         if (needAuth) {
             return null;
         }
+        final String className = beanType.getName();
+        final String methodName = method.getName();
+        final String methodParams = methodParamSb.toString();
+        // 设置当前数据库中的strFlag
+        ApiPermissionEntity apiPermissionEntity = allApiPermissionList.stream()
+                .filter(apiPermission -> Objects.equals(apiPermission.getClassName(), className)
+                        && Objects.equals(apiPermission.getMethodName(), methodName)
+                        && Objects.equals(apiPermission.getMethodParams(), methodParams))
+                .findFirst().orElse(null);
+        if (apiPermissionEntity != null && StringUtils.isBlank(strFlag)) {
+            strFlag = apiPermissionEntity.getStrFlag();
+        }
+        // 生成随机的strFlag
+        if (StringUtils.isBlank(strFlag)) {
+            strFlag = PermissionStrFlagUtils.createStrFlag();
+        }
         // 创建API权限对象
         ApiPermissionModel apiPermissionModel = new ApiPermissionModel();
         apiPermissionModel.setStrFlag(strFlag);
         apiPermissionModel.setTitle(title);
         apiPermissionModel.setEnableAuth(securityConfig.isDefaultEnableApiAuth() ? EnumConstant.Permission_EnableAuth_1 : EnumConstant.Permission_EnableAuth_0);
         apiPermissionModel.setDescription(description);
-        apiPermissionModel.setClassName(beanType.getName());
-        apiPermissionModel.setMethodName(method.getName());
-        apiPermissionModel.setMethodParams(methodParams.toString());
+        apiPermissionModel.setClassName(className);
+        apiPermissionModel.setMethodName(methodName);
+        apiPermissionModel.setMethodParams(methodParams);
         apiPermissionModel.setApiPath(apiPath.toString());
         return apiPermissionModel;
     }

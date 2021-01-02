@@ -6,7 +6,10 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.response.GetApiPermissionRes;
 import org.clever.security.entity.ApiPermission;
+import org.clever.security.model.auth.ApiPermissionEntity;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 作者：lizw <br/>
@@ -21,4 +24,6 @@ public interface ApiPermissionMapper extends BaseMapper<ApiPermission> {
             @Param("className") String className,
             @Param("methodName") String methodName,
             @Param("methodParams") String methodParams);
+
+    List<ApiPermissionEntity> findApiPermissionBydDomainId(@Param("domainId") Long domainId);
 }
