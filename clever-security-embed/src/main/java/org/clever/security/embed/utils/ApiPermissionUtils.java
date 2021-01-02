@@ -89,7 +89,7 @@ public class ApiPermissionUtils {
             }
             apiPath.append(url);
         }
-        if (needAuth) {
+        if (!needAuth) {
             return null;
         }
         final String className = beanType.getName();
