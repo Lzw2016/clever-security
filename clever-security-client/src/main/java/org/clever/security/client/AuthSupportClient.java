@@ -5,12 +5,16 @@ import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.CacheContextReq;
 import org.clever.security.dto.request.GetApiPermissionReq;
 import org.clever.security.dto.request.LoadContextReq;
+import org.clever.security.dto.request.RegisterApiPermissionReq;
 import org.clever.security.dto.response.GetApiPermissionRes;
+import org.clever.security.dto.response.RegisterApiPermissionRes;
 import org.clever.security.model.SecurityContext;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * 作者：lizw <br/>
@@ -40,4 +44,10 @@ public interface AuthSupportClient {
      */
     @GetMapping("/load_security_context")
     SecurityContext loadContext(@Validated @SpringQueryMap LoadContextReq req);
+
+    /**
+     * 注册系统API权限
+     */
+    @PostMapping("/register_api_permission")
+    RegisterApiPermissionRes registerApiPermission(@Validated @RequestBody RegisterApiPermissionReq req);
 }

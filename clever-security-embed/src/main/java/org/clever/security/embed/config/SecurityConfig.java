@@ -34,6 +34,10 @@ public class SecurityConfig implements Serializable {
      */
     private List<String> ignoreAuthPaths = new ArrayList<>();
     /**
+     * 不需要授权的Class
+     */
+    private List<String> ignoreAuthClass = new ArrayList<>();
+    /**
      * 未登录时是否需要重定向到401页面
      */
     private boolean notLoginNeedRedirect = false;

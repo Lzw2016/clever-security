@@ -14,17 +14,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UrlAuthorization {
     /**
-     * 权限唯一字符串标识
-     */
-    String strFlag() default "";
-
-    /**
      * 权限标题
      */
     String title() default "";
 
     /**
-     * 权限说明
+     * 权限唯一字符串标识(仅支持Method,不支持Class)
+     */
+    String strFlag() default "";
+
+    /**
+     * 权限说明(仅支持Method,不支持Class)
      */
     String description() default "";
 }

@@ -1,5 +1,6 @@
 package org.clever.security.embed.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.*;
 import org.springframework.http.HttpMethod;
@@ -40,6 +41,10 @@ public class PathFilterUtils {
      */
     public static boolean isLoginCaptchaPath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isLoginCaptchaPath(path, securityConfig);
+    }
+
+    public static boolean isLoginCaptchaPath(String path, SecurityConfig securityConfig) {
         LoginConfig login = securityConfig.getLogin();
         if (login == null) {
             return false;
@@ -56,6 +61,10 @@ public class PathFilterUtils {
      */
     public static boolean isLoginSmsValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isLoginSmsValidateCodePath(path, securityConfig);
+    }
+
+    public static boolean isLoginSmsValidateCodePath(String path, SecurityConfig securityConfig) {
         LoginConfig login = securityConfig.getLogin();
         if (login == null) {
             return false;
@@ -72,6 +81,10 @@ public class PathFilterUtils {
      */
     public static boolean isLoginEmailValidateCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isLoginEmailValidateCodePath(path, securityConfig);
+    }
+
+    public static boolean isLoginEmailValidateCodePath(String path, SecurityConfig securityConfig) {
         LoginConfig login = securityConfig.getLogin();
         if (login == null) {
             return false;
@@ -88,6 +101,10 @@ public class PathFilterUtils {
      */
     public static boolean isGetScanCodeLoginPath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isGetScanCodeLoginPath(path, securityConfig);
+    }
+
+    public static boolean isGetScanCodeLoginPath(String path, SecurityConfig securityConfig) {
         ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
         if (scanCodeLogin == null) {
             return false;
@@ -100,6 +117,10 @@ public class PathFilterUtils {
      */
     public static boolean isScanCodeStatePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isScanCodeStatePath(path, securityConfig);
+    }
+
+    public static boolean isScanCodeStatePath(String path, SecurityConfig securityConfig) {
         ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
         if (scanCodeLogin == null) {
             return false;
@@ -112,6 +133,10 @@ public class PathFilterUtils {
      */
     public static boolean isScanCodePath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isScanCodePath(path, securityConfig);
+    }
+
+    public static boolean isScanCodePath(String path, SecurityConfig securityConfig) {
         ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
         if (scanCodeLogin == null) {
             return false;
@@ -124,6 +149,10 @@ public class PathFilterUtils {
      */
     public static boolean isScanCodeLoginConfirmPath(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isScanCodeLoginConfirmPath(path, securityConfig);
+    }
+
+    public static boolean isScanCodeLoginConfirmPath(String path, SecurityConfig securityConfig) {
         ScanCodeLoginConfig scanCodeLogin = getScanCodeLoginConfig(securityConfig);
         if (scanCodeLogin == null) {
             return false;
@@ -136,6 +165,10 @@ public class PathFilterUtils {
      */
     public static boolean isLoginRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
+        return isLoginRequest(path, request.getMethod(), securityConfig);
+    }
+
+    public static boolean isLoginRequest(String path, String method, SecurityConfig securityConfig) {
         LoginConfig login = securityConfig.getLogin();
         if (login == null) {
             return false;
@@ -143,7 +176,7 @@ public class PathFilterUtils {
         if (!Objects.equals(login.getLoginPath(), path)) {
             return false;
         }
-        boolean postRequest = HttpMethod.POST.matches(request.getMethod());
+        boolean postRequest = StringUtils.isBlank(method) || HttpMethod.POST.matches(method);
         return !login.isPostOnly() || postRequest;
     }
 
@@ -151,11 +184,16 @@ public class PathFilterUtils {
      * 当前请求是否是登录请求
      */
     public static boolean isLogoutRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isLogoutRequest(path, securityConfig);
+    }
+
+    public static boolean isLogoutRequest(String path, SecurityConfig securityConfig) {
         LogoutConfig logout = securityConfig.getLogout();
         if (logout == null) {
             return false;
         }
-        return Objects.equals(logout.getLogoutUrl(), getPath(request));
+        return Objects.equals(logout.getLogoutUrl(), path);
     }
 
     /**
@@ -163,17 +201,20 @@ public class PathFilterUtils {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isAuthenticationRequest(path, request.getMethod(), securityConfig);
+    }
+
+    public static boolean isAuthenticationRequest(String path, String method, SecurityConfig securityConfig) {
         // 当前请求是“登录请求”或“验证码请求”
-        if (isLoginRequest(request, securityConfig)
-                || isLoginCaptchaPath(request, securityConfig)
-                || isLoginSmsValidateCodePath(request, securityConfig)
-                || isLoginEmailValidateCodePath(request, securityConfig)
-                || isGetScanCodeLoginPath(request, securityConfig)
-                || isScanCodeStatePath(request, securityConfig)) {
+        if (isLoginRequest(path, method, securityConfig)
+                || isLoginCaptchaPath(path, securityConfig)
+                || isLoginSmsValidateCodePath(path, securityConfig)
+                || isLoginEmailValidateCodePath(path, securityConfig)
+                || isGetScanCodeLoginPath(path, securityConfig)
+                || isScanCodeStatePath(path, securityConfig)) {
             return false;
         }
-        // 不需要认证和授权的Path
-        final String path = getPath(request);
         List<String> ignorePaths = securityConfig.getIgnorePaths();
         if (ignorePaths == null || ignorePaths.isEmpty()) {
             return true;
@@ -191,12 +232,19 @@ public class PathFilterUtils {
      * 当前请求是否需要授权
      */
     public static boolean isAuthorizationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
-        // 当前请求不需要身份认证 - 那就更不需要授权了
-        if (!isAuthenticationRequest(request, securityConfig)) {
-            return false;
-        }
         // 不需要授权的Path
         final String path = getPath(request);
+        return isAuthorizationRequest(path, request.getMethod(), securityConfig);
+    }
+
+    /**
+     * 当前请求是否需要授权
+     */
+    public static boolean isAuthorizationRequest(String path, String method, SecurityConfig securityConfig) {
+        // 当前请求不需要身份认证 - 那就更不需要授权了
+        if (!isAuthenticationRequest(path, method, securityConfig)) {
+            return false;
+        }
         List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();
         if (ignoreAuthPaths == null || ignoreAuthPaths.isEmpty()) {
             return true;

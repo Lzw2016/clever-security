@@ -7,7 +7,9 @@ import org.clever.security.client.AuthSupportClient;
 import org.clever.security.dto.request.CacheContextReq;
 import org.clever.security.dto.request.GetApiPermissionReq;
 import org.clever.security.dto.request.LoadContextReq;
+import org.clever.security.dto.request.RegisterApiPermissionReq;
 import org.clever.security.dto.response.GetApiPermissionRes;
+import org.clever.security.dto.response.RegisterApiPermissionRes;
 import org.clever.security.entity.User;
 import org.clever.security.entity.UserSecurityContext;
 import org.clever.security.mapper.*;
@@ -76,6 +78,11 @@ public class AuthSupportService implements AuthSupportClient {
             return tupleTow.getValue2();
         }
         return JacksonMapper.getInstance().fromJson(userSecurityContext.getSecurityContext(), SecurityContext.class);
+    }
+
+    @Override
+    public RegisterApiPermissionRes registerApiPermission(RegisterApiPermissionReq req) {
+        return null;
     }
 
     /**
