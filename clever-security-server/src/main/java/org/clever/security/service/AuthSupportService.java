@@ -154,6 +154,9 @@ public class AuthSupportService implements AuthSupportClient {
         permission.setDomainId(domainId);
         permission.setResourcesType(EnumConstant.Permission_ResourcesType_1);
         ApiPermission apiPermission = BeanMapper.mapper(apiPermissionModel, ApiPermission.class);
+        apiPermission.setId(SnowFlake.SNOW_FLAKE.nextId());
+        apiPermission.setPermissionId(permission.getId());
+        apiPermission.setApiExist(EnumConstant.ApiPermission_ApiExist_1);
         permissionMapper.insert(permission);
         apiPermissionMapper.insert(apiPermission);
     }

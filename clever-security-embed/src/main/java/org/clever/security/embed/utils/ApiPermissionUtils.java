@@ -48,7 +48,7 @@ public class ApiPermissionUtils {
         } else if (apiOperation != null && StringUtils.isNotBlank(apiOperation.value())) {
             titleSuffix = apiOperation.value();
         }
-        String title = String.format("[%1$s]-%2$s", titlePrefix, titleSuffix);
+        String title = String.format("%1$s-%2$s", titlePrefix, titleSuffix);
         // 获取资源说明
         String description = "系统自动生成的权限配置";
         if (urlAuthorizationForMethod != null && StringUtils.isNotBlank(urlAuthorizationForMethod.description())) {

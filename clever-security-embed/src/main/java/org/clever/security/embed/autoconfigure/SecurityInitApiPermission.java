@@ -90,7 +90,7 @@ public class SecurityInitApiPermission implements CommandLineRunner {
         }
         String applicationName = environment.getProperty("spring.application.name");
         if (!Objects.equals(domain.getName(), applicationName)) {
-            log.error("服务启动失败", new IllegalArgumentException(String.format("权限域名称和应用名不一致,权限域名称=[%s],spring.application.name=[%s]", domain.getName(), applicationName)));
+            log.error("服务启动失败", new IllegalArgumentException(String.format("域名称和应用名不一致,域名称=[%s],spring.application.name=[%s]", domain.getName(), applicationName)));
             System.exit(-1);
         }
         log.info("### 当前系统domain信息 | domain-id={} | name={} | redis-name-space={}", domain.getId(), domain.getName(), domain.getRedisNameSpace());
@@ -119,11 +119,8 @@ public class SecurityInitApiPermission implements CommandLineRunner {
             strTmp.append("\r\n");
             strTmp.append("#=======================================================================================================================#\r\n");
             strTmp
-                    .append("# 系统注册信息：").append(applicationName).append("\n")
-                    .append("# 新增的权限配置如下(").append(res.getAddPermissionList().size()).append("条):")
-                    .append("\t\t---> ")
-                    .append(securityConfig.isDefaultEnableApiAuth() ? "需要授权" : "不需要授权")
-                    .append("\r\n");
+                    .append("# 系统注册信息：").append(applicationName).append("(").append(securityConfig.isDefaultEnableApiAuth() ? "需要授权" : "不需要授权").append(")").append("\n")
+                    .append("# 新增的权限配置如下(").append(res.getAddPermissionList().size()).append("条):").append("\r\n");
             for (ApiPermissionModel permission : res.getAddPermissionList()) {
                 strTmp.append("#\t ").append(permissionToString(permission)).append("\r\n");
             }
@@ -141,7 +138,7 @@ public class SecurityInitApiPermission implements CommandLineRunner {
      */
     private String permissionToString(ApiPermissionModel permission) {
         return String.format(
-                "| [%1$s] [%2$s#%3$s] -> [%4$s]",
+                "[%1$s] [%2$s#%3$s] -> [%4$s]",
                 permission.getTitle(),
                 permission.getClassName(),
                 permission.getMethodName(),

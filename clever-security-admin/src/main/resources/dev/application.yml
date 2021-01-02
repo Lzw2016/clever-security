@@ -145,6 +145,7 @@ mybatis-plus:
 clever:
   security:
     domain-id: 1
+    init-auth: true
     default-enable-api-auth: true
     ignore-paths:
       # swagger
@@ -170,6 +171,9 @@ clever:
     ignore-auth-paths:
       - '/login/user_info.json'
       - '/api/**'
+    ignore-auth-class:
+      - 'springfox.documentation.swagger.web.ApiResourceController'
+      - 'org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController'
     not-login-need-redirect: false
     not-login-redirect-page: '/index.html'
     forbidden-need-redirect: false

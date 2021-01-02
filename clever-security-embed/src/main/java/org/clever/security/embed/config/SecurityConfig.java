@@ -22,6 +22,10 @@ public class SecurityConfig implements Serializable {
      */
     private Long domainId;
     /**
+     * 是否需要初始化权限数据
+     */
+    private boolean initAuth = false;
+    /**
      * API权限是否默认启用，默认true(true 启用；false 不启用)
      */
     private boolean defaultEnableApiAuth = true;
