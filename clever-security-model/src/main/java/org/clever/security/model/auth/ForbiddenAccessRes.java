@@ -13,16 +13,11 @@ import org.clever.security.model.UserInfo;
 @Data
 public class ForbiddenAccessRes extends BaseResponse {
     /**
-     * 登出成功用户信息
-     */
-    private final UserInfo userInfo;
-    /**
      * 登出返回消息
      */
     private final String message;
 
-    public ForbiddenAccessRes(UserInfo userInfo, String message) {
-        this.userInfo = userInfo;
+    public ForbiddenAccessRes(String message) {
         this.message = message;
     }
 }

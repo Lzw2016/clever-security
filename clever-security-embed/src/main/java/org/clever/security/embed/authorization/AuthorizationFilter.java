@@ -14,7 +14,6 @@ import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.clever.security.model.SecurityContext;
-import org.clever.security.model.UserInfo;
 import org.clever.security.model.auth.ForbiddenAccessRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
@@ -111,9 +110,12 @@ public class AuthorizationFilter extends GenericFilterBean {
         } catch (Throwable e) {
             log.error("授权异常", e);
             HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            return;
         }
         // 处理业务逻辑
-        chain.doFilter(request, response);
+        if (pass) {
+            chain.doFilter(request, response);
+        }
     }
 
     protected boolean authorization(AuthorizationContext context) {
@@ -182,9 +184,7 @@ public class AuthorizationFilter extends GenericFilterBean {
             HttpServletResponseUtils.redirect(response, securityConfig.getNotLoginRedirectPage());
         } else {
             // 直接返回
-            SecurityContext securityContext = context.getSecurityContext();
-            UserInfo userInfo = securityContext == null ? null : securityContext.getUserInfo();
-            ForbiddenAccessRes forbiddenAccessRes = new ForbiddenAccessRes(userInfo, "未授权，禁止访问");
+            ForbiddenAccessRes forbiddenAccessRes = new ForbiddenAccessRes("未授权，禁止访问");
             HttpServletResponseUtils.sendJson(response, forbiddenAccessRes, HttpStatus.FORBIDDEN);
         }
     }

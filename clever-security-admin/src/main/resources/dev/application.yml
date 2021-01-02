@@ -168,9 +168,11 @@ clever:
       - '/actuator/**'
       - '/'
       # - '/**'
+      - '/api/public/**'
     ignore-auth-paths:
       - '/login/user_info.json'
-      - '/api/**'
+      - '/api/protected/**'
+      # - '/api/**'
     ignore-auth-class:
       - 'springfox.documentation.swagger.web.ApiResourceController'
       - 'org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController'

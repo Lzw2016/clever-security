@@ -19,7 +19,7 @@ public class PrivateController {
     }
 
     @PostMapping("/t01")
-    public Object t0t(@RequestBody Domain domain) {
+    public Object t01(@RequestBody Domain domain) {
         return new AjaxMessage<>(domain, "成功");
     }
 
