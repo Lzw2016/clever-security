@@ -10,7 +10,6 @@ import org.clever.security.dto.request.GetScanCodeLoginInfoReq;
 import org.clever.security.dto.response.CreateLoginScanCodeRes;
 import org.clever.security.dto.response.GetScanCodeLoginInfoRes;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
@@ -64,11 +63,7 @@ public class ScanCodeLoginFilter extends GenericFilterBean {
                 getLoginScanCode(httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("获取扫码登录二维码失败", e);
-                if (e instanceof LoginException) {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
-                } else {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-                }
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
             }
         } else if (PathFilterUtils.isScanCodeStatePath(httpRequest, securityConfig)) {
             // 获取登录二维码状态
@@ -76,11 +71,7 @@ public class ScanCodeLoginFilter extends GenericFilterBean {
                 getLoginScanCodeState(httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("获取登录二维码状态失败", e);
-                if (e instanceof LoginException) {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
-                } else {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-                }
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
             }
         } else {
             // 不是扫码登录相关请求

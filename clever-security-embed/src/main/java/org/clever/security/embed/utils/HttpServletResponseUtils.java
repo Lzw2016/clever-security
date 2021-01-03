@@ -3,10 +3,7 @@ package org.clever.security.embed.utils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.model.response.ErrorResponse;
 import org.clever.common.utils.mapper.JacksonMapper;
-import org.clever.security.embed.exception.AuthenticationException;
-import org.clever.security.embed.exception.AuthorizationException;
-import org.clever.security.embed.exception.LoginException;
-import org.clever.security.embed.exception.LogoutException;
+import org.clever.security.embed.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -92,5 +89,24 @@ public class HttpServletResponseUtils {
             return;
         }
         response.sendRedirect(location);
+    }
+
+    public static HttpStatus getHttpStatus(Throwable e) {
+        if (e == null) {
+            return HttpStatus.OK;
+        }
+        if (e instanceof AuthenticationInnerException
+                || e instanceof AuthorizationInnerException
+                || e instanceof LoginInnerException) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        if (e instanceof AuthenticationException
+                || e instanceof AuthorizationException
+                || e instanceof LoginException
+                || e instanceof LogoutException
+                || e instanceof BusinessException) {
+            return HttpStatus.BAD_REQUEST;
+        }
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 }

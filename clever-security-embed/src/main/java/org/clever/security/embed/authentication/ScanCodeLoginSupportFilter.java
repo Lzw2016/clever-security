@@ -8,12 +8,10 @@ import org.clever.security.dto.request.ConfirmLoginScanCodeReq;
 import org.clever.security.dto.response.BindLoginScanCodeRes;
 import org.clever.security.dto.response.ConfirmLoginScanCodeRes;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.exception.LoginException;
 import org.clever.security.embed.exception.ScanCodeLoginException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -60,11 +58,7 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
                 bindLoginScanCode(claims, httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("扫描扫码登录二维码处理失败", e);
-                if (e instanceof LoginException) {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
-                } else {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-                }
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
             }
         } else if (PathFilterUtils.isScanCodeLoginConfirmPath(httpRequest, securityConfig)) {
             // 扫码登录确认登录
@@ -72,11 +66,7 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
                 confirmLoginScanCode(claims, httpRequest, httpResponse);
             } catch (Exception e) {
                 log.error("扫码登录确认登录处理失败", e);
-                if (e instanceof LoginException) {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.OK, e);
-                } else {
-                    HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
-                }
+                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
             }
         } else {
             // 不是扫码登录相关请求

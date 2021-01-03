@@ -339,7 +339,7 @@ public class LoginFilter extends GenericFilterBean {
             userInfo.setPassword("******");
             userInfo.getExtInfo().putAll(context.getUserInfo().getExtInfo());
             LoginRes loginRes = LoginRes.loginSuccess(userInfo, context.getJwtToken(), context.getRefreshToken());
-            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.UNAUTHORIZED);
+            HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, HttpStatus.OK);
         }
     }
 
@@ -357,7 +357,7 @@ public class LoginFilter extends GenericFilterBean {
         } else {
             // 直接返回
             LoginRes loginRes = LoginRes.loginFailure(context.getLoginException().getMessage());
-            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+            HttpStatus httpStatus = (context.getLoginException() instanceof RepeatLoginException) ? HttpStatus.BAD_REQUEST : HttpStatus.UNAUTHORIZED;
             HttpServletResponseUtils.sendJson(context.getResponse(), loginRes, httpStatus);
         }
     }

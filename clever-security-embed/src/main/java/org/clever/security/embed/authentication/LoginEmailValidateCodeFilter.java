@@ -11,7 +11,6 @@ import org.clever.security.embed.exception.SendValidateCodeException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -61,7 +60,7 @@ public class LoginEmailValidateCodeFilter extends GenericFilterBean {
             sendEmailValidateCode(httpRequest, httpResponse);
         } catch (Exception e) {
             log.error("发送邮箱登录验证码失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
         }
     }
 
