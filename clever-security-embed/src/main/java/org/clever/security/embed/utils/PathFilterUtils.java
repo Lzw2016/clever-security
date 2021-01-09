@@ -213,6 +213,18 @@ public class PathFilterUtils {
     }
 
     /**
+     * 当前请求是否是注册验证码
+     */
+    public static boolean isRegisterCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        UserRegisterConfig register =  securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        // TODO - 未实现
+        return true;
+    }
+
+    /**
      * 当前请求是否需要身份认证
      */
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
