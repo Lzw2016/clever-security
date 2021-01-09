@@ -6,14 +6,14 @@ import lombok.ToString;
 import java.util.Objects;
 
 /**
- * 登录渠道
+ * 注册渠道
  * <p>
  * 作者：lizw <br/>
- * 创建时间：2020/11/29 15:11 <br/>
+ * 创建时间：2021/01/09 14:13 <br/>
  */
 @ToString
 @Getter
-public enum LoginChannel {
+public enum RegisterChannel {
     /**
      * PC-Admin
      */
@@ -41,50 +41,50 @@ public enum LoginChannel {
     ;
 
     /**
-     * 登录渠道ID，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
+     * 注册渠道ID，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
     private final int id;
     /**
-     * 登录渠道名称，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
+     * 注册渠道名称，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
     private final String name;
 
-    LoginChannel(int id, String name) {
+    RegisterChannel(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static LoginChannel lookup(String name) {
+    public static RegisterChannel lookup(String name) {
         if (PC_Admin.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.PC_Admin;
+            return RegisterChannel.PC_Admin;
         } else if (PC_Web.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.PC_Web;
+            return RegisterChannel.PC_Web;
         } else if (H5.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.H5;
+            return RegisterChannel.H5;
         } else if (IOS_APP.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.IOS_APP;
+            return RegisterChannel.IOS_APP;
         } else if (Android_APP.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.Android_APP;
+            return RegisterChannel.Android_APP;
         } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
-            return LoginChannel.WechatSmallProgram;
+            return RegisterChannel.WechatSmallProgram;
         } else {
             return null;
         }
     }
 
-    public static LoginChannel lookup(int id) {
+    public static RegisterChannel lookup(int id) {
         if (Objects.equals(PC_Admin.getId(), id)) {
-            return LoginChannel.PC_Admin;
+            return RegisterChannel.PC_Admin;
         } else if (Objects.equals(PC_Web.getId(), id)) {
-            return LoginChannel.PC_Web;
+            return RegisterChannel.PC_Web;
         } else if (Objects.equals(H5.getId(), id)) {
-            return LoginChannel.H5;
+            return RegisterChannel.H5;
         } else if (Objects.equals(IOS_APP.getId(), id)) {
-            return LoginChannel.IOS_APP;
+            return RegisterChannel.IOS_APP;
         } else if (Objects.equals(Android_APP.getId(), id)) {
-            return LoginChannel.Android_APP;
+            return RegisterChannel.Android_APP;
         } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
-            return LoginChannel.WechatSmallProgram;
+            return RegisterChannel.WechatSmallProgram;
         } else {
             return null;
         }

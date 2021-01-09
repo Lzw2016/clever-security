@@ -2,13 +2,15 @@ package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户登出配置
  * 作者： lzw<br/>
  * 创建时间：2019-04-25 19:02 <br/>
  */
 @Data
-public class LogoutConfig {
+public class LogoutConfig implements Serializable {
     /**
      * 登出请求URL
      */

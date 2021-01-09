@@ -2,6 +2,7 @@ package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Duration;
 
 /**
@@ -9,7 +10,7 @@ import java.time.Duration;
  * 创建时间：2020/12/13 11:30 <br/>
  */
 @Data
-public class EmailValidateCodeLoginConfig {
+public class EmailValidateCodeLoginConfig implements Serializable {
     /**
      * 是否启用邮箱验证码登录
      */

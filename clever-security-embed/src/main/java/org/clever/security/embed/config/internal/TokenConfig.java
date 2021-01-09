@@ -2,6 +2,7 @@ package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Duration;
 
 /**
@@ -10,7 +11,7 @@ import java.time.Duration;
  * 创建时间：2019-04-25 19:04 <br/>
  */
 @Data
-public class TokenConfig {
+public class TokenConfig implements Serializable {
     /**
      * Token Redis前缀
      */

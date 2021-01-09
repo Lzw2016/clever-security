@@ -59,7 +59,11 @@ public class SecurityConfig implements Serializable {
     private String forbiddenRedirectPage = "/403.html";
 
     // ----------------------------------------------------------------------------------------
-
+    /**
+     * 用户请求参数加密配置AesKey(登录、注册等敏感接口使用)
+     */
+    @NestedConfigurationProperty
+    private final AesKeyConfig reqAesKey = new AesKeyConfig();
     /**
      * 用户登录相关配置
      */
@@ -71,15 +75,15 @@ public class SecurityConfig implements Serializable {
     @NestedConfigurationProperty
     private final LogoutConfig logout = new LogoutConfig();
     /**
-     * token配置(只有JWT Token有效)
+     * 用户注册配置
+     */
+    @NestedConfigurationProperty
+    private final UserRegisterConfig register = new UserRegisterConfig();
+    /**
+     * token配置(JWT-Token有效)
      */
     @NestedConfigurationProperty
     private final TokenConfig tokenConfig = new TokenConfig();
-    /**
-     * 用户登录请求参数加密配置 Aes Key
-     */
-    @NestedConfigurationProperty
-    private final AesKeyConfig loginReqAesKey = new AesKeyConfig();
     /**
      * 服务间免登陆Token访问配置
      */

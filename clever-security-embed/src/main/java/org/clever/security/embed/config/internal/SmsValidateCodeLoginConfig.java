@@ -2,6 +2,7 @@ package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.Duration;
 
 /**
@@ -9,7 +10,7 @@ import java.time.Duration;
  * 创建时间：2020/12/13 11:26 <br/>
  */
 @Data
-public class SmsValidateCodeLoginConfig {
+public class SmsValidateCodeLoginConfig implements Serializable {
     /**
      * 是否启用手机号验证码登录
      */

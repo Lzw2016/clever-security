@@ -2,13 +2,15 @@ package org.clever.security.embed.config.internal;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * AES对称加密key配置
  * 作者： lzw<br/>
  * 创建时间：2019-04-25 19:03 <br/>
  */
 @Data
-public class AesKeyConfig {
+public class AesKeyConfig implements Serializable {
     /**
      * 启用密码加密传输
      */

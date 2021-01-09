@@ -51,9 +51,9 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
             throw new LoginDataValidateException("登录数据为空");
         }
         LoginConfig loginConfig = securityConfig.getLogin();
-        AesKeyConfig loginReqAesKey = securityConfig.getLoginReqAesKey();
+        AesKeyConfig reqAesKey = securityConfig.getReqAesKey();
         // 登录用户不存在 | 密码错误
-        verifyUserInfo(loginConfig, loginReqAesKey, loginReq, userInfo);
+        verifyUserInfo(loginConfig, reqAesKey, loginReq, userInfo);
         // 不支持登录域错误
         verifyUserDomain(securityConfig.getDomainId(), loginConfig, userInfo);
         // 用户过期错误 | 用户禁用错误
@@ -65,7 +65,7 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
     /**
      * 验证用户信息
      */
-    protected void verifyUserInfo(LoginConfig loginConfig, AesKeyConfig loginReqAesKey, AbstractUserLoginReq loginReq, UserInfo userInfo) {
+    protected void verifyUserInfo(LoginConfig loginConfig, AesKeyConfig reqAesKey, AbstractUserLoginReq loginReq, UserInfo userInfo) {
         // 登录用户不存在
         if (userInfo == null) {
             if (loginConfig.isHideUserNotFoundException()) {
@@ -78,10 +78,10 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
         if (loginReq instanceof LoginNamePasswordReq) {
             LoginNamePasswordReq loginNamePasswordReq = (LoginNamePasswordReq) loginReq;
             String reqPassword = loginNamePasswordReq.getPassword();
-            if (loginReqAesKey.isEnable()) {
+            if (reqAesKey.isEnable()) {
                 // 解密密码(请求密码加密在客户端)
                 try {
-                    reqPassword = AesUtils.decode(loginReqAesKey.getReqPasswordAesKey(), loginReqAesKey.getReqPasswordAesIv(), reqPassword);
+                    reqPassword = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), reqPassword);
                 } catch (Exception e) {
                     throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误", e);
                 }

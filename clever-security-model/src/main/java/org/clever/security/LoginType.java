@@ -56,17 +56,17 @@ public enum LoginType {
 
     public static LoginType lookup(String name) {
         if (LoginName_Password.getName().equalsIgnoreCase(name)) {
-            return LoginName_Password;
+            return LoginType.LoginName_Password;
         } else if (Sms_ValidateCode.getName().equalsIgnoreCase(name)) {
-            return Sms_ValidateCode;
+            return LoginType.Sms_ValidateCode;
         } else if (Email_ValidateCode.getName().equalsIgnoreCase(name)) {
-            return Email_ValidateCode;
+            return LoginType.Email_ValidateCode;
         } else if (RefreshToken.getName().equalsIgnoreCase(name)) {
-            return RefreshToken;
+            return LoginType.RefreshToken;
         } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
-            return WechatSmallProgram;
+            return LoginType.WechatSmallProgram;
         } else if (ScanCode.getName().equalsIgnoreCase(name)) {
-            return ScanCode;
+            return LoginType.ScanCode;
         } else {
             return null;
         }
@@ -74,17 +74,17 @@ public enum LoginType {
 
     public static LoginType lookup(int id) {
         if (Objects.equals(LoginName_Password.getId(), id)) {
-            return LoginName_Password;
+            return LoginType.LoginName_Password;
         } else if (Objects.equals(Sms_ValidateCode.getId(), id)) {
-            return Sms_ValidateCode;
+            return LoginType.Sms_ValidateCode;
         } else if (Objects.equals(Email_ValidateCode.getId(), id)) {
-            return Email_ValidateCode;
+            return LoginType.Email_ValidateCode;
         } else if (Objects.equals(RefreshToken.getId(), id)) {
-            return RefreshToken;
+            return LoginType.RefreshToken;
         } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
-            return WechatSmallProgram;
+            return LoginType.WechatSmallProgram;
         } else if (Objects.equals(ScanCode.getId(), id)) {
-            return ScanCode;
+            return LoginType.ScanCode;
         } else {
             return null;
         }

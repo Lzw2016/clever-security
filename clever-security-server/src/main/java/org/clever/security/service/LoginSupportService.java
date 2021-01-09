@@ -156,7 +156,7 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("邮件验证码发送次数超限");
         }
         // 发送邮件验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), user.getEmail(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newEmailValidateCode(now, req.getDomainId(), user.getUid(), user.getEmail(), req.getEffectiveTimeMilli());
         byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
         Executor_Service.execute(() -> {
             try {
@@ -206,7 +206,7 @@ public class LoginSupportService implements LoginSupportClient {
             throw new BusinessException("短信验证码发送次数超限");
         }
         // 发送短信验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newValidateCode(now, req.getDomainId(), user.getUid(), user.getTelephone(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), user.getUid(), user.getTelephone(), req.getEffectiveTimeMilli());
         Executor_Service.execute(() -> {
             try {
                 smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
@@ -458,6 +458,7 @@ public class LoginSupportService implements LoginSupportClient {
         UserExt userExt = userExtMapper.getByWechatOpenId(req.getDomainId(), req.getOpenId());
         String uid;
         if (userExt == null) {
+            // TODO 注册用户 UserRegisterLogMapper
             // 微信未绑定用户信息则注册新用户
             uid = UserNameUtils.generateUid();
             User addUser = new User();

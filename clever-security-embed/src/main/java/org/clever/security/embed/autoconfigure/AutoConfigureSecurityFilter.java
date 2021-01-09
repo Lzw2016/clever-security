@@ -17,7 +17,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
-import org.clever.security.embed.extend.UserRegisterFilter;
+import org.clever.security.embed.register.UserRegisterFilter;
 import org.clever.security.embed.handler.*;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -146,7 +146,7 @@ public class AutoConfigureSecurityFilter {
     @ConditionalOnMissingBean(name = "userRegisterFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
     public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter() {
-        UserRegisterFilter filter = new UserRegisterFilter();
+        UserRegisterFilter filter = new UserRegisterFilter(securityConfig);
         FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
         filterRegistration.setName("userRegisterFilter");
