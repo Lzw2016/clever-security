@@ -42,7 +42,7 @@ public class SmsRegisterReqCollect extends AbstractRegisterDataCollect {
         }
         // 收集基础数据
         collectBaseDataByParameter(req, request);
-        // 收集当前登录类型数据
+        // 收集当前注册类型数据
         if (req.getTelephone() == null) {
             String telephone = request.getParameter(SmsRegisterReq.Telephone_ParamName);
             if (telephone != null) {
