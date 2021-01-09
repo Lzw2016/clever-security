@@ -3,6 +3,7 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.Constant;
 import org.clever.security.client.LoginSupportClient;
+import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.embed.authentication.*;
 import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
 import org.clever.security.embed.authentication.login.LoadUser;
@@ -12,13 +13,15 @@ import org.clever.security.embed.authentication.token.VerifyJwtToken;
 import org.clever.security.embed.authorization.AuthorizationFilter;
 import org.clever.security.embed.authorization.voter.AuthorizationVoter;
 import org.clever.security.embed.collect.LoginDataCollect;
+import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
-import org.clever.security.embed.register.UserRegisterFilter;
 import org.clever.security.embed.handler.*;
+import org.clever.security.embed.register.UserRegisterFilter;
+import org.clever.security.embed.register.VerifyRegisterData;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -139,20 +143,32 @@ public class AutoConfigureSecurityFilter {
         return filterRegistration;
     }
 
-//    /**
-//     * TODO 用户注册
-//     */
-//    @Bean("userRegisterFilter")
-//    @ConditionalOnMissingBean(name = "userRegisterFilter")
-//    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
-//    public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter() {
-//        UserRegisterFilter filter = new UserRegisterFilter(securityConfig);
-//        FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-//        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
-//        filterRegistration.setName("userRegisterFilter");
-//        filterRegistration.setOrder(Base_Order + 5);
-//        return filterRegistration;
-//    }
+    /**
+     * 用户注册
+     */
+    @Bean("userRegisterFilter")
+    @ConditionalOnMissingBean(name = "userRegisterFilter")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
+    public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter(
+            List<RegisterDataCollect> registerDataCollectList,
+            List<VerifyRegisterData> verifyRegisterDataList,
+            List<RegisterSuccessHandler> registerSuccessHandlerList,
+            List<RegisterFailureHandler> registerFailureHandlerList,
+            ObjectProvider<RegisterSupportClient> registerSupportClient) {
+        UserRegisterFilter filter = new UserRegisterFilter(
+                securityConfig,
+                registerDataCollectList,
+                verifyRegisterDataList,
+                registerSuccessHandlerList,
+                registerFailureHandlerList,
+                registerSupportClient.getIfAvailable()
+        );
+        FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
+        filterRegistration.setName("userRegisterFilter");
+        filterRegistration.setOrder(Base_Order + 5);
+        return filterRegistration;
+    }
 
     /**
      * TODO 密码找回
