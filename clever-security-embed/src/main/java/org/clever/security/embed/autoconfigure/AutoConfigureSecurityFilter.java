@@ -150,17 +150,17 @@ public class AutoConfigureSecurityFilter {
     @ConditionalOnMissingBean(name = "userRegisterFilter")
     @Conditional(ConditionalOnUserRegisterFilter.class)
     public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter(
-            List<RegisterDataCollect> registerDataCollectList,
-            List<VerifyRegisterData> verifyRegisterDataList,
-            List<RegisterSuccessHandler> registerSuccessHandlerList,
-            List<RegisterFailureHandler> registerFailureHandlerList,
+            ObjectProvider<List<RegisterDataCollect>> registerDataCollectList,
+            ObjectProvider<List<VerifyRegisterData>> verifyRegisterDataList,
+            ObjectProvider<List<RegisterSuccessHandler>> registerSuccessHandlerList,
+            ObjectProvider<List<RegisterFailureHandler>> registerFailureHandlerList,
             ObjectProvider<RegisterSupportClient> registerSupportClient) {
         UserRegisterFilter filter = new UserRegisterFilter(
                 securityConfig,
-                registerDataCollectList,
-                verifyRegisterDataList,
-                registerSuccessHandlerList,
-                registerFailureHandlerList,
+                registerDataCollectList.getIfAvailable() == null ? new ArrayList<>() : registerDataCollectList.getIfAvailable(),
+                verifyRegisterDataList.getIfAvailable() == null ? new ArrayList<>() : verifyRegisterDataList.getIfAvailable(),
+                registerSuccessHandlerList.getIfAvailable() == null ? new ArrayList<>() : registerSuccessHandlerList.getIfAvailable(),
+                registerFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : registerFailureHandlerList.getIfAvailable(),
                 registerSupportClient.getIfAvailable()
         );
         FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
@@ -317,12 +317,12 @@ public class AutoConfigureSecurityFilter {
     @Bean("authorizationFilter")
     @ConditionalOnMissingBean(name = "authorizationFilter")
     public FilterRegistrationBean<AuthorizationFilter> authorizationFilter(
-            List<AuthorizationVoter> authorizationVoterList,
+            ObjectProvider<List<AuthorizationVoter>> authorizationVoterList,
             ObjectProvider<List<AuthorizationSuccessHandler>> authorizationSuccessHandlerList,
             ObjectProvider<List<AuthorizationFailureHandler>> authorizationFailureHandlerList) {
         AuthorizationFilter filter = new AuthorizationFilter(
                 this.securityConfig,
-                authorizationVoterList,
+                authorizationVoterList.getIfAvailable() == null ? new ArrayList<>() : authorizationVoterList.getIfAvailable(),
                 authorizationSuccessHandlerList.getIfAvailable() == null ? new ArrayList<>() : authorizationSuccessHandlerList.getIfAvailable(),
                 authorizationFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : authorizationFailureHandlerList.getIfAvailable()
         );
