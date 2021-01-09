@@ -50,7 +50,6 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
             // 登录名注册-验证码
 
-            return;
         } else if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
             // 短信注册-图片验证码
 
