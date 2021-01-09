@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RegisterSupportService implements RegisterSupportClient {
 
-
     @Override
     public UserRegisterRes registerByLoginName(LoginNameRegisterReq req) {
         return null;

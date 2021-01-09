@@ -225,10 +225,27 @@ clever:
       logout-redirect-page: '/index.html'
     register:
       register-path: '/user_register'
-      enable-captcha: true
-      enable-login-name-register: true
-      enable-email-register: true
-      enable-sms-register: true
+      login-name-register:
+        enable: true
+        need-captcha: true
+        register-captcha-path: '/register/captcha'
+        effective-time: 60s
+      sms-register:
+        enable: true
+        need-captcha: true
+        register-captcha-path: '/register/sms/captcha'
+        captcha-effective-time: 60s
+        register-sms-validate-code-path: '/register/sms'
+        effective-time: 120s
+        max-send-num-in-day: 16
+      email-register:
+        enable: true
+        need-captcha: true
+        register-captcha-path: '/register/email/captcha'
+        captcha-effective-time: 60s
+        register-email-validate-code-path: '/register/email'
+        effective-time: 300s
+        max-send-num-in-day: 32
     token-config:
       redis-namespace: 'jwt'
       secret-key: 'clever-security-jwt'

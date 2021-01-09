@@ -1,6 +1,7 @@
 package org.clever.security.embed.config.internal;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.io.Serializable;
 
@@ -15,21 +16,21 @@ public class UserRegisterConfig implements Serializable {
      */
     private String registerPath = "/user_register";
     /**
-     * 是否启用验证码
+     * 登录名注册配置
      */
-    private boolean enableCaptcha = true;
+    @NestedConfigurationProperty
+    private LoginNameRegisterConfig loginNameRegister = new LoginNameRegisterConfig();
     /**
-     * 启用登录名注册
+     * 短信验证码注册配置
      */
-    private boolean enableLoginNameRegister = true;
+    @NestedConfigurationProperty
+    private SmsRegisterConfig smsRegister = new SmsRegisterConfig();
     /**
-     * 启用短信注册(使用手机号验证码注册)
+     * 邮箱注册配置
      */
-    private boolean enableSmsRegister = false;
-    /**
-     * 启用邮箱注册(使用邮箱验证码注册)
-     */
-    private boolean enableEmailRegister = false;
+    @NestedConfigurationProperty
+    private EmailRegisterConfig emailRegister = new EmailRegisterConfig();
 
     // 其他三方平台账号登录注册(oauth2.0)
 }
+

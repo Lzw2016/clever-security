@@ -5,6 +5,9 @@ import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.dto.response.UserRegisterRes;
 import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.EmailRegisterConfig;
+import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
+import org.clever.security.embed.config.internal.SmsRegisterConfig;
 import org.clever.security.embed.config.internal.UserRegisterConfig;
 import org.clever.security.embed.event.RegisterFailureEvent;
 import org.clever.security.embed.event.RegisterSuccessEvent;
@@ -139,7 +142,10 @@ public class UserRegisterFilter extends GenericFilterBean {
         if (register == null) {
             return false;
         }
-        return register.isEnableLoginNameRegister() || register.isEnableSmsRegister() || register.isEnableEmailRegister();
+        LoginNameRegisterConfig loginNameRegister = register.getLoginNameRegister();
+        SmsRegisterConfig smsRegister = register.getSmsRegister();
+        EmailRegisterConfig emailRegister = register.getEmailRegister();
+        return (loginNameRegister != null && loginNameRegister.isEnable()) || (smsRegister != null && smsRegister.isEnable()) || (emailRegister != null && emailRegister.isEnable());
     }
 
     /**
