@@ -3,6 +3,7 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
+import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.embed.authentication.login.DefaultLoadUser;
 import org.clever.security.embed.authentication.login.DefaultVerifyLoginData;
 import org.clever.security.embed.authentication.login.DefaultVerifyUserInfo;
@@ -15,6 +16,7 @@ import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.handler.DefaultLoginFailureHandler;
 import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
 import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
+import org.clever.security.embed.register.DefaultVerifyRegisterData;
 import org.clever.security.embed.validate.DefaultEmailValidateCode;
 import org.clever.security.embed.validate.DefaultSmsValidateCode;
 import org.clever.security.third.client.WeChatClient;
@@ -168,4 +170,14 @@ public class AutoConfigureBaseBeans {
     public EmailRegisterReqCollect emailRegisterReqCollect() {
         return new EmailRegisterReqCollect();
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 验证用户注册信息
+
+    @Bean("defaultVerifyRegisterData")
+    @ConditionalOnMissingBean(name = "defaultVerifyRegisterData")
+    public DefaultVerifyRegisterData defaultVerifyRegisterData(RegisterSupportClient registerSupportClient) {
+        return new DefaultVerifyRegisterData(registerSupportClient);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 注册Handler
 }
