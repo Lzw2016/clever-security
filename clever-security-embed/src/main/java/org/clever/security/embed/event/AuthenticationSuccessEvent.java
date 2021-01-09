@@ -4,12 +4,14 @@ import io.jsonwebtoken.Claims;
 import lombok.Data;
 import org.clever.security.model.SecurityContext;
 
+import java.io.Serializable;
+
 /**
  * 作者：lizw <br/>
  * 创建时间：2020/12/05 18:45 <br/>
  */
 @Data
-public class AuthenticationSuccessEvent {
+public class AuthenticationSuccessEvent implements Serializable {
     /**
      * JWT-Token
      */

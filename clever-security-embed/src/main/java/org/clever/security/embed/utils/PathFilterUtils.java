@@ -193,26 +193,42 @@ public class PathFilterUtils {
         if (logout == null) {
             return false;
         }
-        return Objects.equals(logout.getLogoutUrl(), path);
+        return Objects.equals(logout.getLogoutPath(), path);
+    }
+
+    /**
+     * 当前请求是否是注册请求
+     */
+    public static boolean isRegisterRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isRegisterRequest(path, securityConfig);
+    }
+
+    public static boolean isRegisterRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        return Objects.equals(register.getRegisterPath(), path);
     }
 
     /**
      * 当前请求是否需要身份认证
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
         return isAuthenticationRequest(path, request.getMethod(), securityConfig);
     }
 
     public static boolean isAuthenticationRequest(String path, String method, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“验证码请求”
+        // 当前请求是“登录请求”或“验证码请求”或“注册码请求”
         if (isLoginRequest(path, method, securityConfig)
                 || isLoginCaptchaPath(path, securityConfig)
                 || isLoginSmsValidateCodePath(path, securityConfig)
                 || isLoginEmailValidateCodePath(path, securityConfig)
                 || isGetScanCodeLoginPath(path, securityConfig)
-                || isScanCodeStatePath(path, securityConfig)) {
+                || isScanCodeStatePath(path, securityConfig)
+                || isRegisterRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignorePaths = securityConfig.getIgnorePaths();

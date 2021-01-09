@@ -7,6 +7,7 @@ import org.clever.security.model.login.AbstractUserLoginReq;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Serializable;
 
 /**
  * 登录失败事件
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  * 创建时间：2020/11/29 16:13 <br/>
  */
 @Data
-public class LoginFailureEvent {
+public class LoginFailureEvent implements Serializable {
     /**
      * 请求对象
      */

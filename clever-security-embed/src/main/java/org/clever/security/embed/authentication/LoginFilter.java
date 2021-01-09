@@ -60,7 +60,7 @@ public class LoginFilter extends GenericFilterBean {
      */
     private final List<LoginDataCollect> loginDataCollectList;
     /**
-     * 加载用户前后校验登录数据(字段格式、验证码等等)
+     * 加载用户之前校验登录数据(字段格式、验证码等等)
      */
     private final List<VerifyLoginData> verifyLoginDataList;
     /**
@@ -99,10 +99,10 @@ public class LoginFilter extends GenericFilterBean {
             List<LoginFailureHandler> loginFailureHandlerList,
             SecurityContextRepository securityContextRepository) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
-        Assert.notEmpty(loginDataCollectList, "登录数据收集器(ILoginDataCollect)不存在");
-        Assert.notEmpty(verifyLoginDataList, "用户登录验证器(IVerifyLoginData)不存在");
-        Assert.notEmpty(loadUserList, "用户信息加载器(ILoadUser)不存在");
-        Assert.notEmpty(verifyUserInfoList, "用户登录验证器(IVerifyUserInfo)不存在");
+        Assert.notEmpty(loginDataCollectList, "登录数据收集器(LoginDataCollect)不存在");
+        Assert.notEmpty(verifyLoginDataList, "用户登录验证器(VerifyLoginData)不存在");
+        Assert.notEmpty(loadUserList, "用户信息加载器(LoadUser)不存在");
+        Assert.notEmpty(verifyUserInfoList, "用户登录验证器(VerifyUserInfo)不存在");
         Assert.notNull(securityContextRepository, "安全上下文存取器(SecurityContextRepository)不能为null");
         this.securityConfig = securityConfig;
         this.loginDataCollectList = ListSortUtils.sort(loginDataCollectList);

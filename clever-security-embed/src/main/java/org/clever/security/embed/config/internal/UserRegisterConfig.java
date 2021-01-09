@@ -17,7 +17,7 @@ public class UserRegisterConfig implements Serializable {
     /**
      * 用户注册路径
      */
-    private String userRegisterPath = "/user_register";
+    private String registerPath = "/user_register";
     /**
      * 是否启用验证码
      */

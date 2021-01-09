@@ -8,6 +8,7 @@ import org.clever.security.model.login.AbstractUserLoginReq;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Date;
  * 创建时间：2020/11/29 16:14 <br/>
  */
 @Data
-public class LoginSuccessEvent {
+public class LoginSuccessEvent implements Serializable {
     /**
      * 请求对象
      */

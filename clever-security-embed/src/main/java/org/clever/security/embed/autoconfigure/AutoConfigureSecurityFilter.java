@@ -139,20 +139,20 @@ public class AutoConfigureSecurityFilter {
         return filterRegistration;
     }
 
-    /**
-     * TODO 用户注册
-     */
-    @Bean("userRegisterFilter")
-    @ConditionalOnMissingBean(name = "userRegisterFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
-    public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter() {
-        UserRegisterFilter filter = new UserRegisterFilter(securityConfig);
-        FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
-        filterRegistration.setName("userRegisterFilter");
-        filterRegistration.setOrder(Base_Order + 5);
-        return filterRegistration;
-    }
+//    /**
+//     * TODO 用户注册
+//     */
+//    @Bean("userRegisterFilter")
+//    @ConditionalOnMissingBean(name = "userRegisterFilter")
+//    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
+//    public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter() {
+//        UserRegisterFilter filter = new UserRegisterFilter(securityConfig);
+//        FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+//        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
+//        filterRegistration.setName("userRegisterFilter");
+//        filterRegistration.setOrder(Base_Order + 5);
+//        return filterRegistration;
+//    }
 
     /**
      * TODO 密码找回
@@ -289,7 +289,7 @@ public class AutoConfigureSecurityFilter {
                 logoutFailureHandlerList.getIfAvailable() == null ? new ArrayList<>() : logoutFailureHandlerList.getIfAvailable()
         );
         FilterRegistrationBean<LogoutFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns(this.securityConfig.getLogout().getLogoutUrl());
+        filterRegistration.addUrlPatterns(this.securityConfig.getLogout().getLogoutPath());
         filterRegistration.setName("logoutFilter");
         filterRegistration.setOrder(Base_Order + 300);
         return filterRegistration;

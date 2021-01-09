@@ -12,9 +12,9 @@ import java.io.Serializable;
 @Data
 public class LogoutConfig implements Serializable {
     /**
-     * 登出请求URL
+     * 登出请求路径
      */
-    private String logoutUrl = "/logout";
+    private String logoutPath = "/logout";
     /**
      * 登出后 - 是否需要重定向
      */
