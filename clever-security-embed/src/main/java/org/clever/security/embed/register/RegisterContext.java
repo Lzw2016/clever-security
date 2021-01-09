@@ -1,8 +1,8 @@
 package org.clever.security.embed.register;
 
 import lombok.Data;
+import org.clever.security.dto.response.UserRegisterRes;
 import org.clever.security.embed.exception.RegisterException;
-import org.clever.security.entity.User;
 import org.clever.security.model.register.AbstractUserRegisterReq;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,10 +33,17 @@ public class RegisterContext {
     /**
      * 注册的用户信息
      */
-    private User user;
+    private UserRegisterRes user;
 
     public RegisterContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
+    }
+
+    /**
+     * 是否注册失败(无法判断注册成功)
+     */
+    public boolean isRegisterFailure() {
+        return registerException != null;
     }
 }
