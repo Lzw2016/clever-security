@@ -46,7 +46,7 @@ public class UserRegisterFilter extends GenericFilterBean {
      * 注册失败处理
      */
     private final List<RegisterFailureHandler> registerFailureHandlerList;
-    
+
     public UserRegisterFilter(
             SecurityConfig securityConfig,
             List<RegisterDataCollect> registerDataCollectList,
@@ -108,6 +108,9 @@ public class UserRegisterFilter extends GenericFilterBean {
         }
     }
 
+    /**
+     * 注册流程
+     */
     protected void register(RegisterContext context) throws Exception {
 
     }

@@ -11,10 +11,6 @@ import java.io.Serializable;
 @Data
 public class UserRegisterConfig implements Serializable {
     /**
-     * 是否启用邮箱验证码登录
-     */
-    private boolean enable = false;
-    /**
      * 用户注册路径
      */
     private String registerPath = "/user_register";
@@ -22,9 +18,18 @@ public class UserRegisterConfig implements Serializable {
      * 是否启用验证码
      */
     private boolean enableCaptcha = true;
+    /**
+     * 启用登录名注册
+     */
+    private boolean enableLoginNameRegister = true;
+    /**
+     * 启用短信注册(使用手机号验证码注册)
+     */
+    private boolean enableSmsRegister = false;
+    /**
+     * 启用邮箱注册(使用邮箱验证码注册)
+     */
+    private boolean enableEmailRegister = false;
 
-
-    // 使用手机号验证码注册
-    // 使用邮箱验证码注册
     // 其他三方平台账号登录注册(oauth2.0)
 }

@@ -18,7 +18,7 @@ public class SmsValidateCodeLoginConfig implements Serializable {
     /**
      * 登录手机验证码(请求Path)
      */
-    private String loginSmsValidateCodePath = "/sms_code";
+    private String loginSmsValidateCodePath = "/login/sms_code";
     /**
      * 验证码有效时间(默认120秒)
      */

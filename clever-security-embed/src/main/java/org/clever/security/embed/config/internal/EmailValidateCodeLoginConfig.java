@@ -18,7 +18,7 @@ public class EmailValidateCodeLoginConfig implements Serializable {
     /**
      * 登录邮箱验证码(请求Path)
      */
-    private String loginEmailValidateCodePath = "/email_code";
+    private String loginEmailValidateCodePath = "/login/email_code";
     /**
      * 验证码有效时间(默认300秒)
      */

@@ -185,7 +185,7 @@ clever:
       post-only: true
       login-captcha:
         need-captcha: true
-        login-captcha-path: '/captcha'
+        login-captcha-path: '/login/captcha'
         need-captcha-by-login-failed-count: 3
         effective-time: 60s
       wechat-small-program-login:
@@ -194,20 +194,20 @@ clever:
         app-secret: 'appSecret'
       sms-validate-code-login:
         enable: true
-        login-sms-validate-code-path: '/sms_code'
+        login-sms-validate-code-path: '/login/sms_code'
         effective-time: 120s
         max-send-num-in-day: 32
       email-validate-code-login:
         enable: true
-        login-email-validate-code-path: '/email_code'
+        login-email-validate-code-path: '/login/email_code'
         effective-time: 300s
         max-send-num-in-day: 64
       scan-code-login:
         enable: true
-        get-scan-code-login-path: '/scan_code/get'
-        scan-code-path: '/scan_code/scan'
-        confirm-login-path: '/scan_code/confirm'
-        scan-code-state-path: '/scan_code/state'
+        get-scan-code-login-path: '/login/scan_code/get'
+        scan-code-path: '/login/scan_code/scan'
+        confirm-login-path: '/login/scan_code/confirm'
+        scan-code-state-path: '/login/scan_code/state'
         expired-time: 60s
         confirm-expired-time: 30s
         get-token-expired-time: 30s
@@ -220,9 +220,15 @@ clever:
       concurrent-login-count: 1
       allow-after-login: true
     logout:
-      logout-url: '/logout'
+      logout-path: '/logout'
       logout-need-redirect: false
       logout-redirect-page: '/index.html'
+    register:
+      register-path: '/user_register'
+      enable-captcha: true
+      enable-login-name-register: true
+      enable-email-register: true
+      enable-sms-register: true
     token-config:
       redis-namespace: 'jwt'
       secret-key: 'clever-security-jwt'
@@ -235,7 +241,7 @@ clever:
       enable-refresh-token: true
       refresh-token-validity: 30d
       refresh-token-name: 'refresh-token'
-    login-req-aes-key:
+    req-aes-key:
       enable: true
       req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'
       req-password-aes-iv: '47e2cf4f8ee69fd9d7f3cad475682df8'

@@ -18,7 +18,7 @@ public class LoginCaptchaConfig implements Serializable {
     /**
      * 登录图片验证码(请求Path)
      */
-    private String loginCaptchaPath = "/captcha";
+    private String loginCaptchaPath = "/login/captcha";
     /**
      * 登录失败多少次才需要验证码(小于等于0表示总是需要验证码)
      */

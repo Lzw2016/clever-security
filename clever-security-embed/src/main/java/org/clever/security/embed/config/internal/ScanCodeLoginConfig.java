@@ -20,19 +20,19 @@ public class ScanCodeLoginConfig implements Serializable {
     /**
      * 获取扫码登录二维码(请求Path)
      */
-    private String getScanCodeLoginPath = "/scan_code/get";
+    private String getScanCodeLoginPath = "/login/scan_code/get";
     /**
      * 扫码请求Path
      */
-    private String scanCodePath = "/scan_code/scan";
+    private String scanCodePath = "/login/scan_code/scan";
     /**
      * 确认登录请求Path
      */
-    private String confirmLoginPath = "/scan_code/confirm";
+    private String confirmLoginPath = "/login/scan_code/confirm";
     /**
      * 登录二维码状态Path
      */
-    private String scanCodeStatePath = "/scan_code/state";
+    private String scanCodeStatePath = "/login/scan_code/state";
 
     /**
      * 扫码登录二维码有效时间(生成二维码 -> 扫码请求时间，默认60秒)
