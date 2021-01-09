@@ -20,13 +20,12 @@ import java.util.Objects;
 public class SmsValidateCodeReqCollect extends AbstractLoginDataCollect {
     @Override
     public boolean isSupported(SecurityConfig securityConfig, HttpServletRequest request) {
-        String loginType = request.getParameter(AbstractUserLoginReq.LoginType_ParamName);
-        LoginType loginTypeEnum = LoginType.lookup(loginType);
-        if (loginTypeEnum == null) {
+        LoginType loginType = getLoginType(request);
+        if (loginType == null) {
             SmsValidateCodeReq req = getSmsValidateCodeReq(securityConfig, request);
             return req != null;
         }
-        return Objects.equals(LoginType.Sms_ValidateCode.getId(), loginTypeEnum.getId());
+        return Objects.equals(LoginType.Sms_ValidateCode.getId(), loginType.getId());
     }
 
     @Override

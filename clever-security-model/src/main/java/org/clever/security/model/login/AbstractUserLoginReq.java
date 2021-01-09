@@ -22,7 +22,7 @@ public abstract class AbstractUserLoginReq extends BaseRequest {
     /**
      * 登录渠道，0:PC-Admin，1:PC-Web，2:H5，3:IOS-APP，4:Android-APP，5:微信小程序
      */
-    private String loginChannel;
+    private Integer loginChannel;
     /**
      * 登录验证码(登录失败次数超过限制时需要)
      */

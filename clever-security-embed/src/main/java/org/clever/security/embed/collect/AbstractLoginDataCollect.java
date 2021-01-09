@@ -1,7 +1,9 @@
 package org.clever.security.embed.collect;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.security.LoginChannel;
+import org.clever.security.LoginType;
 import org.clever.security.model.login.AbstractUserLoginReq;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,8 +19,11 @@ public abstract class AbstractLoginDataCollect implements LoginDataCollect {
             String loginChannel = request.getParameter(AbstractUserLoginReq.LoginChannel_ParamName);
             if (StringUtils.isNotBlank(loginChannel)) {
                 LoginChannel loginChannelEnum = LoginChannel.lookup(loginChannel);
+                if (loginChannelEnum == null) {
+                    loginChannelEnum = LoginChannel.lookup(NumberUtils.toInt(loginChannel, -1));
+                }
                 if (loginChannelEnum != null) {
-                    loginData.setLoginChannel(loginChannelEnum.getName());
+                    loginData.setLoginChannel(loginChannelEnum.getId());
                 }
             }
         }
@@ -34,5 +39,14 @@ public abstract class AbstractLoginDataCollect implements LoginDataCollect {
                 loginData.setCaptchaDigest(captchaDigest);
             }
         }
+    }
+
+    protected LoginType getLoginType(HttpServletRequest request) {
+        String loginType = request.getParameter(AbstractUserLoginReq.LoginType_ParamName);
+        LoginType loginTypeEnum = LoginType.lookup(loginType);
+        if (loginTypeEnum == null) {
+            loginTypeEnum = LoginType.lookup(NumberUtils.toInt(loginType, -1));
+        }
+        return loginTypeEnum;
     }
 }

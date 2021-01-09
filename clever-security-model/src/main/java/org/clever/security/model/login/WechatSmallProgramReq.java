@@ -28,12 +28,12 @@ public class WechatSmallProgramReq extends AbstractUserLoginReq {
     }
 
     @Override
-    public String getLoginChannel() {
-        return LoginChannel.WechatSmallProgram.getName();
+    public Integer getLoginChannel() {
+        return LoginChannel.WechatSmallProgram.getId();
     }
 
     @Override
-    public void setLoginChannel(String loginChannel) {
+    public void setLoginChannel(Integer loginChannel) {
         // throw new UnsupportedOperationException("微信小程序登录，不支持设置登录渠道");
     }
 }

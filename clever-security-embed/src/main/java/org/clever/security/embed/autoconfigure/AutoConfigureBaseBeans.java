@@ -148,4 +148,24 @@ public class AutoConfigureBaseBeans {
     public ControllerAuthorizationVoter controllerAuthorizationVoter(AuthSupportClient authSupportClient, RequestMappingHandlerMapping requestMappingHandlerMapping) {
         return new ControllerAuthorizationVoter(authSupportClient, requestMappingHandlerMapping);
     }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户注册信息
+
+    @Bean("loginNameRegisterReqCollect")
+    @ConditionalOnMissingBean(name = "loginNameRegisterReqCollect")
+    public LoginNameRegisterReqCollect loginNameRegisterReqCollect() {
+        return new LoginNameRegisterReqCollect();
+    }
+
+    @Bean("smsRegisterReqCollect")
+    @ConditionalOnMissingBean(name = "smsRegisterReqCollect")
+    public SmsRegisterReqCollect smsRegisterReqCollect() {
+        return new SmsRegisterReqCollect();
+    }
+
+    @Bean("emailRegisterReqCollect")
+    @ConditionalOnMissingBean(name = "emailRegisterReqCollect")
+    public EmailRegisterReqCollect emailRegisterReqCollect() {
+        return new EmailRegisterReqCollect();
+    }
 }

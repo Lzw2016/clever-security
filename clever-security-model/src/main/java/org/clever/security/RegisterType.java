@@ -3,6 +3,8 @@ package org.clever.security;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Objects;
+
 /**
  * 作者：lizw <br/>
  * 创建时间：2021/01/09 14:19 <br/>
@@ -39,5 +41,33 @@ public enum RegisterType {
     RegisterType(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static RegisterType lookup(String name) {
+        if (LoginName_Password.getName().equalsIgnoreCase(name)) {
+            return RegisterType.LoginName_Password;
+        } else if (Sms_ValidateCode.getName().equalsIgnoreCase(name)) {
+            return RegisterType.Sms_ValidateCode;
+        } else if (Email_ValidateCode.getName().equalsIgnoreCase(name)) {
+            return RegisterType.Email_ValidateCode;
+        } else if (WechatSmallProgram.getName().equalsIgnoreCase(name)) {
+            return RegisterType.WechatSmallProgram;
+        } else {
+            return null;
+        }
+    }
+
+    public static RegisterType lookup(int id) {
+        if (Objects.equals(LoginName_Password.getId(), id)) {
+            return RegisterType.LoginName_Password;
+        } else if (Objects.equals(Sms_ValidateCode.getId(), id)) {
+            return RegisterType.Sms_ValidateCode;
+        } else if (Objects.equals(Email_ValidateCode.getId(), id)) {
+            return RegisterType.Email_ValidateCode;
+        } else if (Objects.equals(WechatSmallProgram.getId(), id)) {
+            return RegisterType.WechatSmallProgram;
+        } else {
+            return null;
+        }
     }
 }
