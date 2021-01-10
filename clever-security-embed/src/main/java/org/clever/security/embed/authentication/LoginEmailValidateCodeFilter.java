@@ -83,6 +83,8 @@ public class LoginEmailValidateCodeFilter extends GenericFilterBean {
         if (res == null) {
             throw new LoginNameNotFoundException("当前邮箱未注册");
         }
+        log.debug("邮箱登录-验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
+        res.setCode("******");
         HttpServletResponseUtils.sendJson(response, res);
     }
 }

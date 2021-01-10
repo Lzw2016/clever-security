@@ -82,6 +82,7 @@ public class LoginSmsValidateCodeFilter extends GenericFilterBean {
         if (res == null) {
             throw new SendValidateCodeException("手机号未注册");
         }
+        log.debug("短信登录-验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
         res.setCode("******");
         HttpServletResponseUtils.sendJson(response, res);
     }
