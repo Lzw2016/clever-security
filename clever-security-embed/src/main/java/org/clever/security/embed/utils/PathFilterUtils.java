@@ -213,15 +213,103 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是注册验证码
+     * 当前请求是否是注册验证码(登录名注册-验证码)
      */
-    public static boolean isRegisterCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
-        UserRegisterConfig register =  securityConfig.getRegister();
+    public static boolean isLoginNameRegisterCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isLoginNameRegisterCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isLoginNameRegisterCaptchaRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
         if (register == null) {
             return false;
         }
-        // TODO - 未实现
-        return true;
+        LoginNameRegisterConfig loginNameRegister = register.getLoginNameRegister();
+        if (loginNameRegister == null) {
+            return false;
+        }
+        return Objects.equals(loginNameRegister.getRegisterCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是注册验证码(短信注册-图片验证码)
+     */
+    public static boolean isSmsRegisterCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isSmsRegisterCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isSmsRegisterCaptchaRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        SmsRegisterConfig smsRegister = register.getSmsRegister();
+        if (smsRegister == null) {
+            return false;
+        }
+        return Objects.equals(smsRegister.getRegisterCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是注册验证码(短信注册-短信验证码)
+     */
+    public static boolean isSmsRegisterSmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isSmsRegisterSmsValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isSmsRegisterSmsValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        SmsRegisterConfig smsRegister = register.getSmsRegister();
+        if (smsRegister == null) {
+            return false;
+        }
+        return Objects.equals(smsRegister.getRegisterSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是注册验证码(邮箱注册-图片验证码)
+     */
+    public static boolean isEmailRegisterCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isEmailRegisterCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isEmailRegisterCaptchaRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        EmailRegisterConfig emailRegister = register.getEmailRegister();
+        if (emailRegister == null) {
+            return false;
+        }
+        return Objects.equals(emailRegister.getRegisterCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是注册验证码(邮箱注册-邮箱验证码)
+     */
+    public static boolean isEmailRegisterEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isEmailRegisterEmailValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isEmailRegisterEmailValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        if (register == null) {
+            return false;
+        }
+        EmailRegisterConfig emailRegister = register.getEmailRegister();
+        if (emailRegister == null) {
+            return false;
+        }
+        return Objects.equals(emailRegister.getRegisterEmailValidateCodePath(), path);
     }
 
     /**
@@ -233,14 +321,19 @@ public class PathFilterUtils {
     }
 
     public static boolean isAuthenticationRequest(String path, String method, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“验证码请求”或“注册码请求”
+        // 当前请求是“登录请求”或“验证码请求”或“注册请求”
         if (isLoginRequest(path, method, securityConfig)
                 || isLoginCaptchaPath(path, securityConfig)
                 || isLoginSmsValidateCodePath(path, securityConfig)
                 || isLoginEmailValidateCodePath(path, securityConfig)
                 || isGetScanCodeLoginPath(path, securityConfig)
                 || isScanCodeStatePath(path, securityConfig)
-                || isRegisterRequest(path, securityConfig)) {
+                || isRegisterRequest(path, securityConfig)
+                || isLoginNameRegisterCaptchaRequest(path, securityConfig)
+                || isSmsRegisterCaptchaRequest(path, securityConfig)
+                || isSmsRegisterSmsValidateCodeRequest(path, securityConfig)
+                || isEmailRegisterCaptchaRequest(path, securityConfig)
+                || isEmailRegisterEmailValidateCodeRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignorePaths = securityConfig.getIgnorePaths();

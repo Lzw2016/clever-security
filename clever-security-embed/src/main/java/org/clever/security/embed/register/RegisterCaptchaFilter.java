@@ -47,19 +47,19 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         // UserRegisterConfig register =  securityConfig.getRegister();
-        if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
+        if (PathFilterUtils.isLoginNameRegisterCaptchaRequest(httpRequest, securityConfig)) {
             // 登录名注册-验证码
 
-        } else if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
+        } else if (PathFilterUtils.isSmsRegisterCaptchaRequest(httpRequest, securityConfig)) {
             // 短信注册-图片验证码
 
-        } else if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
+        } else if (PathFilterUtils.isSmsRegisterSmsValidateCodeRequest(httpRequest, securityConfig)) {
             // 短信注册-短信验证码
 
-        } else if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
+        } else if (PathFilterUtils.isEmailRegisterCaptchaRequest(httpRequest, securityConfig)) {
             // 邮箱注册-图片验证码
 
-        } else if (PathFilterUtils.isRegisterCaptchaRequest(httpRequest, securityConfig)) {
+        } else if (PathFilterUtils.isEmailRegisterEmailValidateCodeRequest(httpRequest, securityConfig)) {
             // 邮箱注册-邮箱验证码
 
         } else {
@@ -67,4 +67,6 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
             chain.doFilter(request, response);
         }
     }
+
+
 }
