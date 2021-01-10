@@ -2,6 +2,7 @@ package org.clever.security;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Objects;
 
@@ -54,7 +55,16 @@ public enum RegisterChannel {
         this.name = name;
     }
 
-    public static RegisterChannel lookup(String name) {
+    public static RegisterChannel lookup(Object obj) {
+        String name = String.valueOf(obj);
+        RegisterChannel registerChannel = lookup(name);
+        if (registerChannel == null) {
+            registerChannel = lookup(NumberUtils.toInt(name, -1));
+        }
+        return registerChannel;
+    }
+
+    protected static RegisterChannel lookup(String name) {
         if (PC_Admin.getName().equalsIgnoreCase(name)) {
             return RegisterChannel.PC_Admin;
         } else if (PC_Web.getName().equalsIgnoreCase(name)) {
@@ -72,7 +82,7 @@ public enum RegisterChannel {
         }
     }
 
-    public static RegisterChannel lookup(int id) {
+    protected static RegisterChannel lookup(int id) {
         if (Objects.equals(PC_Admin.getId(), id)) {
             return RegisterChannel.PC_Admin;
         } else if (Objects.equals(PC_Web.getId(), id)) {

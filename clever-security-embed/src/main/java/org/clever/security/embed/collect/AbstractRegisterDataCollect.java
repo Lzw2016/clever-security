@@ -1,7 +1,6 @@
 package org.clever.security.embed.collect;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.clever.security.RegisterChannel;
 import org.clever.security.RegisterType;
 import org.clever.security.model.register.AbstractUserRegisterReq;
@@ -19,9 +18,6 @@ public abstract class AbstractRegisterDataCollect implements RegisterDataCollect
             String registerChannel = request.getParameter(AbstractUserRegisterReq.RegisterChannel_ParamName);
             if (StringUtils.isNotBlank(registerChannel)) {
                 RegisterChannel registerChannelEnum = RegisterChannel.lookup(registerChannel);
-                if (registerChannelEnum == null) {
-                    registerChannelEnum = RegisterChannel.lookup(NumberUtils.toInt(registerChannel, -1));
-                }
                 if (registerChannelEnum != null) {
                     registerData.setRegisterChannel(registerChannelEnum.getName());
                 }
@@ -43,10 +39,6 @@ public abstract class AbstractRegisterDataCollect implements RegisterDataCollect
 
     protected RegisterType getRegisterType(HttpServletRequest request) {
         String registerType = request.getParameter(AbstractUserRegisterReq.RegisterType_ParamName);
-        RegisterType registerTypeEnum = RegisterType.lookup(registerType);
-        if (registerTypeEnum == null) {
-            registerTypeEnum = RegisterType.lookup(NumberUtils.toInt(registerType, -1));
-        }
-        return registerTypeEnum;
+        return RegisterType.lookup(registerType);
     }
 }

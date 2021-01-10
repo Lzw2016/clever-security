@@ -2,6 +2,7 @@ package org.clever.security;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Objects;
 
@@ -54,7 +55,16 @@ public enum LoginType {
         this.name = name;
     }
 
-    public static LoginType lookup(String name) {
+    public static LoginType lookup(Object obj) {
+        String name = String.valueOf(obj);
+        LoginType loginType = lookup(name);
+        if (loginType == null) {
+            loginType = lookup(NumberUtils.toInt(name, -1));
+        }
+        return loginType;
+    }
+
+    protected static LoginType lookup(String name) {
         if (LoginName_Password.getName().equalsIgnoreCase(name)) {
             return LoginType.LoginName_Password;
         } else if (Sms_ValidateCode.getName().equalsIgnoreCase(name)) {
@@ -72,7 +82,7 @@ public enum LoginType {
         }
     }
 
-    public static LoginType lookup(int id) {
+    protected static LoginType lookup(int id) {
         if (Objects.equals(LoginName_Password.getId(), id)) {
             return LoginType.LoginName_Password;
         } else if (Objects.equals(Sms_ValidateCode.getId(), id)) {
