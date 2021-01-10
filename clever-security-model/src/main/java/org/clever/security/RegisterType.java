@@ -13,7 +13,7 @@ import java.util.Objects;
 @Getter
 public enum RegisterType {
     /**
-     * 登录名密码注册
+     * 登录名注册
      */
     LoginName_Password(1, "LoginName-Password"),
     /**
@@ -30,11 +30,11 @@ public enum RegisterType {
     WechatSmallProgram(4, "WechatSmallProgram"),
     ;
     /**
-     * 注册类型ID，1:登录名密码注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
+     * 注册类型ID，1:登录名注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
      */
     private final int id;
     /**
-     * 注册类型，1:登录名密码注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
+     * 注册类型，1:登录名注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
      */
     private final String name;
 

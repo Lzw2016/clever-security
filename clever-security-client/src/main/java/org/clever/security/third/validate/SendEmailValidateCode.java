@@ -4,7 +4,7 @@ package org.clever.security.third.validate;
  * 作者：lizw <br/>
  * 创建时间：2020/12/27 16:50 <br/>
  */
-public interface EmailValidateCode {
+public interface SendEmailValidateCode {
     /**
      * 发送邮件验证码
      *

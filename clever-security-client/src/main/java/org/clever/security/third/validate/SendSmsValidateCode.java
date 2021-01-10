@@ -4,7 +4,7 @@ package org.clever.security.third.validate;
  * 作者：lizw <br/>
  * 创建时间：2020/12/27 16:47 <br/>
  */
-public interface SmsValidateCode {
+public interface SendSmsValidateCode {
     /**
      * 发送短信验证码
      *

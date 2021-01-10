@@ -18,8 +18,8 @@ import org.clever.security.dto.response.*;
 import org.clever.security.entity.*;
 import org.clever.security.mapper.*;
 import org.clever.security.model.UserInfo;
-import org.clever.security.third.validate.EmailValidateCode;
-import org.clever.security.third.validate.SmsValidateCode;
+import org.clever.security.third.validate.SendEmailValidateCode;
+import org.clever.security.third.validate.SendSmsValidateCode;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.UserNameUtils;
 import org.clever.security.utils.ValidateCodeUtils;
@@ -65,9 +65,9 @@ public class LoginSupportService implements LoginSupportClient {
     @Autowired
     private UserLoginLogMapper userLoginLogMapper;
     @Autowired
-    private SmsValidateCode smsValidateCode;
+    private SendSmsValidateCode sendSmsValidateCode;
     @Autowired
-    private EmailValidateCode emailValidateCode;
+    private SendEmailValidateCode sendEmailValidateCode;
 
     @Override
     public Domain getDomain(@Validated GetDomainReq req) {
@@ -160,7 +160,7 @@ public class LoginSupportService implements LoginSupportClient {
         byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
         Executor_Service.execute(() -> {
             try {
-                emailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode(), image);
+                sendEmailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode(), image);
             } catch (Exception e) {
                 log.error("登录邮件验证码发送失败", e);
             }
@@ -209,7 +209,7 @@ public class LoginSupportService implements LoginSupportClient {
         ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), user.getUid(), user.getTelephone(), req.getEffectiveTimeMilli());
         Executor_Service.execute(() -> {
             try {
-                smsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
+                sendSmsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
             } catch (Exception e) {
                 log.error("登录短信验证码发送失败", e);
             }

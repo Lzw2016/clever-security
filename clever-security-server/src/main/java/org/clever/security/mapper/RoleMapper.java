@@ -3,7 +3,6 @@ package org.clever.security.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.clever.security.entity.Role;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +16,4 @@ import java.util.Set;
 @Mapper
 public interface RoleMapper extends BaseMapper<Role> {
     Set<String> findRolesByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
-
-
 }

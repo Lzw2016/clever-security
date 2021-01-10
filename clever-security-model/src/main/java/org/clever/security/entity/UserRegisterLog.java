@@ -43,7 +43,7 @@ public class UserRegisterLog implements Serializable {
     private Integer registerChannel;
 
     /**
-     * 注册类型，1:登录名密码注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
+     * 注册类型，1:登录名注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
      */
     private Integer registerType;
 

@@ -2,12 +2,15 @@ package org.clever.security.client;
 
 import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
-import org.clever.security.dto.response.UserRegisterRes;
+import org.clever.security.dto.request.*;
+import org.clever.security.dto.response.*;
 import org.clever.security.model.register.EmailRegisterReq;
 import org.clever.security.model.register.LoginNameRegisterReq;
 import org.clever.security.model.register.SmsRegisterReq;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -22,6 +25,54 @@ import org.springframework.web.bind.annotation.RequestBody;
         configuration = CleverSecurityFeignConfiguration.class
 )
 public interface RegisterSupportClient {
+    /**
+     * 获取登录名注册-验证码
+     */
+    @GetMapping("/login_name_register_captcha")
+    GetLoginNameRegisterCaptchaRes getLoginNameRegisterCaptcha(@Validated @SpringQueryMap GetLoginNameRegisterCaptchaReq req);
+
+    /**
+     * 验证登录名注册-验证码
+     */
+    @PostMapping("/verify_login_name_register_captcha")
+    VerifyLoginNameRegisterCaptchaRes verifyLoginNameRegisterCaptcha(@Validated @RequestBody VerifyLoginNameRegisterCaptchaReq req);
+
+    /**
+     * 获取短信注册-图片验证码
+     */
+    @GetMapping("/sms_register_captcha")
+    GetSmsRegisterCaptchaRes getSmsRegisterCaptcha(@Validated @SpringQueryMap GetSmsRegisterCaptchaReq req);
+
+    /**
+     * 验证短信注册-图片验证码
+     */
+    @PostMapping("/verify_sms_register_captcha")
+    VerifySmsRegisterCaptchaRes verifySmsRegisterCaptcha(@Validated @RequestBody VerifySmsRegisterCaptchaReq req);
+
+    /**
+     * 发送短信注册-短信验证码
+     */
+    @PostMapping("/sms_register_send_validate_code")
+    SendSmsValidateCodeRes sendSmsValidateCode(@Validated @RequestBody SendSmsValidateCodeReq req);
+
+    /**
+     * 获取邮箱注册-图片验证码
+     */
+    @GetMapping("/email_register_captcha")
+    GetEmailRegisterCaptchaRes getEmailRegisterCaptcha(@Validated @SpringQueryMap GetEmailRegisterCaptchaReq req);
+
+    /**
+     * 验证短信注册-图片验证码
+     */
+    @PostMapping("/verify_email_register_captcha")
+    VerifyEmailRegisterCaptchaRes verifyEmailRegisterCaptcha(@Validated @RequestBody VerifyEmailRegisterCaptchaReq req);
+
+    /**
+     * 发送邮箱注册-邮箱验证码
+     */
+    @PostMapping("/email_register_send_validate_code")
+    SendEmailValidateCodeRes sendEmailValidateCode(@Validated @RequestBody SendEmailValidateCodeReq req);
+
     /**
      * 根据登录名注册
      */

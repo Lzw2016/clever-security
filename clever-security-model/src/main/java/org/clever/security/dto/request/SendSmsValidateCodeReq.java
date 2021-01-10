@@ -10,13 +10,21 @@ import javax.validation.constraints.Pattern;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2020/12/13 21:34 <br/>
+ * 创建时间：2021-01-10 14:35 <br/>
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendLoginValidateCodeForSmsReq extends BaseRequest {
+public class SendSmsValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
+    /**
+     * 图片验证码
+     */
+    private String captcha;
+    /**
+     * 登录验证码签名(校验验证码时需要)
+     */
+    private String captchaDigest;
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;
@@ -27,9 +35,5 @@ public class SendLoginValidateCodeForSmsReq extends BaseRequest {
     /**
      * 一天发送短信验证码的最大数(小于等于0表示不限制)
      */
-    private int maxSendNumInDay = 32;
-
-    public SendLoginValidateCodeForSmsReq(Long domainId) {
-        this.domainId = domainId;
-    }
+    private int maxSendNumInDay = 16;
 }

@@ -17,11 +17,7 @@ import org.clever.security.embed.handler.DefaultLoginFailureHandler;
 import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
 import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
 import org.clever.security.embed.register.DefaultVerifyRegisterData;
-import org.clever.security.embed.validate.DefaultEmailValidateCode;
-import org.clever.security.embed.validate.DefaultSmsValidateCode;
 import org.clever.security.third.client.WeChatClient;
-import org.clever.security.third.validate.EmailValidateCode;
-import org.clever.security.third.validate.SmsValidateCode;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -43,18 +39,6 @@ public class AutoConfigureBaseBeans {
     @ConditionalOnMissingBean(name = "passwordEncoder")
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10, new SecureRandom());
-    }
-
-    @Bean("emailValidateCode")
-    @ConditionalOnMissingBean(name = "emailValidateCode")
-    public EmailValidateCode emailValidateCode() {
-        return new DefaultEmailValidateCode();
-    }
-
-    @Bean("smsValidateCode")
-    @ConditionalOnMissingBean(name = "smsValidateCode")
-    public SmsValidateCode smsValidateCode() {
-        return new DefaultSmsValidateCode();
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户登录信息

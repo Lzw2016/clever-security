@@ -3,7 +3,6 @@ package org.clever.security.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.response.GetApiPermissionRes;
 import org.clever.security.entity.ApiPermission;
 import org.clever.security.model.auth.ApiPermissionEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 @Repository
 @Mapper
 public interface ApiPermissionMapper extends BaseMapper<ApiPermission> {
-
     GetApiPermissionRes getByTargetMethod(
             @Param("domainId") Long domainId,
             @Param("className") String className,

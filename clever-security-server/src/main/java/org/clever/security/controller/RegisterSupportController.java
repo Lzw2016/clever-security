@@ -1,17 +1,15 @@
 package org.clever.security.controller;
 
 import org.clever.security.client.RegisterSupportClient;
-import org.clever.security.dto.response.UserRegisterRes;
+import org.clever.security.dto.request.*;
+import org.clever.security.dto.response.*;
 import org.clever.security.model.register.EmailRegisterReq;
 import org.clever.security.model.register.LoginNameRegisterReq;
 import org.clever.security.model.register.SmsRegisterReq;
 import org.clever.security.service.RegisterSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 作者：lizw <br/>
@@ -22,6 +20,78 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterSupportController implements RegisterSupportClient {
     @Autowired
     private RegisterSupportService registerSupportService;
+
+    /**
+     * 获取登录名注册-验证码
+     */
+    @GetMapping("/login_name_register_captcha")
+    @Override
+    public GetLoginNameRegisterCaptchaRes getLoginNameRegisterCaptcha(@Validated GetLoginNameRegisterCaptchaReq req) {
+        return registerSupportService.getLoginNameRegisterCaptcha(req);
+    }
+
+    /**
+     * 验证登录名注册-验证码
+     */
+    @PostMapping("/verify_login_name_register_captcha")
+    @Override
+    public VerifyLoginNameRegisterCaptchaRes verifyLoginNameRegisterCaptcha(@Validated @RequestBody VerifyLoginNameRegisterCaptchaReq req) {
+        return registerSupportService.verifyLoginNameRegisterCaptcha(req);
+    }
+
+    /**
+     * 获取短信注册-图片验证码
+     */
+    @GetMapping("/sms_register_captcha")
+    @Override
+    public GetSmsRegisterCaptchaRes getSmsRegisterCaptcha(@Validated GetSmsRegisterCaptchaReq req) {
+        return registerSupportService.getSmsRegisterCaptcha(req);
+    }
+
+    /**
+     * 验证短信注册-图片验证码
+     */
+    @PostMapping("/verify_sms_register_captcha")
+    @Override
+    public VerifySmsRegisterCaptchaRes verifySmsRegisterCaptcha(@Validated @RequestBody VerifySmsRegisterCaptchaReq req) {
+        return registerSupportService.verifySmsRegisterCaptcha(req);
+    }
+
+    /**
+     * 发送短信注册-验证码
+     */
+    @PostMapping("/sms_register_send_validate_code")
+    @Override
+    public SendSmsValidateCodeRes sendSmsValidateCode(@Validated @RequestBody SendSmsValidateCodeReq req) {
+        return registerSupportService.sendSmsValidateCode(req);
+    }
+
+    /**
+     * 获取邮箱注册-图片验证码
+     */
+    @GetMapping("/email_register_captcha")
+    @Override
+    public GetEmailRegisterCaptchaRes getEmailRegisterCaptcha(@Validated GetEmailRegisterCaptchaReq req) {
+        return registerSupportService.getEmailRegisterCaptcha(req);
+    }
+
+    /**
+     * 验证短信注册-图片验证码
+     */
+    @PostMapping("/verify_email_register_captcha")
+    @Override
+    public VerifyEmailRegisterCaptchaRes verifyEmailRegisterCaptcha(@Validated @RequestBody VerifyEmailRegisterCaptchaReq req) {
+        return registerSupportService.verifyEmailRegisterCaptcha(req);
+    }
+
+    /**
+     * 发送邮箱注册-邮箱验证码
+     */
+    @PostMapping("/email_register_send_validate_code")
+    @Override
+    public SendEmailValidateCodeRes sendEmailValidateCode(@Validated @RequestBody SendEmailValidateCodeReq req) {
+        return registerSupportService.sendEmailValidateCode(req);
+    }
 
     /**
      * 根据登录名注册

@@ -22,16 +22,16 @@ public abstract class AbstractUserRegisterReq extends BaseRequest {
      */
     private String registerChannel;
     /**
-     * 登录验证码(登录失败次数超过限制时需要)
+     * 注册验证码
      */
     private String captcha;
     /**
-     * 登录验证码签名(校验验证码时需要)
+     * 注册验证码签名(校验验证码时需要)
      */
     private String captchaDigest;
 
     /**
-     * 注册类型，1:登录名密码注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
+     * 注册类型，1:登录名注册，2:手机号注册，3:邮箱注册，4:微信小程序注册，
      */
     public abstract RegisterType getRegisterType();
 }
