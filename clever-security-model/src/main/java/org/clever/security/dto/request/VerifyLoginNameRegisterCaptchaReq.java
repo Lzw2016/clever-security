@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -18,10 +19,12 @@ public class VerifyLoginNameRegisterCaptchaReq extends BaseRequest {
     /**
      * 验证码
      */
+    @NotBlank(message = "验证码不能为空")
     private String captcha;
     /**
      * 验证码签名(校验验证码时需要)
      */
+    @NotBlank(message = "验证码签名不能为空")
     private String captchaDigest;
 
     public VerifyLoginNameRegisterCaptchaReq(Long domainId) {

@@ -145,7 +145,11 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifySmsValidateCodeRes verifySmsValidateCode(VerifySmsValidateCodeReq req) {
-        return null;
+        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_6, EnumConstant.ValidateCode_SendChannel_1, req.getCode(), req.getCodeDigest());
+        VerifySmsValidateCodeRes res = new VerifySmsValidateCodeRes();
+        res.setSuccess(tupleTow.getValue1());
+        res.setMessage(tupleTow.getValue2());
+        return res;
     }
 
     @Override
