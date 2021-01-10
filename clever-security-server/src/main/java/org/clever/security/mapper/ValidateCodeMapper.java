@@ -41,4 +41,25 @@ public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
             @Param("sendChannel") Integer sendChannel,
             @Param("sendTarget") String sendTarget
     );
+
+    @Select("select count(1) from validate_code where domain_id=#{domainId} and type=#{type} and send_channel=#{sendChannel} and send_target=#{sendTarget} and create_at>=#{start} and create_at<=#{end}")
+    int getSendCountNoUid(
+            @Param("domainId") Long domainId,
+            @Param("type") Integer type,
+            @Param("sendChannel") Integer sendChannel,
+            @Param("sendTarget") String sendTarget,
+            @Param("start") Date start,
+            @Param("end") Date end
+    );
+
+    @Select({
+            "select * from validate_code where validate_time is null and expired_time>=date_add(now(), interval 15 second) ",
+            "and domain_id=#{domainId} and type=#{type} and send_channel=#{sendChannel} and send_target=#{sendTarget} order by create_at desc limit 1"
+    })
+    ValidateCode getLastEffectiveNoUid(
+            @Param("domainId") Long domainId,
+            @Param("type") Integer type,
+            @Param("sendChannel") Integer sendChannel,
+            @Param("sendTarget") String sendTarget
+    );
 }

@@ -1,7 +1,9 @@
 package org.clever.security.utils;
 
+import org.clever.security.dto.response.SendEmailValidateCodeRes;
 import org.clever.security.dto.response.SendLoginValidateCodeForEmailRes;
 import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
+import org.clever.security.dto.response.SendSmsValidateCodeRes;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.UserInfo;
@@ -46,6 +48,22 @@ public class ConvertUtils {
 
     public static SendLoginValidateCodeForEmailRes convertToSendLoginValidateCodeForEmailRes(ValidateCode validateCode) {
         SendLoginValidateCodeForEmailRes res = new SendLoginValidateCodeForEmailRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendSmsValidateCodeRes convertToSendSmsValidateCodeRes(ValidateCode validateCode) {
+        SendSmsValidateCodeRes res = new SendSmsValidateCodeRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendEmailValidateCodeRes convertToSendEmailValidateCodeRes(ValidateCode validateCode) {
+        SendEmailValidateCodeRes res = new SendEmailValidateCodeRes();
         res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());

@@ -18,6 +18,16 @@ public class ValidateCodeUtils {
     private static final char[] SMS_CODE_SEQ = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     /**
+     * 新增图片验证码
+     */
+    public static ValidateCode newCaptchaValidateCode(Date now, long domainId, int effectiveTimeMilli) {
+        ValidateCode validateCode = newValidateCode(now, domainId, null, null, effectiveTimeMilli);
+        String code = ValidateCodeSourceUtils.getRandString(4);
+        validateCode.setCode(code);
+        return validateCode;
+    }
+
+    /**
      * 新增邮件验证码
      */
     public static ValidateCode newEmailValidateCode(Date now, long domainId, String uid, String sendTarget, int effectiveTimeMilli) {

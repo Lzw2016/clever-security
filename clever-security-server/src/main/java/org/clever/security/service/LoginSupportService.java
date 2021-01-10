@@ -9,7 +9,6 @@ import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
-import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.common.utils.zxing.ZxingCreateImageUtils;
 import org.clever.security.client.LoginSupportClient;
@@ -18,8 +17,6 @@ import org.clever.security.dto.response.*;
 import org.clever.security.entity.*;
 import org.clever.security.mapper.*;
 import org.clever.security.model.UserInfo;
-import org.clever.security.third.validate.SendEmailValidateCode;
-import org.clever.security.third.validate.SendSmsValidateCode;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.UserNameUtils;
 import org.clever.security.utils.ValidateCodeUtils;
@@ -32,9 +29,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 作者：lizw <br/>
@@ -45,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class LoginSupportService implements LoginSupportClient {
-    protected static final ThreadPoolExecutor Executor_Service = new ThreadPoolExecutor(256, 256, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
     @Autowired
     private DomainMapper domainMapper;
     @Autowired
@@ -65,9 +58,7 @@ public class LoginSupportService implements LoginSupportClient {
     @Autowired
     private UserLoginLogMapper userLoginLogMapper;
     @Autowired
-    private SendSmsValidateCode sendSmsValidateCode;
-    @Autowired
-    private SendEmailValidateCode sendEmailValidateCode;
+    private SendValidateCodeService sendValidateCodeService;
 
     @Override
     public Domain getDomain(@Validated GetDomainReq req) {
@@ -76,19 +67,14 @@ public class LoginSupportService implements LoginSupportClient {
 
     @Override
     public GetLoginCaptchaRes getLoginCaptcha(GetLoginCaptchaReq req) {
-        String code = ValidateCodeSourceUtils.getRandString(4);
-        byte[] image = ImageValidateCageUtils.createImage(code);
-        ValidateCode validateCode = new ValidateCode();
-        validateCode.setId(SnowFlake.SNOW_FLAKE.nextId());
-        validateCode.setDomainId(req.getDomainId());
-        validateCode.setCode(code);
-        validateCode.setDigest(IDCreateUtils.uuid());
+        final Date now = new Date();
+        ValidateCode validateCode = ValidateCodeUtils.newCaptchaValidateCode(now, req.getDomainId(), req.getEffectiveTimeMilli());
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_0);
-        validateCode.setExpiredTime(new Date(System.currentTimeMillis() + req.getEffectiveTimeMilli()));
+        byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
         validateCodeMapper.insert(validateCode);
         GetLoginCaptchaRes res = new GetLoginCaptchaRes();
-        res.setCode(code);
+        res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setCodeContent(EncodeDecodeUtils.encodeBase64(image));
         res.setExpiredTime(validateCode.getExpiredTime());
@@ -157,14 +143,7 @@ public class LoginSupportService implements LoginSupportClient {
         }
         // 发送邮件验证码 - 可多线程异步发送
         ValidateCode validateCode = ValidateCodeUtils.newEmailValidateCode(now, req.getDomainId(), user.getUid(), user.getEmail(), req.getEffectiveTimeMilli());
-        byte[] image = ImageValidateCageUtils.createImage(validateCode.getCode());
-        Executor_Service.execute(() -> {
-            try {
-                sendEmailValidateCode.sendEmail(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode(), image);
-            } catch (Exception e) {
-                log.error("登录邮件验证码发送失败", e);
-            }
-        });
+        sendValidateCodeService.sendEmail(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
         // 验证码数据写入数据库
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_2);
@@ -207,13 +186,7 @@ public class LoginSupportService implements LoginSupportClient {
         }
         // 发送短信验证码 - 可多线程异步发送
         ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), user.getUid(), user.getTelephone(), req.getEffectiveTimeMilli());
-        Executor_Service.execute(() -> {
-            try {
-                sendSmsValidateCode.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
-            } catch (Exception e) {
-                log.error("登录短信验证码发送失败", e);
-            }
-        });
+        sendValidateCodeService.sendSms(EnumConstant.ValidateCode_Type_1, validateCode.getSendTarget(), validateCode.getCode());
         // 验证码数据写入数据库
         validateCode.setType(EnumConstant.ValidateCode_Type_1);
         validateCode.setSendChannel(EnumConstant.ValidateCode_SendChannel_1);

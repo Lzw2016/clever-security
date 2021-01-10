@@ -197,6 +197,26 @@ public interface EnumConstant {
      */
     int ValidateCode_Type_3 = 3;
     /**
+     * 验证码类型，4:登录名注册图片验证码
+     */
+    int ValidateCode_Type_4 = 4;
+    /**
+     * 验证码类型，5:短信注册图片验证码
+     */
+    int ValidateCode_Type_5 = 5;
+    /**
+     * 验证码类型，6:短信注册短信验证码
+     */
+    int ValidateCode_Type_6 = 6;
+    /**
+     * 验证码类型，7:邮箱注册图片验证码
+     */
+    int ValidateCode_Type_7 = 7;
+    /**
+     * 验证码类型，8:邮箱注册邮箱验证码
+     */
+    int ValidateCode_Type_8 = 8;
+    /**
      * 验证码发送渠道，0:不需要发送
      */
     int ValidateCode_SendChannel_0 = 0;
