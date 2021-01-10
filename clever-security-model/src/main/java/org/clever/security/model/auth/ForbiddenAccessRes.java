@@ -3,7 +3,6 @@ package org.clever.security.model.auth;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.response.BaseResponse;
-import org.clever.security.model.UserInfo;
 
 /**
  * 作者：lizw <br/>

@@ -1,9 +1,6 @@
 package org.clever.security.client.config;
 
 import lombok.Data;
-import org.clever.security.Constant;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 

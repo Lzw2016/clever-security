@@ -14,7 +14,7 @@ public class CryptoUtilsTest {
 
     @Test
     public void t01() {
-        log.info("{}",EncodeDecodeUtils.encodeHex("clever-security-server李志伟".getBytes()));
+        log.info("{}", EncodeDecodeUtils.encodeHex("clever-security-server李志伟".getBytes()));
 
 
         String str = "李志伟123abc!@#$";

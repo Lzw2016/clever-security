@@ -48,7 +48,7 @@ spring:
       compressed: true
     cache:
       period: 31536000s
-    static-locations: ['classpath:/static/']
+    static-locations: [ 'classpath:/static/' ]
 
   redis: #---------------------------------------------------------------- Redis配置
     ssl: false
