@@ -3,9 +3,11 @@ package org.clever.security.utils;
 import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
+import org.clever.common.utils.tuples.TupleTow;
 import org.clever.security.entity.ValidateCode;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -59,5 +61,23 @@ public class ValidateCodeUtils {
         validateCode.setSendTarget(sendTarget);
         validateCode.setExpiredTime(new Date(now.getTime() + effectiveTimeMilli));
         return validateCode;
+    }
+
+    /**
+     * 验证验证码
+     */
+    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha) {
+        String message = null;
+        boolean success = false;
+        if (validateCode == null) {
+            message = "验证码错误";
+        } else if (!Objects.equals(validateCode.getCode(), captcha)) {
+            message = "验证码错误";
+        } else if (validateCode.getValidateTime() != null || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+            message = "验证码已过期";
+        } else {
+            success = true;
+        }
+        return TupleTow.creat(success, message);
     }
 }

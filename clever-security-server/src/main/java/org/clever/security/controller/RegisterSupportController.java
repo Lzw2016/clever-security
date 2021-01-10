@@ -67,6 +67,15 @@ public class RegisterSupportController implements RegisterSupportClient {
     }
 
     /**
+     * 验证短信注册-短信验证码
+     */
+    @PostMapping("/verify_sms_register_send_validate_code")
+    @Override
+    public VerifySmsValidateCodeRes verifySmsValidateCode(@Validated @RequestBody VerifySmsValidateCodeReq req) {
+        return registerSupportService.verifySmsValidateCode(req);
+    }
+
+    /**
      * 获取邮箱注册-图片验证码
      */
     @GetMapping("/email_register_captcha")

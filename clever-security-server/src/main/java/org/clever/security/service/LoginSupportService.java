@@ -86,13 +86,13 @@ public class LoginSupportService implements LoginSupportClient {
         final Date now = new Date();
         GetLoginFailedCountAndCaptchaRes res = new GetLoginFailedCountAndCaptchaRes();
         res.setFailedCount(0);
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getCaptchaDigest());
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_0, req.getCaptchaDigest());
         if (validateCode != null && validateCode.getValidateTime() == null) {
             res.setCode(validateCode.getCode());
             res.setDigest(validateCode.getDigest());
             res.setExpiredTime(validateCode.getExpiredTime());
         }
-        if (validateCode != null) {
+        if (validateCode != null && validateCode.getValidateTime() == null) {
             ValidateCode update = new ValidateCode();
             update.setId(validateCode.getId());
             update.setValidateTime(now);
@@ -329,7 +329,7 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getValidateCodeDigest());
         if (validateCode == null) {
             return null;
         }
@@ -354,7 +354,7 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getValidateCodeDigest());
         if (validateCode == null) {
             return null;
         }

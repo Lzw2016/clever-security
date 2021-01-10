@@ -17,8 +17,8 @@ import java.util.Date;
 @Mapper
 public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
 
-    @Select("select * from validate_code where domain_id=#{domainId} and digest=#{digest}")
-    ValidateCode getByDigest(@Param("domainId") Long domainId, @Param("digest") String digest);
+    @Select("select * from validate_code where domain_id=#{domainId} and type=#{type} and send_channel=#{sendChannel} and digest=#{digest}")
+    ValidateCode getByDigest(@Param("domainId") Long domainId, @Param("type") Integer type, @Param("sendChannel") Integer sendChannel, @Param("digest") String digest);
 
     @Select("select count(1) from validate_code where domain_id=#{domainId} and uid=#{uid} and type=#{type} and send_channel=#{sendChannel} and create_at>=#{start} and create_at<=#{end}")
     int getSendCount(
