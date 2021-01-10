@@ -4,17 +4,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021-01-10 20:06 <br/>
+ * 创建时间：2021-01-10 20:17 <br/>
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifySmsValidateCodeReq extends BaseRequest {
+public class VerifyEmailValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -28,11 +28,11 @@ public class VerifySmsValidateCodeReq extends BaseRequest {
     @NotBlank(message = "验证码签名不能为空")
     private String codeDigest;
 
-    @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
-    private String telephone;
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
+    private String email;
 
-    public VerifySmsValidateCodeReq(Long domainId) {
+    public VerifyEmailValidateCodeReq(Long domainId) {
         this.domainId = domainId;
     }
 }

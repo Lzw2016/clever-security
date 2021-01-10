@@ -80,6 +80,12 @@ public interface RegisterSupportClient {
     SendEmailValidateCodeRes sendEmailValidateCode(@Validated @RequestBody SendEmailValidateCodeReq req);
 
     /**
+     * 验证邮箱注册-邮箱验证码
+     */
+    @PostMapping("/verify_email_register_send_validate_code")
+    VerifyEmailValidateCodeRes verifyEmailValidateCode(@Validated @RequestBody VerifyEmailValidateCodeReq req);
+
+    /**
      * 根据登录名注册
      */
     @PostMapping("/register_by_login_name")

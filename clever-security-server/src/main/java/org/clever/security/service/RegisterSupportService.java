@@ -145,6 +145,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifySmsValidateCodeRes verifySmsValidateCode(VerifySmsValidateCodeReq req) {
+        // TODO 手机号验证
         TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_6, EnumConstant.ValidateCode_SendChannel_1, req.getCode(), req.getCodeDigest());
         VerifySmsValidateCodeRes res = new VerifySmsValidateCodeRes();
         res.setSuccess(tupleTow.getValue1());
@@ -175,20 +176,6 @@ public class RegisterSupportService implements RegisterSupportClient {
         res.setSuccess(tupleTow.getValue1());
         res.setMessage(tupleTow.getValue2());
         return res;
-    }
-
-    protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest) {
-        final Date now = new Date();
-        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, type, sendChannel, captchaDigest);
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha);
-        // 更新验证码
-        if (validateCode != null && validateCode.getValidateTime() == null) {
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(now);
-            validateCodeMapper.updateById(update);
-        }
-        return tupleTow;
     }
 
     @Override
@@ -234,6 +221,30 @@ public class RegisterSupportService implements RegisterSupportClient {
         validateCodeMapper.insert(validateCode);
         // 返回
         return ConvertUtils.convertToSendEmailValidateCodeRes(validateCode);
+    }
+
+    @Override
+    public VerifyEmailValidateCodeRes verifyEmailValidateCode(VerifyEmailValidateCodeReq req) {
+        // TODO 邮箱验证
+        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_8, EnumConstant.ValidateCode_SendChannel_2, req.getCode(), req.getCodeDigest());
+        VerifyEmailValidateCodeRes res = new VerifyEmailValidateCodeRes();
+        res.setSuccess(tupleTow.getValue1());
+        res.setMessage(tupleTow.getValue2());
+        return res;
+    }
+
+    protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest) {
+        final Date now = new Date();
+        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, type, sendChannel, captchaDigest);
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha);
+        // 更新验证码
+        if (validateCode != null && validateCode.getValidateTime() == null) {
+            ValidateCode update = new ValidateCode();
+            update.setId(validateCode.getId());
+            update.setValidateTime(now);
+            validateCodeMapper.updateById(update);
+        }
+        return tupleTow;
     }
 
     @Override
