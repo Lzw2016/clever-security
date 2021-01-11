@@ -165,16 +165,24 @@ public class AutoConfigureSecurityFilter {
         EmailRegisterConfig emailRegister = register.getEmailRegister();
         RegisterCaptchaFilter filter = new RegisterCaptchaFilter(securityConfig, registerSupportClient);
         FilterRegistrationBean<RegisterCaptchaFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        if (loginNameRegister != null && StringUtils.isBlank(loginNameRegister.getRegisterCaptchaPath())) {
+        if (loginNameRegister != null && StringUtils.isNotBlank(loginNameRegister.getRegisterCaptchaPath())) {
             filterRegistration.addUrlPatterns(loginNameRegister.getRegisterCaptchaPath());
         }
-        if (smsRegister != null && StringUtils.isBlank(smsRegister.getRegisterCaptchaPath()) && StringUtils.isBlank(smsRegister.getRegisterSmsValidateCodePath())) {
-            filterRegistration.addUrlPatterns(smsRegister.getRegisterCaptchaPath());
-            filterRegistration.addUrlPatterns(smsRegister.getRegisterSmsValidateCodePath());
+        if (smsRegister != null) {
+            if (StringUtils.isNotBlank(smsRegister.getRegisterCaptchaPath())) {
+                filterRegistration.addUrlPatterns(smsRegister.getRegisterCaptchaPath());
+            }
+            if (StringUtils.isNotBlank(smsRegister.getRegisterSmsValidateCodePath())) {
+                filterRegistration.addUrlPatterns(smsRegister.getRegisterSmsValidateCodePath());
+            }
         }
-        if (emailRegister != null && StringUtils.isBlank(emailRegister.getRegisterCaptchaPath()) && StringUtils.isBlank(emailRegister.getRegisterEmailValidateCodePath())) {
-            filterRegistration.addUrlPatterns(emailRegister.getRegisterCaptchaPath());
-            filterRegistration.addUrlPatterns(emailRegister.getRegisterEmailValidateCodePath());
+        if (emailRegister != null) {
+            if (StringUtils.isNotBlank(emailRegister.getRegisterCaptchaPath())) {
+                filterRegistration.addUrlPatterns(emailRegister.getRegisterCaptchaPath());
+            }
+            if (StringUtils.isNotBlank(emailRegister.getRegisterEmailValidateCodePath())) {
+                filterRegistration.addUrlPatterns(emailRegister.getRegisterEmailValidateCodePath());
+            }
         }
         filterRegistration.setName("registerCaptchaFilter");
         filterRegistration.setOrder(Base_Order + 5);

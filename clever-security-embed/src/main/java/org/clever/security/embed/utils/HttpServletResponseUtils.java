@@ -65,6 +65,7 @@ public class HttpServletResponseUtils {
                 || e instanceof AuthorizationException
                 || e instanceof LoginException
                 || e instanceof LogoutException
+                || e instanceof RegisterException
                 || e instanceof BusinessException) {
             errorResponse.setMessage(e.getMessage());
         } else {
