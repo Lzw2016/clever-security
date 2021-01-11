@@ -8,7 +8,7 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
 
-    <description>clever-hinny项目Java生态封装层</description>
+    <description>多系统权限管理解决方案</description>
     <url>https://github.com/Lzw2016/clever-security.git</url>
 
     <licenses>
