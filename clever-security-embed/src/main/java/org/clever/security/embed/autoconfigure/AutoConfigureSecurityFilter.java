@@ -1,6 +1,7 @@
 package org.clever.security.embed.autoconfigure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.client.RegisterSupportClient;
@@ -15,11 +16,16 @@ import org.clever.security.embed.authorization.voter.AuthorizationVoter;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.EmailRegisterConfig;
+import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
+import org.clever.security.embed.config.internal.SmsRegisterConfig;
+import org.clever.security.embed.config.internal.UserRegisterConfig;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
 import org.clever.security.embed.handler.*;
+import org.clever.security.embed.register.RegisterCaptchaFilter;
 import org.clever.security.embed.register.UserRegisterFilter;
 import org.clever.security.embed.register.VerifyRegisterData;
 import org.springframework.beans.factory.ObjectProvider;
@@ -33,6 +39,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +52,7 @@ import java.util.List;
  *   LoginSmsValidateCodeFilter(登录短信验证码)
  *   LoginEmailValidateCodeFilter(登录邮箱验证码)
  *   ScanCodeLoginFilter(获取扫码登录二维码)
+ *   RegisterCaptchaFilter(获取注册验证码)
  *   UserRegisterFilter(用户注册)
  *   PasswordRecoveryFilter(密码找回)
  *   🡓
@@ -144,6 +152,36 @@ public class AutoConfigureSecurityFilter {
     }
 
     /**
+     * 用户注册验证码
+     */
+    @Bean("registerCaptchaFilter")
+    @ConditionalOnMissingBean(name = "registerCaptchaFilter")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
+    public FilterRegistrationBean<RegisterCaptchaFilter> registerCaptchaFilter(RegisterSupportClient registerSupportClient) {
+        UserRegisterConfig register = securityConfig.getRegister();
+        Assert.notNull(register, "register配置不能为null");
+        LoginNameRegisterConfig loginNameRegister = register.getLoginNameRegister();
+        SmsRegisterConfig smsRegister = register.getSmsRegister();
+        EmailRegisterConfig emailRegister = register.getEmailRegister();
+        RegisterCaptchaFilter filter = new RegisterCaptchaFilter(securityConfig, registerSupportClient);
+        FilterRegistrationBean<RegisterCaptchaFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        if (loginNameRegister != null && StringUtils.isBlank(loginNameRegister.getRegisterCaptchaPath())) {
+            filterRegistration.addUrlPatterns(loginNameRegister.getRegisterCaptchaPath());
+        }
+        if (smsRegister != null && StringUtils.isBlank(smsRegister.getRegisterCaptchaPath()) && StringUtils.isBlank(smsRegister.getRegisterSmsValidateCodePath())) {
+            filterRegistration.addUrlPatterns(smsRegister.getRegisterCaptchaPath());
+            filterRegistration.addUrlPatterns(smsRegister.getRegisterSmsValidateCodePath());
+        }
+        if (emailRegister != null && StringUtils.isBlank(emailRegister.getRegisterCaptchaPath()) && StringUtils.isBlank(emailRegister.getRegisterEmailValidateCodePath())) {
+            filterRegistration.addUrlPatterns(emailRegister.getRegisterCaptchaPath());
+            filterRegistration.addUrlPatterns(emailRegister.getRegisterEmailValidateCodePath());
+        }
+        filterRegistration.setName("registerCaptchaFilter");
+        filterRegistration.setOrder(Base_Order + 5);
+        return filterRegistration;
+    }
+
+    /**
      * 用户注册
      */
     @Bean("userRegisterFilter")
@@ -164,9 +202,9 @@ public class AutoConfigureSecurityFilter {
                 registerSupportClient
         );
         FilterRegistrationBean<UserRegisterFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
+        filterRegistration.addUrlPatterns(this.securityConfig.getRegister().getRegisterPath());
         filterRegistration.setName("userRegisterFilter");
-        filterRegistration.setOrder(Base_Order + 5);
+        filterRegistration.setOrder(Base_Order + 6);
         return filterRegistration;
     }
 

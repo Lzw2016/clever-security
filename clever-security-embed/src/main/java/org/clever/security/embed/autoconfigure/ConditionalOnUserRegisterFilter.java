@@ -15,7 +15,6 @@ public class ConditionalOnUserRegisterFilter extends AnyNestedCondition {
 
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-login-name-register", havingValue = "true")
     static class EnableLoginNameRegister {
-
     }
 
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-sms-register", havingValue = "false")
@@ -24,6 +23,5 @@ public class ConditionalOnUserRegisterFilter extends AnyNestedCondition {
 
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-email-register", havingValue = "false")
     static class EnableEmailRegister {
-
     }
 }
