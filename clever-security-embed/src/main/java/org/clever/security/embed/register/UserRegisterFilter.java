@@ -1,14 +1,15 @@
 package org.clever.security.embed.register;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.common.exception.BusinessException;
 import org.clever.security.client.RegisterSupportClient;
+import org.clever.security.dto.request.RegisterByEmailReq;
+import org.clever.security.dto.request.RegisterByLoginNameReq;
+import org.clever.security.dto.request.RegisterBySmsReq;
 import org.clever.security.dto.response.UserRegisterRes;
 import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.EmailRegisterConfig;
-import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
-import org.clever.security.embed.config.internal.SmsRegisterConfig;
-import org.clever.security.embed.config.internal.UserRegisterConfig;
+import org.clever.security.embed.config.internal.*;
 import org.clever.security.embed.event.RegisterFailureEvent;
 import org.clever.security.embed.event.RegisterSuccessEvent;
 import org.clever.security.embed.exception.CollectRegisterDataException;
@@ -16,6 +17,7 @@ import org.clever.security.embed.exception.RegisterException;
 import org.clever.security.embed.exception.RegisterInnerException;
 import org.clever.security.embed.handler.RegisterFailureHandler;
 import org.clever.security.embed.handler.RegisterSuccessHandler;
+import org.clever.security.embed.utils.AesUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -193,11 +195,35 @@ public class UserRegisterFilter extends GenericFilterBean {
         // 注册用户
         UserRegisterRes userRegisterRes;
         if (registerReq instanceof LoginNameRegisterReq) {
-            userRegisterRes = registerSupportClient.registerByLoginName((LoginNameRegisterReq) registerReq);
+            LoginNameRegisterReq loginNameRegisterReq = (LoginNameRegisterReq) registerReq;
+            RegisterByLoginNameReq req = new RegisterByLoginNameReq(securityConfig.getDomainId());
+            req.setRegisterChannel(loginNameRegisterReq.getRegisterChannel());
+            req.setLoginName(loginNameRegisterReq.getLoginName());
+            AesKeyConfig reqAesKey = securityConfig.getReqAesKey();
+            if (reqAesKey != null && reqAesKey.isEnable()) {
+                // 解密密码(请求密码加密在客户端)
+                try {
+                    String password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), loginNameRegisterReq.getPassword());
+                    req.setPassword(password);
+                } catch (Exception e) {
+                    throw new BusinessException("登录密码需要加密传输", e);
+                }
+            } else {
+                req.setPassword(loginNameRegisterReq.getPassword());
+            }
+            userRegisterRes = registerSupportClient.registerByLoginName(req);
         } else if (registerReq instanceof SmsRegisterReq) {
-            userRegisterRes = registerSupportClient.registerBySms((SmsRegisterReq) registerReq);
+            SmsRegisterReq smsRegisterReq = (SmsRegisterReq) registerReq;
+            RegisterBySmsReq req = new RegisterBySmsReq(securityConfig.getDomainId());
+            req.setRegisterChannel(smsRegisterReq.getRegisterChannel());
+            req.setTelephone(smsRegisterReq.getTelephone());
+            userRegisterRes = registerSupportClient.registerBySms(req);
         } else if (registerReq instanceof EmailRegisterReq) {
-            userRegisterRes = registerSupportClient.registerByEmail((EmailRegisterReq) registerReq);
+            EmailRegisterReq emailRegisterReq = (EmailRegisterReq) registerReq;
+            RegisterByEmailReq req = new RegisterByEmailReq(securityConfig.getDomainId());
+            req.setRegisterChannel(emailRegisterReq.getRegisterChannel());
+            req.setEmail(emailRegisterReq.getEmail());
+            userRegisterRes = registerSupportClient.registerByEmail(req);
         } else {
             throw new RegisterInnerException(String.format("不支持的注册数据类型: %s", registerReq.getClass().getName()));
         }

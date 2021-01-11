@@ -116,17 +116,8 @@ public class RegisterSupportController implements RegisterSupportClient {
      */
     @PostMapping("/register_by_login_name")
     @Override
-    public UserRegisterRes registerByLoginName(@Validated @RequestBody LoginNameRegisterReq req) {
+    public UserRegisterRes registerByLoginName(@Validated @RequestBody RegisterByLoginNameReq req) {
         return registerSupportService.registerByLoginName(req);
-    }
-
-    /**
-     * 根据邮箱注册
-     */
-    @PostMapping("/register_by_email")
-    @Override
-    public UserRegisterRes registerByEmail(@Validated @RequestBody EmailRegisterReq req) {
-        return registerSupportService.registerByEmail(req);
     }
 
     /**
@@ -134,7 +125,16 @@ public class RegisterSupportController implements RegisterSupportClient {
      */
     @PostMapping("/register_by_sms")
     @Override
-    public UserRegisterRes registerBySms(@Validated @RequestBody SmsRegisterReq req) {
+    public UserRegisterRes registerBySms(@Validated @RequestBody RegisterBySmsReq req) {
         return registerSupportService.registerBySms(req);
+    }
+
+    /**
+     * 根据邮箱注册
+     */
+    @PostMapping("/register_by_email")
+    @Override
+    public UserRegisterRes registerByEmail(@Validated @RequestBody RegisterByEmailReq req) {
+        return registerSupportService.registerByEmail(req);
     }
 }

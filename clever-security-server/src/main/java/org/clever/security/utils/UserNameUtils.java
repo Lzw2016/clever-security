@@ -47,6 +47,7 @@ public class UserNameUtils {
      * 生成用户LoginName
      */
     public static String generateLoginName() {
+        // TODO 需要保证生成的uid与数据库中的不重复
         final int minLength = 6;
         final int maxLength = 12;
         int length = minLength + new Double(Math.random() * (maxLength - minLength + 1)).intValue();

@@ -5,7 +5,6 @@ import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.model.register.EmailRegisterReq;
-import org.clever.security.model.register.LoginNameRegisterReq;
 import org.clever.security.model.register.SmsRegisterReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -89,17 +88,17 @@ public interface RegisterSupportClient {
      * 根据登录名注册
      */
     @PostMapping("/register_by_login_name")
-    UserRegisterRes registerByLoginName(@Validated @RequestBody LoginNameRegisterReq req);
-
-    /**
-     * 根据邮箱注册
-     */
-    @PostMapping("/register_by_email")
-    UserRegisterRes registerByEmail(@Validated @RequestBody EmailRegisterReq req);
+    UserRegisterRes registerByLoginName(@Validated @RequestBody RegisterByLoginNameReq req);
 
     /**
      * 根据短信注册
      */
     @PostMapping("/register_by_sms")
-    UserRegisterRes registerBySms(@Validated @RequestBody SmsRegisterReq req);
+    UserRegisterRes registerBySms(@Validated @RequestBody RegisterBySmsReq req);
+
+    /**
+     * 根据邮箱注册
+     */
+    @PostMapping("/register_by_email")
+    UserRegisterRes registerByEmail(@Validated @RequestBody RegisterByEmailReq req);
 }

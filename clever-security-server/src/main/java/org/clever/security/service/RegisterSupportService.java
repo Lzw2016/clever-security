@@ -5,20 +5,21 @@ import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.DateTimeUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
+import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.common.utils.tuples.TupleTow;
+import org.clever.security.RegisterChannel;
 import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
+import org.clever.security.entity.UserDomain;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.mapper.UserDomainMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.mapper.ValidateCodeMapper;
-import org.clever.security.model.register.EmailRegisterReq;
-import org.clever.security.model.register.LoginNameRegisterReq;
-import org.clever.security.model.register.SmsRegisterReq;
 import org.clever.security.utils.ConvertUtils;
+import org.clever.security.utils.UserNameUtils;
 import org.clever.security.utils.ValidateCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -267,17 +268,76 @@ public class RegisterSupportService implements RegisterSupportClient {
     }
 
     @Override
-    public UserRegisterRes registerByLoginName(LoginNameRegisterReq req) {
-        return null;
+    public UserRegisterRes registerByLoginName(RegisterByLoginNameReq req) {
+        User user = userMapper.getByLoginName(req.getLoginName());
+        if (user != null) {
+            throw new BusinessException("当前用户名已注册");
+        }
+        User addUser = new User();
+        addUser.setUid(UserNameUtils.generateUid());
+        addUser.setLoginName(req.getLoginName());
+        addUser.setPassword(req.getPassword());
+        addUser.setNickname(addUser.getLoginName());
+        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
+        if (registerChannel != null) {
+            addUser.setRegisterChannel(registerChannel.getId());
+        }
+        addUser.setFromSource(EnumConstant.User_FromSource_0);
+        return registerUser(req.getDomainId(), addUser);
     }
 
     @Override
-    public UserRegisterRes registerByEmail(EmailRegisterReq req) {
-        return null;
+    public UserRegisterRes registerBySms(RegisterBySmsReq req) {
+        User user = userMapper.getByTelephone(req.getTelephone());
+        if (user != null) {
+            int exists = userDomainMapper.exists(req.getDomainId(), user.getUid());
+            if (exists > 0) {
+                throw new BusinessException("当前手机号已经注册了");
+            }
+        }
+        User addUser = new User();
+        addUser.setUid(UserNameUtils.generateUid());
+        addUser.setLoginName(UserNameUtils.generateLoginName());
+        addUser.setTelephone(req.getTelephone());
+        addUser.setNickname(req.getTelephone());
+        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
+        if (registerChannel != null) {
+            addUser.setRegisterChannel(registerChannel.getId());
+        }
+        addUser.setFromSource(EnumConstant.User_FromSource_0);
+        return registerUser(req.getDomainId(), addUser);
     }
 
     @Override
-    public UserRegisterRes registerBySms(SmsRegisterReq req) {
-        return null;
+    public UserRegisterRes registerByEmail(RegisterByEmailReq req) {
+        User user = userMapper.getByEmail(req.getEmail());
+        if (user != null) {
+            int exists = userDomainMapper.exists(req.getDomainId(), user.getUid());
+            if (exists > 0) {
+                throw new BusinessException("当前邮箱已经注册了");
+            }
+        }
+        User addUser = new User();
+        addUser.setUid(UserNameUtils.generateUid());
+        addUser.setLoginName(UserNameUtils.generateLoginName());
+        addUser.setEmail(req.getEmail());
+        addUser.setNickname(req.getEmail());
+        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
+        if (registerChannel != null) {
+            addUser.setRegisterChannel(registerChannel.getId());
+        }
+        addUser.setFromSource(EnumConstant.User_FromSource_0);
+        return registerUser(req.getDomainId(), addUser);
+    }
+
+    protected UserRegisterRes registerUser(Long domainId, User addUser) {
+        addUser.setEnabled(EnumConstant.User_Enabled_1);
+        userMapper.insert(addUser);
+        UserDomain addUserDomain = new UserDomain();
+        addUserDomain.setDomainId(domainId);
+        addUserDomain.setUid(addUser.getUid());
+        userDomainMapper.insert(addUserDomain);
+        User user = userMapper.getByUid(addUser.getUid());
+        return BeanMapper.mapper(user, UserRegisterRes.class);
     }
 }
