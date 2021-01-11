@@ -27,7 +27,7 @@ public class SmsRegisterReqCollect extends AbstractRegisterDataCollect {
 
     @Override
     public AbstractUserRegisterReq collectRegisterData(SecurityConfig securityConfig, HttpServletRequest request) {
-        return null;
+        return getSmsRegisterReq(securityConfig, request);
     }
 
     @Override

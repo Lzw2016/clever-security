@@ -264,6 +264,7 @@ public class UserRegisterFilter extends GenericFilterBean {
         if (context.getResponse().isCommitted()) {
             return;
         }
+        HttpServletResponseUtils.sendJson(context.getResponse(), context.getUser(), HttpStatus.OK);
     }
 
     /**
@@ -273,5 +274,11 @@ public class UserRegisterFilter extends GenericFilterBean {
         if (context.getResponse().isCommitted()) {
             return;
         }
+        HttpServletResponseUtils.sendJson(
+                context.getRequest(),
+                context.getResponse(),
+                HttpServletResponseUtils.getHttpStatus(context.getRegisterException()),
+                context.getRegisterException()
+        );
     }
 }
