@@ -57,4 +57,9 @@ public class UserRegisterRes extends BaseResponse {
      * 用户来源，0:系统注册，1:外部导入(同步)
      */
     private Integer fromSource;
+
+    /**
+     * 注册结果，0:注册失败，1:注册成功且创建用户，2:注册成功仅关联到域
+     */
+    private Integer requestResult;
 }

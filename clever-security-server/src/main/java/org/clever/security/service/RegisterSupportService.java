@@ -3,6 +3,7 @@ package org.clever.security.service;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.DateTimeUtils;
+import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.mapper.BeanMapper;
@@ -11,12 +12,10 @@ import org.clever.security.RegisterChannel;
 import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.User;
-import org.clever.security.entity.UserDomain;
-import org.clever.security.entity.ValidateCode;
+import org.clever.security.entity.*;
 import org.clever.security.mapper.UserDomainMapper;
 import org.clever.security.mapper.UserMapper;
+import org.clever.security.mapper.UserRegisterLogMapper;
 import org.clever.security.mapper.ValidateCodeMapper;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.UserNameUtils;
@@ -44,6 +43,8 @@ public class RegisterSupportService implements RegisterSupportClient {
     private UserMapper userMapper;
     @Autowired
     private UserDomainMapper userDomainMapper;
+    @Autowired
+    private UserRegisterLogMapper userRegisterLogMapper;
     @Autowired
     private SendValidateCodeService sendValidateCodeService;
 
@@ -283,7 +284,9 @@ public class RegisterSupportService implements RegisterSupportClient {
             addUser.setRegisterChannel(registerChannel.getId());
         }
         addUser.setFromSource(EnumConstant.User_FromSource_0);
-        return registerUser(req.getDomainId(), addUser);
+        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
+        userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        return userRegisterRes;
     }
 
     @Override
@@ -295,6 +298,7 @@ public class RegisterSupportService implements RegisterSupportClient {
                 throw new BusinessException("当前手机号已经注册了");
             }
         }
+        // TODO 不一定需要add用户
         User addUser = new User();
         addUser.setUid(UserNameUtils.generateUid());
         addUser.setLoginName(UserNameUtils.generateLoginName());
@@ -305,7 +309,9 @@ public class RegisterSupportService implements RegisterSupportClient {
             addUser.setRegisterChannel(registerChannel.getId());
         }
         addUser.setFromSource(EnumConstant.User_FromSource_0);
-        return registerUser(req.getDomainId(), addUser);
+        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
+        userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        return userRegisterRes;
     }
 
     @Override
@@ -317,6 +323,7 @@ public class RegisterSupportService implements RegisterSupportClient {
                 throw new BusinessException("当前邮箱已经注册了");
             }
         }
+        // TODO 不一定需要add用户
         User addUser = new User();
         addUser.setUid(UserNameUtils.generateUid());
         addUser.setLoginName(UserNameUtils.generateLoginName());
@@ -327,7 +334,9 @@ public class RegisterSupportService implements RegisterSupportClient {
             addUser.setRegisterChannel(registerChannel.getId());
         }
         addUser.setFromSource(EnumConstant.User_FromSource_0);
-        return registerUser(req.getDomainId(), addUser);
+        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
+        userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        return userRegisterRes;
     }
 
     protected UserRegisterRes registerUser(Long domainId, User addUser) {
@@ -339,5 +348,15 @@ public class RegisterSupportService implements RegisterSupportClient {
         userDomainMapper.insert(addUserDomain);
         User user = userMapper.getByUid(addUser.getUid());
         return BeanMapper.mapper(user, UserRegisterRes.class);
+    }
+
+    @Override
+    public AddUserRegisterLogRes addUserRegisterLog(AddUserRegisterLogReq req) {
+        Date now = new Date();
+        UserRegisterLog userRegisterLog = BeanMapper.mapper(req, UserRegisterLog.class);
+        userRegisterLog.setRegisterTime(now);
+        userRegisterLog.setId(SnowFlake.SNOW_FLAKE.nextId());
+        userRegisterLogMapper.insert(userRegisterLog);
+        return BeanMapper.mapper(userRegisterLog, AddUserRegisterLogRes.class);
     }
 }

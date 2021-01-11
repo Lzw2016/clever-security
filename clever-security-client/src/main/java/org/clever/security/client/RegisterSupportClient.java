@@ -4,8 +4,6 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.model.register.EmailRegisterReq;
-import org.clever.security.model.register.SmsRegisterReq;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
@@ -101,4 +99,10 @@ public interface RegisterSupportClient {
      */
     @PostMapping("/register_by_email")
     UserRegisterRes registerByEmail(@Validated @RequestBody RegisterByEmailReq req);
+
+    /**
+     * 新增用户注册日志
+     */
+    @PostMapping("/add_user_register_log")
+    AddUserRegisterLogRes addUserRegisterLog(@Validated @RequestBody AddUserRegisterLogReq req);
 }

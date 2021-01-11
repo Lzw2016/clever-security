@@ -137,4 +137,13 @@ public class RegisterSupportController implements RegisterSupportClient {
     public UserRegisterRes registerByEmail(@Validated @RequestBody RegisterByEmailReq req) {
         return registerSupportService.registerByEmail(req);
     }
+
+    /**
+     * 新增用户注册日志
+     */
+    @PostMapping("/add_user_register_log")
+    @Override
+    public AddUserRegisterLogRes addUserRegisterLog(@Validated @RequestBody AddUserRegisterLogReq req) {
+        return registerSupportService.addUserRegisterLog(req);
+    }
 }

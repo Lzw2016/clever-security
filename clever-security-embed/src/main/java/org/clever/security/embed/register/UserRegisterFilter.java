@@ -2,6 +2,7 @@ package org.clever.security.embed.register;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.exception.BusinessException;
+import org.clever.security.RegisterChannel;
 import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.dto.request.RegisterByEmailReq;
 import org.clever.security.dto.request.RegisterByLoginNameReq;
@@ -238,7 +239,17 @@ public class UserRegisterFilter extends GenericFilterBean {
         if (registerSuccessHandlerList == null) {
             return;
         }
-        RegisterSuccessEvent registerSuccessEvent = new RegisterSuccessEvent();
+        AbstractUserRegisterReq registerData = context.getRegisterData();
+        RegisterChannel registerChannel = null;
+        if (registerData != null) {
+            registerChannel = RegisterChannel.lookup(registerData.getRegisterChannel());
+        }
+        RegisterSuccessEvent registerSuccessEvent = new RegisterSuccessEvent(
+                securityConfig.getDomainId(),
+                registerChannel == null ? null : registerChannel.getId(),
+                registerData == null ? null : registerData.getRegisterType().getId(),
+                context.getUser()
+        );
         for (RegisterSuccessHandler handler : registerSuccessHandlerList) {
             handler.onRegisterSuccess(context.getRequest(), context.getResponse(), registerSuccessEvent);
         }
@@ -251,7 +262,16 @@ public class UserRegisterFilter extends GenericFilterBean {
         if (registerFailureHandlerList == null) {
             return;
         }
-        RegisterFailureEvent loginFailureEvent = new RegisterFailureEvent();
+        AbstractUserRegisterReq registerData = context.getRegisterData();
+        RegisterChannel registerChannel = null;
+        if (registerData != null) {
+            registerChannel = RegisterChannel.lookup(registerData.getRegisterChannel());
+        }
+        RegisterFailureEvent loginFailureEvent = new RegisterFailureEvent(
+                securityConfig.getDomainId(),
+                registerChannel == null ? null : registerChannel.getId(),
+                registerData == null ? null : registerData.getRegisterType().getId()
+        );
         for (RegisterFailureHandler handler : registerFailureHandlerList) {
             handler.onRegisterFailure(context.getRequest(), context.getResponse(), loginFailureEvent);
         }

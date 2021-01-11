@@ -237,4 +237,33 @@ public interface EnumConstant {
      * 数据删除标志，1:已删除
      */
     int LoginFailedCount_DeleteFlag_1 = 1;
+
+    /**
+     * 注册类型，1:登录名注册
+     */
+    int UserRegisterLog_RegisterType_1 = 1;
+    /**
+     * 注册类型，2:手机号注册
+     */
+    int UserRegisterLog_RegisterType_2 = 2;
+    /**
+     * 注册类型，3:邮箱注册
+     */
+    int UserRegisterLog_RegisterType_3 = 3;
+    /**
+     * 注册类型，4:微信小程序注册，
+     */
+    int UserRegisterLog_RegisterType_4 = 4;
+    /**
+     * 注册结果，0:注册失败
+     */
+    int UserRegisterLog_RequestResult_1 = 1;
+    /**
+     * 注册结果，1:注册成功且创建用户
+     */
+    int UserRegisterLog_RequestResult_2 = 2;
+    /**
+     * 注册结果，2:注册成功仅关联到域
+     */
+    int UserRegisterLog_RequestResult_3 = 3;
 }
