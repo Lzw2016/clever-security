@@ -13,15 +13,15 @@ public class ConditionalOnUserRegisterFilter extends AnyNestedCondition {
         super(ConfigurationPhase.REGISTER_BEAN);
     }
 
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-login-name-register", havingValue = "true")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-login-name-register.enable", havingValue = "true", matchIfMissing = true)
     static class EnableLoginNameRegister {
     }
 
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-sms-register", havingValue = "false")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-sms-register.enable", havingValue = "true")
     static class EnableSmsRegister {
     }
 
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-email-register", havingValue = "false")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "register.enable-email-register.enable", havingValue = "true")
     static class EnableEmailRegister {
     }
 }
