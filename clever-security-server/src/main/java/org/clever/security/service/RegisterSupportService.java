@@ -12,7 +12,6 @@ import org.clever.security.dto.response.*;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.mapper.DomainMapper;
 import org.clever.security.mapper.UserDomainMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.mapper.ValidateCodeMapper;
@@ -37,8 +36,6 @@ import java.util.Date;
 @Service
 @Slf4j
 public class RegisterSupportService implements RegisterSupportClient {
-    @Autowired
-    private DomainMapper domainMapper;
     @Autowired
     private ValidateCodeMapper validateCodeMapper;
     @Autowired
@@ -66,7 +63,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifyLoginNameRegisterCaptchaRes verifyLoginNameRegisterCaptcha(VerifyLoginNameRegisterCaptchaReq req) {
-        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_4, EnumConstant.ValidateCode_SendChannel_0, req.getCaptcha(), req.getCaptchaDigest());
+        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_4, req.getCaptcha(), req.getCaptchaDigest());
         VerifyLoginNameRegisterCaptchaRes res = new VerifyLoginNameRegisterCaptchaRes();
         res.setSuccess(tupleTow.getValue1());
         res.setMessage(tupleTow.getValue2());
@@ -91,7 +88,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifySmsRegisterCaptchaRes verifySmsRegisterCaptcha(VerifySmsRegisterCaptchaReq req) {
-        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_5, EnumConstant.ValidateCode_SendChannel_0, req.getCaptcha(), req.getCaptchaDigest());
+        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_5, req.getCaptcha(), req.getCaptchaDigest());
         VerifySmsRegisterCaptchaRes res = new VerifySmsRegisterCaptchaRes();
         res.setSuccess(tupleTow.getValue1());
         res.setMessage(tupleTow.getValue2());
@@ -177,7 +174,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifyEmailRegisterCaptchaRes verifyEmailRegisterCaptcha(VerifyEmailRegisterCaptchaReq req) {
-        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_7, EnumConstant.ValidateCode_SendChannel_0, req.getCaptcha(), req.getCaptchaDigest());
+        TupleTow<Boolean, String> tupleTow = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_7, req.getCaptcha(), req.getCaptchaDigest());
         VerifyEmailRegisterCaptchaRes res = new VerifyEmailRegisterCaptchaRes();
         res.setSuccess(tupleTow.getValue1());
         res.setMessage(tupleTow.getValue2());
@@ -245,8 +242,8 @@ public class RegisterSupportService implements RegisterSupportClient {
         return res;
     }
 
-    protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest) {
-        return verifyValidateCode(domainId, type, sendChannel, captcha, captchaDigest, null);
+    protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, String captcha, String captchaDigest) {
+        return verifyValidateCode(domainId, type, EnumConstant.ValidateCode_SendChannel_0, captcha, captchaDigest, null);
     }
 
     protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest, String sendTarget) {
