@@ -97,13 +97,15 @@ public class HttpServletResponseUtils {
         }
         if (e instanceof AuthenticationInnerException
                 || e instanceof AuthorizationInnerException
-                || e instanceof LoginInnerException) {
+                || e instanceof LoginInnerException
+                || e instanceof RegisterInnerException) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
         if (e instanceof AuthenticationException
                 || e instanceof AuthorizationException
                 || e instanceof LoginException
                 || e instanceof LogoutException
+                || e instanceof RegisterException
                 || e instanceof BusinessException) {
             return HttpStatus.BAD_REQUEST;
         }
