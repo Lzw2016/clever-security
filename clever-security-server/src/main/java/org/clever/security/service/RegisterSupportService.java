@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -248,8 +249,13 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     protected TupleTow<Boolean, String> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest, String sendTarget) {
         final Date now = new Date();
-        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, type, sendChannel, captchaDigest, sendTarget);
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha);
+        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, captchaDigest);
+        TupleTow<Boolean, String> tupleTow;
+        if (Objects.equals(EnumConstant.ValidateCode_SendChannel_0, sendChannel)) {
+            tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha, type);
+        } else {
+            tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha, type, sendChannel, sendTarget);
+        }
         // 更新验证码
         if (validateCode != null && validateCode.getValidateTime() == null) {
             ValidateCode update = new ValidateCode();

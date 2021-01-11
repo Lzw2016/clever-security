@@ -10,6 +10,7 @@ import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.mapper.BeanMapper;
+import org.clever.common.utils.tuples.TupleTow;
 import org.clever.common.utils.zxing.ZxingCreateImageUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
@@ -86,14 +87,9 @@ public class LoginSupportService implements LoginSupportClient {
         final Date now = new Date();
         GetLoginFailedCountAndCaptchaRes res = new GetLoginFailedCountAndCaptchaRes();
         res.setFailedCount(0);
-        ValidateCode validateCode = validateCodeMapper.getByDigest(
-                req.getDomainId(),
-                EnumConstant.ValidateCode_Type_1,
-                EnumConstant.ValidateCode_SendChannel_0,
-                req.getCaptchaDigest(),
-                null
-        );
-        if (validateCode != null && validateCode.getValidateTime() == null) {
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getCaptchaDigest());
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1);
+        if (tupleTow.getValue1()) {
             res.setCode(validateCode.getCode());
             res.setDigest(validateCode.getDigest());
             res.setExpiredTime(validateCode.getExpiredTime());
@@ -335,22 +331,10 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(
-                req.getDomainId(),
-                EnumConstant.ValidateCode_Type_1,
-                EnumConstant.ValidateCode_SendChannel_1,
-                req.getValidateCodeDigest(),
-                null
-        );
-        if (validateCode == null) {
-            return null;
-        }
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
         final Date now = new Date();
-        if (!Objects.equals(validateCode.getSendTarget(), user.getTelephone())
-                || !Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
-                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_1)
-                || validateCode.getValidateTime() != null
-                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getTelephone());
+        if (!tupleTow.getValue1()) {
             return null;
         }
         ValidateCode update = new ValidateCode();
@@ -366,22 +350,10 @@ public class LoginSupportService implements LoginSupportClient {
         if (user == null) {
             return null;
         }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(
-                req.getDomainId(),
-                EnumConstant.ValidateCode_Type_1,
-                EnumConstant.ValidateCode_SendChannel_2,
-                req.getValidateCodeDigest(),
-                null
-        );
-        if (validateCode == null) {
-            return null;
-        }
+        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
         final Date now = new Date();
-        if (!Objects.equals(validateCode.getSendTarget(), user.getEmail())
-                || !Objects.equals(validateCode.getType(), EnumConstant.ValidateCode_Type_1)
-                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_2)
-                || validateCode.getValidateTime() != null
-                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getEmail());
+        if (!tupleTow.getValue1()) {
             return null;
         }
         ValidateCode update = new ValidateCode();
