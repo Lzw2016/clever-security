@@ -10,10 +10,8 @@ import org.clever.security.entity.EnumConstant;
 import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * 作者：lizw <br/>
@@ -29,13 +27,14 @@ public class DefaultRegisterFailureHandler implements RegisterFailureHandler {
     }
 
     @Override
-    public void onRegisterFailure(HttpServletRequest request, HttpServletResponse response, RegisterFailureEvent event) throws IOException, ServletException {
+    public void onRegisterFailure(HttpServletRequest request, HttpServletResponse response, RegisterFailureEvent event) {
         AddUserRegisterLogReq req = new AddUserRegisterLogReq(event.getDomainId());
         req.setRegisterIp(request.getRemoteAddr());
         req.setRegisterChannel(event.getRegisterChannel());
         req.setRegisterType(event.getRegisterType());
         req.setRequestData(HttpServletRequestUtils.getBodyData(request));
         req.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_1);
+        req.setFailReason(event.getRegisterException().getMessage());
         AddUserRegisterLogRes res = registerSupportClient.addUserRegisterLog(req);
         log.debug("用户注册失败,注册日志 -> {}", res);
     }

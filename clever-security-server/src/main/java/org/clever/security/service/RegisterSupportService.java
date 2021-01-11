@@ -274,18 +274,19 @@ public class RegisterSupportService implements RegisterSupportClient {
         if (user != null) {
             throw new BusinessException("当前用户名已注册");
         }
-        User addUser = new User();
-        addUser.setUid(UserNameUtils.generateUid());
-        addUser.setLoginName(req.getLoginName());
-        addUser.setPassword(req.getPassword());
-        addUser.setNickname(addUser.getLoginName());
+        user = new User();
+        user.setUid(UserNameUtils.generateUid());
+        user.setLoginName(req.getLoginName());
+        user.setPassword(req.getPassword());
+        user.setNickname(user.getLoginName());
         RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
         if (registerChannel != null) {
-            addUser.setRegisterChannel(registerChannel.getId());
+            user.setRegisterChannel(registerChannel.getId());
         }
-        addUser.setFromSource(EnumConstant.User_FromSource_0);
-        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
+        user.setFromSource(EnumConstant.User_FromSource_0);
+        UserRegisterRes userRegisterRes = addUser(user);
         userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
     }
 
@@ -298,19 +299,24 @@ public class RegisterSupportService implements RegisterSupportClient {
                 throw new BusinessException("当前手机号已经注册了");
             }
         }
-        // TODO 不一定需要add用户
-        User addUser = new User();
-        addUser.setUid(UserNameUtils.generateUid());
-        addUser.setLoginName(UserNameUtils.generateLoginName());
-        addUser.setTelephone(req.getTelephone());
-        addUser.setNickname(req.getTelephone());
-        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
-        if (registerChannel != null) {
-            addUser.setRegisterChannel(registerChannel.getId());
+        UserRegisterRes userRegisterRes;
+        if (user == null) {
+            user = new User();
+            user.setUid(UserNameUtils.generateUid());
+            user.setLoginName(UserNameUtils.generateLoginName());
+            user.setTelephone(req.getTelephone());
+            user.setNickname(req.getTelephone());
+            RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
+            if (registerChannel != null) {
+                user.setRegisterChannel(registerChannel.getId());
+            }
+            user.setFromSource(EnumConstant.User_FromSource_0);
+            userRegisterRes = addUser(user);
+        } else {
+            userRegisterRes = BeanMapper.mapper(user, UserRegisterRes.class);
         }
-        addUser.setFromSource(EnumConstant.User_FromSource_0);
-        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
         userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
     }
 
@@ -323,31 +329,39 @@ public class RegisterSupportService implements RegisterSupportClient {
                 throw new BusinessException("当前邮箱已经注册了");
             }
         }
-        // TODO 不一定需要add用户
-        User addUser = new User();
-        addUser.setUid(UserNameUtils.generateUid());
-        addUser.setLoginName(UserNameUtils.generateLoginName());
-        addUser.setEmail(req.getEmail());
-        addUser.setNickname(req.getEmail());
-        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
-        if (registerChannel != null) {
-            addUser.setRegisterChannel(registerChannel.getId());
+        UserRegisterRes userRegisterRes;
+        if (user == null) {
+            user = new User();
+            user.setUid(UserNameUtils.generateUid());
+            user.setLoginName(UserNameUtils.generateLoginName());
+            user.setEmail(req.getEmail());
+            user.setNickname(req.getEmail());
+            RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
+            if (registerChannel != null) {
+                user.setRegisterChannel(registerChannel.getId());
+            }
+            user.setFromSource(EnumConstant.User_FromSource_0);
+            userRegisterRes = addUser(user);
+        } else {
+            userRegisterRes = BeanMapper.mapper(user, UserRegisterRes.class);
         }
-        addUser.setFromSource(EnumConstant.User_FromSource_0);
-        UserRegisterRes userRegisterRes = registerUser(req.getDomainId(), addUser);
         userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
+        userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
     }
 
-    protected UserRegisterRes registerUser(Long domainId, User addUser) {
-        addUser.setEnabled(EnumConstant.User_Enabled_1);
-        userMapper.insert(addUser);
+    protected UserRegisterRes addUser(User user) {
+        user.setEnabled(EnumConstant.User_Enabled_1);
+        userMapper.insert(user);
+        user = userMapper.getByUid(user.getUid());
+        return BeanMapper.mapper(user, UserRegisterRes.class);
+    }
+
+    protected void userBindDomain(Long domainId, User user) {
         UserDomain addUserDomain = new UserDomain();
         addUserDomain.setDomainId(domainId);
-        addUserDomain.setUid(addUser.getUid());
+        addUserDomain.setUid(user.getUid());
         userDomainMapper.insert(addUserDomain);
-        User user = userMapper.getByUid(addUser.getUid());
-        return BeanMapper.mapper(user, UserRegisterRes.class);
     }
 
     @Override

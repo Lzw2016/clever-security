@@ -82,6 +82,11 @@ public class AddUserRegisterLogReq extends BaseRequest {
      */
     private String registerUid;
 
+    /**
+     * 注册失败原因
+     */
+    private String failReason;
+
     public AddUserRegisterLogReq(Long registerDomainId) {
         this.registerDomainId = registerDomainId;
     }

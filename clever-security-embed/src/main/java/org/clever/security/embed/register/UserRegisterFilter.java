@@ -270,7 +270,8 @@ public class UserRegisterFilter extends GenericFilterBean {
         RegisterFailureEvent loginFailureEvent = new RegisterFailureEvent(
                 securityConfig.getDomainId(),
                 registerChannel == null ? null : registerChannel.getId(),
-                registerData == null ? null : registerData.getRegisterType().getId()
+                registerData == null ? null : registerData.getRegisterType().getId(),
+                context.getRegisterException()
         );
         for (RegisterFailureHandler handler : registerFailureHandlerList) {
             handler.onRegisterFailure(context.getRequest(), context.getResponse(), loginFailureEvent);

@@ -275,6 +275,7 @@ create table user_register_log
     request_data        varchar(1023)                                                           comment '注册请求数据',
     request_result      int(1)          not null                                                comment '注册结果，0:注册失败，1:注册成功且创建用户，2:注册成功仅关联到域',
     register_uid        varchar(63)                                                             comment '注册成功的用户id',
+    fail_reason         varchar(127)                                                            comment '注册失败原因',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
     primary key (id)

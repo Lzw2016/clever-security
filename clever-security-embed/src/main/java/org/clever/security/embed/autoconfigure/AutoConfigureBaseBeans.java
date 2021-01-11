@@ -13,9 +13,7 @@ import org.clever.security.embed.collect.*;
 import org.clever.security.embed.context.DefaultSecurityContextRepository;
 import org.clever.security.embed.crypto.BCryptPasswordEncoder;
 import org.clever.security.embed.crypto.PasswordEncoder;
-import org.clever.security.embed.handler.DefaultLoginFailureHandler;
-import org.clever.security.embed.handler.DefaultLoginSuccessHandler;
-import org.clever.security.embed.handler.DefaultLogoutSuccessHandler;
+import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.DefaultVerifyRegisterData;
 import org.clever.security.third.client.WeChatClient;
 import org.springframework.beans.factory.ObjectProvider;
@@ -164,4 +162,16 @@ public class AutoConfigureBaseBeans {
     }
 
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 注册Handler
+
+    @Bean("defaultRegisterFailureHandler")
+    @ConditionalOnMissingBean(name = "defaultRegisterFailureHandler")
+    public DefaultRegisterFailureHandler defaultRegisterFailureHandler(RegisterSupportClient registerSupportClient) {
+        return new DefaultRegisterFailureHandler(registerSupportClient);
+    }
+
+    @Bean("defaultRegisterSuccessHandler")
+    @ConditionalOnMissingBean(name = "defaultRegisterSuccessHandler")
+    public DefaultRegisterSuccessHandler defaultRegisterSuccessHandler(RegisterSupportClient registerSupportClient) {
+        return new DefaultRegisterSuccessHandler(registerSupportClient);
+    }
 }

@@ -63,6 +63,11 @@ public class UserRegisterLog implements Serializable {
     private String registerUid;
 
     /**
+     * 注册失败原因
+     */
+    private String failReason;
+
+    /**
      * 创建时间
      */
     private Date createAt;
