@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class SendValidateCodeService {
     protected static final ThreadPoolExecutor Executor_Service = new ThreadPoolExecutor(
-            Runtime.getRuntime().availableProcessors() * 8,
-            Runtime.getRuntime().availableProcessors() * 8,
+            Runtime.getRuntime().availableProcessors() * 4 + 8,
+            Runtime.getRuntime().availableProcessors() * 4 + 8,
             60L,
             TimeUnit.SECONDS, new LinkedBlockingQueue<>()
     );
