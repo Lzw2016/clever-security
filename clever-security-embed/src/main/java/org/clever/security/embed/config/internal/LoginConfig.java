@@ -24,27 +24,27 @@ public class LoginConfig implements Serializable {
      * 登录验证码配置
      */
     @NestedConfigurationProperty
-    private LoginCaptchaConfig loginCaptcha = new LoginCaptchaConfig();
+    private final LoginCaptchaConfig loginCaptcha = new LoginCaptchaConfig();
     /**
      * 微信小程序登录配置
      */
     @NestedConfigurationProperty
-    private WechatSmallProgramLoginConfig wechatSmallProgramLogin = new WechatSmallProgramLoginConfig();
+    private final WechatSmallProgramLoginConfig wechatSmallProgramLogin = new WechatSmallProgramLoginConfig();
     /**
      * 手机验证码登录配置
      */
     @NestedConfigurationProperty
-    private SmsValidateCodeLoginConfig smsValidateCodeLogin = new SmsValidateCodeLoginConfig();
+    private final SmsValidateCodeLoginConfig smsValidateCodeLogin = new SmsValidateCodeLoginConfig();
     /**
      * 邮箱验证码登录配置
      */
     @NestedConfigurationProperty
-    private EmailValidateCodeLoginConfig emailValidateCodeLogin = new EmailValidateCodeLoginConfig();
+    private final EmailValidateCodeLoginConfig emailValidateCodeLogin = new EmailValidateCodeLoginConfig();
     /**
      * 扫码登录配置
      */
     @NestedConfigurationProperty
-    private ScanCodeLoginConfig scanCodeLogin = new ScanCodeLoginConfig();
+    private final ScanCodeLoginConfig scanCodeLogin = new ScanCodeLoginConfig();
     /**
      * 隐藏登录用户不存在的异常
      */

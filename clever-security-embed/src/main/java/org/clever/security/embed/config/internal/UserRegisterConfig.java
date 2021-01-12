@@ -19,18 +19,17 @@ public class UserRegisterConfig implements Serializable {
      * 登录名注册配置
      */
     @NestedConfigurationProperty
-    private LoginNameRegisterConfig loginNameRegister = new LoginNameRegisterConfig();
+    private final LoginNameRegisterConfig loginNameRegister = new LoginNameRegisterConfig();
     /**
      * 短信验证码注册配置
      */
     @NestedConfigurationProperty
-    private SmsRegisterConfig smsRegister = new SmsRegisterConfig();
+    private final SmsRegisterConfig smsRegister = new SmsRegisterConfig();
     /**
      * 邮箱注册配置
      */
     @NestedConfigurationProperty
-    private EmailRegisterConfig emailRegister = new EmailRegisterConfig();
+    private final EmailRegisterConfig emailRegister = new EmailRegisterConfig();
 
     // 其他三方平台账号登录注册(oauth2.0)
 }
-

@@ -32,15 +32,15 @@ public class SecurityConfig implements Serializable {
     /**
      * 不需要认证和授权的Path(支持Ant风格的Path)
      */
-    private List<String> ignorePaths = new ArrayList<>();
+    private final List<String> ignorePaths = new ArrayList<>();
     /**
      * 不需要授权的Path(支持Ant风格的Path)
      */
-    private List<String> ignoreAuthPaths = new ArrayList<>();
+    private final List<String> ignoreAuthPaths = new ArrayList<>();
     /**
      * 不需要授权的Class
      */
-    private List<String> ignoreAuthClass = new ArrayList<>();
+    private final List<String> ignoreAuthClass = new ArrayList<>();
     /**
      * 未登录时是否需要重定向到401页面
      */
@@ -84,6 +84,11 @@ public class SecurityConfig implements Serializable {
      */
     @NestedConfigurationProperty
     private final TokenConfig tokenConfig = new TokenConfig();
+    /**
+     * 密码找回配置
+     */
+    @NestedConfigurationProperty
+    private final PasswordRecoveryConfig passwordRecovery = new PasswordRecoveryConfig();
     /**
      * 服务间免登陆Token访问配置
      */

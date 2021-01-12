@@ -180,6 +180,10 @@ clever:
     not-login-redirect-page: '/index.html'
     forbidden-need-redirect: false
     forbidden-redirect-page: '/403.html'
+    req-aes-key:
+      enable: true
+      req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'
+      req-password-aes-iv: '47e2cf4f8ee69fd9d7f3cad475682df8'
     login:
       login-path: '/login'
       post-only: true
@@ -258,10 +262,18 @@ clever:
       enable-refresh-token: true
       refresh-token-validity: 30d
       refresh-token-name: 'refresh-token'
-    req-aes-key:
-      enable: true
-      req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'
-      req-password-aes-iv: '47e2cf4f8ee69fd9d7f3cad475682df8'
+    password-recovery:
+      register-path: '/password_recovery'
+      password-sms-recovery:
+        enable: true
+        sms-validate-code-path: '/password_recovery/sms'
+        effective-time: 120s
+        max-send-num-in-day: 8
+      password-email-recovery:
+        enable: true
+        email-validate-code-path: '/password_recovery/email'
+        effective-time: 300s
+        max-send-num-in-day: 16
     server-api-access-token:
       token-name: 'server-api-token'
       token-value: '512f6b74f8ee69fd9049bb512f635b9bf9e6d7fe2cf4f8ee69fd949bb512f6b7768d9d7f3cad4756'
