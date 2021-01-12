@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import javax.validation.constraints.Pattern;
  * 作者：lizw <br/>
  * 创建时间：2021/01/11 15:02 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RegisterBySmsReq extends BaseRequest {

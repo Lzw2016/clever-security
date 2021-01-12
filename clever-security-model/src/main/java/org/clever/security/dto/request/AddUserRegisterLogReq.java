@@ -2,17 +2,20 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 import org.clever.common.validation.ValidIntegerStatus;
 import org.clever.security.entity.EnumConstant;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * 作者：lizw <br/>
  * 创建时间：2021-01-11 21:22 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AddUserRegisterLogReq extends BaseRequest {
@@ -21,6 +24,12 @@ public class AddUserRegisterLogReq extends BaseRequest {
      */
     @NotNull(message = "域id不能为null")
     private Long registerDomainId;
+
+    /**
+     * 注册时间
+     */
+    @NotNull(message = "注册时间不能为null")
+    private Date registerTime;
 
     /**
      * 注册IP
@@ -87,7 +96,8 @@ public class AddUserRegisterLogReq extends BaseRequest {
      */
     private String failReason;
 
-    public AddUserRegisterLogReq(Long registerDomainId) {
+    public AddUserRegisterLogReq(Long registerDomainId, Date registerTime) {
         this.registerDomainId = registerDomainId;
+        this.registerTime = registerTime;
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * 作者：lizw <br/>
@@ -30,7 +31,7 @@ public class DefaultRegisterSuccessHandler implements RegisterSuccessHandler {
     @Override
     public void onRegisterSuccess(HttpServletRequest request, HttpServletResponse response, RegisterSuccessEvent event) {
         UserRegisterRes userRegisterRes = event.getUserRegisterRes();
-        AddUserRegisterLogReq req = new AddUserRegisterLogReq(event.getDomainId());
+        AddUserRegisterLogReq req = new AddUserRegisterLogReq(event.getDomainId(), new Date());
         req.setRegisterIp(request.getRemoteAddr());
         req.setRegisterChannel(event.getRegisterChannel());
         req.setRegisterType(event.getRegisterType());

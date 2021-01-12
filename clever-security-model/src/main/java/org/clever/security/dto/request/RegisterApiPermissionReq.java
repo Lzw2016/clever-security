@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 import org.clever.security.model.auth.ApiPermissionModel;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * 作者：lizw <br/>
  * 创建时间：2021-01-02 11:41 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class RegisterApiPermissionReq extends BaseRequest {

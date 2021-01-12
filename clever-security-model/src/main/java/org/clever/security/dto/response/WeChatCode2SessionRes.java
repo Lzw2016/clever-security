@@ -2,6 +2,7 @@ package org.clever.security.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * 作者：lizw <br/>
  * 创建时间：2020/12/13 21:02 <br/>
  */
+@NoArgsConstructor
 @Data
 public class WeChatCode2SessionRes implements Serializable {
     /**

@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import java.util.Date;
  * 作者：lizw <br/>
  * 创建时间：2020/12/14 20:22 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AddJwtTokenReq extends BaseRequest {

@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * 作者：lizw <br/>
  * 创建时间：2020/12/13 21:56 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ConfirmLoginScanCodeReq extends BaseRequest {
@@ -30,9 +32,6 @@ public class ConfirmLoginScanCodeReq extends BaseRequest {
      * 获取登录JWT-Token过期时间(确认登录 -> 获取登录Token时间，默认30秒)
      */
     private int getTokenExpiredTime = 30 * 1000;
-
-    public ConfirmLoginScanCodeReq() {
-    }
 
     public ConfirmLoginScanCodeReq(Long domainId) {
         this.domainId = domainId;

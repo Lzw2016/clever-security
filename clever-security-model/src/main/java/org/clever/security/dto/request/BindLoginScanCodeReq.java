@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * 作者：lizw <br/>
  * 创建时间：2020/12/13 21:39 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class BindLoginScanCodeReq extends BaseRequest {
@@ -31,9 +33,6 @@ public class BindLoginScanCodeReq extends BaseRequest {
      * 确认登录过期时间(扫码二维码 -> 确认登录时间，默认30秒)
      */
     private int confirmExpiredTime = 30 * 1000;
-
-    public BindLoginScanCodeReq() {
-    }
 
     public BindLoginScanCodeReq(Long domainId) {
         this.domainId = domainId;

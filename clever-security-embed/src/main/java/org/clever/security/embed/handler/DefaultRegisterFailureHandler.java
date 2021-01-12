@@ -12,6 +12,7 @@ import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * 作者：lizw <br/>
@@ -28,7 +29,7 @@ public class DefaultRegisterFailureHandler implements RegisterFailureHandler {
 
     @Override
     public void onRegisterFailure(HttpServletRequest request, HttpServletResponse response, RegisterFailureEvent event) {
-        AddUserRegisterLogReq req = new AddUserRegisterLogReq(event.getDomainId());
+        AddUserRegisterLogReq req = new AddUserRegisterLogReq(event.getDomainId(), new Date());
         req.setRegisterIp(request.getRemoteAddr());
         req.setRegisterChannel(event.getRegisterChannel());
         req.setRegisterType(event.getRegisterType());

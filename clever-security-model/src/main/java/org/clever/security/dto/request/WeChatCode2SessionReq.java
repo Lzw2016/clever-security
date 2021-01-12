@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * 作者：lizw <br/>
  * 创建时间：2020/12/13 21:01 <br/>
  */
+@NoArgsConstructor
 @Data
 public class WeChatCode2SessionReq implements Serializable {
     /**
@@ -31,9 +33,6 @@ public class WeChatCode2SessionReq implements Serializable {
      */
     @JsonProperty("grant_type")
     private String grantType = "authorization_code";
-
-    public WeChatCode2SessionReq() {
-    }
 
     public WeChatCode2SessionReq(String appId, String secret, String jsCode) {
         this.appId = appId;

@@ -2,6 +2,7 @@ package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 import org.clever.common.validation.ValidIntegerStatus;
 import org.clever.security.entity.EnumConstant;
@@ -14,6 +15,7 @@ import java.util.Date;
  * 作者：lizw <br/>
  * 创建时间：2020/12/14 19:36 <br/>
  */
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AddUserLoginLogReq extends BaseRequest {

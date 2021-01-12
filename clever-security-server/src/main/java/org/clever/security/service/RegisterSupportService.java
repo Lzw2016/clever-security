@@ -275,16 +275,10 @@ public class RegisterSupportService implements RegisterSupportClient {
             throw new BusinessException("当前用户名已注册");
         }
         user = new User();
-        user.setUid(UserNameUtils.generateUid());
         user.setLoginName(req.getLoginName());
         user.setPassword(req.getPassword());
         user.setNickname(user.getLoginName());
-        RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
-        if (registerChannel != null) {
-            user.setRegisterChannel(registerChannel.getId());
-        }
-        user.setFromSource(EnumConstant.User_FromSource_0);
-        UserRegisterRes userRegisterRes = addUser(user);
+        UserRegisterRes userRegisterRes = addUser(user, req.getRegisterChannel());
         userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
         userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
@@ -302,20 +296,15 @@ public class RegisterSupportService implements RegisterSupportClient {
         UserRegisterRes userRegisterRes;
         if (user == null) {
             user = new User();
-            user.setUid(UserNameUtils.generateUid());
             user.setLoginName(UserNameUtils.generateLoginName());
             user.setTelephone(req.getTelephone());
             user.setNickname(req.getTelephone());
-            RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
-            if (registerChannel != null) {
-                user.setRegisterChannel(registerChannel.getId());
-            }
-            user.setFromSource(EnumConstant.User_FromSource_0);
-            userRegisterRes = addUser(user);
+            userRegisterRes = addUser(user, req.getRegisterChannel());
+            userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
         } else {
             userRegisterRes = BeanMapper.mapper(user, UserRegisterRes.class);
+            userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_3);
         }
-        userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
         userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
     }
@@ -332,25 +321,26 @@ public class RegisterSupportService implements RegisterSupportClient {
         UserRegisterRes userRegisterRes;
         if (user == null) {
             user = new User();
-            user.setUid(UserNameUtils.generateUid());
             user.setLoginName(UserNameUtils.generateLoginName());
             user.setEmail(req.getEmail());
             user.setNickname(req.getEmail());
-            RegisterChannel registerChannel = RegisterChannel.lookup(req.getRegisterChannel());
-            if (registerChannel != null) {
-                user.setRegisterChannel(registerChannel.getId());
-            }
-            user.setFromSource(EnumConstant.User_FromSource_0);
-            userRegisterRes = addUser(user);
+            userRegisterRes = addUser(user, req.getRegisterChannel());
+            userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
         } else {
             userRegisterRes = BeanMapper.mapper(user, UserRegisterRes.class);
+            userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_3);
         }
-        userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);
         userBindDomain(req.getDomainId(), user);
         return userRegisterRes;
     }
 
-    protected UserRegisterRes addUser(User user) {
+    protected UserRegisterRes addUser(User user, String registerChannel) {
+        user.setUid(UserNameUtils.generateUid());
+        RegisterChannel channel = RegisterChannel.lookup(registerChannel);
+        if (channel != null) {
+            user.setRegisterChannel(channel.getId());
+        }
+        user.setFromSource(EnumConstant.User_FromSource_0);
         user.setEnabled(EnumConstant.User_Enabled_1);
         userMapper.insert(user);
         user = userMapper.getByUid(user.getUid());
@@ -366,9 +356,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public AddUserRegisterLogRes addUserRegisterLog(AddUserRegisterLogReq req) {
-        Date now = new Date();
         UserRegisterLog userRegisterLog = BeanMapper.mapper(req, UserRegisterLog.class);
-        userRegisterLog.setRegisterTime(now);
         userRegisterLog.setId(SnowFlake.SNOW_FLAKE.nextId());
         userRegisterLogMapper.insert(userRegisterLog);
         return BeanMapper.mapper(userRegisterLog, AddUserRegisterLogRes.class);
