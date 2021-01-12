@@ -25,4 +25,7 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("select * from user where email=#{email}")
     User getByEmail(@Param("email") String email);
+
+    @Select("select count(1) from user where uid=#{uid} limit 1")
+    int existsUid(@Param("uid") String uid);
 }

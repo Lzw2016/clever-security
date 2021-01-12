@@ -1,6 +1,8 @@
 package org.clever.security.utils;
 
 import org.clever.common.utils.SnowFlake;
+import org.clever.common.utils.spring.SpringContextHolder;
+import org.clever.security.mapper.UserMapper;
 
 import java.util.Random;
 
@@ -19,6 +21,12 @@ public class UserNameUtils {
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
+
+    private static final UserMapper USER_MAPPER;
+
+    static {
+        USER_MAPPER = SpringContextHolder.getBean(UserMapper.class);
+    }
 
     /**
      * 生成随机的字符串
@@ -47,10 +55,20 @@ public class UserNameUtils {
      * 生成用户LoginName
      */
     public static String generateLoginName() {
-        // TODO 需要保证生成的uid与数据库中的不重复
         final int minLength = 6;
         final int maxLength = 12;
         int length = minLength + new Double(Math.random() * (maxLength - minLength + 1)).intValue();
-        return getRandString(length);
+        String uid = getRandString(length);
+        while (true) {
+            boolean exists = USER_MAPPER.existsUid(uid) > 0;
+            if (!exists) {
+                break;
+            }
+            if (length <= 15) {
+                length++;
+            }
+            uid = getRandString(length);
+        }
+        return uid;
     }
 }
