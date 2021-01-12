@@ -17,10 +17,7 @@ import org.clever.security.embed.authorization.voter.AuthorizationVoter;
 import org.clever.security.embed.collect.LoginDataCollect;
 import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
-import org.clever.security.embed.config.internal.EmailRegisterConfig;
-import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
-import org.clever.security.embed.config.internal.SmsRegisterConfig;
-import org.clever.security.embed.config.internal.UserRegisterConfig;
+import org.clever.security.embed.config.internal.*;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
@@ -226,7 +223,20 @@ public class AutoConfigureSecurityFilter {
     public FilterRegistrationBean<PasswordRecoveryFilter> passwordRecoveryFilter(PasswordRecoverySupportClient passwordRecoverySupportClient) {
         PasswordRecoveryFilter filter = new PasswordRecoveryFilter(securityConfig, passwordRecoverySupportClient);
         FilterRegistrationBean<PasswordRecoveryFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery != null) {
+            if (StringUtils.isNotBlank(passwordRecovery.getPasswordRecoveryPath())) {
+                filterRegistration.addUrlPatterns(passwordRecovery.getPasswordRecoveryPath());
+            }
+            PasswordSmsRecoveryConfig passwordSmsRecovery = passwordRecovery.getPasswordSmsRecovery();
+            if (passwordSmsRecovery != null && StringUtils.isNotBlank(passwordSmsRecovery.getSmsValidateCodePath())) {
+                filterRegistration.addUrlPatterns(passwordSmsRecovery.getSmsValidateCodePath());
+            }
+            PasswordEmailRecoveryConfig passwordEmailRecovery = passwordRecovery.getPasswordEmailRecovery();
+            if (passwordEmailRecovery != null && StringUtils.isNotBlank(passwordEmailRecovery.getEmailValidateCodePath())) {
+                filterRegistration.addUrlPatterns(passwordEmailRecovery.getEmailValidateCodePath());
+            }
+        }
         filterRegistration.setName("passwordRecoveryFilter");
         filterRegistration.setOrder(Base_Order + 7);
         return filterRegistration;
