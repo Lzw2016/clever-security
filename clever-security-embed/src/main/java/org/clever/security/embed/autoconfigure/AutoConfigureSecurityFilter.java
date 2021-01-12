@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.LoginSupportClient;
+import org.clever.security.client.PasswordRecoverySupportClient;
 import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.embed.authentication.*;
 import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
@@ -156,7 +157,7 @@ public class AutoConfigureSecurityFilter {
      */
     @Bean("registerCaptchaFilter")
     @ConditionalOnMissingBean(name = "registerCaptchaFilter")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public FilterRegistrationBean<RegisterCaptchaFilter> registerCaptchaFilter(RegisterSupportClient registerSupportClient) {
         UserRegisterConfig register = securityConfig.getRegister();
         Assert.notNull(register, "register配置不能为null");
@@ -194,7 +195,7 @@ public class AutoConfigureSecurityFilter {
      */
     @Bean("userRegisterFilter")
     @ConditionalOnMissingBean(name = "userRegisterFilter")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public FilterRegistrationBean<UserRegisterFilter> userRegisterFilter(
             List<RegisterDataCollect> registerDataCollectList,
             List<VerifyRegisterData> verifyRegisterDataList,
@@ -217,17 +218,17 @@ public class AutoConfigureSecurityFilter {
     }
 
     /**
-     * TODO 密码找回
+     * 密码找回
      */
     @Bean("passwordRecoveryFilter")
     @ConditionalOnMissingBean(name = "passwordRecoveryFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
-    public FilterRegistrationBean<PasswordRecoveryFilter> passwordRecoveryFilter() {
-        PasswordRecoveryFilter filter = new PasswordRecoveryFilter();
+    @Conditional(ConditionalOnEnablePasswordRecovery.class)
+    public FilterRegistrationBean<PasswordRecoveryFilter> passwordRecoveryFilter(PasswordRecoverySupportClient passwordRecoverySupportClient) {
+        PasswordRecoveryFilter filter = new PasswordRecoveryFilter(securityConfig, passwordRecoverySupportClient);
         FilterRegistrationBean<PasswordRecoveryFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.addUrlPatterns(this.securityConfig.getLogin().getEmailValidateCodeLogin().getLoginEmailValidateCodePath());
         filterRegistration.setName("passwordRecoveryFilter");
-        filterRegistration.setOrder(Base_Order + 6);
+        filterRegistration.setOrder(Base_Order + 7);
         return filterRegistration;
     }
 

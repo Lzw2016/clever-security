@@ -14,7 +14,7 @@ public class PasswordRecoveryConfig implements Serializable {
     /**
      * 密码找回请求地址
      */
-    private String registerPath = "/password_recovery";
+    private String passwordRecoveryPath = "/password_recovery";
     /**
      * 使用短信找回密码
      */

@@ -138,21 +138,21 @@ public class AutoConfigureBaseBeans {
 
     @Bean("loginNameRegisterReqCollect")
     @ConditionalOnMissingBean(name = "loginNameRegisterReqCollect")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public LoginNameRegisterReqCollect loginNameRegisterReqCollect() {
         return new LoginNameRegisterReqCollect();
     }
 
     @Bean("smsRegisterReqCollect")
     @ConditionalOnMissingBean(name = "smsRegisterReqCollect")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public SmsRegisterReqCollect smsRegisterReqCollect() {
         return new SmsRegisterReqCollect();
     }
 
     @Bean("emailRegisterReqCollect")
     @ConditionalOnMissingBean(name = "emailRegisterReqCollect")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public EmailRegisterReqCollect emailRegisterReqCollect() {
         return new EmailRegisterReqCollect();
     }
@@ -161,7 +161,7 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultVerifyRegisterData")
     @ConditionalOnMissingBean(name = "defaultVerifyRegisterData")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public DefaultVerifyRegisterData defaultVerifyRegisterData(RegisterSupportClient registerSupportClient) {
         return new DefaultVerifyRegisterData(registerSupportClient);
     }
@@ -170,14 +170,14 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultRegisterFailureHandler")
     @ConditionalOnMissingBean(name = "defaultRegisterFailureHandler")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public DefaultRegisterFailureHandler defaultRegisterFailureHandler(RegisterSupportClient registerSupportClient) {
         return new DefaultRegisterFailureHandler(registerSupportClient);
     }
 
     @Bean("defaultRegisterSuccessHandler")
     @ConditionalOnMissingBean(name = "defaultRegisterSuccessHandler")
-    @Conditional(ConditionalOnUserRegisterFilter.class)
+    @Conditional(ConditionalOnEnableUserRegister.class)
     public DefaultRegisterSuccessHandler defaultRegisterSuccessHandler(RegisterSupportClient registerSupportClient) {
         return new DefaultRegisterSuccessHandler(registerSupportClient);
     }

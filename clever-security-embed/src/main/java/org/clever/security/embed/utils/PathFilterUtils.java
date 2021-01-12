@@ -313,6 +313,62 @@ public class PathFilterUtils {
     }
 
     /**
+     * 当前请求是否是密码找回请求
+     */
+    public static boolean isPasswordRecoveryRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isPasswordRecoveryRequest(path, securityConfig);
+    }
+
+    public static boolean isPasswordRecoveryRequest(String path, SecurityConfig securityConfig) {
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery == null) {
+            return false;
+        }
+        return Objects.equals(passwordRecovery.getPasswordRecoveryPath(), path);
+    }
+
+    /**
+     * 当前请求是否是密码找回验证码(短信找回-短信验证码)
+     */
+    public static boolean isPasswordRecoverySmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isPasswordRecoverySmsValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isPasswordRecoverySmsValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery == null) {
+            return false;
+        }
+        PasswordSmsRecoveryConfig passwordSmsRecovery = passwordRecovery.getPasswordSmsRecovery();
+        if (passwordSmsRecovery == null) {
+            return false;
+        }
+        return Objects.equals(passwordSmsRecovery.getSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是密码找回验证码(邮箱找回-短信验证码)
+     */
+    public static boolean isPasswordRecoveryEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isPasswordRecoveryEmailValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery == null) {
+            return false;
+        }
+        PasswordEmailRecoveryConfig passwordEmailRecovery = passwordRecovery.getPasswordEmailRecovery();
+        if (passwordEmailRecovery == null) {
+            return false;
+        }
+        return Objects.equals(passwordEmailRecovery.getEmailValidateCodePath(), path);
+    }
+
+    /**
      * 当前请求是否需要身份认证
      */
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
@@ -321,7 +377,7 @@ public class PathFilterUtils {
     }
 
     public static boolean isAuthenticationRequest(String path, String method, SecurityConfig securityConfig) {
-        // 当前请求是“登录请求”或“验证码请求”或“注册请求”
+        // 当前请求是“登录请求”或“验证码请求”或“注册请求”或“密码找回”
         if (isLoginRequest(path, method, securityConfig)
                 || isLoginCaptchaPath(path, securityConfig)
                 || isLoginSmsValidateCodePath(path, securityConfig)
@@ -333,7 +389,10 @@ public class PathFilterUtils {
                 || isSmsRegisterCaptchaRequest(path, securityConfig)
                 || isSmsRegisterSmsValidateCodeRequest(path, securityConfig)
                 || isEmailRegisterCaptchaRequest(path, securityConfig)
-                || isEmailRegisterEmailValidateCodeRequest(path, securityConfig)) {
+                || isEmailRegisterEmailValidateCodeRequest(path, securityConfig)
+                || isPasswordRecoveryRequest(path, securityConfig)
+                || isPasswordRecoverySmsValidateCodeRequest(path, securityConfig)
+                || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignorePaths = securityConfig.getIgnorePaths();
