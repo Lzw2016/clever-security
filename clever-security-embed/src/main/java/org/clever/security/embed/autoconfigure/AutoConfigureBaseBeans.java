@@ -19,6 +19,7 @@ import org.clever.security.third.client.WeChatClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -137,18 +138,21 @@ public class AutoConfigureBaseBeans {
 
     @Bean("loginNameRegisterReqCollect")
     @ConditionalOnMissingBean(name = "loginNameRegisterReqCollect")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public LoginNameRegisterReqCollect loginNameRegisterReqCollect() {
         return new LoginNameRegisterReqCollect();
     }
 
     @Bean("smsRegisterReqCollect")
     @ConditionalOnMissingBean(name = "smsRegisterReqCollect")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public SmsRegisterReqCollect smsRegisterReqCollect() {
         return new SmsRegisterReqCollect();
     }
 
     @Bean("emailRegisterReqCollect")
     @ConditionalOnMissingBean(name = "emailRegisterReqCollect")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public EmailRegisterReqCollect emailRegisterReqCollect() {
         return new EmailRegisterReqCollect();
     }
@@ -157,6 +161,7 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultVerifyRegisterData")
     @ConditionalOnMissingBean(name = "defaultVerifyRegisterData")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public DefaultVerifyRegisterData defaultVerifyRegisterData(RegisterSupportClient registerSupportClient) {
         return new DefaultVerifyRegisterData(registerSupportClient);
     }
@@ -165,12 +170,14 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultRegisterFailureHandler")
     @ConditionalOnMissingBean(name = "defaultRegisterFailureHandler")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public DefaultRegisterFailureHandler defaultRegisterFailureHandler(RegisterSupportClient registerSupportClient) {
         return new DefaultRegisterFailureHandler(registerSupportClient);
     }
 
     @Bean("defaultRegisterSuccessHandler")
     @ConditionalOnMissingBean(name = "defaultRegisterSuccessHandler")
+    @Conditional(ConditionalOnUserRegisterFilter.class)
     public DefaultRegisterSuccessHandler defaultRegisterSuccessHandler(RegisterSupportClient registerSupportClient) {
         return new DefaultRegisterSuccessHandler(registerSupportClient);
     }
