@@ -65,7 +65,7 @@ public interface RegisterSupportClient {
     GetEmailRegisterCaptchaRes getEmailRegisterCaptcha(@Validated @SpringQueryMap GetEmailRegisterCaptchaReq req);
 
     /**
-     * 验证短信注册-图片验证码
+     * 验证邮箱注册-图片验证码
      */
     @PostMapping("/verify_email_register_captcha")
     VerifyEmailRegisterCaptchaRes verifyEmailRegisterCaptcha(@Validated @RequestBody VerifyEmailRegisterCaptchaReq req);

@@ -329,6 +329,26 @@ public class PathFilterUtils {
     }
 
     /**
+     * 当前请求是否是密码找回验证码(短信找回-图片验证码)
+     */
+    public static boolean isPasswordRecoverySmsCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isPasswordRecoverySmsCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isPasswordRecoverySmsCaptchaRequest(String path, SecurityConfig securityConfig) {
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery == null) {
+            return false;
+        }
+        PasswordSmsRecoveryConfig smsRecovery = passwordRecovery.getSmsRecovery();
+        if (smsRecovery == null) {
+            return false;
+        }
+        return Objects.equals(smsRecovery.getCaptchaPath(), path);
+    }
+
+    /**
      * 当前请求是否是密码找回验证码(短信找回-短信验证码)
      */
     public static boolean isPasswordRecoverySmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
@@ -346,6 +366,26 @@ public class PathFilterUtils {
             return false;
         }
         return Objects.equals(smsRecovery.getSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是密码找回验证码(邮箱找回-短信验证码)
+     */
+    public static boolean isPasswordRecoveryEmailCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isPasswordRecoveryEmailCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isPasswordRecoveryEmailCaptchaRequest(String path, SecurityConfig securityConfig) {
+        PasswordRecoveryConfig passwordRecovery = securityConfig.getPasswordRecovery();
+        if (passwordRecovery == null) {
+            return false;
+        }
+        PasswordEmailRecoveryConfig emailRecovery = passwordRecovery.getEmailRecovery();
+        if (emailRecovery == null) {
+            return false;
+        }
+        return Objects.equals(emailRecovery.getCaptchaPath(), path);
     }
 
     /**
@@ -391,7 +431,9 @@ public class PathFilterUtils {
                 || isEmailRegisterCaptchaRequest(path, securityConfig)
                 || isEmailRegisterEmailValidateCodeRequest(path, securityConfig)
                 || isPasswordRecoveryRequest(path, securityConfig)
+                || isPasswordRecoverySmsCaptchaRequest(path, securityConfig)
                 || isPasswordRecoverySmsValidateCodeRequest(path, securityConfig)
+                || isPasswordRecoveryEmailCaptchaRequest(path, securityConfig)
                 || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)) {
             return false;
         }

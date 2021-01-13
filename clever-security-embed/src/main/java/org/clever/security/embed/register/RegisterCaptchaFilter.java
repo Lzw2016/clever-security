@@ -63,23 +63,31 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         boolean isRegisterCaptchaRequest = false;
         try {
-            if (PathFilterUtils.isLoginNameRegisterCaptchaRequest(httpRequest, securityConfig)) {
+            if (PathFilterUtils.isLoginNameRegisterCaptchaRequest(httpRequest, securityConfig)
+                    && securityConfig.getRegister().getLoginNameRegister().isEnable()
+                    && securityConfig.getRegister().getLoginNameRegister().isNeedCaptcha()) {
                 // 登录名注册-验证码
                 isRegisterCaptchaRequest = true;
                 sendLoginNameRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isSmsRegisterCaptchaRequest(httpRequest, securityConfig)) {
+            } else if (PathFilterUtils.isSmsRegisterCaptchaRequest(httpRequest, securityConfig)
+                    && securityConfig.getRegister().getSmsRegister().isEnable()
+                    && securityConfig.getRegister().getSmsRegister().isNeedCaptcha()) {
                 // 短信注册-图片验证码
                 isRegisterCaptchaRequest = true;
                 sendSmsRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isSmsRegisterSmsValidateCodeRequest(httpRequest, securityConfig)) {
+            } else if (PathFilterUtils.isSmsRegisterSmsValidateCodeRequest(httpRequest, securityConfig)
+                    && securityConfig.getRegister().getSmsRegister().isEnable()) {
                 // 短信注册-短信验证码
                 isRegisterCaptchaRequest = true;
                 sendSmsValidateCode(httpRequest, httpResponse);
-            } else if (PathFilterUtils.isEmailRegisterCaptchaRequest(httpRequest, securityConfig)) {
+            } else if (PathFilterUtils.isEmailRegisterCaptchaRequest(httpRequest, securityConfig)
+                    && securityConfig.getRegister().getEmailRegister().isEnable()
+                    && securityConfig.getRegister().getEmailRegister().isNeedCaptcha()) {
                 // 邮箱注册-图片验证码
                 isRegisterCaptchaRequest = true;
                 sendEmailRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isEmailRegisterEmailValidateCodeRequest(httpRequest, securityConfig)) {
+            } else if (PathFilterUtils.isEmailRegisterEmailValidateCodeRequest(httpRequest, securityConfig)
+                    && securityConfig.getRegister().getEmailRegister().isEnable()) {
                 // 邮箱注册-邮箱验证码
                 isRegisterCaptchaRequest = true;
                 sendEmailValidateCode(httpRequest, httpResponse);

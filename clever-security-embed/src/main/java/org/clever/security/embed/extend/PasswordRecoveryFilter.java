@@ -49,15 +49,34 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
         boolean enablePasswordRecovery = enablePasswordRecovery();
         boolean isPasswordRecovery = false;
         try {
-            if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoveryRequest(httpRequest, securityConfig)) {
-                // 密码找回请求
+            if (PathFilterUtils.isPasswordRecoverySmsCaptchaRequest(httpRequest, securityConfig)
+                    && securityConfig.getPasswordRecovery().getSmsRecovery().isEnable()
+                    && securityConfig.getPasswordRecovery().getSmsRecovery().isNeedCaptcha()) {
+                // 密码找回 - 短信图片验证码
                 isPasswordRecovery = true;
-            } else if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoverySmsValidateCodeRequest(httpRequest, securityConfig)) {
+                getSmsRecoveryCaptcha(httpResponse);
+            } else if (enablePasswordRecovery
+                    && PathFilterUtils.isPasswordRecoverySmsValidateCodeRequest(httpRequest, securityConfig)
+                    && securityConfig.getPasswordRecovery().getSmsRecovery().isEnable()) {
                 // 密码找回 - 短信验证码
                 isPasswordRecovery = true;
-            } else if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoveryEmailValidateCodeRequest(httpRequest, securityConfig)) {
+                sendSmsValidateCode(httpRequest, httpResponse);
+            } else if (PathFilterUtils.isPasswordRecoveryEmailCaptchaRequest(httpRequest, securityConfig)
+                    && securityConfig.getPasswordRecovery().getEmailRecovery().isEnable()
+                    && securityConfig.getPasswordRecovery().getEmailRecovery().isNeedCaptcha()) {
+                // 密码找回 - 邮箱图片验证码
+                isPasswordRecovery = true;
+                sendEmailCaptcha(httpResponse);
+            } else if (enablePasswordRecovery
+                    && PathFilterUtils.isPasswordRecoveryEmailValidateCodeRequest(httpRequest, securityConfig)
+                    && securityConfig.getPasswordRecovery().getEmailRecovery().isEnable()) {
                 // 密码找回 - 邮箱验证码
                 isPasswordRecovery = true;
+                sendEmailValidateCode(httpRequest, httpResponse);
+            } else if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoveryRequest(httpRequest, securityConfig)) {
+                // 密码找回请求
+                isPasswordRecovery = true;
+                recoveryPassword(httpRequest, httpResponse);
             }
         } catch (Exception e) {
             isPasswordRecovery = true;
@@ -82,5 +101,30 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
         PasswordSmsRecoveryConfig smsRecovery = passwordRecovery.getSmsRecovery();
         PasswordEmailRecoveryConfig emailRecovery = passwordRecovery.getEmailRecovery();
         return (smsRecovery != null && smsRecovery.isEnable()) || (emailRecovery != null && emailRecovery.isEnable());
+    }
+
+    // 密码找回 - 短信图片验证码
+    protected void getSmsRecoveryCaptcha(HttpServletResponse response) throws IOException {
+
+    }
+
+    // 密码找回 - 短信验证码
+    protected void sendSmsValidateCode(HttpServletRequest request, HttpServletResponse response) {
+
+    }
+
+    // 密码找回 - 邮箱图片验证码
+    protected void sendEmailCaptcha(HttpServletResponse response) throws IOException {
+
+    }
+
+    // 密码找回 - 邮箱验证码
+    protected void sendEmailValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+    }
+
+    // 找回密码
+    protected void recoveryPassword(HttpServletRequest request, HttpServletResponse response) {
+
     }
 }
