@@ -74,9 +74,9 @@ public class JwtTokenUtilsTest {
         TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, null);
         log.info("jwtToken -> {}", tokenInfo.getValue1());
 
-        Claims claims = null;
+        Claims claims = JwtTokenUtils.parserJwtToken(tokenConfig, tokenInfo.getValue1());
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10000; i++) {
             claims = JwtTokenUtils.parserJwtToken(tokenConfig, tokenInfo.getValue1());
         }
         long end = System.currentTimeMillis();
