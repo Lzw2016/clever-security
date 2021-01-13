@@ -16,6 +16,18 @@ public class PasswordEmailRecoveryConfig implements Serializable {
      */
     private boolean enable = true;
     /**
+     * 是否需要验证码
+     */
+    private boolean needCaptcha = true;
+    /**
+     * 图片验证码路径(用于发送邮件验证码之前的验证)
+     */
+    private String captchaPath = "/password_recovery/email/captcha";
+    /**
+     * 图片验证码有效时间(默认60秒)
+     */
+    private Duration captchaEffectiveTime = Duration.ofSeconds(60);
+    /**
      * 邮箱验证码(请求Path)
      */
     private String emailValidateCodePath = "/password_recovery/email";

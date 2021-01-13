@@ -263,14 +263,20 @@ clever:
       refresh-token-validity: 30d
       refresh-token-name: 'refresh-token'
     password-recovery:
-      register-path: '/password_recovery'
+      password-recovery-path: '/password_recovery'
       password-sms-recovery:
         enable: true
+        need-captcha: true
+        captcha-path: '/password_recovery/sms/captcha'
+        captcha-effective-time: 60
         sms-validate-code-path: '/password_recovery/sms'
         effective-time: 120s
         max-send-num-in-day: 8
       password-email-recovery:
         enable: true
+        need-captcha: true
+        captcha-path: '/password_recovery/email/captcha'
+        captcha-effective-time: 60
         email-validate-code-path: '/password_recovery/email'
         effective-time: 300s
         max-send-num-in-day: 16
