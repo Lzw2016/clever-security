@@ -83,7 +83,7 @@ public class ApiPermissionUtils {
         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
         boolean needAuth = false;
         for (String url : urlArray) {
-            needAuth = needAuth || PathFilterUtils.isAuthorizationRequest(url, "", securityConfig);
+            needAuth = needAuth || PathFilterUtils.isAuthorizationRequest(url, StringUtils.EMPTY, securityConfig);
             if (apiPath.length() > 0) {
                 apiPath.append(" | ");
             }

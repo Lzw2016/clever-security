@@ -1,7 +1,6 @@
 package org.clever.security.embed.utils;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +30,7 @@ import java.util.Map;
  */
 @Slf4j
 public class JwtTokenUtils {
+    private static final Class<? extends Claims> Claims_Class = Jwts.claims().getClass();
     private static final String Secret_Key_Suffix = "0123456789012345678901234567890123456789012345678901234567890123";
 
     /**
@@ -42,7 +42,7 @@ public class JwtTokenUtils {
      */
     public static TupleTow<String, Claims> createJwtToken(TokenConfig tokenConfig, UserInfo userInfo, List<AddJwtTokenExtData> addJwtTokenExtDataList) {
         //创建Token令牌 - iss（签发者）, aud（接收方）, sub（面向的用户）,exp（过期时间戳）, iat（签发时间）, jti（JWT ID）
-        DefaultClaims claims = new DefaultClaims();
+        Claims claims = Jwts.claims();
         claims.setIssuer(tokenConfig.getIssuer());
         claims.setAudience(tokenConfig.getAudience());
         claims.setSubject(userInfo.getUid());
@@ -161,7 +161,7 @@ public class JwtTokenUtils {
         // 解析获得签名私钥
         String payload = strArray[1];
         payload = new String(EncodeDecodeUtils.decodeBase64(payload));
-        return JacksonMapper.getInstance().fromJson(payload, DefaultClaims.class);
+        return JacksonMapper.getInstance().fromJson(payload, Claims_Class);
     }
 
     /**
