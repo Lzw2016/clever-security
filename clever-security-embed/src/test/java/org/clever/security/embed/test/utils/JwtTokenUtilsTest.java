@@ -64,4 +64,23 @@ public class JwtTokenUtilsTest {
             log.info("--> ", e.getCause());
         }
     }
+
+    @Test
+    public void t03() {
+        TokenConfig tokenConfig = new TokenConfig();
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUid("lizw" + IDCreateUtils.uuid());
+        userInfo.setLoginName("lizw");
+        TupleTow<String, Claims> tokenInfo = JwtTokenUtils.createJwtToken(tokenConfig, userInfo, null);
+        log.info("jwtToken -> {}", tokenInfo.getValue1());
+
+        Claims claims = null;
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000; i++) {
+            claims = JwtTokenUtils.parserJwtToken(tokenConfig, tokenInfo.getValue1());
+        }
+        long end = System.currentTimeMillis();
+        log.info("-> {}ms", end - start);
+        log.info("Body     -> {}", claims);
+    }
 }
