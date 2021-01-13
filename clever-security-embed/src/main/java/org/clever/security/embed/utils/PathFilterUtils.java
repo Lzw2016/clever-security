@@ -341,11 +341,11 @@ public class PathFilterUtils {
         if (passwordRecovery == null) {
             return false;
         }
-        PasswordSmsRecoveryConfig passwordSmsRecovery = passwordRecovery.getPasswordSmsRecovery();
-        if (passwordSmsRecovery == null) {
+        PasswordSmsRecoveryConfig smsRecovery = passwordRecovery.getSmsRecovery();
+        if (smsRecovery == null) {
             return false;
         }
-        return Objects.equals(passwordSmsRecovery.getSmsValidateCodePath(), path);
+        return Objects.equals(smsRecovery.getSmsValidateCodePath(), path);
     }
 
     /**
@@ -361,11 +361,11 @@ public class PathFilterUtils {
         if (passwordRecovery == null) {
             return false;
         }
-        PasswordEmailRecoveryConfig passwordEmailRecovery = passwordRecovery.getPasswordEmailRecovery();
-        if (passwordEmailRecovery == null) {
+        PasswordEmailRecoveryConfig emailRecovery = passwordRecovery.getEmailRecovery();
+        if (emailRecovery == null) {
             return false;
         }
-        return Objects.equals(passwordEmailRecovery.getEmailValidateCodePath(), path);
+        return Objects.equals(emailRecovery.getEmailValidateCodePath(), path);
     }
 
     /**

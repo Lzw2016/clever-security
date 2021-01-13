@@ -19,10 +19,10 @@ public class PasswordRecoveryConfig implements Serializable {
      * 使用短信找回密码
      */
     @NestedConfigurationProperty
-    private final PasswordSmsRecoveryConfig passwordSmsRecovery = new PasswordSmsRecoveryConfig();
+    private final PasswordSmsRecoveryConfig smsRecovery = new PasswordSmsRecoveryConfig();
     /**
      * 使用邮箱找回密码
      */
     @NestedConfigurationProperty
-    private final PasswordEmailRecoveryConfig passwordEmailRecovery = new PasswordEmailRecoveryConfig();
+    private final PasswordEmailRecoveryConfig emailRecovery = new PasswordEmailRecoveryConfig();
 }

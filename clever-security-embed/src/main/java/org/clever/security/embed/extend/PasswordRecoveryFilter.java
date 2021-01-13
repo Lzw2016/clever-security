@@ -79,8 +79,8 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
         if (passwordRecovery == null) {
             return false;
         }
-        PasswordSmsRecoveryConfig passwordSmsRecovery = passwordRecovery.getPasswordSmsRecovery();
-        PasswordEmailRecoveryConfig passwordEmailRecovery = passwordRecovery.getPasswordEmailRecovery();
-        return (passwordSmsRecovery != null && passwordSmsRecovery.isEnable()) || (passwordEmailRecovery != null && passwordEmailRecovery.isEnable());
+        PasswordSmsRecoveryConfig smsRecovery = passwordRecovery.getSmsRecovery();
+        PasswordEmailRecoveryConfig emailRecovery = passwordRecovery.getEmailRecovery();
+        return (smsRecovery != null && smsRecovery.isEnable()) || (emailRecovery != null && emailRecovery.isEnable());
     }
 }

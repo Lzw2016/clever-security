@@ -264,7 +264,7 @@ clever:
       refresh-token-name: 'refresh-token'
     password-recovery:
       password-recovery-path: '/password_recovery'
-      password-sms-recovery:
+      sms-recovery:
         enable: true
         need-captcha: true
         captcha-path: '/password_recovery/sms/captcha'
@@ -272,7 +272,7 @@ clever:
         sms-validate-code-path: '/password_recovery/sms'
         effective-time: 120s
         max-send-num-in-day: 8
-      password-email-recovery:
+      email-recovery:
         enable: true
         need-captcha: true
         captcha-path: '/password_recovery/email/captcha'
