@@ -13,6 +13,7 @@ import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.common.utils.tuples.TupleThree;
 import org.clever.common.utils.zxing.ZxingCreateImageUtils;
 import org.clever.security.client.LoginSupportClient;
+import org.clever.security.crypto.PasswordEncoder;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.entity.*;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.Date;
 import java.util.List;
@@ -60,9 +60,11 @@ public class LoginSupportService implements LoginSupportClient {
     private UserLoginLogMapper userLoginLogMapper;
     @Autowired
     private SendValidateCodeService sendValidateCodeService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public Domain getDomain(@Validated GetDomainReq req) {
+    public Domain getDomain(GetDomainReq req) {
         return domainMapper.selectById(req.getDomainId());
     }
 
@@ -615,6 +617,13 @@ public class LoginSupportService implements LoginSupportClient {
         jwtTokenMapper.updateById(update);
         // 返回新增的Token
         return jwtTokenMapper.selectById(add.getId());
+    }
+
+    @Override
+    public MatchesPasswordRes matchesPassword(MatchesPasswordReq req) {
+        MatchesPasswordRes res = new MatchesPasswordRes();
+        res.setSuccess(passwordEncoder.matches(req.getRawPassword(), req.getEncodedPassword()));
+        return res;
     }
 
     protected ValidateCode getAndExpiredValidateCode(Long domainId, String digest, Date now) {

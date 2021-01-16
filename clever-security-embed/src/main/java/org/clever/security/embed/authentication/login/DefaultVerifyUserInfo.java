@@ -5,8 +5,10 @@ import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.DomainExistsUserReq;
 import org.clever.security.dto.request.GetConcurrentLoginCountReq;
 import org.clever.security.dto.request.GetUserReq;
+import org.clever.security.dto.request.MatchesPasswordReq;
 import org.clever.security.dto.response.DomainExistsUserRes;
 import org.clever.security.dto.response.GetConcurrentLoginCountRes;
+import org.clever.security.dto.response.MatchesPasswordRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
@@ -83,9 +85,15 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
                 }
             }
             // 验证密码
-//            if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {
-//                throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
-//            }
+            MatchesPasswordReq req = new MatchesPasswordReq();
+            req.setRawPassword(reqPassword);
+            req.setEncodedPassword(userInfo.getPassword());
+            MatchesPasswordRes res = loginSupportClient.matchesPassword(req);
+            if (res == null) {
+                throw new LoginInnerException("用户名或密码验证失败");
+            } else if (!res.isSuccess()) {
+                throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
+            }
         }
     }
 

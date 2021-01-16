@@ -3,7 +3,10 @@ package org.clever.security.controller;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.*;
+import org.clever.security.entity.Domain;
+import org.clever.security.entity.JwtToken;
+import org.clever.security.entity.ScanCodeLogin;
+import org.clever.security.entity.User;
 import org.clever.security.model.UserInfo;
 import org.clever.security.service.LoginSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,5 +272,14 @@ public class LoginSupportController implements LoginSupportClient {
     @Override
     public JwtToken useJwtRefreshToken(@Validated @RequestBody UseJwtRefreshTokenReq req) {
         return loginSupportService.useJwtRefreshToken(req);
+    }
+
+    /**
+     * 密码匹配验证
+     */
+    @PostMapping("/matches_password")
+    @Override
+    public MatchesPasswordRes matchesPassword(@Validated @RequestBody MatchesPasswordReq req) {
+        return loginSupportService.matchesPassword(req);
     }
 }

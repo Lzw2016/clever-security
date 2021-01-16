@@ -10,6 +10,7 @@ import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.common.utils.tuples.TupleThree;
 import org.clever.security.RegisterChannel;
 import org.clever.security.client.RegisterSupportClient;
+import org.clever.security.crypto.PasswordEncoder;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.entity.*;
@@ -47,6 +48,8 @@ public class RegisterSupportService implements RegisterSupportClient {
     private UserRegisterLogMapper userRegisterLogMapper;
     @Autowired
     private SendValidateCodeService sendValidateCodeService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public GetLoginNameRegisterCaptchaRes getLoginNameRegisterCaptcha(GetLoginNameRegisterCaptchaReq req) {
@@ -281,7 +284,7 @@ public class RegisterSupportService implements RegisterSupportClient {
         }
         user = new User();
         user.setLoginName(req.getLoginName());
-        user.setPassword(req.getPassword());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setNickname(user.getLoginName());
         UserRegisterRes userRegisterRes = addUser(user, req.getRegisterChannel());
         userRegisterRes.setRequestResult(EnumConstant.UserRegisterLog_RequestResult_2);

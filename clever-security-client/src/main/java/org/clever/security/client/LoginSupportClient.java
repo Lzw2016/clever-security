@@ -4,7 +4,10 @@ import org.clever.security.Constant;
 import org.clever.security.client.config.CleverSecurityFeignConfiguration;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
-import org.clever.security.entity.*;
+import org.clever.security.entity.Domain;
+import org.clever.security.entity.JwtToken;
+import org.clever.security.entity.ScanCodeLogin;
+import org.clever.security.entity.User;
 import org.clever.security.model.UserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
@@ -191,4 +194,10 @@ public interface LoginSupportClient {
      */
     @PostMapping("/use_jwt_refresh_token")
     JwtToken useJwtRefreshToken(@Validated @RequestBody UseJwtRefreshTokenReq req);
+
+    /**
+     * 密码匹配验证
+     */
+    @PostMapping("/matches_password")
+    MatchesPasswordRes matchesPassword(@Validated @RequestBody MatchesPasswordReq req);
 }
