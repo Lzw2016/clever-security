@@ -83,31 +83,33 @@ public class LoginSupportService implements LoginSupportClient {
     }
 
     @Override
-    public GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(GetLoginFailedCountAndCaptchaReq req) {
+    public VerifyLoginCaptchaRes verifyLoginCaptcha(VerifyLoginCaptchaReq req) {
         final Date now = new Date();
-        GetLoginFailedCountAndCaptchaRes res = new GetLoginFailedCountAndCaptchaRes();
-        res.setFailedCount(0);
         ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getCaptchaDigest());
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1);
-        if (tupleTow.getValue1()) {
-            res.setCode(validateCode.getCode());
-            res.setDigest(validateCode.getDigest());
-            res.setExpiredTime(validateCode.getExpiredTime());
-        }
+        // 设置验证码已经验证
         if (validateCode != null && validateCode.getValidateTime() == null) {
             ValidateCode update = new ValidateCode();
             update.setId(validateCode.getId());
             update.setValidateTime(now);
             validateCodeMapper.updateById(update);
         }
-        User user = getUser(req.getLoginTypeId(), req.getLoginUniqueName());
-        if (user != null) {
-            LoginFailedCount loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), user.getUid(), req.getLoginTypeId());
-            if (loginFailedCount != null) {
-                res.setFailedCount(loginFailedCount.getFailedCount());
-                res.setLastLoginTime(loginFailedCount.getLastLoginTime());
-            }
+        VerifyLoginCaptchaRes res = new VerifyLoginCaptchaRes();
+        if (req.getNeedCaptchaByLoginFailedCount() == null || req.getNeedCaptchaByLoginFailedCount() <= 0) {
+            res.setSuccess(true);
+            return res;
         }
+        User user = getUser(req.getLoginTypeId(), req.getLoginUniqueName());
+        LoginFailedCount loginFailedCount = null;
+        if (user != null) {
+            loginFailedCount = loginFailedCountMapper.getByUidAndLoginType(req.getDomainId(), user.getUid(), req.getLoginTypeId());
+        }
+        if (loginFailedCount == null || loginFailedCount.getFailedCount() < req.getNeedCaptchaByLoginFailedCount()) {
+            res.setSuccess(true);
+            return res;
+        }
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getCaptcha(), EnumConstant.ValidateCode_Type_1);
+        res.setSuccess(tupleTow.getValue1());
+        res.setMessage(tupleTow.getValue2());
         return res;
     }
 

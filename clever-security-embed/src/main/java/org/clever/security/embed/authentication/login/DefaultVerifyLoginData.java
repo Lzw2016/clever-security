@@ -5,18 +5,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.GetLoginEmailValidateCodeReq;
-import org.clever.security.dto.request.GetLoginFailedCountAndCaptchaReq;
 import org.clever.security.dto.request.GetLoginSmsValidateCodeReq;
 import org.clever.security.dto.request.GetScanCodeLoginInfoReq;
-import org.clever.security.dto.response.GetLoginFailedCountAndCaptchaRes;
+import org.clever.security.dto.request.VerifyLoginCaptchaReq;
 import org.clever.security.dto.response.GetScanCodeLoginInfoRes;
+import org.clever.security.dto.response.VerifyLoginCaptchaRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginCaptchaConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.exception.LoginDataValidateException;
-import org.clever.security.embed.exception.LoginException;
-import org.clever.security.embed.exception.LoginValidateCodeException;
-import org.clever.security.embed.exception.ScanCodeLoginException;
+import org.clever.security.embed.exception.*;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.login.AbstractUserLoginReq;
@@ -91,26 +88,20 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
             return;
         }
         // 获取当前登录失败次数和验证码信息
-        GetLoginFailedCountAndCaptchaReq req = new GetLoginFailedCountAndCaptchaReq(domainId);
-        req.setCaptchaDigest(loginReq.getCaptchaDigest());
+        VerifyLoginCaptchaReq req = new VerifyLoginCaptchaReq(domainId);
         req.setLoginTypeId(loginReq.getLoginType().getId());
         req.setLoginUniqueName(LoginUniqueNameUtils.getLoginUniqueName(loginReq));
+        req.setCaptcha(loginReq.getCaptcha());
+        req.setCaptchaDigest(loginReq.getCaptchaDigest());
+        req.setNeedCaptchaByLoginFailedCount(loginCaptcha.getNeedCaptchaByLoginFailedCount());
         if (StringUtils.isBlank(req.getLoginUniqueName())) {
-            return;
+            throw new LoginDataValidateException("登录名不能为空");
         }
-        GetLoginFailedCountAndCaptchaRes res = loginSupportClient.getLoginFailedCountAndCaptcha(req);
-        // 不需要验证码
-        if (res.getFailedCount() < loginCaptcha.getNeedCaptchaByLoginFailedCount()) {
-            return;
-        }
-        final Date now = new Date();
-        if (res.getExpiredTime() != null && now.compareTo(res.getExpiredTime()) >= 0) {
-            throw new LoginDataValidateException("验证码已过期");
-        }
-        if (StringUtils.isBlank(res.getCode())
-                || !Objects.equals(res.getDigest(), loginReq.getCaptchaDigest())
-                || !Objects.equals(res.getCode(), loginReq.getCaptcha())) {
-            throw new LoginDataValidateException("登录验证码错误");
+        VerifyLoginCaptchaRes res = loginSupportClient.verifyLoginCaptcha(req);
+        if (res == null) {
+            throw new LoginInnerException("验证验证码失败");
+        } else if (!res.isSuccess()) {
+            throw new BadCaptchaException("验证码错误");
         }
     }
 

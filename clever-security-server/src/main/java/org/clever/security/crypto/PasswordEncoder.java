@@ -1,4 +1,4 @@
-package org.clever.security.embed.crypto;
+package org.clever.security.crypto;
 
 /**
  * 密码加密处理

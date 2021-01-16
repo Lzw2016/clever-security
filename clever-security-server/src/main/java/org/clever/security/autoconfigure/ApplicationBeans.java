@@ -1,6 +1,8 @@
 package org.clever.security.autoconfigure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.crypto.BCryptPasswordEncoder;
+import org.clever.security.crypto.PasswordEncoder;
 import org.clever.security.third.validate.SendEmailValidateCode;
 import org.clever.security.third.validate.SendSmsValidateCode;
 import org.clever.security.validate.DefaultSendEmailValidateCode;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
+import java.security.SecureRandom;
+
 /**
  * 作者：lizw <br/>
  * 创建时间：2021-01-10 15:12 <br/>
@@ -18,6 +22,11 @@ import org.springframework.core.annotation.Order;
 @Configuration
 @Slf4j
 public class ApplicationBeans {
+    @Bean("passwordEncoder")
+    @ConditionalOnMissingBean(name = "passwordEncoder")
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(10, new SecureRandom());
+    }
 
     @Bean("sendEmailValidateCode")
     @ConditionalOnMissingBean(name = "sendEmailValidateCode")

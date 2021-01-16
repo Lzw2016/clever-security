@@ -39,12 +39,12 @@ public class LoginSupportController implements LoginSupportClient {
     }
 
     /**
-     * 获取用户登录失败次数和验证码信息
+     * 验证登录验证码
      */
-    @GetMapping("/login_failed_count_and_captcha")
+    @GetMapping("/verify_login_captcha")
     @Override
-    public GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(@Validated GetLoginFailedCountAndCaptchaReq req) {
-        return loginSupportService.getLoginFailedCountAndCaptcha(req);
+    public VerifyLoginCaptchaRes verifyLoginCaptcha(@Validated VerifyLoginCaptchaReq req) {
+        return loginSupportService.verifyLoginCaptcha(req);
     }
 
     /**

@@ -11,8 +11,6 @@ import org.clever.security.embed.authentication.token.DefaultVerifyJwtToken;
 import org.clever.security.embed.authorization.voter.ControllerAuthorizationVoter;
 import org.clever.security.embed.collect.*;
 import org.clever.security.embed.context.DefaultSecurityContextRepository;
-import org.clever.security.embed.crypto.BCryptPasswordEncoder;
-import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.DefaultVerifyRegisterData;
 import org.clever.security.third.client.WeChatClient;
@@ -24,8 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.security.SecureRandom;
-
 /**
  * 作者：lizw <br/>
  * 创建时间：2020/12/19 22:28 <br/>
@@ -34,12 +30,6 @@ import java.security.SecureRandom;
 @Configuration
 @Slf4j
 public class AutoConfigureBaseBeans {
-    @Bean("passwordEncoder")
-    @ConditionalOnMissingBean(name = "passwordEncoder")
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10, new SecureRandom());
-    }
-
     // ------------------------------------------------------------------------------------------------------------------------------------------------- 收集用户登录信息
 
     @Bean("loginNamePasswordReqCollect")
@@ -82,8 +72,8 @@ public class AutoConfigureBaseBeans {
 
     @Bean("defaultVerifyUserInfo")
     @ConditionalOnMissingBean(name = "defaultVerifyUserInfo")
-    public DefaultVerifyUserInfo defaultVerifyUserInfo(PasswordEncoder passwordEncoder, LoginSupportClient loginSupportClient) {
-        return new DefaultVerifyUserInfo(passwordEncoder, loginSupportClient);
+    public DefaultVerifyUserInfo defaultVerifyUserInfo(LoginSupportClient loginSupportClient) {
+        return new DefaultVerifyUserInfo(loginSupportClient);
     }
 
     @Bean("defaultVerifyJwtToken")

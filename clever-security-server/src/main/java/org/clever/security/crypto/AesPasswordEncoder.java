@@ -1,4 +1,4 @@
-package org.clever.security.embed.crypto;
+package org.clever.security.crypto;
 
 import org.clever.common.utils.codec.CryptoUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;

@@ -37,10 +37,10 @@ public interface LoginSupportClient {
     GetLoginCaptchaRes getLoginCaptcha(@Validated @SpringQueryMap GetLoginCaptchaReq req);
 
     /**
-     * 获取用户登录失败次数和验证码信息
+     * 验证登录验证码
      */
-    @GetMapping("/login_failed_count_and_captcha")
-    GetLoginFailedCountAndCaptchaRes getLoginFailedCountAndCaptcha(@Validated @SpringQueryMap GetLoginFailedCountAndCaptchaReq req);
+    @GetMapping("/verify_login_captcha")
+    VerifyLoginCaptchaRes verifyLoginCaptcha(@Validated @SpringQueryMap VerifyLoginCaptchaReq req);
 
     /**
      * 发送邮箱登录验证码

@@ -1,10 +1,10 @@
-package org.clever.security.embed.test.utils;
+package org.clever.security.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.clever.common.utils.codec.CryptoUtils;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
-import org.clever.security.embed.crypto.AesPasswordEncoder;
-import org.clever.security.embed.crypto.BCryptPasswordEncoder;
+import org.clever.security.crypto.AesPasswordEncoder;
+import org.clever.security.crypto.BCryptPasswordEncoder;
 import org.junit.Test;
 
 import java.security.SecureRandom;

@@ -10,7 +10,6 @@ import org.clever.security.dto.response.GetConcurrentLoginCountRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
-import org.clever.security.embed.crypto.PasswordEncoder;
 import org.clever.security.embed.exception.*;
 import org.clever.security.embed.utils.AesUtils;
 import org.clever.security.entity.User;
@@ -30,13 +29,10 @@ import java.util.Objects;
  */
 @Slf4j
 public class DefaultVerifyUserInfo implements VerifyUserInfo {
-    private final PasswordEncoder passwordEncoder;
     private final LoginSupportClient loginSupportClient;
 
-    public DefaultVerifyUserInfo(PasswordEncoder passwordEncoder, LoginSupportClient loginSupportClient) {
-        Assert.notNull(loginSupportClient, "参数passwordEncoder不能为null");
+    public DefaultVerifyUserInfo(LoginSupportClient loginSupportClient) {
         Assert.notNull(loginSupportClient, "参数loginSupportClient不能为null");
-        this.passwordEncoder = passwordEncoder;
         this.loginSupportClient = loginSupportClient;
     }
 
@@ -87,9 +83,9 @@ public class DefaultVerifyUserInfo implements VerifyUserInfo {
                 }
             }
             // 验证密码
-            if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {
-                throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
-            }
+//            if (!passwordEncoder.matches(reqPassword, userInfo.getPassword())) {
+//                throw new BadCredentialsException(loginConfig.isHideUserNotFoundException() ? "用户名或密码错误" : "登录密码错误");
+//            }
         }
     }
 

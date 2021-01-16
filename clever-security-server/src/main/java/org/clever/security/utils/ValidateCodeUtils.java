@@ -93,7 +93,7 @@ public class ValidateCodeUtils {
     }
 
     /**
-     * 验证验证码
+     * 验证验证码 TODO private
      */
     public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, Integer type, Integer sendChannel, String sendTarget) {
         String message = null;
@@ -113,7 +113,7 @@ public class ValidateCodeUtils {
     /**
      * 验证验证码
      */
-    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, Integer type) {
+    private static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, Integer type) {
         String message = null;
         boolean success = false;
         if (validateCode == null) {
@@ -127,4 +127,9 @@ public class ValidateCodeUtils {
         }
         return TupleTow.creat(success, message);
     }
+
+//    /**
+//     * 验证码是否已过期
+//     */
+//    private boolean expired;
 }

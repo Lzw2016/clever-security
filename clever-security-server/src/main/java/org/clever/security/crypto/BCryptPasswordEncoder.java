@@ -1,4 +1,4 @@
-package org.clever.security.embed.crypto;
+package org.clever.security.crypto;
 
 
 import org.apache.commons.logging.Log;
