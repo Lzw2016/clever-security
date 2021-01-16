@@ -49,10 +49,22 @@ public interface LoginSupportClient {
     SendLoginValidateCodeForEmailRes sendLoginValidateCodeForEmail(@Validated @RequestBody SendLoginValidateCodeForEmailReq req);
 
     /**
+     * 验证邮箱登录验证码
+     */
+    @GetMapping("/verify_login_email_validate_code")
+    VerifyLoginEmailValidateCodeRes verifyLoginEmailValidateCode(@Validated @SpringQueryMap GetLoginEmailValidateCodeReq req);
+
+    /**
      * 发送短信登录验证码
      */
     @PostMapping("/send_login_validate_code_for_sms")
     SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated @RequestBody SendLoginValidateCodeForSmsReq req);
+
+    /**
+     * 验证短信登录验证码
+     */
+    @GetMapping("/verify_login_sms_validate_code")
+    VerifyLoginSmsValidateCodeRes verifyLoginSmsValidateCode(@Validated @SpringQueryMap VerifyLoginSmsValidateCodeReq req);
 
     /**
      * 创建登录扫码二维码
@@ -85,19 +97,7 @@ public interface LoginSupportClient {
     ScanCodeLogin writeBackScanCodeLogin(@Validated @SpringQueryMap WriteBackScanCodeLoginReq req);
 
     /**
-     * 获取发送的手机验证码
-     */
-    @GetMapping("/login_sms_validate_code")
-    ValidateCode getLoginSmsValidateCode(@Validated @SpringQueryMap GetLoginSmsValidateCodeReq req);
-
-    /**
-     * 获取发送的邮箱验证码
-     */
-    @GetMapping("/login_email_validate_code")
-    ValidateCode getLoginEmailValidateCode(@Validated @SpringQueryMap GetLoginEmailValidateCodeReq req);
-
-    /**
-     * 获取用户在指定域中
+     * 指定域中是否存在用户
      */
     @GetMapping("/domain_exists_user")
     DomainExistsUserRes domainExistsUser(@Validated @SpringQueryMap DomainExistsUserReq req);

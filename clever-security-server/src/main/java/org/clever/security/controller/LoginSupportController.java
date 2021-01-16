@@ -57,12 +57,30 @@ public class LoginSupportController implements LoginSupportClient {
     }
 
     /**
-     * 发送邮箱登录验证码
+     * 验证邮箱登录验证码
+     */
+    @GetMapping("/verify_login_email_validate_code")
+    @Override
+    public VerifyLoginEmailValidateCodeRes verifyLoginEmailValidateCode(@Validated GetLoginEmailValidateCodeReq req) {
+        return loginSupportService.verifyLoginEmailValidateCode(req);
+    }
+
+    /**
+     * 发送短信登录验证码
      */
     @PostMapping("/send_login_validate_code_for_sms")
     @Override
     public SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(@Validated @RequestBody SendLoginValidateCodeForSmsReq req) {
         return loginSupportService.sendLoginValidateCodeForSms(req);
+    }
+
+    /**
+     * 获取发送的手机验证码
+     */
+    @GetMapping("/verify_login_sms_validate_code")
+    @Override
+    public VerifyLoginSmsValidateCodeRes verifyLoginSmsValidateCode(@Validated VerifyLoginSmsValidateCodeReq req) {
+        return loginSupportService.verifyLoginSmsValidateCode(req);
     }
 
     /**
@@ -110,25 +128,7 @@ public class LoginSupportController implements LoginSupportClient {
     }
 
     /**
-     * 获取发送的手机验证码
-     */
-    @GetMapping("/login_sms_validate_code")
-    @Override
-    public ValidateCode getLoginSmsValidateCode(@Validated GetLoginSmsValidateCodeReq req) {
-        return loginSupportService.getLoginSmsValidateCode(req);
-    }
-
-    /**
-     * 获取发送的邮箱验证码
-     */
-    @GetMapping("/login_email_validate_code")
-    @Override
-    public ValidateCode getLoginEmailValidateCode(@Validated GetLoginEmailValidateCodeReq req) {
-        return loginSupportService.getLoginEmailValidateCode(req);
-    }
-
-    /**
-     * 获取用户在指定域中
+     * 指定域中是否存在用户
      */
     @GetMapping("/domain_exists_user")
     @Override

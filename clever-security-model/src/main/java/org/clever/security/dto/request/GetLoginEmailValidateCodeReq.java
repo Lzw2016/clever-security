@@ -26,6 +26,11 @@ public class GetLoginEmailValidateCodeReq extends BaseRequest {
     @Email(message = "邮箱格式错误")
     private String email;
     /**
+     * 验证码
+     */
+    @NotBlank(message = "验证码不能为空")
+    private String validateCode;
+    /**
      * 验证码签名
      */
     @NotBlank(message = "验证码签名不能为空")

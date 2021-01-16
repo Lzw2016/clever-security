@@ -68,41 +68,17 @@ public class ValidateCodeUtils {
      * 验证验证码
      */
     public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type, Integer sendChannel, String sendTarget) {
-        TupleTow<Boolean, String> tupleTow = verifyValidateCode(validateCode, now, type, sendChannel, sendTarget);
-        if (tupleTow.getValue1()) {
-            if (!Objects.equals(validateCode.getCode(), captcha)) {
-                tupleTow.setValue1(false);
-                tupleTow.setValue2("验证码错误");
-            }
-        }
-        return tupleTow;
-    }
-
-    /**
-     * 验证验证码
-     */
-    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type) {
-        TupleTow<Boolean, String> tupleTow = verifyValidateCode(validateCode, now, type);
-        if (tupleTow.getValue1()) {
-            if (!Objects.equals(validateCode.getCode(), captcha)) {
-                tupleTow.setValue1(false);
-                tupleTow.setValue2("验证码错误");
-            }
-        }
-        return tupleTow;
-    }
-
-    /**
-     * 验证验证码 TODO private
-     */
-    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, Integer type, Integer sendChannel, String sendTarget) {
         String message = null;
         boolean success = false;
         if (validateCode == null) {
             message = "验证码错误";
-        } else if (validateCode.getValidateTime() != null || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+        } else if (validateCode.getValidateTime() != null
+                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
             message = "验证码已过期";
-        } else if (!Objects.equals(validateCode.getType(), type) || !Objects.equals(validateCode.getSendChannel(), sendChannel) || !Objects.equals(validateCode.getSendTarget(), sendTarget)) {
+        } else if (!Objects.equals(validateCode.getCode(), captcha)
+                || !Objects.equals(validateCode.getType(), type)
+                || !Objects.equals(validateCode.getSendChannel(), sendChannel)
+                || !Objects.equals(validateCode.getSendTarget(), sendTarget)) {
             message = "验证码错误";
         } else {
             success = true;
@@ -113,14 +89,17 @@ public class ValidateCodeUtils {
     /**
      * 验证验证码
      */
-    private static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, Integer type) {
+    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type) {
         String message = null;
         boolean success = false;
         if (validateCode == null) {
             message = "验证码错误";
-        } else if (validateCode.getValidateTime() != null || now.compareTo(validateCode.getExpiredTime()) >= 0) {
+        } else if (validateCode.getValidateTime() != null
+                || now.compareTo(validateCode.getExpiredTime()) >= 0) {
             message = "验证码已过期";
-        } else if (!Objects.equals(validateCode.getType(), type) || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_0)) {
+        } else if (!Objects.equals(validateCode.getCode(), captcha)
+                || !Objects.equals(validateCode.getType(), type)
+                || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_0)) {
             message = "验证码错误";
         } else {
             success = true;

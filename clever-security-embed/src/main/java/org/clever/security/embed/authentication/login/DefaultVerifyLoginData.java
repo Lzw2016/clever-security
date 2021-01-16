@@ -5,17 +5,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.GetLoginEmailValidateCodeReq;
-import org.clever.security.dto.request.GetLoginSmsValidateCodeReq;
 import org.clever.security.dto.request.GetScanCodeLoginInfoReq;
 import org.clever.security.dto.request.VerifyLoginCaptchaReq;
+import org.clever.security.dto.request.VerifyLoginSmsValidateCodeReq;
 import org.clever.security.dto.response.GetScanCodeLoginInfoRes;
 import org.clever.security.dto.response.VerifyLoginCaptchaRes;
+import org.clever.security.dto.response.VerifyLoginEmailValidateCodeRes;
+import org.clever.security.dto.response.VerifyLoginSmsValidateCodeRes;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.LoginCaptchaConfig;
 import org.clever.security.embed.config.internal.LoginConfig;
 import org.clever.security.embed.exception.*;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.EmailValidateCodeReq;
 import org.clever.security.model.login.ScanCodeReq;
@@ -99,9 +100,9 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         }
         VerifyLoginCaptchaRes res = loginSupportClient.verifyLoginCaptcha(req);
         if (res == null) {
-            throw new LoginInnerException("验证验证码失败");
+            throw new LoginInnerException("验证图片验证码失败");
         } else if (!res.isSuccess()) {
-            throw new BadCaptchaException("验证码错误");
+            throw new BadCaptchaException("图片验证码错误");
         }
     }
 
@@ -139,11 +140,16 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      */
     protected void verifySmsValidateCode(Long domainId, SmsValidateCodeReq smsValidateCodeReq) {
         // 获取真实发送的手机验证码
-        GetLoginSmsValidateCodeReq req = new GetLoginSmsValidateCodeReq(domainId);
+        VerifyLoginSmsValidateCodeReq req = new VerifyLoginSmsValidateCodeReq(domainId);
         req.setTelephone(smsValidateCodeReq.getTelephone());
+        req.setValidateCode(smsValidateCodeReq.getValidateCode());
         req.setValidateCodeDigest(smsValidateCodeReq.getValidateCodeDigest());
-        ValidateCode realValidateCode = loginSupportClient.getLoginSmsValidateCode(req);
-        verifyValidateCode(realValidateCode, smsValidateCodeReq.getValidateCode());
+        VerifyLoginSmsValidateCodeRes res = loginSupportClient.verifyLoginSmsValidateCode(req);
+        if(res==null) {
+            throw new LoginInnerException("验证短信验证码失败");
+        } else if(!res.isSuccess()) {
+            throw new BadCaptchaException("短信验证码错误");
+        }
     }
 
     /**
@@ -153,27 +159,13 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         // 获取真实发送的邮箱验证码
         GetLoginEmailValidateCodeReq req = new GetLoginEmailValidateCodeReq(domainId);
         req.setEmail(emailValidateCodeReq.getEmail());
+        req.setValidateCode(emailValidateCodeReq.getValidateCode());
         req.setValidateCodeDigest(emailValidateCodeReq.getValidateCodeDigest());
-        ValidateCode realValidateCode = loginSupportClient.getLoginEmailValidateCode(req);
-        verifyValidateCode(realValidateCode, emailValidateCodeReq.getValidateCode());
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param realValidateCode 真实的验证码数据
-     * @param validateCode     用户提交的验证码
-     */
-    protected void verifyValidateCode(ValidateCode realValidateCode, String validateCode) {
-        if (realValidateCode == null) {
-            throw new LoginValidateCodeException("登录验证码已过期");
-        }
-        Date now = new Date();
-        if (realValidateCode.getExpiredTime() == null || now.compareTo(realValidateCode.getExpiredTime()) >= 0) {
-            throw new LoginValidateCodeException("登录验证码已过期");
-        }
-        if (!Objects.equals(realValidateCode.getCode(), validateCode)) {
-            throw new LoginValidateCodeException("登录验证码错误");
+        VerifyLoginEmailValidateCodeRes res = loginSupportClient.verifyLoginEmailValidateCode(req);
+        if(res==null) {
+            throw new LoginInnerException("验证邮箱验证码失败");
+        } else if(!res.isSuccess()) {
+            throw new BadCaptchaException("邮箱验证码错误");
         }
     }
 

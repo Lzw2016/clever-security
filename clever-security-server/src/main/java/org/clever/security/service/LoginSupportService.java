@@ -85,14 +85,8 @@ public class LoginSupportService implements LoginSupportClient {
     @Override
     public VerifyLoginCaptchaRes verifyLoginCaptcha(VerifyLoginCaptchaReq req) {
         final Date now = new Date();
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getCaptchaDigest());
-        // 设置验证码已经验证
-        if (validateCode != null && validateCode.getValidateTime() == null) {
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(now);
-            validateCodeMapper.updateById(update);
-        }
+        ValidateCode validateCode = getAndExpiredValidateCode(req.getDomainId(), req.getCaptchaDigest(), now);
+        // 验证码验证逻辑
         VerifyLoginCaptchaRes res = new VerifyLoginCaptchaRes();
         if (req.getNeedCaptchaByLoginFailedCount() == null || req.getNeedCaptchaByLoginFailedCount() <= 0) {
             res.setSuccess(true);
@@ -157,6 +151,24 @@ public class LoginSupportService implements LoginSupportClient {
     }
 
     @Override
+    public VerifyLoginEmailValidateCodeRes verifyLoginEmailValidateCode(GetLoginEmailValidateCodeReq req) {
+        final Date now = new Date();
+        ValidateCode validateCode = getAndExpiredValidateCode(req.getDomainId(), req.getValidateCodeDigest(), now);
+        VerifyLoginEmailValidateCodeRes res = new VerifyLoginEmailValidateCodeRes();
+        User user = userMapper.getByEmail(req.getEmail());
+        if (user == null) {
+            res.setSuccess(false);
+            res.setMessage("验证码错误");
+            return res;
+        }
+        // 验证码验证逻辑
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getEmail());
+        res.setSuccess(tupleTow.getValue1());
+        res.setMessage(tupleTow.getValue2());
+        return res;
+    }
+
+    @Override
     public SendLoginValidateCodeForSmsRes sendLoginValidateCodeForSms(SendLoginValidateCodeForSmsReq req) {
         final Date now = new Date();
         final Date dayStart = DateTimeUtils.getDayStartTime(now);
@@ -197,6 +209,24 @@ public class LoginSupportService implements LoginSupportClient {
         validateCodeMapper.insert(validateCode);
         // 返回
         return ConvertUtils.convertToSendLoginValidateCodeForSmsRes(validateCode);
+    }
+
+    @Override
+    public VerifyLoginSmsValidateCodeRes verifyLoginSmsValidateCode(VerifyLoginSmsValidateCodeReq req) {
+        final Date now = new Date();
+        ValidateCode validateCode = getAndExpiredValidateCode(req.getDomainId(), req.getValidateCodeDigest(), now);
+        VerifyLoginSmsValidateCodeRes res = new VerifyLoginSmsValidateCodeRes();
+        User user = userMapper.getByTelephone(req.getTelephone());
+        if (user == null) {
+            res.setSuccess(false);
+            res.setMessage("验证码错误");
+            return res;
+        }
+        // 验证码验证逻辑
+        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getTelephone());
+        res.setSuccess(tupleTow.getValue1());
+        res.setMessage(tupleTow.getValue2());
+        return res;
     }
 
     @Override
@@ -325,44 +355,6 @@ public class LoginSupportService implements LoginSupportClient {
         update.setId(scanCodeLogin.getId());
         scanCodeLoginMapper.updateById(update);
         return scanCodeLoginMapper.selectById(update.getId());
-    }
-
-    @Override
-    public ValidateCode getLoginSmsValidateCode(GetLoginSmsValidateCodeReq req) {
-        User user = userMapper.getByTelephone(req.getTelephone());
-        if (user == null) {
-            return null;
-        }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
-        final Date now = new Date();
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getTelephone());
-        if (!tupleTow.getValue1()) {
-            return null;
-        }
-        ValidateCode update = new ValidateCode();
-        update.setId(validateCode.getId());
-        update.setValidateTime(new Date());
-        validateCodeMapper.updateById(update);
-        return validateCode;
-    }
-
-    @Override
-    public ValidateCode getLoginEmailValidateCode(GetLoginEmailValidateCodeReq req) {
-        User user = userMapper.getByEmail(req.getEmail());
-        if (user == null) {
-            return null;
-        }
-        ValidateCode validateCode = validateCodeMapper.getByDigest(req.getDomainId(), req.getValidateCodeDigest());
-        final Date now = new Date();
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getEmail());
-        if (!tupleTow.getValue1()) {
-            return null;
-        }
-        ValidateCode update = new ValidateCode();
-        update.setId(validateCode.getId());
-        update.setValidateTime(new Date());
-        validateCodeMapper.updateById(update);
-        return validateCode;
     }
 
     @Override
@@ -620,6 +612,18 @@ public class LoginSupportService implements LoginSupportClient {
         jwtTokenMapper.updateById(update);
         // 返回新增的Token
         return jwtTokenMapper.selectById(add.getId());
+    }
+
+    protected ValidateCode getAndExpiredValidateCode(Long domainId, String digest, Date now) {
+        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, digest);
+        // 设置验证码已经验证
+        if (validateCode != null && validateCode.getValidateTime() == null) {
+            ValidateCode update = new ValidateCode();
+            update.setId(validateCode.getId());
+            update.setValidateTime(now);
+            validateCodeMapper.updateById(update);
+        }
+        return validateCode;
     }
 
     /**
