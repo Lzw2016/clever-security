@@ -26,4 +26,8 @@ public class ResetPasswordReq extends BaseRequest {
     @NotBlank(message = "新密码不能为空")
     @Size(min = 6, max = 63, message = "密码长度在6~63个字符之间")
     private String newPassword;
+
+    public ResetPasswordReq(Long domainId) {
+        this.domainId = domainId;
+    }
 }

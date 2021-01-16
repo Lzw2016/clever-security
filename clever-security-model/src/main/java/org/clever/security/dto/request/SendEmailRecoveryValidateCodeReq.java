@@ -24,7 +24,7 @@ public class SendEmailRecoveryValidateCodeReq extends BaseRequest {
      */
     private String captcha;
     /**
-     * 登录验证码签名(校验验证码时需要)
+     * 验证码签名(校验验证码时需要)
      */
     private String captchaDigest;
     @NotBlank(message = "邮箱不能为空")

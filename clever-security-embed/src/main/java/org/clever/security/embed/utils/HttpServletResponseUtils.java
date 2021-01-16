@@ -66,6 +66,7 @@ public class HttpServletResponseUtils {
                 || e instanceof LoginException
                 || e instanceof LogoutException
                 || e instanceof RegisterException
+                || e instanceof PasswordRecoveryException
                 || e instanceof BusinessException) {
             errorResponse.setMessage(e.getMessage());
         } else {
@@ -99,7 +100,8 @@ public class HttpServletResponseUtils {
         if (e instanceof AuthenticationInnerException
                 || e instanceof AuthorizationInnerException
                 || e instanceof LoginInnerException
-                || e instanceof RegisterInnerException) {
+                || e instanceof RegisterInnerException
+                || e instanceof PasswordRecoveryInnerException) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
         if (e instanceof AuthenticationException
@@ -107,6 +109,7 @@ public class HttpServletResponseUtils {
                 || e instanceof LoginException
                 || e instanceof LogoutException
                 || e instanceof RegisterException
+                || e instanceof PasswordRecoveryException
                 || e instanceof BusinessException) {
             return HttpStatus.BAD_REQUEST;
         }

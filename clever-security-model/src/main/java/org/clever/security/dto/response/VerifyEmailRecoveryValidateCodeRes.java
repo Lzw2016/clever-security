@@ -27,4 +27,9 @@ public class VerifyEmailRecoveryValidateCodeRes extends BaseResponse {
      * 用户id
      */
     private String uid;
+
+    /**
+     * 验证码是否已过期
+     */
+    private boolean expired;
 }

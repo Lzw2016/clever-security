@@ -154,7 +154,7 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         }
         SendSmsValidateCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, SendSmsValidateCodeReq.class);
         if (req == null) {
-            throw new BusinessException("请求数据解析异常(发送短信验证码)");
+            throw new BusinessException("请求数据解析异常(用户注册发送短信验证码)");
         }
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) smsRegister.getEffectiveTime().toMillis());
@@ -162,7 +162,7 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         try {
             ValidatorFactoryUtils.getValidatorInstance().validate(req);
         } catch (Exception e) {
-            throw new BusinessException("请求数据校验失败(发送短信验证码)", e);
+            throw new BusinessException("请求数据校验失败(用户注册发送短信验证码)", e);
         }
         // 校验图形验证码
         if (smsRegister.isNeedCaptcha()) {
