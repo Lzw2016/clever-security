@@ -10,7 +10,7 @@ import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
 import org.clever.common.utils.imgvalidate.ImageValidateCageUtils;
 import org.clever.common.utils.mapper.BeanMapper;
-import org.clever.common.utils.tuples.TupleTow;
+import org.clever.common.utils.tuples.TupleThree;
 import org.clever.common.utils.zxing.ZxingCreateImageUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.*;
@@ -101,9 +101,10 @@ public class LoginSupportService implements LoginSupportClient {
             res.setSuccess(true);
             return res;
         }
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getCaptcha(), EnumConstant.ValidateCode_Type_1);
-        res.setSuccess(tupleTow.getValue1());
-        res.setMessage(tupleTow.getValue2());
+        TupleThree<Boolean, String, Boolean> tuple = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getCaptcha(), EnumConstant.ValidateCode_Type_1);
+        res.setSuccess(tuple.getValue1());
+        res.setMessage(tuple.getValue2());
+        res.setExpired(tuple.getValue3());
         return res;
     }
 
@@ -162,9 +163,10 @@ public class LoginSupportService implements LoginSupportClient {
             return res;
         }
         // 验证码验证逻辑
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getEmail());
-        res.setSuccess(tupleTow.getValue1());
-        res.setMessage(tupleTow.getValue2());
+        TupleThree<Boolean, String, Boolean> tuple = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_2, req.getEmail());
+        res.setSuccess(tuple.getValue1());
+        res.setMessage(tuple.getValue2());
+        res.setExpired(tuple.getValue3());
         return res;
     }
 
@@ -223,9 +225,10 @@ public class LoginSupportService implements LoginSupportClient {
             return res;
         }
         // 验证码验证逻辑
-        TupleTow<Boolean, String> tupleTow = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getTelephone());
-        res.setSuccess(tupleTow.getValue1());
-        res.setMessage(tupleTow.getValue2());
+        TupleThree<Boolean, String, Boolean> tuple = ValidateCodeUtils.verifyValidateCode(validateCode, now, req.getValidateCode(), EnumConstant.ValidateCode_Type_1, EnumConstant.ValidateCode_SendChannel_1, req.getTelephone());
+        res.setSuccess(tuple.getValue1());
+        res.setMessage(tuple.getValue2());
+        res.setExpired(tuple.getValue3());
         return res;
     }
 

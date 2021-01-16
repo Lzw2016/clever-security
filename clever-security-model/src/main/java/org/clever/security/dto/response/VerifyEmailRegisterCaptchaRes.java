@@ -22,4 +22,9 @@ public class VerifyEmailRegisterCaptchaRes extends BaseResponse {
      * 消息
      */
     private String message;
+
+    /**
+     * 验证码是否已过期
+     */
+    private boolean expired;
 }

@@ -3,7 +3,7 @@ package org.clever.security.utils;
 import org.clever.common.utils.IDCreateUtils;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.imgvalidate.ValidateCodeSourceUtils;
-import org.clever.common.utils.tuples.TupleTow;
+import org.clever.common.utils.tuples.TupleThree;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.ValidateCode;
 
@@ -66,15 +66,19 @@ public class ValidateCodeUtils {
 
     /**
      * 验证验证码
+     *
+     * @return {@code TupleTow<验证码是否正确, 验证码错误消息, 验证码是否已过期>}
      */
-    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type, Integer sendChannel, String sendTarget) {
+    public static TupleThree<Boolean, String, Boolean> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type, Integer sendChannel, String sendTarget) {
         String message = null;
         boolean success = false;
+        boolean expired = false;
         if (validateCode == null) {
             message = "验证码错误";
         } else if (validateCode.getValidateTime() != null
                 || now.compareTo(validateCode.getExpiredTime()) >= 0) {
-            message = "验证码已过期";
+            message = "验证码已失效";
+            expired = true;
         } else if (!Objects.equals(validateCode.getCode(), captcha)
                 || !Objects.equals(validateCode.getType(), type)
                 || !Objects.equals(validateCode.getSendChannel(), sendChannel)
@@ -83,20 +87,24 @@ public class ValidateCodeUtils {
         } else {
             success = true;
         }
-        return TupleTow.creat(success, message);
+        return TupleThree.creat(success, message, expired);
     }
 
     /**
      * 验证验证码
+     *
+     * @return {@code TupleTow<验证码是否正确, 验证码错误消息, 验证码是否已过期>}
      */
-    public static TupleTow<Boolean, String> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type) {
+    public static TupleThree<Boolean, String, Boolean> verifyValidateCode(ValidateCode validateCode, Date now, String captcha, Integer type) {
         String message = null;
         boolean success = false;
+        boolean expired = false;
         if (validateCode == null) {
             message = "验证码错误";
         } else if (validateCode.getValidateTime() != null
                 || now.compareTo(validateCode.getExpiredTime()) >= 0) {
-            message = "验证码已过期";
+            message = "验证码已失效";
+            expired = true;
         } else if (!Objects.equals(validateCode.getCode(), captcha)
                 || !Objects.equals(validateCode.getType(), type)
                 || !Objects.equals(validateCode.getSendChannel(), EnumConstant.ValidateCode_SendChannel_0)) {
@@ -104,11 +112,6 @@ public class ValidateCodeUtils {
         } else {
             success = true;
         }
-        return TupleTow.creat(success, message);
+        return TupleThree.creat(success, message, expired);
     }
-
-//    /**
-//     * 验证码是否已过期
-//     */
-//    private boolean expired;
 }

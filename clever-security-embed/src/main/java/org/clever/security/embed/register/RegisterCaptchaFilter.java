@@ -14,6 +14,8 @@ import org.clever.security.embed.config.internal.EmailRegisterConfig;
 import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
 import org.clever.security.embed.config.internal.SmsRegisterConfig;
 import org.clever.security.embed.config.internal.UserRegisterConfig;
+import org.clever.security.embed.exception.RegisterInnerException;
+import org.clever.security.embed.exception.RegisterValidateCodeException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -171,8 +173,10 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
             verifySmsRegisterCaptchaReq.setCaptcha(req.getCaptcha());
             verifySmsRegisterCaptchaReq.setCaptchaDigest(req.getCaptchaDigest());
             VerifySmsRegisterCaptchaRes res = registerSupportClient.verifySmsRegisterCaptcha(verifySmsRegisterCaptchaReq);
-            if (res == null || !res.isSuccess()) {
-                throw new BusinessException("验证码错误");
+            if (res == null) {
+                throw new RegisterInnerException("验证图片验证码失败");
+            } else if (!res.isSuccess()) {
+                throw new RegisterValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
             }
         }
         // 发送短信验证码
@@ -232,8 +236,10 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
             verifyEmailRegisterCaptchaReq.setCaptcha(req.getCaptcha());
             verifyEmailRegisterCaptchaReq.setCaptchaDigest(req.getCaptchaDigest());
             VerifyEmailRegisterCaptchaRes res = registerSupportClient.verifyEmailRegisterCaptcha(verifyEmailRegisterCaptchaReq);
-            if (res == null || !res.isSuccess()) {
-                throw new BusinessException("验证码错误");
+            if (res == null) {
+                throw new RegisterInnerException("验证图片验证码失败");
+            } else if (!res.isSuccess()) {
+                throw new RegisterValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
             }
         }
         // 发送短信验证码

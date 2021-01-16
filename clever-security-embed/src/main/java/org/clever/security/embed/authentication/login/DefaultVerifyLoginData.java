@@ -102,7 +102,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         if (res == null) {
             throw new LoginInnerException("验证图片验证码失败");
         } else if (!res.isSuccess()) {
-            throw new BadCaptchaException("图片验证码错误");
+            throw new BadCaptchaException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
         }
     }
 
@@ -145,10 +145,10 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         req.setValidateCode(smsValidateCodeReq.getValidateCode());
         req.setValidateCodeDigest(smsValidateCodeReq.getValidateCodeDigest());
         VerifyLoginSmsValidateCodeRes res = loginSupportClient.verifyLoginSmsValidateCode(req);
-        if(res==null) {
+        if (res == null) {
             throw new LoginInnerException("验证短信验证码失败");
-        } else if(!res.isSuccess()) {
-            throw new BadCaptchaException("短信验证码错误");
+        } else if (!res.isSuccess()) {
+            throw new BadCaptchaException(res.isExpired() ? "短信验证码已失效" : "短信验证码错误");
         }
     }
 
@@ -162,10 +162,10 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
         req.setValidateCode(emailValidateCodeReq.getValidateCode());
         req.setValidateCodeDigest(emailValidateCodeReq.getValidateCodeDigest());
         VerifyLoginEmailValidateCodeRes res = loginSupportClient.verifyLoginEmailValidateCode(req);
-        if(res==null) {
+        if (res == null) {
             throw new LoginInnerException("验证邮箱验证码失败");
-        } else if(!res.isSuccess()) {
-            throw new BadCaptchaException("邮箱验证码错误");
+        } else if (!res.isSuccess()) {
+            throw new BadCaptchaException(res.isExpired() ? "邮箱验证码已失效" : "邮箱验证码错误");
         }
     }
 

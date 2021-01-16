@@ -13,10 +13,7 @@ import org.clever.security.embed.config.internal.EmailRegisterConfig;
 import org.clever.security.embed.config.internal.LoginNameRegisterConfig;
 import org.clever.security.embed.config.internal.SmsRegisterConfig;
 import org.clever.security.embed.config.internal.UserRegisterConfig;
-import org.clever.security.embed.exception.LoginDataValidateException;
-import org.clever.security.embed.exception.RegisterDataValidateException;
-import org.clever.security.embed.exception.RegisterException;
-import org.clever.security.embed.exception.RegisterValidateCodeException;
+import org.clever.security.embed.exception.*;
 import org.clever.security.model.register.AbstractUserRegisterReq;
 import org.clever.security.model.register.EmailRegisterReq;
 import org.clever.security.model.register.LoginNameRegisterReq;
@@ -86,8 +83,10 @@ public class DefaultVerifyRegisterData implements VerifyRegisterData {
         req.setCaptcha(registerReq.getCaptcha());
         req.setCaptchaDigest(registerReq.getCaptchaDigest());
         VerifyLoginNameRegisterCaptchaRes res = registerSupportClient.verifyLoginNameRegisterCaptcha(req);
-        if (res == null || !res.isSuccess()) {
-            throw new RegisterValidateCodeException("验证码错误");
+        if (res == null) {
+            throw new RegisterInnerException("验证图片验证码失败");
+        } else if (!res.isSuccess()) {
+            throw new RegisterValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
         }
     }
 
@@ -104,8 +103,10 @@ public class DefaultVerifyRegisterData implements VerifyRegisterData {
         req.setCodeDigest(registerReq.getValidateCodeDigest());
         req.setTelephone(registerReq.getTelephone());
         VerifySmsValidateCodeRes res = registerSupportClient.verifySmsValidateCode(req);
-        if (res == null || !res.isSuccess()) {
-            throw new RegisterValidateCodeException("验证码错误");
+        if (res == null) {
+            throw new RegisterInnerException("验证短信验证码失败");
+        } else if (!res.isSuccess()) {
+            throw new RegisterValidateCodeException(res.isExpired() ? "短信验证码已失效" : "短信验证码错误");
         }
     }
 
@@ -122,8 +123,10 @@ public class DefaultVerifyRegisterData implements VerifyRegisterData {
         req.setCodeDigest(registerReq.getValidateCodeDigest());
         req.setEmail(registerReq.getEmail());
         VerifyEmailValidateCodeRes res = registerSupportClient.verifyEmailValidateCode(req);
-        if (res == null || !res.isSuccess()) {
-            throw new RegisterValidateCodeException("验证码错误");
+        if (res == null) {
+            throw new RegisterInnerException("验证邮箱验证码失败");
+        } else if (!res.isSuccess()) {
+            throw new RegisterValidateCodeException(res.isExpired() ? "邮箱验证码已失效" : "邮箱验证码错误");
         }
     }
 
