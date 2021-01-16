@@ -1,9 +1,6 @@
 package org.clever.security.utils;
 
-import org.clever.security.dto.response.SendEmailValidateCodeRes;
-import org.clever.security.dto.response.SendLoginValidateCodeForEmailRes;
-import org.clever.security.dto.response.SendLoginValidateCodeForSmsRes;
-import org.clever.security.dto.response.SendSmsValidateCodeRes;
+import org.clever.security.dto.response.*;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
 import org.clever.security.model.UserInfo;
@@ -81,5 +78,21 @@ public class ConvertUtils {
         apiPermissionModel.setMethodParams(apiPermissionEntity.getMethodParams());
         apiPermissionModel.setApiPath(apiPermissionEntity.getApiPath());
         return apiPermissionModel;
+    }
+
+    public static SendSmsRecoveryValidateCodeRes convertToSendSmsRecoveryValidateCodeRes(ValidateCode validateCode) {
+        SendSmsRecoveryValidateCodeRes res = new SendSmsRecoveryValidateCodeRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendEmailRecoveryValidateCodeRes convertToSendEmailRecoveryValidateCodeRes(ValidateCode validateCode) {
+        SendEmailRecoveryValidateCodeRes res = new SendEmailRecoveryValidateCodeRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
     }
 }
