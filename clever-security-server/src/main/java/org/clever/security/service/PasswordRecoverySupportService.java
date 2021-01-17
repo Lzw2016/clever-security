@@ -132,6 +132,7 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
         res.setSuccess(tuple.getValue1());
         res.setMessage(tuple.getValue2());
         res.setExpired(tuple.getValue3());
+        res.setUid(user.getUid());
         return res;
     }
 
@@ -229,6 +230,7 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
         User update = new User();
         update.setUid(user.getUid());
         update.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userMapper.updateById(update);
         // 禁用当前用户的Token
         List<JwtToken> jwtTokenList = jwtTokenMapper.getEffectiveTokenByUid(update.getUid());
         final String disableReason = "用户修改密码";

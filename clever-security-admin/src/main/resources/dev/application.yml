@@ -268,7 +268,7 @@ clever:
         enable: true
         need-captcha: true
         captcha-path: '/password_recovery/sms/captcha'
-        captcha-effective-time: 60
+        captcha-effective-time: 60s
         sms-validate-code-path: '/password_recovery/sms'
         effective-time: 120s
         max-send-num-in-day: 8
@@ -276,7 +276,7 @@ clever:
         enable: true
         need-captcha: true
         captcha-path: '/password_recovery/email/captcha'
-        captcha-effective-time: 60
+        captcha-effective-time: 60s
         email-validate-code-path: '/password_recovery/email'
         effective-time: 300s
         max-send-num-in-day: 16
