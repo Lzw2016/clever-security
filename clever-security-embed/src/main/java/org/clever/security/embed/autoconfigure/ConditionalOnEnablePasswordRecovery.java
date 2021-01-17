@@ -13,11 +13,11 @@ public class ConditionalOnEnablePasswordRecovery extends AnyNestedCondition {
         super(ConfigurationPhase.REGISTER_BEAN);
     }
 
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "password-recovery.password-sms-recovery.enable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "password-recovery.sms-recovery.enable", havingValue = "true", matchIfMissing = true)
     static class EnablePasswordSmsRecovery {
     }
 
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "password-recovery.password-email-recovery.enable", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "password-recovery.email-recovery.enable", havingValue = "true", matchIfMissing = true)
     static class EnablePasswordEmailRecovery {
     }
 }

@@ -58,7 +58,7 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
         GetSmsRecoveryCaptchaRes res = new GetSmsRecoveryCaptchaRes();
         res.setCode(tuple.getValue1());
         res.setDigest(tuple.getValue2());
-        res.setCodeContent(tuple.getValue2());
+        res.setCodeContent(tuple.getValue3());
         res.setExpiredTime(tuple.getValue4());
         return res;
     }
@@ -141,7 +141,7 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
         GetEmailRecoveryCaptchaRes res = new GetEmailRecoveryCaptchaRes();
         res.setCode(tuple.getValue1());
         res.setDigest(tuple.getValue2());
-        res.setCodeContent(tuple.getValue2());
+        res.setCodeContent(tuple.getValue3());
         res.setExpiredTime(tuple.getValue4());
         return res;
     }

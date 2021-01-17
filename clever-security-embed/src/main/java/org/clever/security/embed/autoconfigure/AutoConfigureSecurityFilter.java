@@ -229,10 +229,16 @@ public class AutoConfigureSecurityFilter {
                 filterRegistration.addUrlPatterns(passwordRecovery.getPasswordRecoveryPath());
             }
             PasswordSmsRecoveryConfig smsRecovery = passwordRecovery.getSmsRecovery();
+            if (smsRecovery != null && StringUtils.isNotBlank(smsRecovery.getCaptchaPath())) {
+                filterRegistration.addUrlPatterns(smsRecovery.getCaptchaPath());
+            }
             if (smsRecovery != null && StringUtils.isNotBlank(smsRecovery.getSmsValidateCodePath())) {
                 filterRegistration.addUrlPatterns(smsRecovery.getSmsValidateCodePath());
             }
             PasswordEmailRecoveryConfig emailRecovery = passwordRecovery.getEmailRecovery();
+            if (emailRecovery != null && StringUtils.isNotBlank(emailRecovery.getCaptchaPath())) {
+                filterRegistration.addUrlPatterns(emailRecovery.getCaptchaPath());
+            }
             if (emailRecovery != null && StringUtils.isNotBlank(emailRecovery.getEmailValidateCodePath())) {
                 filterRegistration.addUrlPatterns(emailRecovery.getEmailValidateCodePath());
             }
