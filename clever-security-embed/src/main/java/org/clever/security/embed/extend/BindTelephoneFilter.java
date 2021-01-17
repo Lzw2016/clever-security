@@ -1,5 +1,8 @@
 package org.clever.security.embed.extend;
 
+import org.clever.security.client.BindSupportClient;
+import org.clever.security.embed.config.SecurityConfig;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -13,6 +16,19 @@ import java.io.IOException;
  * 创建时间：2020/12/18 22:12 <br/>
  */
 public class BindTelephoneFilter extends GenericFilterBean {
+    /**
+     * 全局配置
+     */
+    private final SecurityConfig securityConfig;
+    private final BindSupportClient bindSupportClient;
+
+    public BindTelephoneFilter(SecurityConfig securityConfig, BindSupportClient bindSupportClient) {
+        Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
+        Assert.notNull(bindSupportClient, "参数bindSupportClient不能为null");
+        this.securityConfig = securityConfig;
+        this.bindSupportClient = bindSupportClient;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         // TODO 手机号绑定/换绑

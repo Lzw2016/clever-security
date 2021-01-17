@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * 创建时间：2021/01/12 21:19 <br/>
  */
 @FeignClient(
-        contextId = "org.clever.security.client.RegisterSupportClient",
+        contextId = "org.clever.security.client.PasswordRecoverySupportClient",
         name = Constant.ServerName,
         path = "/security/api",
         configuration = CleverSecurityFeignConfiguration.class

@@ -90,6 +90,16 @@ public class SecurityConfig implements Serializable {
     @NestedConfigurationProperty
     private final PasswordRecoveryConfig passwordRecovery = new PasswordRecoveryConfig();
     /**
+     * 手机号绑定配置
+     */
+    @NestedConfigurationProperty
+    private final BindTelephoneConfig bindTelephone = new BindTelephoneConfig();
+    /**
+     * 邮箱绑定配置
+     */
+    @NestedConfigurationProperty
+    private final BindEmailConfig bindEmail = new BindEmailConfig();
+    /**
      * 服务间免登陆Token访问配置
      */
     @NestedConfigurationProperty

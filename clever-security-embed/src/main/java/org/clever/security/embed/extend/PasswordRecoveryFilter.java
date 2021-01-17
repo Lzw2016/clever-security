@@ -23,6 +23,7 @@ import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -48,6 +49,8 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
     private final PasswordRecoverySupportClient passwordRecoverySupportClient;
 
     public PasswordRecoveryFilter(SecurityConfig securityConfig, PasswordRecoverySupportClient passwordRecoverySupportClient) {
+        Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
+        Assert.notNull(passwordRecoverySupportClient, "参数passwordRecoverySupportClient不能为null");
         this.securityConfig = securityConfig;
         this.passwordRecoverySupportClient = passwordRecoverySupportClient;
     }

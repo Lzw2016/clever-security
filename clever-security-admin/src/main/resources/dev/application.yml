@@ -280,6 +280,24 @@ clever:
         email-validate-code-path: '/password_recovery/email'
         effective-time: 300s
         max-send-num-in-day: 16
+    bind-telephone:
+      enable: true
+      bind-telephone-path: '/bind_telephone'
+      need-captcha: true
+      captcha-path: '/bind_telephone/captcha'
+      captcha-effective-time: 60s
+      sms-validate-code-path: '/bind/telephone'
+      effective-time: 120s
+      max-send-num-in-day: 8
+    bind-email:
+      enable: true
+      bind-email-path: '/bind_email'
+      need-captcha: true
+      captcha-path: '/bind_email/captcha'
+      captcha-effective-time: 60s
+      email-validate-code-path: '/bind/email'
+      effective-time: 300s
+      max-send-num-in-day: 16
     server-api-access-token:
       token-name: 'server-api-token'
       token-value: '512f6b74f8ee69fd9049bb512f635b9bf9e6d7fe2cf4f8ee69fd949bb512f6b7768d9d7f3cad4756'
