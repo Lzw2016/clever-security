@@ -3,10 +3,7 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
-import org.clever.security.client.BindSupportClient;
-import org.clever.security.client.LoginSupportClient;
-import org.clever.security.client.PasswordRecoverySupportClient;
-import org.clever.security.client.RegisterSupportClient;
+import org.clever.security.client.*;
 import org.clever.security.embed.authentication.*;
 import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
 import org.clever.security.embed.authentication.login.LoadUser;
@@ -381,8 +378,8 @@ public class AutoConfigureSecurityFilter {
     @Bean("resetPasswordFilter")
     @ConditionalOnMissingBean(name = "resetPasswordFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true", matchIfMissing = true)
-    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter() {
-        ResetPasswordFilter filter = new ResetPasswordFilter();
+    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter(ResetPasswordSupportClient resetPasswordSupportClient) {
+        ResetPasswordFilter filter = new ResetPasswordFilter(securityConfig, resetPasswordSupportClient);
         FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         filterRegistration.setName("resetPasswordFilter");
         filterRegistration.setOrder(Base_Order + 200 + 3);

@@ -55,7 +55,7 @@ public class AuthSupportService implements AuthSupportClient {
     public void cacheContext(CacheContextReq req) {
         TupleTow<UserSecurityContext, SecurityContext> tupleTow = getSecurityContext(req.getDomainId(), req.getUid());
         if (tupleTow == null) {
-            userSecurityContextMapper.deleteByUid(req.getDomainId(), req.getUid());
+            userSecurityContextMapper.deleteByDomainIdAndUid(req.getDomainId(), req.getUid());
             return;
         }
         UserSecurityContext userSecurityContext = userSecurityContextMapper.getByUid(req.getDomainId(), req.getUid());

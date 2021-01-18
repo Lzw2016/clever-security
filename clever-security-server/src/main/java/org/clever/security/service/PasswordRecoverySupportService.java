@@ -12,13 +12,9 @@ import org.clever.security.crypto.PasswordEncoder;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.entity.EnumConstant;
-import org.clever.security.entity.JwtToken;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.mapper.JwtTokenMapper;
-import org.clever.security.mapper.UserDomainMapper;
-import org.clever.security.mapper.UserMapper;
-import org.clever.security.mapper.ValidateCodeMapper;
+import org.clever.security.mapper.*;
 import org.clever.security.utils.ConvertUtils;
 import org.clever.security.utils.ValidateCodeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -47,6 +42,8 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
     private UserDomainMapper userDomainMapper;
     @Autowired
     private JwtTokenMapper jwtTokenMapper;
+    @Autowired
+    private UserSecurityContextMapper userSecurityContextMapper;
     @Autowired
     private SendValidateCodeService sendValidateCodeService;
     @Autowired
@@ -232,11 +229,10 @@ public class PasswordRecoverySupportService implements PasswordRecoverySupportCl
         update.setPassword(passwordEncoder.encode(req.getNewPassword()));
         userMapper.updateById(update);
         // 禁用当前用户的Token
-        List<JwtToken> jwtTokenList = jwtTokenMapper.getEffectiveTokenByUid(update.getUid());
         final String disableReason = "用户修改密码";
-        for (JwtToken jwtToken : jwtTokenList) {
-            jwtTokenMapper.disableJwtToken(jwtToken.getDomainId(), jwtToken.getId(), disableReason);
-        }
+        jwtTokenMapper.disableJwtTokenByUid(user.getUid(), disableReason);
+        // 清除 user_security_context
+        userSecurityContextMapper.deleteByUid(user.getUid());
         // 返回
         ResetPasswordReqRes res = new ResetPasswordReqRes();
         res.setSuccess(true);
