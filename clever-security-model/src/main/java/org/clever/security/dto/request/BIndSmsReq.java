@@ -6,28 +6,29 @@ import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
- * 作者：ymx <br/>
- * 创建时间：2021/01/18 15:13 <br/>
+ * 作者：lizw <br/>
+ * 创建时间：2021-01-16 17:10 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ChangeBindSmsReq extends BaseRequest {
-    @NotNull(message = "域id不能为空")
-    private Long domainId;
-
-    @NotBlank(message = "用户id不能为空")
-    private String uid;
-
-    @NotBlank(message = "新手机号不能为空")
+public class BIndSmsReq extends BaseRequest {
+    @NotBlank(message = "绑定的手机号不能为空")
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;
 
-    public ChangeBindSmsReq(Long domainId) {
-        this.domainId = domainId;
-    }
+    /**
+     * 验证码
+     */
+    @NotBlank(message = "验证码不能为空")
+    private String code;
+
+    /**
+     * 验证码签名(校验验证码时需要)
+     */
+    @NotBlank(message = "验证码签名不能为空")
+    private String codeDigest;
 }

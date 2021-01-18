@@ -25,7 +25,7 @@ public class ChangeBindEmailReq extends BaseRequest {
 
     @NotBlank(message = "新邮箱不能为空")
     @Email(message = "邮箱格式不正确")
-    private String newEmail;
+    private String email;
 
     public ChangeBindEmailReq(Long domainId) {
         this.domainId = domainId;

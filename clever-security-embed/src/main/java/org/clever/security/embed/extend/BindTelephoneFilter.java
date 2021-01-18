@@ -1,11 +1,26 @@
 package org.clever.security.embed.extend;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.clever.common.exception.BusinessException;
+import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.validator.ValidatorFactoryUtils;
+import org.clever.security.Constant;
 import org.clever.security.client.BindSupportClient;
+import org.clever.security.dto.request.*;
+import org.clever.security.dto.response.*;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.BindTelephoneConfig;
+import org.clever.security.embed.context.SecurityContextHolder;
+import org.clever.security.embed.exception.AuthorizationInnerException;
+import org.clever.security.embed.exception.PasswordRecoveryInnerException;
+import org.clever.security.embed.exception.PasswordRecoveryValidateCodeException;
+import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.clever.security.model.SecurityContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -73,7 +88,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
     }
 
     //发送手机号图片验证码
-    protected void sendSmsCaptcha(HttpServletResponse httpResponse) {
+    protected void sendSmsCaptcha(HttpServletResponse response) throws IOException {
         BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
         if (bindTelephone == null || !bindTelephone.isEnable()) {
             throw new UnsupportedOperationException("未启用手机号换绑");
@@ -81,20 +96,94 @@ public class BindTelephoneFilter extends GenericFilterBean {
         if (!bindTelephone.isNeedCaptcha()) {
             throw new UnsupportedOperationException("手机号换绑不需要图片验证码");
         }
-        //todo 服务层调度
+        GetBindSmsCaptchaReq req = new GetBindSmsCaptchaReq(securityConfig.getDomainId());
+        req.setEffectiveTimeMilli((int) bindTelephone.getCaptchaEffectiveTime().toMillis());
+        GetBindSmsCaptchaRes res = bindSupportClient.getBindSmsCaptcha(req);
+        log.debug("手机换绑-验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
+        response.addHeader(Constant.Login_Captcha_Digest_Response_Header, res.getDigest());
+        byte[] image = EncodeDecodeUtils.decodeBase64(res.getCodeContent());
+        response.setContentType(MediaType.IMAGE_PNG_VALUE);
+        response.getOutputStream().write(image);
+        response.setStatus(HttpStatus.OK.value());
     }
 
     //发送手机号验证码
-    protected void sendSmsValidateCode(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    protected void sendSmsValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
         if (bindTelephone == null || !bindTelephone.isEnable()) {
             throw new UnsupportedOperationException("未启用手机号换绑");
         }
-        //todo 服务层调度
+        SendBindSmsValidateCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, SendBindSmsValidateCodeReq.class);
+        if (req == null) {
+            throw new BusinessException("请求数据解析异常(手机换绑发送手机验证码)");
+        }
+        req.setDomainId(securityConfig.getDomainId());
+        req.setEffectiveTimeMilli((int) bindTelephone.getEffectiveTime().toMillis());
+        req.setMaxSendNumInDay(bindTelephone.getMaxSendNumInDay());
+        try {
+            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+        } catch (Exception e) {
+            throw new BusinessException("请求数据校验失败(手机换绑发送短信验证码)", e);
+        }
+        // 校验图形验证码
+        if (bindTelephone.isNeedCaptcha()) {
+            if (StringUtils.isBlank(req.getCaptcha()) || StringUtils.isBlank(req.getCaptchaDigest())) {
+                throw new BusinessException("验证码不能为空");
+            }
+            VerifyBindSmsCaptchaReq verifyBindSmsCaptchaReq = new VerifyBindSmsCaptchaReq(securityConfig.getDomainId());
+            verifyBindSmsCaptchaReq.setCaptcha(req.getCaptcha());
+            verifyBindSmsCaptchaReq.setCaptchaDigest(req.getCaptchaDigest());
+            VerifyBindSmsCaptchaRes res = bindSupportClient.verifyBindSmsCaptcha(verifyBindSmsCaptchaReq);
+            if (res == null) {
+                throw new PasswordRecoveryInnerException("验证图片验证码失败");
+            } else if (!res.isSuccess()) {
+                throw new PasswordRecoveryValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
+            }
+        }
+        // 发送短信验证码
+        SendBindSmsValidateCodeRes res = bindSupportClient.sendBindSmsValidateCode(req);
+        if (res == null) {
+            throw new BusinessException("短信验证码发送失败");
+        }
+        log.debug("手机号换绑-短信验证码 -> [{}] | [{}]", res.getCode(), res.getExpiredTime());
+        res.setCode("******");
+        HttpServletResponseUtils.sendJson(response, res);
     }
 
     //更换手机号绑定
-    protected void changeBindSms(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        //todo 服务层调度
+    protected void changeBindSms(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SecurityContext securityContext = SecurityContextHolder.getContext(request);
+        if (securityContext == null) {
+            throw new AuthorizationInnerException("获取SecurityContext失败");
+        }
+        BIndSmsReq req = HttpServletRequestUtils.parseBodyToEntity(request, BIndSmsReq.class);
+        if (req == null) {
+            throw new BusinessException("请求数据解析异常(手机号换绑)");
+        }
+        try {
+            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+        } catch (Exception e) {
+            throw new BusinessException("请求数据校验失败(手机号换绑)", e);
+        }
+        VerifyBindSmsValidateCodeReq verifyBindSmsValidateCodeReq = new VerifyBindSmsValidateCodeReq(securityConfig.getDomainId());
+        verifyBindSmsValidateCodeReq.setCode(req.getCode());
+        verifyBindSmsValidateCodeReq.setCodeDigest(req.getCodeDigest());
+        verifyBindSmsValidateCodeReq.setTelephone(req.getTelephone());
+        VerifyBindSmsValidateCodeRes smsValidateCodeRes = bindSupportClient.verifyBindSmsValidateCode(verifyBindSmsValidateCodeReq);
+        if (smsValidateCodeRes == null) {
+            throw new PasswordRecoveryInnerException("验证短信验证码失败");
+        } else if (!smsValidateCodeRes.isSuccess()) {
+            throw new PasswordRecoveryValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : "短信验证码错误");
+        }
+        ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
+        changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());
+        changeBindSmsReq.setTelephone(req.getTelephone());
+        ChangeBindSmsRes res = bindSupportClient.changeBindSms(changeBindSmsReq);
+        if (res == null) {
+            throw new PasswordRecoveryInnerException("手机号换绑失败");
+        } else if (!res.isSuccess()) {
+            throw new BusinessException(res.getMessage());
+        }
+        HttpServletResponseUtils.sendJson(response, res);
     }
 }

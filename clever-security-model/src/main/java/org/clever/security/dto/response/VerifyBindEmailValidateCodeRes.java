@@ -24,11 +24,6 @@ public class VerifyBindEmailValidateCodeRes extends BaseResponse {
     private String message;
 
     /**
-     * 用户id
-     */
-    private String uid;
-
-    /**
      * 验证码是否已过期
      */
     private boolean expired;
