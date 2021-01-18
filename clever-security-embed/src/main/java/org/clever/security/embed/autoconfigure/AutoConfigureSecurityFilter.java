@@ -23,6 +23,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
+import org.clever.security.embed.extend.ResetPasswordFilter;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.RegisterCaptchaFilter;
 import org.clever.security.embed.register.UserRegisterFilter;
@@ -370,6 +371,20 @@ public class AutoConfigureSecurityFilter {
         }
         filterRegistration.setName("bindEmailFilter");
         filterRegistration.setOrder(Base_Order + 200 + 2);
+        return filterRegistration;
+    }
+
+    /**
+     * 设置/修改密码
+     */
+    @Bean("resetPasswordFilter")
+    @ConditionalOnMissingBean(name = "resetPasswordFilter")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true", matchIfMissing = true)
+    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter() {
+        ResetPasswordFilter filter = new ResetPasswordFilter();
+        FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        filterRegistration.setName("resetPasswordFilter");
+        filterRegistration.setOrder(Base_Order + 200 + 3);
         return filterRegistration;
     }
 
