@@ -1,7 +1,7 @@
 package org.clever.security.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.clever.security.client.ResetPasswordSupportClient;
+import org.clever.security.client.UpdatePasswordSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.springframework.context.annotation.Primary;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Primary
 @Service
 @Slf4j
-public class ResetPasswordSupportService implements ResetPasswordSupportClient {
+public class UpdatePasswordSupportService implements UpdatePasswordSupportClient {
     @Override
     public GetInitPasswordCaptchaRes getInitPasswordCaptcha(GetInitPasswordCaptchaReq req) {
         return null;

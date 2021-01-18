@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
         path = "/security/api",
         configuration = CleverSecurityFeignConfiguration.class
 )
-public interface ResetPasswordSupportClient {
+public interface UpdatePasswordSupportClient {
     /**
      * 获取设置密码-验证码
      */

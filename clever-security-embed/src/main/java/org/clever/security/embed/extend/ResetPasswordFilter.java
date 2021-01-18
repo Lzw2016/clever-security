@@ -1,6 +1,6 @@
 package org.clever.security.embed.extend;
 
-import org.clever.security.client.ResetPasswordSupportClient;
+import org.clever.security.client.UpdatePasswordSupportClient;
 import org.clever.security.embed.config.SecurityConfig;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.GenericFilterBean;
@@ -20,9 +20,9 @@ public class ResetPasswordFilter extends GenericFilterBean {
      * 全局配置
      */
     private final SecurityConfig securityConfig;
-    private final ResetPasswordSupportClient resetPasswordSupportClient;
+    private final UpdatePasswordSupportClient resetPasswordSupportClient;
 
-    public ResetPasswordFilter(SecurityConfig securityConfig, ResetPasswordSupportClient resetPasswordSupportClient) {
+    public ResetPasswordFilter(SecurityConfig securityConfig, UpdatePasswordSupportClient resetPasswordSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
         Assert.notNull(resetPasswordSupportClient, "参数resetPasswordSupportClient不能为null");
         this.securityConfig = securityConfig;

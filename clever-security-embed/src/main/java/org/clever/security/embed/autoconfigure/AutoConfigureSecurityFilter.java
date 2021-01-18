@@ -378,9 +378,9 @@ public class AutoConfigureSecurityFilter {
     @Bean("resetPasswordFilter")
     @ConditionalOnMissingBean(name = "resetPasswordFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "update-password.enable", havingValue = "true", matchIfMissing = true)
-    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter(ResetPasswordSupportClient resetPasswordSupportClient) {
+    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter(UpdatePasswordSupportClient updatePasswordSupportClient) {
         UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
-        ResetPasswordFilter filter = new ResetPasswordFilter(securityConfig, resetPasswordSupportClient);
+        ResetPasswordFilter filter = new ResetPasswordFilter(securityConfig, updatePasswordSupportClient);
         FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getCaptchaPath())) {
             filterRegistration.addUrlPatterns(updatePassword.getCaptchaPath());
