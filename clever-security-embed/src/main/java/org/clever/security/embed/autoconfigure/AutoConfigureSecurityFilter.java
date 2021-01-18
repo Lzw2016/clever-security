@@ -20,7 +20,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
-import org.clever.security.embed.extend.ResetPasswordFilter;
+import org.clever.security.embed.extend.UpdatePasswordFilter;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.RegisterCaptchaFilter;
 import org.clever.security.embed.register.UserRegisterFilter;
@@ -375,13 +375,13 @@ public class AutoConfigureSecurityFilter {
     /**
      * 设置/修改密码
      */
-    @Bean("resetPasswordFilter")
-    @ConditionalOnMissingBean(name = "resetPasswordFilter")
+    @Bean("updatePasswordFilter")
+    @ConditionalOnMissingBean(name = "updatePasswordFilter")
     @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "update-password.enable", havingValue = "true", matchIfMissing = true)
-    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter(UpdatePasswordSupportClient updatePasswordSupportClient) {
+    public FilterRegistrationBean<UpdatePasswordFilter> updatePasswordFilter(UpdatePasswordSupportClient updatePasswordSupportClient) {
         UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
-        ResetPasswordFilter filter = new ResetPasswordFilter(securityConfig, updatePasswordSupportClient);
-        FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        UpdatePasswordFilter filter = new UpdatePasswordFilter(securityConfig, updatePasswordSupportClient);
+        FilterRegistrationBean<UpdatePasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
         if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getCaptchaPath())) {
             filterRegistration.addUrlPatterns(updatePassword.getCaptchaPath());
         }
@@ -397,7 +397,7 @@ public class AutoConfigureSecurityFilter {
         if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getUpdatePasswordPath())) {
             filterRegistration.addUrlPatterns(updatePassword.getUpdatePasswordPath());
         }
-        filterRegistration.setName("resetPasswordFilter");
+        filterRegistration.setName("updatePasswordFilter");
         filterRegistration.setOrder(Base_Order + 200 + 3);
         return filterRegistration;
     }

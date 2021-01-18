@@ -15,18 +15,18 @@ import java.io.IOException;
  * 作者：lizw <br/>
  * 创建时间：2021/01/18 18:09 <br/>
  */
-public class ResetPasswordFilter extends GenericFilterBean {
+public class UpdatePasswordFilter extends GenericFilterBean {
     /**
      * 全局配置
      */
     private final SecurityConfig securityConfig;
-    private final UpdatePasswordSupportClient resetPasswordSupportClient;
+    private final UpdatePasswordSupportClient updatePasswordSupportClient;
 
-    public ResetPasswordFilter(SecurityConfig securityConfig, UpdatePasswordSupportClient resetPasswordSupportClient) {
+    public UpdatePasswordFilter(SecurityConfig securityConfig, UpdatePasswordSupportClient updatePasswordSupportClient) {
         Assert.notNull(securityConfig, "权限系统配置对象(SecurityConfig)不能为null");
-        Assert.notNull(resetPasswordSupportClient, "参数resetPasswordSupportClient不能为null");
+        Assert.notNull(updatePasswordSupportClient, "参数updatePasswordSupportClient不能为null");
         this.securityConfig = securityConfig;
-        this.resetPasswordSupportClient = resetPasswordSupportClient;
+        this.updatePasswordSupportClient = updatePasswordSupportClient;
     }
 
     @Override
