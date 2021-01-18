@@ -369,7 +369,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是密码找回验证码(邮箱找回-短信验证码)
+     * 当前请求是否是密码找回验证码(邮箱找回-邮箱图片验证码)
      */
     public static boolean isPasswordRecoveryEmailCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -389,7 +389,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是密码找回验证码(邮箱找回-短信验证码)
+     * 当前请求是否是密码找回验证码(邮箱找回-邮箱验证码)
      */
     public static boolean isPasswordRecoveryEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -407,6 +407,104 @@ public class PathFilterUtils {
         }
         return Objects.equals(emailRecovery.getEmailValidateCodePath(), path);
     }
+
+    /**
+     * 当前请求是否是绑定邮箱请求路径---------------------------------------------------------------------更换邮箱绑定
+     */
+    public static boolean isChangeBindEmailRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindEmailRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindEmailRequest(String path, SecurityConfig securityConfig) {
+        BindEmailConfig bindEmail = securityConfig.getBindEmail();
+        if (bindEmail == null) {
+            return false;
+        }
+        return Objects.equals(bindEmail.getBindEmailPath(), path);
+    }
+
+    /**
+     * 当前请求是否是图片验证码路径(用于发送邮箱验证码之前的验证)
+     */
+    public static boolean isChangeBindEmailCaptchaPathRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindEmailCaptchaPathRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindEmailCaptchaPathRequest(String path, SecurityConfig securityConfig) {
+        BindEmailConfig bindEmail = securityConfig.getBindEmail();
+        if (bindEmail == null) {
+            return false;
+        }
+        return Objects.equals(bindEmail.getCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(更换邮箱绑定-邮箱验证码)
+     */
+    public static boolean isChangeBindEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindEmailValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindEmailValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        BindEmailConfig bindEmail = securityConfig.getBindEmail();
+        if (bindEmail == null) {
+            return false;
+        }
+        return Objects.equals(bindEmail.getEmailValidateCodePath(), path);
+    }
+
+
+    /**
+     * 当前请求是否是更换绑定手机号请求路径---------------------------------------------------------------------更换绑定手机号
+     */
+    public static boolean isChangeBindSmsRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindSmsRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindSmsRequest(String path, SecurityConfig securityConfig) {
+        BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
+        if (bindTelephone == null) {
+            return false;
+        }
+        return Objects.equals(bindTelephone.getBindTelephonePath(), path);
+    }
+
+    /**
+     * 当前请求是否是图片验证码路径(用于发送手机验证码之前的验证)
+     */
+    public static boolean isChangeBindSmsCaptchaPathRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindSmsCaptchaPathRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindSmsCaptchaPathRequest(String path, SecurityConfig securityConfig) {
+        BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
+        if (bindTelephone == null) {
+            return false;
+        }
+        return Objects.equals(bindTelephone.getCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是手机验证码(更换手机绑定-手机验证码)
+     */
+    public static boolean isChangeBindSmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isChangeBindSmsValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isChangeBindSmsValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
+        if (bindTelephone == null) {
+            return false;
+        }
+        return Objects.equals(bindTelephone.getSmsValidateCodePath(), path);
+    }
+
 
     /**
      * 当前请求是否需要身份认证
