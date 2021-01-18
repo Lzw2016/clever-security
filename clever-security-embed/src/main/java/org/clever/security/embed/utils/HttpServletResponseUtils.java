@@ -67,6 +67,7 @@ public class HttpServletResponseUtils {
                 || e instanceof LogoutException
                 || e instanceof RegisterException
                 || e instanceof PasswordRecoveryException
+                || e instanceof ChangeBindException
                 || e instanceof BusinessException) {
             errorResponse.setMessage(e.getMessage());
         } else {

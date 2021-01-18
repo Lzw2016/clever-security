@@ -13,8 +13,8 @@ import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.BindTelephoneConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.exception.AuthorizationInnerException;
-import org.clever.security.embed.exception.PasswordRecoveryInnerException;
-import org.clever.security.embed.exception.PasswordRecoveryValidateCodeException;
+import org.clever.security.embed.exception.ChangeBindSmsInnerException;
+import org.clever.security.embed.exception.ChangeBindSmsValidateCodeException;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -135,9 +135,9 @@ public class BindTelephoneFilter extends GenericFilterBean {
             verifyBindSmsCaptchaReq.setCaptchaDigest(req.getCaptchaDigest());
             VerifyBindSmsCaptchaRes res = bindSupportClient.verifyBindSmsCaptcha(verifyBindSmsCaptchaReq);
             if (res == null) {
-                throw new PasswordRecoveryInnerException("验证图片验证码失败");
+                throw new ChangeBindSmsInnerException("验证图片验证码失败");
             } else if (!res.isSuccess()) {
-                throw new PasswordRecoveryValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
+                throw new ChangeBindSmsValidateCodeException(res.isExpired() ? "图片验证码已失效" : "图片验证码错误");
             }
         }
         // 发送短信验证码
@@ -171,16 +171,16 @@ public class BindTelephoneFilter extends GenericFilterBean {
         verifyBindSmsValidateCodeReq.setTelephone(req.getTelephone());
         VerifyBindSmsValidateCodeRes smsValidateCodeRes = bindSupportClient.verifyBindSmsValidateCode(verifyBindSmsValidateCodeReq);
         if (smsValidateCodeRes == null) {
-            throw new PasswordRecoveryInnerException("验证短信验证码失败");
+            throw new ChangeBindSmsInnerException("验证短信验证码失败");
         } else if (!smsValidateCodeRes.isSuccess()) {
-            throw new PasswordRecoveryValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : "短信验证码错误");
+            throw new ChangeBindSmsValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : "短信验证码错误");
         }
         ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
         changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());
         changeBindSmsReq.setTelephone(req.getTelephone());
         ChangeBindSmsRes res = bindSupportClient.changeBindSms(changeBindSmsReq);
         if (res == null) {
-            throw new PasswordRecoveryInnerException("手机号换绑失败");
+            throw new ChangeBindSmsInnerException("手机号换绑失败");
         } else if (!res.isSuccess()) {
             throw new BusinessException(res.getMessage());
         }
