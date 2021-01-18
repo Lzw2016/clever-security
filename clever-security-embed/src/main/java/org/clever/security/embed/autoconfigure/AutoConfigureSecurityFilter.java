@@ -48,7 +48,7 @@ import java.util.List;
  * <pre>
  *   用户
  *   🡓
- *   LoginCaptchaFilter(登录图片验证码)
+ *   LoginCaptchaFilter(获取登录图片验证码)
  *   LoginSmsValidateCodeFilter(登录短信验证码)
  *   LoginEmailValidateCodeFilter(登录邮箱验证码)
  *   ScanCodeLoginFilter(获取扫码登录二维码)
@@ -64,6 +64,7 @@ import java.util.List;
  *   🡓
  *   BindTelephoneFilter(手机号绑定/换绑)
  *   BindEmailFilter(邮箱绑定/换绑)
+ *   ResetPasswordFilter(设置/修改密码)
  *   🡓
  *   LogoutFilter(###登出)
  *   🡓
