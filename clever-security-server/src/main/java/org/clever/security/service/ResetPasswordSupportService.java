@@ -18,42 +18,42 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ResetPasswordSupportService implements ResetPasswordSupportClient {
     @Override
-    public GetSetPasswordCaptchaRes getSetPasswordCaptcha(GetSetPasswordCaptchaReq req) {
+    public GetInitPasswordCaptchaRes getInitPasswordCaptcha(GetInitPasswordCaptchaReq req) {
         return null;
     }
 
     @Override
-    public VerifySetPasswordCaptchaRes verifySetPasswordCaptcha(VerifySetPasswordCaptchaReq req) {
+    public VerifyInitPasswordCaptchaRes verifyInitPasswordCaptcha(VerifyInitPasswordCaptchaReq req) {
         return null;
     }
 
     @Override
-    public SendSmsSetPasswordValidateCodeRes sendSmsSetPasswordValidateCode(SendSmsSetPasswordValidateCodeReq req) {
+    public SendSmsInitPasswordValidateCodeRes sendSmsInitPasswordValidateCode(SendSmsInitPasswordValidateCodeReq req) {
         return null;
     }
 
     @Override
-    public VerifySmsSetPasswordValidateCodeRes verifySmsSetPasswordValidateCode(VerifySmsSetPasswordValidateCodeReq req) {
+    public VerifySmsInitPasswordValidateCodeRes verifySmsInitPasswordValidateCode(VerifySmsInitPasswordValidateCodeReq req) {
         return null;
     }
 
     @Override
-    public SendEmailSetPasswordValidateCodeRes sendEmailSetPasswordValidateCode(SendEmailSetPasswordValidateCodeReq req) {
+    public SendEmailInitPasswordValidateCodeRes sendEmailInitPasswordValidateCode(SendEmailInitPasswordValidateCodeReq req) {
         return null;
     }
 
     @Override
-    public VerifyEmailSetPasswordValidateCodeRes verifyEmailSetPasswordValidateCode(VerifyEmailSetPasswordValidateCodeReq req) {
+    public VerifyEmailInitPasswordValidateCodeRes verifyEmailInitPasswordValidateCode(VerifyEmailInitPasswordValidateCodeReq req) {
         return null;
     }
 
     @Override
-    public SetPasswordRes setPassword(SetPasswordReq req) {
+    public InitPasswordRes initPassword(InitPasswordReq req) {
         return null;
     }
 
     @Override
-    public UpdatePasswordRes updatePassword(UpdatePasswordReq req) {
+    public UpdatePasswordRes resetPassword(UpdatePasswordReq req) {
         return null;
     }
 }

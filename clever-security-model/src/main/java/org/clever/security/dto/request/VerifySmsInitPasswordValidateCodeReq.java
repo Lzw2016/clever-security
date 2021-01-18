@@ -16,7 +16,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifySmsSetPasswordValidateCodeReq extends BaseRequest {
+public class VerifySmsInitPasswordValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -34,7 +34,7 @@ public class VerifySmsSetPasswordValidateCodeReq extends BaseRequest {
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;
 
-    public VerifySmsSetPasswordValidateCodeReq(Long domainId) {
+    public VerifySmsInitPasswordValidateCodeReq(Long domainId) {
         this.domainId = domainId;
     }
 }

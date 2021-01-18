@@ -24,8 +24,8 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @GetMapping("/set_password/captcha")
     @Override
-    public GetSetPasswordCaptchaRes getSetPasswordCaptcha(@Validated @SpringQueryMap GetSetPasswordCaptchaReq req) {
-        return resetPasswordSupportService.getSetPasswordCaptcha(req);
+    public GetInitPasswordCaptchaRes getInitPasswordCaptcha(@Validated @SpringQueryMap GetInitPasswordCaptchaReq req) {
+        return resetPasswordSupportService.getInitPasswordCaptcha(req);
     }
 
     /**
@@ -33,8 +33,8 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @PostMapping("/set_password/captcha/verify")
     @Override
-    public VerifySetPasswordCaptchaRes verifySetPasswordCaptcha(@Validated @RequestBody VerifySetPasswordCaptchaReq req) {
-        return resetPasswordSupportService.verifySetPasswordCaptcha(req);
+    public VerifyInitPasswordCaptchaRes verifyInitPasswordCaptcha(@Validated @RequestBody VerifyInitPasswordCaptchaReq req) {
+        return resetPasswordSupportService.verifyInitPasswordCaptcha(req);
     }
 
     /**
@@ -42,8 +42,8 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @PostMapping("/set_password/send_sms_validate_code")
     @Override
-    public SendSmsSetPasswordValidateCodeRes sendSmsSetPasswordValidateCode(@Validated @RequestBody SendSmsSetPasswordValidateCodeReq req) {
-        return resetPasswordSupportService.sendSmsSetPasswordValidateCode(req);
+    public SendSmsInitPasswordValidateCodeRes sendSmsInitPasswordValidateCode(@Validated @RequestBody SendSmsInitPasswordValidateCodeReq req) {
+        return resetPasswordSupportService.sendSmsInitPasswordValidateCode(req);
     }
 
     /**
@@ -51,8 +51,8 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @PostMapping("/set_password/verify_sms_validate_code")
     @Override
-    public VerifySmsSetPasswordValidateCodeRes verifySmsSetPasswordValidateCode(@Validated @RequestBody VerifySmsSetPasswordValidateCodeReq req) {
-        return resetPasswordSupportService.verifySmsSetPasswordValidateCode(req);
+    public VerifySmsInitPasswordValidateCodeRes verifySmsInitPasswordValidateCode(@Validated @RequestBody VerifySmsInitPasswordValidateCodeReq req) {
+        return resetPasswordSupportService.verifySmsInitPasswordValidateCode(req);
     }
 
     /**
@@ -60,8 +60,8 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @PostMapping("/set_password/send_email_validate_code")
     @Override
-    public SendEmailSetPasswordValidateCodeRes sendEmailSetPasswordValidateCode(@Validated @RequestBody SendEmailSetPasswordValidateCodeReq req) {
-        return resetPasswordSupportService.sendEmailSetPasswordValidateCode(req);
+    public SendEmailInitPasswordValidateCodeRes sendEmailInitPasswordValidateCode(@Validated @RequestBody SendEmailInitPasswordValidateCodeReq req) {
+        return resetPasswordSupportService.sendEmailInitPasswordValidateCode(req);
     }
 
     /**
@@ -69,25 +69,25 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
      */
     @PostMapping("/set_password/verify_email_validate_code")
     @Override
-    public VerifyEmailSetPasswordValidateCodeRes verifyEmailSetPasswordValidateCode(@Validated @RequestBody VerifyEmailSetPasswordValidateCodeReq req) {
-        return resetPasswordSupportService.verifyEmailSetPasswordValidateCode(req);
+    public VerifyEmailInitPasswordValidateCodeRes verifyEmailInitPasswordValidateCode(@Validated @RequestBody VerifyEmailInitPasswordValidateCodeReq req) {
+        return resetPasswordSupportService.verifyEmailInitPasswordValidateCode(req);
     }
 
     /**
      * 设置密码
      */
-    @PostMapping("/password/set_password")
+    @PostMapping("/password/init")
     @Override
-    public SetPasswordRes setPassword(@Validated @RequestBody SetPasswordReq req) {
-        return resetPasswordSupportService.setPassword(req);
+    public InitPasswordRes initPassword(@Validated @RequestBody InitPasswordReq req) {
+        return resetPasswordSupportService.initPassword(req);
     }
 
     /**
      * 重置密码
      */
-    @PostMapping("/password/update_password")
+    @PostMapping("/password/reset")
     @Override
-    public UpdatePasswordRes updatePassword(@Validated @RequestBody UpdatePasswordReq req) {
-        return resetPasswordSupportService.updatePassword(req);
+    public UpdatePasswordRes resetPassword(@Validated @RequestBody UpdatePasswordReq req) {
+        return resetPasswordSupportService.resetPassword(req);
     }
 }

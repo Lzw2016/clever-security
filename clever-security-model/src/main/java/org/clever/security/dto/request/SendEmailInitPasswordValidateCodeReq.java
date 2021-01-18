@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendEmailSetPasswordValidateCodeReq extends BaseRequest {
+public class SendEmailInitPasswordValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**

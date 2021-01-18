@@ -1,9 +1,9 @@
-package org.clever.security.dto.response;
+package org.clever.security.dto.request;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.clever.common.model.response.BaseResponse;
+import org.clever.common.model.request.BaseRequest;
 
 /**
  * 作者：lizw <br/>
@@ -12,5 +12,5 @@ import org.clever.common.model.response.BaseResponse;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SetPasswordRes extends BaseResponse {
+public class InitPasswordReq extends BaseRequest {
 }

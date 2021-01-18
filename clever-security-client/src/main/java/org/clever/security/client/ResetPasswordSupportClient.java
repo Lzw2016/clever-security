@@ -25,48 +25,48 @@ public interface ResetPasswordSupportClient {
     /**
      * 获取设置密码-验证码
      */
-    @GetMapping("/set_password/captcha")
-    GetSetPasswordCaptchaRes getSetPasswordCaptcha(@Validated @SpringQueryMap GetSetPasswordCaptchaReq req);
+    @GetMapping("/init_password/captcha")
+    GetInitPasswordCaptchaRes getInitPasswordCaptcha(@Validated @SpringQueryMap GetInitPasswordCaptchaReq req);
 
     /**
      * 验证设置密码-验证码
      */
-    @PostMapping("/set_password/captcha/verify")
-    VerifySetPasswordCaptchaRes verifySetPasswordCaptcha(@Validated @RequestBody VerifySetPasswordCaptchaReq req);
+    @PostMapping("/init_password/captcha/verify")
+    VerifyInitPasswordCaptchaRes verifyInitPasswordCaptcha(@Validated @RequestBody VerifyInitPasswordCaptchaReq req);
 
     /**
      * 发送设置密码-短信验证码
      */
-    @PostMapping("/set_password/send_sms_validate_code")
-    SendSmsSetPasswordValidateCodeRes sendSmsSetPasswordValidateCode(@Validated @RequestBody SendSmsSetPasswordValidateCodeReq req);
+    @PostMapping("/init_password/send_sms_validate_code")
+    SendSmsInitPasswordValidateCodeRes sendSmsInitPasswordValidateCode(@Validated @RequestBody SendSmsInitPasswordValidateCodeReq req);
 
     /**
      * 验证设置密码-短信验证码
      */
-    @PostMapping("/set_password/verify_sms_validate_code")
-    VerifySmsSetPasswordValidateCodeRes verifySmsSetPasswordValidateCode(@Validated @RequestBody VerifySmsSetPasswordValidateCodeReq req);
+    @PostMapping("/init_password/verify_sms_validate_code")
+    VerifySmsInitPasswordValidateCodeRes verifySmsInitPasswordValidateCode(@Validated @RequestBody VerifySmsInitPasswordValidateCodeReq req);
 
     /**
      * 发送设置密码-邮箱验证码
      */
-    @PostMapping("/set_password/send_email_validate_code")
-    SendEmailSetPasswordValidateCodeRes sendEmailSetPasswordValidateCode(@Validated @RequestBody SendEmailSetPasswordValidateCodeReq req);
+    @PostMapping("/init_password/send_email_validate_code")
+    SendEmailInitPasswordValidateCodeRes sendEmailInitPasswordValidateCode(@Validated @RequestBody SendEmailInitPasswordValidateCodeReq req);
 
     /**
      * 验证设置密码-邮箱验证码
      */
-    @PostMapping("/set_password/verify_email_validate_code")
-    VerifyEmailSetPasswordValidateCodeRes verifyEmailSetPasswordValidateCode(@Validated @RequestBody VerifyEmailSetPasswordValidateCodeReq req);
+    @PostMapping("/init_password/verify_email_validate_code")
+    VerifyEmailInitPasswordValidateCodeRes verifyEmailInitPasswordValidateCode(@Validated @RequestBody VerifyEmailInitPasswordValidateCodeReq req);
 
     /**
      * 设置密码
      */
-    @PostMapping("/password/set_password")
-    SetPasswordRes setPassword(@Validated @RequestBody SetPasswordReq req);
+    @PostMapping("/password/init")
+    InitPasswordRes initPassword(@Validated @RequestBody InitPasswordReq req);
 
     /**
      * 重置密码
      */
-    @PostMapping("/password/update_password")
-    UpdatePasswordRes updatePassword(@Validated @RequestBody UpdatePasswordReq req);
+    @PostMapping("/password/reset")
+    UpdatePasswordRes resetPassword(@Validated @RequestBody UpdatePasswordReq req);
 }

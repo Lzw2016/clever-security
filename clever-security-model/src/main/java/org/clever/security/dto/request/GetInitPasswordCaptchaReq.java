@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class GetSetPasswordCaptchaReq extends BaseRequest {
+public class GetInitPasswordCaptchaReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -22,7 +22,7 @@ public class GetSetPasswordCaptchaReq extends BaseRequest {
      */
     private int effectiveTimeMilli = 60 * 1000;
 
-    public GetSetPasswordCaptchaReq(Long domainId) {
+    public GetInitPasswordCaptchaReq(Long domainId) {
         this.domainId = domainId;
     }
 }

@@ -22,7 +22,7 @@ public class ResetPasswordConfig implements Serializable {
     /**
      * 图片验证码路径(用于发送邮箱/短信验证码之前的验证)
      */
-    private String captchaPath = "/set_password/captcha";
+    private String captchaPath = "/init_password/captcha";
     /**
      * 图片验证码有效时间(默认60秒)
      */
@@ -30,7 +30,7 @@ public class ResetPasswordConfig implements Serializable {
     /**
      * 手机验证码(请求Path)
      */
-    private String smsValidateCodePath = "/set_password/sms";
+    private String smsValidateCodePath = "/init_password/sms";
     /**
      * 短信验证码有效时间(默认120秒)
      */
@@ -43,7 +43,7 @@ public class ResetPasswordConfig implements Serializable {
     /**
      * 邮箱验证码(请求Path)
      */
-    private String emailValidateCodePath = "/set_password/email";
+    private String emailValidateCodePath = "/init_password/email";
     /**
      * 邮箱验证码有效时间(默认300秒)
      */
@@ -56,7 +56,7 @@ public class ResetPasswordConfig implements Serializable {
     /**
      * 设置密码(请求Path)
      */
-    private String setPasswordPath = "/set_password";
+    private String initPasswordPath = "/init_password";
     /**
      * 重置密码(请求Path)
      */

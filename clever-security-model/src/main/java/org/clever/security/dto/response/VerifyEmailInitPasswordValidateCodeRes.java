@@ -7,12 +7,12 @@ import org.clever.common.model.response.BaseResponse;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 20:56 <br/>
+ * 创建时间：2021/01/18 21:04 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifySmsSetPasswordValidateCodeRes extends BaseResponse {
+public class VerifyEmailInitPasswordValidateCodeRes extends BaseResponse {
     /**
      * 是否成功
      */

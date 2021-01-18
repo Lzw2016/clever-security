@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifySetPasswordCaptchaReq extends BaseRequest {
+public class VerifyInitPasswordCaptchaReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -29,7 +29,7 @@ public class VerifySetPasswordCaptchaReq extends BaseRequest {
     @NotBlank(message = "验证码签名不能为空")
     private String captchaDigest;
 
-    public VerifySetPasswordCaptchaReq(Long domainId) {
+    public VerifyInitPasswordCaptchaReq(Long domainId) {
         this.domainId = domainId;
     }
 }

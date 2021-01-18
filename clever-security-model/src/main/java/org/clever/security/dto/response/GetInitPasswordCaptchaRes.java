@@ -9,12 +9,12 @@ import java.util.Date;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 20:54 <br/>
+ * 创建时间：2021/01/18 20:44 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendSmsSetPasswordValidateCodeRes extends BaseResponse {
+public class GetInitPasswordCaptchaRes extends BaseResponse {
     /**
      * 验证码
      */
@@ -23,6 +23,10 @@ public class SendSmsSetPasswordValidateCodeRes extends BaseResponse {
      * 验证码签名
      */
     private String digest;
+    /**
+     * 图片验证码内容(Base64编码处理)
+     */
+    private String codeContent;
     /**
      * 验证码过期时间
      */
