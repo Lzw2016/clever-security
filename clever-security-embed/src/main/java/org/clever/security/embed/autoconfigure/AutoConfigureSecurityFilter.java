@@ -330,7 +330,7 @@ public class AutoConfigureSecurityFilter {
      */
     @Bean("bindTelephoneFilter")
     @ConditionalOnMissingBean(name = "bindTelephoneFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "bind-telephone.enable", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<BindTelephoneFilter> bindTelephoneFilter(BindSupportClient bindSupportClient) {
         BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
         BindTelephoneFilter filter = new BindTelephoneFilter(securityConfig, bindSupportClient);
@@ -354,7 +354,7 @@ public class AutoConfigureSecurityFilter {
      */
     @Bean("bindEmailFilter")
     @ConditionalOnMissingBean(name = "bindEmailFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "bind-email.enable", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<BindEmailFilter> bindEmailFilter(BindSupportClient bindSupportClient) {
         BindEmailConfig bindEmail = securityConfig.getBindEmail();
         BindEmailFilter filter = new BindEmailFilter(securityConfig, bindSupportClient);
