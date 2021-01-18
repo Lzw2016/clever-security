@@ -377,10 +377,26 @@ public class AutoConfigureSecurityFilter {
      */
     @Bean("resetPasswordFilter")
     @ConditionalOnMissingBean(name = "resetPasswordFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "update-password.enable", havingValue = "true", matchIfMissing = true)
     public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter(ResetPasswordSupportClient resetPasswordSupportClient) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
         ResetPasswordFilter filter = new ResetPasswordFilter(securityConfig, resetPasswordSupportClient);
         FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getCaptchaPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getCaptchaPath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getSmsValidateCodePath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getSmsValidateCodePath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getEmailValidateCodePath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getEmailValidateCodePath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getInitPasswordPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getInitPasswordPath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getUpdatePasswordPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getUpdatePasswordPath());
+        }
         filterRegistration.setName("resetPasswordFilter");
         filterRegistration.setOrder(Base_Order + 200 + 3);
         return filterRegistration;

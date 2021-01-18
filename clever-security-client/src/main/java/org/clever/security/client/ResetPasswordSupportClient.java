@@ -65,8 +65,8 @@ public interface ResetPasswordSupportClient {
     InitPasswordRes initPassword(@Validated @RequestBody InitPasswordReq req);
 
     /**
-     * 重置密码
+     * 修改密码
      */
-    @PostMapping("/password/reset")
-    UpdatePasswordRes resetPassword(@Validated @RequestBody UpdatePasswordReq req);
+    @PostMapping("/password/update")
+    UpdatePasswordRes updatePassword(@Validated @RequestBody UpdatePasswordReq req);
 }

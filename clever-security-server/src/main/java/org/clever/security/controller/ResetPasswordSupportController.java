@@ -83,11 +83,11 @@ public class ResetPasswordSupportController implements ResetPasswordSupportClien
     }
 
     /**
-     * 重置密码
+     * 修改密码
      */
-    @PostMapping("/password/reset")
+    @PostMapping("/password/update")
     @Override
-    public UpdatePasswordRes resetPassword(@Validated @RequestBody UpdatePasswordReq req) {
-        return resetPasswordSupportService.resetPassword(req);
+    public UpdatePasswordRes updatePassword(@Validated @RequestBody UpdatePasswordReq req) {
+        return resetPasswordSupportService.updatePassword(req);
     }
 }

@@ -53,7 +53,7 @@ public class ResetPasswordSupportService implements ResetPasswordSupportClient {
     }
 
     @Override
-    public UpdatePasswordRes resetPassword(UpdatePasswordReq req) {
+    public UpdatePasswordRes updatePassword(UpdatePasswordReq req) {
         return null;
     }
 }

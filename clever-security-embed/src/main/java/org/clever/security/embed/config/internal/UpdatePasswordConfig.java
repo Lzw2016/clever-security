@@ -10,7 +10,7 @@ import java.time.Duration;
  * 创建时间：2021/01/18 20:21 <br/>
  */
 @Data
-public class ResetPasswordConfig implements Serializable {
+public class UpdatePasswordConfig implements Serializable {
     /**
      * 是否启用
      */
@@ -58,7 +58,7 @@ public class ResetPasswordConfig implements Serializable {
      */
     private String initPasswordPath = "/init_password";
     /**
-     * 重置密码(请求Path)
+     * 修改密码(请求Path)
      */
-    private String resetPasswordPath = "/reset_password";
+    private String updatePasswordPath = "/update_password";
 }

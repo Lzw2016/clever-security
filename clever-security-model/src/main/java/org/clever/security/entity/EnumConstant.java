@@ -193,7 +193,7 @@ public interface EnumConstant {
      */
     int ValidateCode_Type_2 = 2;
     /**
-     * 验证码类型，3:设置密码验证码
+     * 验证码类型，3:修改密码验证码
      */
     int ValidateCode_Type_3 = 3;
     /**
