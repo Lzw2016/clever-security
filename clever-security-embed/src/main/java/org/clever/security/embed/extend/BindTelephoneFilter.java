@@ -184,7 +184,6 @@ public class BindTelephoneFilter extends GenericFilterBean {
             }
         }
         VerifyBindSmsValidateCodeReq verifyBindSmsValidateCodeReq = new VerifyBindSmsValidateCodeReq(securityConfig.getDomainId());
-        verifyBindSmsValidateCodeReq.setPassWord(password);
         verifyBindSmsValidateCodeReq.setCode(req.getCode());
         verifyBindSmsValidateCodeReq.setCodeDigest(req.getCodeDigest());
         verifyBindSmsValidateCodeReq.setTelephone(req.getTelephone());
@@ -196,6 +195,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         }
         ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
         changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());
+        changeBindSmsReq.setPassWord(password);
         changeBindSmsReq.setTelephone(req.getTelephone());
         ChangeBindSmsRes res = bindSupportClient.changeBindSms(changeBindSmsReq);
         if (res == null) {

@@ -23,6 +23,9 @@ public class ChangeBindEmailReq extends BaseRequest {
     @NotBlank(message = "用户id不能为空")
     private String uid;
 
+    @NotBlank(message = "密码不能为空")
+    private String passWord;
+
     @NotBlank(message = "新邮箱不能为空")
     @Email(message = "邮箱格式不正确")
     private String email;

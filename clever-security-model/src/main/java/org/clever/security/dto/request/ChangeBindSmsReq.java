@@ -23,6 +23,9 @@ public class ChangeBindSmsReq extends BaseRequest {
     @NotBlank(message = "用户id不能为空")
     private String uid;
 
+    @NotBlank(message = "密码不能为空")
+    private String passWord;
+
     @NotBlank(message = "新手机号不能为空")
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;

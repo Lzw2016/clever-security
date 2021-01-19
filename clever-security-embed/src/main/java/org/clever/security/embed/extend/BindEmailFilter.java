@@ -186,7 +186,6 @@ public class BindEmailFilter extends GenericFilterBean {
             }
         }
         VerifyBindEmailValidateCodeReq verifyBindEmailValidateCodeReq = new VerifyBindEmailValidateCodeReq(securityConfig.getDomainId());
-        verifyBindEmailValidateCodeReq.setPassWord(password);
         verifyBindEmailValidateCodeReq.setCode(req.getCode());
         verifyBindEmailValidateCodeReq.setCodeDigest(req.getCodeDigest());
         verifyBindEmailValidateCodeReq.setEmail(req.getEmail());
@@ -198,6 +197,7 @@ public class BindEmailFilter extends GenericFilterBean {
         }
         ChangeBindEmailReq changeBindEmailReq = new ChangeBindEmailReq(securityConfig.getDomainId());
         changeBindEmailReq.setUid(securityContext.getUserInfo().getUid());
+        changeBindEmailReq.setPassWord(password);
         changeBindEmailReq.setEmail(req.getEmail());
         ChangeBindEmailRes res = bindSupportClient.changeBindEmail(changeBindEmailReq);
         if (res == null) {
