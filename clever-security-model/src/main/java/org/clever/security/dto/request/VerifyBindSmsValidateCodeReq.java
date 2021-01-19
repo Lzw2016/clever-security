@@ -20,6 +20,11 @@ public class VerifyBindSmsValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
+     * 用户密码
+     */
+    @NotBlank(message = "密码不能为空")
+    private String passWord;
+    /**
      * 验证码
      */
     @NotBlank(message = "验证码不能为空")

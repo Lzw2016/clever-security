@@ -15,11 +15,15 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BIndEmailReq extends BaseRequest {
+public class BindEmailReq extends BaseRequest {
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式不正确")
     private String email;
-
+    /**
+     * 账号密码
+     */
+    @NotBlank(message = "密码不能为空")
+    private String passWord;
     /**
      * 验证码
      */

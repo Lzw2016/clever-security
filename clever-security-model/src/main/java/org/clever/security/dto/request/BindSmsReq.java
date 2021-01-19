@@ -15,11 +15,15 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BIndSmsReq extends BaseRequest {
+public class BindSmsReq extends BaseRequest {
     @NotBlank(message = "绑定的手机号不能为空")
     @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
     private String telephone;
-
+    /**
+     * 账号密码
+     */
+    @NotBlank(message = "密码不能为空")
+    private String passWord;
     /**
      * 验证码
      */

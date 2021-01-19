@@ -10,11 +10,14 @@ import org.clever.security.client.BindSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.BindTelephoneConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.exception.AuthorizationInnerException;
+import org.clever.security.embed.exception.BadCredentialsException;
 import org.clever.security.embed.exception.ChangeBindSmsInnerException;
 import org.clever.security.embed.exception.ChangeBindSmsValidateCodeException;
+import org.clever.security.embed.utils.AesUtils;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -109,6 +112,10 @@ public class BindTelephoneFilter extends GenericFilterBean {
 
     //发送手机号验证码
     protected void sendSmsValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SecurityContext securityContext = SecurityContextHolder.getContext(request);
+        if (securityContext == null) {
+            throw new AuthorizationInnerException("获取SecurityContext失败");
+        }
         BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
         if (bindTelephone == null || !bindTelephone.isEnable()) {
             throw new UnsupportedOperationException("未启用手机号换绑");
@@ -117,6 +124,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         if (req == null) {
             throw new BusinessException("请求数据解析异常(手机换绑发送手机验证码)");
         }
+        req.setUid(securityContext.getUserInfo().getUid());
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) bindTelephone.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindTelephone.getMaxSendNumInDay());
@@ -156,7 +164,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         if (securityContext == null) {
             throw new AuthorizationInnerException("获取SecurityContext失败");
         }
-        BIndSmsReq req = HttpServletRequestUtils.parseBodyToEntity(request, BIndSmsReq.class);
+        BindSmsReq req = HttpServletRequestUtils.parseBodyToEntity(request, BindSmsReq.class);
         if (req == null) {
             throw new BusinessException("请求数据解析异常(手机号换绑)");
         }
@@ -165,7 +173,18 @@ public class BindTelephoneFilter extends GenericFilterBean {
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(手机号换绑)", e);
         }
+        String password = req.getPassWord();
+        AesKeyConfig reqAesKey = securityConfig.getReqAesKey();
+        if (reqAesKey != null && reqAesKey.isEnable()) {
+            try {
+                password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), password);
+                req.setPassWord(password);
+            } catch (Exception e) {
+                throw new BadCredentialsException("密码需要加密传输", e);
+            }
+        }
         VerifyBindSmsValidateCodeReq verifyBindSmsValidateCodeReq = new VerifyBindSmsValidateCodeReq(securityConfig.getDomainId());
+        verifyBindSmsValidateCodeReq.setPassWord(password);
         verifyBindSmsValidateCodeReq.setCode(req.getCode());
         verifyBindSmsValidateCodeReq.setCodeDigest(req.getCodeDigest());
         verifyBindSmsValidateCodeReq.setTelephone(req.getTelephone());
@@ -173,7 +192,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         if (smsValidateCodeRes == null) {
             throw new ChangeBindSmsInnerException("验证短信验证码失败");
         } else if (!smsValidateCodeRes.isSuccess()) {
-            throw new ChangeBindSmsValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : "短信验证码错误");
+            throw new ChangeBindSmsValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : (smsValidateCodeRes.isPassWord() ? "短信验证码错误" : "密码错误"));
         }
         ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
         changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());

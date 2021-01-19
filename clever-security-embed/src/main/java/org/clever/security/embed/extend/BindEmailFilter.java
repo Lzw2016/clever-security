@@ -10,11 +10,14 @@ import org.clever.security.client.BindSupportClient;
 import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.embed.config.SecurityConfig;
+import org.clever.security.embed.config.internal.AesKeyConfig;
 import org.clever.security.embed.config.internal.BindEmailConfig;
 import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.exception.AuthorizationInnerException;
+import org.clever.security.embed.exception.BadCredentialsException;
 import org.clever.security.embed.exception.ChangeBindEmailInnerException;
 import org.clever.security.embed.exception.ChangeBindEmailValidateCodeException;
+import org.clever.security.embed.utils.AesUtils;
 import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
@@ -110,6 +113,10 @@ public class BindEmailFilter extends GenericFilterBean {
 
     //发送邮箱验证码
     protected void sendEmailValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SecurityContext securityContext = SecurityContextHolder.getContext(request);
+        if (securityContext == null) {
+            throw new AuthorizationInnerException("获取SecurityContext失败");
+        }
         BindEmailConfig bindEmail = securityConfig.getBindEmail();
         if (bindEmail == null || !bindEmail.isEnable()) {
             throw new UnsupportedOperationException("未启用邮箱换绑");
@@ -118,6 +125,7 @@ public class BindEmailFilter extends GenericFilterBean {
         if (req == null) {
             throw new BusinessException("请求数据解析异常(邮箱换绑发送手机验证码)");
         }
+        req.setUid(securityContext.getUserInfo().getUid());
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) bindEmail.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindEmail.getMaxSendNumInDay());
@@ -157,7 +165,7 @@ public class BindEmailFilter extends GenericFilterBean {
         if (securityContext == null) {
             throw new AuthorizationInnerException("获取SecurityContext失败");
         }
-        BIndEmailReq req = HttpServletRequestUtils.parseBodyToEntity(request, BIndEmailReq.class);
+        BindEmailReq req = HttpServletRequestUtils.parseBodyToEntity(request, BindEmailReq.class);
         if (req == null) {
             throw new BusinessException("请求数据解析异常(邮箱换绑)");
         }
@@ -166,15 +174,27 @@ public class BindEmailFilter extends GenericFilterBean {
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(邮箱换绑)", e);
         }
+        String password = req.getPassWord();
+        AesKeyConfig reqAesKey = securityConfig.getReqAesKey();
+        if (reqAesKey != null && reqAesKey.isEnable()) {
+            // 解密密码(请求密码加密在客户端)
+            try {
+                password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), password);
+                req.setPassWord(password);
+            } catch (Exception e) {
+                throw new BadCredentialsException("密码需要加密传输", e);
+            }
+        }
         VerifyBindEmailValidateCodeReq verifyBindEmailValidateCodeReq = new VerifyBindEmailValidateCodeReq(securityConfig.getDomainId());
+        verifyBindEmailValidateCodeReq.setPassWord(password);
         verifyBindEmailValidateCodeReq.setCode(req.getCode());
         verifyBindEmailValidateCodeReq.setCodeDigest(req.getCodeDigest());
         verifyBindEmailValidateCodeReq.setEmail(req.getEmail());
-        VerifyBindEmailValidateCodeRes emailValidateCodeRes = bindSupportClient.verifyBindEmailValidateCode(verifyBindEmailValidateCodeReq);
-        if (emailValidateCodeRes == null) {
+        VerifyBindEmailValidateCodeRes validateCodeRes = bindSupportClient.verifyBindEmailValidateCode(verifyBindEmailValidateCodeReq);
+        if (validateCodeRes == null) {
             throw new ChangeBindEmailInnerException("验证邮箱验证码失败");
-        } else if (!emailValidateCodeRes.isSuccess()) {
-            throw new ChangeBindEmailValidateCodeException(emailValidateCodeRes.isExpired() ? "邮箱验证码已失效" : "邮箱验证码错误");
+        } else if (!validateCodeRes.isSuccess()) {
+            throw new ChangeBindEmailValidateCodeException(validateCodeRes.isExpired() ? "邮箱验证码已失效" : (validateCodeRes.isPassWord() ? "邮箱验证码错误" : "密码错误"));
         }
         ChangeBindEmailReq changeBindEmailReq = new ChangeBindEmailReq(securityConfig.getDomainId());
         changeBindEmailReq.setUid(securityContext.getUserInfo().getUid());
