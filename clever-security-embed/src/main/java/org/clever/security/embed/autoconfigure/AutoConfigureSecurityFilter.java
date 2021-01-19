@@ -61,7 +61,7 @@ import java.util.List;
  *   🡓
  *   BindTelephoneFilter(手机号绑定/换绑)
  *   BindEmailFilter(邮箱绑定/换绑)
- *   ResetPasswordFilter(设置/修改密码)
+ *   UpdatePasswordFilter(设置/修改密码)
  *   🡓
  *   LogoutFilter(###登出)
  *   🡓
