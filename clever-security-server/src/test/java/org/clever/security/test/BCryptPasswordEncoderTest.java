@@ -27,6 +27,7 @@ public class BCryptPasswordEncoderTest {
         log.info("-> {}", passwordEncoder.matches(password, after));
         log.info("-> {}", passwordEncoder.matches(password, after));
         log.info("-> {}", passwordEncoder.matches(password, after));
+        log.info("-> {}", passwordEncoder.matches("123456", "$2a$10$JXCYbQAabE5TQgIJOjumuu47SyYQTXIOmwfklEACHiQ71G1HdKLPC"));
     }
 
     @Test

@@ -22,7 +22,7 @@ public class SendBindEmailValidateCodeReq extends BaseResponse {
     /**
      * 用户uid
      */
-    @NotBlank(message = "邮箱不能为空")
+    @NotBlank(message = "uid不能为空")
     private String uid;
     /**
      * 图片验证码
