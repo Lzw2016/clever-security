@@ -36,7 +36,7 @@ public class BCryptPasswordEncoderTest {
         String key = "b9049bb512f6b776835b9bf9e6c44c45";
         String iv = "47e2cf4f8ee69fd9d7f3cad475682df8";
         AesPasswordEncoder passwordEncoder = new AesPasswordEncoder(key, iv);
-        String password = "112233";
+        String password = "123456";
         String after = passwordEncoder.encode(password);
         log.info("-> {}", after);
         log.info("-> {}", passwordEncoder.encode(password));

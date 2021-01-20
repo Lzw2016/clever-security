@@ -212,7 +212,7 @@ public class BindSupportService implements BindSupportClient {
         TupleThree<Boolean, String, Boolean> tuple = registerSupportService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_10,
-                EnumConstant.ValidateCode_SendChannel_2,
+                EnumConstant.ValidateCode_SendChannel_1,
                 req.getCode(),
                 req.getCodeDigest(),
                 req.getTelephone());
@@ -251,7 +251,7 @@ public class BindSupportService implements BindSupportClient {
         user = verifyPassWord(req.getUid(), req.getPassWord());
         User update = new User();
         update.setUid(req.getUid());
-        update.setEmail(req.getTelephone());
+        update.setTelephone(req.getTelephone());
         userMapper.updateById(update);
         // 清除 user_security_context
         userSecurityContextMapper.deleteByUid(user.getUid());

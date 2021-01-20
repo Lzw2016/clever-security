@@ -27,9 +27,4 @@ public class VerifyBindEmailValidateCodeRes extends BaseResponse {
      * 验证码是否已过期
      */
     private boolean expired;
-
-    /**
-     * 密码是否正确
-     */
-    private boolean isPassWord;
 }

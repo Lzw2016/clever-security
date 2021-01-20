@@ -217,19 +217,19 @@ public interface EnumConstant {
      */
     int ValidateCode_Type_8 = 8;
     /**
-     * 验证码类型，5:手机换绑图片验证码
+     * 验证码类型，9:手机换绑图片验证码
      */
     int ValidateCode_Type_9 = 9;
     /**
-     * 验证码类型，6:手机换绑短信验证码
+     * 验证码类型，10:手机换绑短信验证码
      */
     int ValidateCode_Type_10 = 10;
     /**
-     * 验证码类型，7:邮箱换绑图片验证码
+     * 验证码类型，11:邮箱换绑图片验证码
      */
     int ValidateCode_Type_11 = 11;
     /**
-     * 验证码类型，8:邮箱换绑邮箱验证码
+     * 验证码类型，12:邮箱换绑邮箱验证码
      */
     int ValidateCode_Type_12 = 12;
     /**

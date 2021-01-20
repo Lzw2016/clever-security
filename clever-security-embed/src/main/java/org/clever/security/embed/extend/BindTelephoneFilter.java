@@ -33,7 +33,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import java.io.IOException;
+import java.util.Set;
 
 /**
  * 作者：lizw <br/>
@@ -129,6 +131,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) bindTelephone.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindTelephone.getMaxSendNumInDay());
         try {
+            //todo  校验
             ValidatorFactoryUtils.getValidatorInstance().validate(req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(手机换绑发送短信验证码)", e);
@@ -169,6 +172,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
             throw new BusinessException("请求数据解析异常(手机号换绑)");
         }
         try {
+            //todo  校验
             ValidatorFactoryUtils.getValidatorInstance().validate(req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(手机号换绑)", e);
@@ -191,7 +195,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         if (smsValidateCodeRes == null) {
             throw new ChangeBindSmsInnerException("验证短信验证码失败");
         } else if (!smsValidateCodeRes.isSuccess()) {
-            throw new ChangeBindSmsValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : (smsValidateCodeRes.isPassWord() ? "短信验证码错误" : "密码错误"));
+            throw new ChangeBindSmsValidateCodeException(smsValidateCodeRes.isExpired() ? "短信验证码已失效" : "短信验证码错误");
         }
         ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
         changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());

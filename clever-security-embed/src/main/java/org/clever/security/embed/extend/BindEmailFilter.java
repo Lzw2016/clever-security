@@ -130,6 +130,7 @@ public class BindEmailFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) bindEmail.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindEmail.getMaxSendNumInDay());
         try {
+            //todo  校验
             ValidatorFactoryUtils.getValidatorInstance().validate(req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(邮箱换绑发送邮箱验证码)", e);
@@ -170,6 +171,7 @@ public class BindEmailFilter extends GenericFilterBean {
             throw new BusinessException("请求数据解析异常(邮箱换绑)");
         }
         try {
+            //todo  校验
             ValidatorFactoryUtils.getValidatorInstance().validate(req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(邮箱换绑)", e);
@@ -193,7 +195,7 @@ public class BindEmailFilter extends GenericFilterBean {
         if (validateCodeRes == null) {
             throw new ChangeBindEmailInnerException("验证邮箱验证码失败");
         } else if (!validateCodeRes.isSuccess()) {
-            throw new ChangeBindEmailValidateCodeException(validateCodeRes.isExpired() ? "邮箱验证码已失效" : (validateCodeRes.isPassWord() ? "邮箱验证码错误" : "密码错误"));
+            throw new ChangeBindEmailValidateCodeException(validateCodeRes.isExpired() ? "邮箱验证码已失效" : "邮箱验证码错误");
         }
         ChangeBindEmailReq changeBindEmailReq = new ChangeBindEmailReq(securityConfig.getDomainId());
         changeBindEmailReq.setUid(securityContext.getUserInfo().getUid());
