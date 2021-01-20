@@ -29,6 +29,9 @@ public interface JwtTokenMapper extends BaseMapper<JwtToken> {
     @Update("update jwt_token set disable=1, disable_reason=#{disableReason} where domain_id=#{domainId} and id=#{id}")
     int disableJwtToken(@Param("domainId") Long domainId, @Param("id") Long id, @Param("disableReason") String disableReason);
 
+    @Update("update jwt_token set disable=1, disable_reason=#{disableReason} where (expired_time is not null and expired_time>now()) and disable=0 and uid=#{uid}")
+    int disableJwtTokenByUid(@Param("uid") String uid, @Param("disableReason") String disableReason);
+
     @Select("select * from jwt_token where (expired_time is not null and expired_time>now()) and disable=0 and uid=#{uid}")
     List<JwtToken> getEffectiveTokenByUid(@Param("uid") String uid);
 }

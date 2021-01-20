@@ -326,7 +326,7 @@ create table validate_code
     uid                 varchar(63)                                                             comment '用户id(触发生成验证码的用户)',
     code                varchar(15)     not null                                                comment '验证码',
     digest              varchar(63)     not null        unique                                  comment '验证码签名',
-    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:重置密码(修改密码)验证码，4:登录名注册验证码，5:短信注册图片验证码，6:短信注册短信验证码，7:邮箱注册图片验证码，8:邮箱注册邮箱验证码',
+    type                int(1)          not null        default 1                               comment '验证码类型，1:登录验证码，2:找回密码验证码，3:修改密码验证码，4:登录名注册验证码，5:短信注册图片验证码，6:短信注册短信验证码，7:邮箱注册图片验证码，8:邮箱注册邮箱验证码',
     send_channel        int(1)          not null                                                comment '验证码发送渠道，0:不需要发送，1:短信，2:email',
     send_target         varchar(63)                                                             comment '发送目标手机号或邮箱',
     expired_time        datetime(3)     not null                                                comment '验证码过期时间',

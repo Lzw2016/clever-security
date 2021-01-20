@@ -3,10 +3,7 @@ package org.clever.security.embed.autoconfigure;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.security.Constant;
-import org.clever.security.client.BindSupportClient;
-import org.clever.security.client.LoginSupportClient;
-import org.clever.security.client.PasswordRecoverySupportClient;
-import org.clever.security.client.RegisterSupportClient;
+import org.clever.security.client.*;
 import org.clever.security.embed.authentication.*;
 import org.clever.security.embed.authentication.login.AddJwtTokenExtData;
 import org.clever.security.embed.authentication.login.LoadUser;
@@ -23,7 +20,7 @@ import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.extend.BindEmailFilter;
 import org.clever.security.embed.extend.BindTelephoneFilter;
 import org.clever.security.embed.extend.PasswordRecoveryFilter;
-import org.clever.security.embed.extend.ResetPasswordFilter;
+import org.clever.security.embed.extend.UpdatePasswordFilter;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.RegisterCaptchaFilter;
 import org.clever.security.embed.register.UserRegisterFilter;
@@ -64,7 +61,7 @@ import java.util.List;
  *   🡓
  *   BindTelephoneFilter(手机号绑定/换绑)
  *   BindEmailFilter(邮箱绑定/换绑)
- *   ResetPasswordFilter(设置/修改密码)
+ *   UpdatePasswordFilter(设置/修改密码)
  *   🡓
  *   LogoutFilter(###登出)
  *   🡓
@@ -378,13 +375,29 @@ public class AutoConfigureSecurityFilter {
     /**
      * 设置/修改密码
      */
-    @Bean("resetPasswordFilter")
-    @ConditionalOnMissingBean(name = "resetPasswordFilter")
-    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "???", havingValue = "true", matchIfMissing = true)
-    public FilterRegistrationBean<ResetPasswordFilter> resetPasswordFilter() {
-        ResetPasswordFilter filter = new ResetPasswordFilter();
-        FilterRegistrationBean<ResetPasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
-        filterRegistration.setName("resetPasswordFilter");
+    @Bean("updatePasswordFilter")
+    @ConditionalOnMissingBean(name = "updatePasswordFilter")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "update-password.enable", havingValue = "true", matchIfMissing = true)
+    public FilterRegistrationBean<UpdatePasswordFilter> updatePasswordFilter(UpdatePasswordSupportClient updatePasswordSupportClient) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        UpdatePasswordFilter filter = new UpdatePasswordFilter(securityConfig, updatePasswordSupportClient);
+        FilterRegistrationBean<UpdatePasswordFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getCaptchaPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getCaptchaPath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getSmsValidateCodePath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getSmsValidateCodePath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getEmailValidateCodePath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getEmailValidateCodePath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getInitPasswordPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getInitPasswordPath());
+        }
+        if (updatePassword != null && StringUtils.isNotBlank(updatePassword.getUpdatePasswordPath())) {
+            filterRegistration.addUrlPatterns(updatePassword.getUpdatePasswordPath());
+        }
+        filterRegistration.setName("updatePasswordFilter");
         filterRegistration.setOrder(Base_Order + 200 + 3);
         return filterRegistration;
     }

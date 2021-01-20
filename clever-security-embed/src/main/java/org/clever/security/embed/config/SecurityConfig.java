@@ -100,6 +100,11 @@ public class SecurityConfig implements Serializable {
     @NestedConfigurationProperty
     private final BindEmailConfig bindEmail = new BindEmailConfig();
     /**
+     * 修改密码配置
+     */
+    @NestedConfigurationProperty
+    private final UpdatePasswordConfig updatePassword = new UpdatePasswordConfig();
+    /**
      * 服务间免登陆Token访问配置
      */
     @NestedConfigurationProperty
