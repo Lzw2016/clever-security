@@ -5,7 +5,6 @@ import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.service.UpdatePasswordSupportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class UpdatePasswordSupportController implements UpdatePasswordSupportCli
      */
     @GetMapping("/init_password/captcha")
     @Override
-    public GetInitPasswordCaptchaRes getInitPasswordCaptcha(@Validated @SpringQueryMap GetInitPasswordCaptchaReq req) {
+    public GetInitPasswordCaptchaRes getInitPasswordCaptcha(@Validated GetInitPasswordCaptchaReq req) {
         return updatePasswordSupportService.getInitPasswordCaptcha(req);
     }
 

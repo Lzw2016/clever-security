@@ -17,12 +17,10 @@ import org.clever.security.model.SecurityContext;
 import org.clever.security.model.auth.ForbiddenAccessRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -36,7 +34,7 @@ import java.util.Objects;
  * 创建时间：2020/11/29 16:18 <br/>
  */
 @Slf4j
-public class AuthorizationFilter extends GenericFilterBean {
+public class AuthorizationFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -70,22 +68,15 @@ public class AuthorizationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!PathFilterUtils.isAuthorizationRequest(httpRequest, securityConfig)) {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!PathFilterUtils.isAuthorizationRequest(request, securityConfig)) {
             // 不需要授权
             chain.doFilter(request, response);
             return;
         }
         log.debug("### 开始执行授权逻辑 ---------------------------------------------------------------------->");
         // 执行授权逻辑
-        AuthorizationContext context = new AuthorizationContext(httpRequest, httpResponse);
+        AuthorizationContext context = new AuthorizationContext(request, response);
         boolean pass;
         try {
             pass = authorization(context);
@@ -93,7 +84,7 @@ public class AuthorizationFilter extends GenericFilterBean {
         } catch (Throwable e) {
             // 授权异常
             log.error("授权异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
             return;
         } finally {
             log.debug("### 授权逻辑执行完成 <----------------------------------------------------------------------");
@@ -109,7 +100,7 @@ public class AuthorizationFilter extends GenericFilterBean {
             }
         } catch (Throwable e) {
             log.error("授权异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
             return;
         }
         // 处理业务逻辑

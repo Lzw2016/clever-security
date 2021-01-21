@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
+import org.clever.security.PatternConstant;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -17,8 +18,8 @@ import javax.validation.constraints.Pattern;
 @Data
 public class BindSmsReq extends BaseRequest {
     @NotBlank(message = "绑定的手机号不能为空")
-    @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
-    private String telephone;
+    @Pattern(regexp = PatternConstant.Telephone_Pattern, message = "手机号格式错误")
+    private String newTelephone;
     /**
      * 账号密码
      */

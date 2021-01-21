@@ -29,3 +29,4 @@ target
 .docker
 .DS_Store
 pom.xml.versionsBackup
+.flattened-pom.xml

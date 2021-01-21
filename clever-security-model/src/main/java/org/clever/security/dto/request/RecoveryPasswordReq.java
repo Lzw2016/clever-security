@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
+import org.clever.security.PatternConstant;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -21,7 +22,7 @@ public class RecoveryPasswordReq extends BaseRequest {
     @Email(message = "邮箱格式不正确")
     private String email;
 
-    @Pattern(regexp = "(?:0|86|\\+86)?1[3456789]\\d{9}", message = "手机号格式错误")
+    @Pattern(regexp = PatternConstant.Telephone_Pattern, message = "手机号格式错误")
     private String telephone;
 
     /**

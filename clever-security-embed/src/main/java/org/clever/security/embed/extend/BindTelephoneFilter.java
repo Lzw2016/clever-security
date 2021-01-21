@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.BindSupportClient;
@@ -25,24 +26,20 @@ import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
 import java.io.IOException;
-import java.util.Set;
 
 /**
  * 作者：lizw <br/>
  * 创建时间：2020/12/18 22:12 <br/>
  */
 @Slf4j
-public class BindTelephoneFilter extends GenericFilterBean {
+public class BindTelephoneFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -57,33 +54,26 @@ public class BindTelephoneFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         boolean changeBindSms = false;
         try {
-            if (PathFilterUtils.isChangeBindSmsCaptchaPathRequest(httpRequest, securityConfig)) {
+            if (PathFilterUtils.isChangeBindSmsCaptchaPathRequest(request, securityConfig)) {
                 // 手机换绑 - 图片验证码
                 changeBindSms = true;
-                sendSmsCaptcha(httpResponse);
-            } else if (PathFilterUtils.isChangeBindSmsValidateCodeRequest(httpRequest, securityConfig)) {
+                sendSmsCaptcha(response);
+            } else if (PathFilterUtils.isChangeBindSmsValidateCodeRequest(request, securityConfig)) {
                 // 手机换绑 - 短信验证码
                 changeBindSms = true;
-                sendSmsValidateCode(httpRequest, httpResponse);
-            } else if (PathFilterUtils.isChangeBindSmsRequest(httpRequest, securityConfig)) {
+                sendSmsValidateCode(request, response);
+            } else if (PathFilterUtils.isChangeBindSmsRequest(request, securityConfig)) {
                 // 手机换绑 - 手机号换绑
                 changeBindSms = true;
-                changeBindSms(httpRequest, httpResponse);
+                changeBindSms(request, response);
             }
         } catch (Exception e) {
             changeBindSms = true;
             log.error("手机号换绑处理失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
         }
         if (changeBindSms) {
             return;
@@ -131,8 +121,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) bindTelephone.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindTelephone.getMaxSendNumInDay());
         try {
-            //todo  校验
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(手机换绑发送短信验证码)", e);
         }
@@ -172,8 +161,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
             throw new BusinessException("请求数据解析异常(手机号换绑)");
         }
         try {
-            //todo  校验
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(手机号换绑)", e);
         }
@@ -184,13 +172,13 @@ public class BindTelephoneFilter extends GenericFilterBean {
                 password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), password);
                 req.setPassWord(password);
             } catch (Exception e) {
-                throw new BadCredentialsException("密码需要加密传输", e);
+                throw new BadCredentialsException("密码需要加密传输(手机号换绑)", e);
             }
         }
         VerifyBindSmsValidateCodeReq verifyBindSmsValidateCodeReq = new VerifyBindSmsValidateCodeReq(securityConfig.getDomainId());
         verifyBindSmsValidateCodeReq.setCode(req.getCode());
         verifyBindSmsValidateCodeReq.setCodeDigest(req.getCodeDigest());
-        verifyBindSmsValidateCodeReq.setTelephone(req.getTelephone());
+        verifyBindSmsValidateCodeReq.setTelephone(req.getNewTelephone());
         VerifyBindSmsValidateCodeRes smsValidateCodeRes = bindSupportClient.verifyBindSmsValidateCode(verifyBindSmsValidateCodeReq);
         if (smsValidateCodeRes == null) {
             throw new ChangeBindSmsInnerException("验证短信验证码失败");
@@ -200,7 +188,7 @@ public class BindTelephoneFilter extends GenericFilterBean {
         ChangeBindSmsReq changeBindSmsReq = new ChangeBindSmsReq(securityConfig.getDomainId());
         changeBindSmsReq.setUid(securityContext.getUserInfo().getUid());
         changeBindSmsReq.setPassWord(password);
-        changeBindSmsReq.setTelephone(req.getTelephone());
+        changeBindSmsReq.setNewTelephone(req.getNewTelephone());
         ChangeBindSmsRes res = bindSupportClient.changeBindSms(changeBindSmsReq);
         if (res == null) {
             throw new ChangeBindSmsInnerException("手机号换绑失败");

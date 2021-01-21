@@ -28,12 +28,10 @@ import org.clever.security.model.register.LoginNameRegisterReq;
 import org.clever.security.model.register.SmsRegisterReq;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -46,7 +44,7 @@ import java.util.List;
  * 创建时间：2020-12-16 22:25 <br/>
  */
 @Slf4j
-public class UserRegisterFilter extends GenericFilterBean {
+public class UserRegisterFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -90,23 +88,16 @@ public class UserRegisterFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!PathFilterUtils.isRegisterRequest(httpRequest, securityConfig) || !enableRegister()) {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!PathFilterUtils.isRegisterRequest(request, securityConfig) || !enableRegister()) {
             // 不是注册请求
             chain.doFilter(request, response);
             return;
         }
         log.debug("### 开始执行注册逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
+        log.debug("当前请求 -> [{}]", request.getRequestURI());
         // 执行注册逻辑
-        RegisterContext context = new RegisterContext(httpRequest, httpResponse);
+        RegisterContext context = new RegisterContext(request, response);
         try {
             register(context);
             // 注册成功处理
@@ -126,12 +117,12 @@ public class UserRegisterFilter extends GenericFilterBean {
                 onRegisterFailureResponse(context);
             } catch (Exception innerException) {
                 log.error("注册异常", innerException);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+                HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
             }
         } catch (Throwable e) {
             // 注册异常
             log.error("注册异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             log.debug("### 注册逻辑执行完成 <----------------------------------------------------------------------");
         }
@@ -207,7 +198,7 @@ public class UserRegisterFilter extends GenericFilterBean {
                     String password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), loginNameRegisterReq.getPassword());
                     req.setPassword(password);
                 } catch (Exception e) {
-                    throw new BusinessException("登录密码需要加密传输", e);
+                    throw new BusinessException("登录密码需要加密传输(用户注册)", e);
                 }
             } else {
                 req.setPassword(loginNameRegisterReq.getPassword());

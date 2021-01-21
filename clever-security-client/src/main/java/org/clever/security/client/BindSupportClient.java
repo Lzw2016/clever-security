@@ -37,14 +37,14 @@ public interface BindSupportClient {
     /**
      * 邮箱换绑 - 图片验证码验证
      */
-    @GetMapping("/bind_email/captcha/verify")
-    VerifyBindEmailCaptchaRes verifyBindEmailCaptcha(@Validated @SpringQueryMap VerifyBindEmailCaptchaReq req);
+    @PostMapping("/bind_email/captcha/verify")
+    VerifyBindEmailCaptchaRes verifyBindEmailCaptcha(@Validated @RequestBody VerifyBindEmailCaptchaReq req);
 
     /**
      * 手机号换绑 - 图片验证码验证
      */
-    @GetMapping("/bind_telephone/captcha/verify")
-    VerifyBindSmsCaptchaRes verifyBindSmsCaptcha(@Validated @SpringQueryMap VerifyBindSmsCaptchaReq req);
+    @PostMapping("/bind_telephone/captcha/verify")
+    VerifyBindSmsCaptchaRes verifyBindSmsCaptcha(@Validated @RequestBody VerifyBindSmsCaptchaReq req);
 
     /**
      * 邮箱换绑 - 邮箱验证码

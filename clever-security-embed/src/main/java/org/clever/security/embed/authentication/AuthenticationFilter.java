@@ -29,12 +29,12 @@ import org.clever.security.entity.JwtToken;
 import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -48,7 +48,7 @@ import java.util.List;
  * 创建时间：2020/11/29 21:27 <br/>
  */
 @Slf4j
-public class AuthenticationFilter extends GenericFilterBean {
+public class AuthenticationFilter extends HttpFilter {
     public final static String JWT_Object_Request_Attribute = AuthenticationFilter.class.getName() + "_JWT_Object";
     /**
      * 全局配置
@@ -97,24 +97,17 @@ public class AuthenticationFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!PathFilterUtils.isAuthenticationRequest(httpRequest, securityConfig)) {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!PathFilterUtils.isAuthenticationRequest(request, securityConfig)) {
             // 不需要身份认证
-            if (!securityConfig.getLogin().isAllowRepeatLogin() && PathFilterUtils.isLoginRequest(httpRequest, securityConfig)) {
+            if (!securityConfig.getLogin().isAllowRepeatLogin() && PathFilterUtils.isLoginRequest(request, securityConfig)) {
                 // 当前请求是登录请求且不允许重复登录时，需要判断当前用户是否已经登录
-                doAuthentication(httpRequest, httpResponse, false);
+                doAuthentication(request, response, false);
             }
             innerDoFilter(request, response, chain);
             return;
         }
-        if (doAuthentication(httpRequest, httpResponse, true)) {
+        if (doAuthentication(request, response, true)) {
             innerDoFilter(request, response, chain);
         }
     }

@@ -13,12 +13,10 @@ import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,7 +26,7 @@ import java.io.IOException;
  * 创建时间：2020/12/13 11:00 <br/>
  */
 @Slf4j
-public class ScanCodeLoginSupportFilter extends GenericFilterBean {
+public class ScanCodeLoginSupportFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -43,30 +41,23 @@ public class ScanCodeLoginSupportFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         Claims claims = (Claims) request.getAttribute(AuthenticationFilter.JWT_Object_Request_Attribute);
-        if (PathFilterUtils.isScanCodePath(httpRequest, securityConfig)) {
+        if (PathFilterUtils.isScanCodePath(request, securityConfig)) {
             // 扫描扫码登录二维码
             try {
-                bindLoginScanCode(claims, httpRequest, httpResponse);
+                bindLoginScanCode(claims, request, response);
             } catch (Exception e) {
                 log.error("扫描扫码登录二维码处理失败", e);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+                HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
             }
-        } else if (PathFilterUtils.isScanCodeLoginConfirmPath(httpRequest, securityConfig)) {
+        } else if (PathFilterUtils.isScanCodeLoginConfirmPath(request, securityConfig)) {
             // 扫码登录确认登录
             try {
-                confirmLoginScanCode(claims, httpRequest, httpResponse);
+                confirmLoginScanCode(claims, request, response);
             } catch (Exception e) {
                 log.error("扫码登录确认登录处理失败", e);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+                HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
             }
         } else {
             // 不是扫码登录相关请求

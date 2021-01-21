@@ -2,6 +2,7 @@ package org.clever.security.embed.authentication.login;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.GetLoginEmailValidateCodeReq;
@@ -74,7 +75,7 @@ public class DefaultVerifyLoginData implements VerifyLoginData {
      */
     protected void verifyLoginData(AbstractUserLoginReq loginReq) {
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(loginReq);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), loginReq);
         } catch (Exception e) {
             throw new LoginDataValidateException("登录数据校验失败", e);
         }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.PasswordRecoverySupportClient;
@@ -24,12 +25,10 @@ import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -41,7 +40,7 @@ import java.io.IOException;
  * 创建时间：2020-12-16 22:27 <br/>
  */
 @Slf4j
-public class PasswordRecoveryFilter extends GenericFilterBean {
+public class PasswordRecoveryFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -56,50 +55,43 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         boolean enablePasswordRecovery = enablePasswordRecovery();
         boolean isPasswordRecovery = false;
         try {
-            if (PathFilterUtils.isPasswordRecoverySmsCaptchaRequest(httpRequest, securityConfig)
+            if (PathFilterUtils.isPasswordRecoverySmsCaptchaRequest(request, securityConfig)
                     && securityConfig.getPasswordRecovery().getSmsRecovery().isEnable()
                     && securityConfig.getPasswordRecovery().getSmsRecovery().isNeedCaptcha()) {
                 // 密码找回 - 短信图片验证码
                 isPasswordRecovery = true;
-                getSmsRecoveryCaptcha(httpResponse);
+                getSmsRecoveryCaptcha(response);
             } else if (enablePasswordRecovery
-                    && PathFilterUtils.isPasswordRecoverySmsValidateCodeRequest(httpRequest, securityConfig)
+                    && PathFilterUtils.isPasswordRecoverySmsValidateCodeRequest(request, securityConfig)
                     && securityConfig.getPasswordRecovery().getSmsRecovery().isEnable()) {
                 // 密码找回 - 短信验证码
                 isPasswordRecovery = true;
-                sendSmsValidateCode(httpRequest, httpResponse);
-            } else if (PathFilterUtils.isPasswordRecoveryEmailCaptchaRequest(httpRequest, securityConfig)
+                sendSmsValidateCode(request, response);
+            } else if (PathFilterUtils.isPasswordRecoveryEmailCaptchaRequest(request, securityConfig)
                     && securityConfig.getPasswordRecovery().getEmailRecovery().isEnable()
                     && securityConfig.getPasswordRecovery().getEmailRecovery().isNeedCaptcha()) {
                 // 密码找回 - 邮箱图片验证码
                 isPasswordRecovery = true;
-                sendEmailCaptcha(httpResponse);
+                sendEmailCaptcha(response);
             } else if (enablePasswordRecovery
-                    && PathFilterUtils.isPasswordRecoveryEmailValidateCodeRequest(httpRequest, securityConfig)
+                    && PathFilterUtils.isPasswordRecoveryEmailValidateCodeRequest(request, securityConfig)
                     && securityConfig.getPasswordRecovery().getEmailRecovery().isEnable()) {
                 // 密码找回 - 邮箱验证码
                 isPasswordRecovery = true;
-                sendEmailValidateCode(httpRequest, httpResponse);
-            } else if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoveryRequest(httpRequest, securityConfig)) {
+                sendEmailValidateCode(request, response);
+            } else if (enablePasswordRecovery && PathFilterUtils.isPasswordRecoveryRequest(request, securityConfig)) {
                 // 密码找回请求
                 isPasswordRecovery = true;
-                recoveryPassword(httpRequest, httpResponse);
+                recoveryPassword(request, response);
             }
         } catch (Exception e) {
             isPasswordRecovery = true;
             log.error("密码找回处理失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
         }
         if (isPasswordRecovery) {
             return;
@@ -163,7 +155,7 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) smsRecovery.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(smsRecovery.getMaxSendNumInDay());
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(找回密码发送短信验证码)", e);
         }
@@ -234,7 +226,7 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) emailRecovery.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(emailRecovery.getMaxSendNumInDay());
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(找回密码发送邮件验证码)", e);
         }
@@ -273,7 +265,7 @@ public class PasswordRecoveryFilter extends GenericFilterBean {
             throw new BusinessException("邮箱和手机号不能同时为空");
         }
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(找回密码)", e);
         }

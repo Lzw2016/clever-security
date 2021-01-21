@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.BindSupportClient;
@@ -25,12 +26,10 @@ import org.clever.security.model.SecurityContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -40,7 +39,7 @@ import java.io.IOException;
  * 创建时间：2020/12/18 22:14 <br/>
  */
 @Slf4j
-public class BindEmailFilter extends GenericFilterBean {
+public class BindEmailFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -55,34 +54,27 @@ public class BindEmailFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         boolean changeBindEmail = false;
         try {
-            if (PathFilterUtils.isChangeBindEmailCaptchaPathRequest(httpRequest, securityConfig)) {
+            if (PathFilterUtils.isChangeBindEmailCaptchaPathRequest(request, securityConfig)) {
                 // 邮箱换绑 - 图片验证码
                 changeBindEmail = true;
-                sendEmailCaptcha(httpResponse);
-            } else if (PathFilterUtils.isChangeBindEmailValidateCodeRequest(httpRequest, securityConfig)
+                sendEmailCaptcha(response);
+            } else if (PathFilterUtils.isChangeBindEmailValidateCodeRequest(request, securityConfig)
                     && securityConfig.getBindEmail().isEnable()) {
                 // 邮箱换绑 - 邮箱验证码
                 changeBindEmail = true;
-                sendEmailValidateCode(httpRequest, httpResponse);
-            } else if (PathFilterUtils.isChangeBindEmailRequest(httpRequest, securityConfig)) {
+                sendEmailValidateCode(request, response);
+            } else if (PathFilterUtils.isChangeBindEmailRequest(request, securityConfig)) {
                 // 邮箱换绑 - 绑定邮箱
                 changeBindEmail = true;
-                changeBindEmail(httpRequest, httpResponse);
+                changeBindEmail(request, response);
             }
         } catch (Exception e) {
             changeBindEmail = true;
             log.error("邮箱换绑处理失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
         }
         if (changeBindEmail) {
             return;
@@ -130,8 +122,7 @@ public class BindEmailFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) bindEmail.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindEmail.getMaxSendNumInDay());
         try {
-            //todo  校验
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(邮箱换绑发送邮箱验证码)", e);
         }
@@ -171,26 +162,24 @@ public class BindEmailFilter extends GenericFilterBean {
             throw new BusinessException("请求数据解析异常(邮箱换绑)");
         }
         try {
-            //todo  校验
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(邮箱换绑)", e);
         }
         String password = req.getPassWord();
         AesKeyConfig reqAesKey = securityConfig.getReqAesKey();
         if (reqAesKey != null && reqAesKey.isEnable()) {
-            // 解密密码(请求密码加密在客户端)
             try {
                 password = AesUtils.decode(reqAesKey.getReqPasswordAesKey(), reqAesKey.getReqPasswordAesIv(), password);
                 req.setPassWord(password);
             } catch (Exception e) {
-                throw new BadCredentialsException("密码需要加密传输", e);
+                throw new BadCredentialsException("密码需要加密传输(邮箱换绑)", e);
             }
         }
         VerifyBindEmailValidateCodeReq verifyBindEmailValidateCodeReq = new VerifyBindEmailValidateCodeReq(securityConfig.getDomainId());
         verifyBindEmailValidateCodeReq.setCode(req.getCode());
         verifyBindEmailValidateCodeReq.setCodeDigest(req.getCodeDigest());
-        verifyBindEmailValidateCodeReq.setEmail(req.getEmail());
+        verifyBindEmailValidateCodeReq.setEmail(req.getNewEmail());
         VerifyBindEmailValidateCodeRes validateCodeRes = bindSupportClient.verifyBindEmailValidateCode(verifyBindEmailValidateCodeReq);
         if (validateCodeRes == null) {
             throw new ChangeBindEmailInnerException("验证邮箱验证码失败");
@@ -200,7 +189,7 @@ public class BindEmailFilter extends GenericFilterBean {
         ChangeBindEmailReq changeBindEmailReq = new ChangeBindEmailReq(securityConfig.getDomainId());
         changeBindEmailReq.setUid(securityContext.getUserInfo().getUid());
         changeBindEmailReq.setPassWord(password);
-        changeBindEmailReq.setEmail(req.getEmail());
+        changeBindEmailReq.setNewEmail(req.getNewEmail());
         ChangeBindEmailRes res = bindSupportClient.changeBindEmail(changeBindEmailReq);
         if (res == null) {
             throw new ChangeBindEmailInnerException("邮箱换绑失败");

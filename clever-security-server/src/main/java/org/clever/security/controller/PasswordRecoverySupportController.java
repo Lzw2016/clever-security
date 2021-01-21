@@ -5,7 +5,6 @@ import org.clever.security.dto.request.*;
 import org.clever.security.dto.response.*;
 import org.clever.security.service.PasswordRecoverySupportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,7 @@ public class PasswordRecoverySupportController implements PasswordRecoverySuppor
      */
     @GetMapping("/password_recovery/sms/captcha")
     @Override
-    public GetSmsRecoveryCaptchaRes getSmsRecoveryCaptcha(@Validated @SpringQueryMap GetSmsRecoveryCaptchaReq req) {
+    public GetSmsRecoveryCaptchaRes getSmsRecoveryCaptcha(@Validated GetSmsRecoveryCaptchaReq req) {
         return passwordRecoverySupportService.getSmsRecoveryCaptcha(req);
     }
 
@@ -60,7 +59,7 @@ public class PasswordRecoverySupportController implements PasswordRecoverySuppor
      */
     @GetMapping("/password_recovery/email/captcha")
     @Override
-    public GetEmailRecoveryCaptchaRes getEmailRecoveryCaptcha(@Validated @SpringQueryMap GetEmailRecoveryCaptchaReq req) {
+    public GetEmailRecoveryCaptchaRes getEmailRecoveryCaptcha(@Validated GetEmailRecoveryCaptchaReq req) {
         return passwordRecoverySupportService.getEmailRecoveryCaptcha(req);
     }
 

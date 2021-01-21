@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
@@ -39,6 +38,8 @@ import java.util.Objects;
 @Slf4j
 public class RegisterSupportService implements RegisterSupportClient {
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private ValidateCodeMapper validateCodeMapper;
     @Autowired
     private UserMapper userMapper;
@@ -47,9 +48,9 @@ public class RegisterSupportService implements RegisterSupportClient {
     @Autowired
     private UserRegisterLogMapper userRegisterLogMapper;
     @Autowired
-    private SendValidateCodeService sendValidateCodeService;
+    private VerifyValidateCodeService verifyValidateCodeService;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private SendValidateCodeService sendValidateCodeService;
 
     @Override
     public GetLoginNameRegisterCaptchaRes getLoginNameRegisterCaptcha(GetLoginNameRegisterCaptchaReq req) {
@@ -69,7 +70,12 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifyLoginNameRegisterCaptchaRes verifyLoginNameRegisterCaptcha(VerifyLoginNameRegisterCaptchaReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_4, req.getCaptcha(), req.getCaptchaDigest());
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
+                req.getDomainId(),
+                EnumConstant.ValidateCode_Type_4,
+                req.getCaptcha(),
+                req.getCaptchaDigest()
+        );
         VerifyLoginNameRegisterCaptchaRes res = new VerifyLoginNameRegisterCaptchaRes();
         res.setSuccess(tuple.getValue1());
         res.setMessage(tuple.getValue2());
@@ -95,7 +101,12 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifySmsRegisterCaptchaRes verifySmsRegisterCaptcha(VerifySmsRegisterCaptchaReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_5, req.getCaptcha(), req.getCaptchaDigest());
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
+                req.getDomainId(),
+                EnumConstant.ValidateCode_Type_5,
+                req.getCaptcha(),
+                req.getCaptchaDigest()
+        );
         VerifySmsRegisterCaptchaRes res = new VerifySmsRegisterCaptchaRes();
         res.setSuccess(tuple.getValue1());
         res.setMessage(tuple.getValue2());
@@ -150,7 +161,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifySmsValidateCodeRes verifySmsValidateCode(VerifySmsValidateCodeReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_6,
                 EnumConstant.ValidateCode_SendChannel_1,
@@ -183,7 +194,12 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifyEmailRegisterCaptchaRes verifyEmailRegisterCaptcha(VerifyEmailRegisterCaptchaReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCode(req.getDomainId(), EnumConstant.ValidateCode_Type_7, req.getCaptcha(), req.getCaptchaDigest());
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
+                req.getDomainId(),
+                EnumConstant.ValidateCode_Type_7,
+                req.getCaptcha(),
+                req.getCaptchaDigest()
+        );
         VerifyEmailRegisterCaptchaRes res = new VerifyEmailRegisterCaptchaRes();
         res.setSuccess(tuple.getValue1());
         res.setMessage(tuple.getValue2());
@@ -238,7 +254,7 @@ public class RegisterSupportService implements RegisterSupportClient {
 
     @Override
     public VerifyEmailValidateCodeRes verifyEmailValidateCode(VerifyEmailValidateCodeReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_8,
                 EnumConstant.ValidateCode_SendChannel_2,
@@ -251,29 +267,6 @@ public class RegisterSupportService implements RegisterSupportClient {
         res.setMessage(tuple.getValue2());
         res.setExpired(tuple.getValue3());
         return res;
-    }
-
-    protected TupleThree<Boolean, String, Boolean> verifyValidateCode(long domainId, int type, String captcha, String captchaDigest) {
-        return verifyValidateCode(domainId, type, EnumConstant.ValidateCode_SendChannel_0, captcha, captchaDigest, null);
-    }
-
-    protected TupleThree<Boolean, String, Boolean> verifyValidateCode(long domainId, int type, int sendChannel, String captcha, String captchaDigest, String sendTarget) {
-        final Date now = new Date();
-        ValidateCode validateCode = validateCodeMapper.getByDigest(domainId, captchaDigest);
-        TupleThree<Boolean, String, Boolean> tuple;
-        if (Objects.equals(EnumConstant.ValidateCode_SendChannel_0, sendChannel)) {
-            tuple = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha, type);
-        } else {
-            tuple = ValidateCodeUtils.verifyValidateCode(validateCode, now, captcha, type, sendChannel, sendTarget);
-        }
-        // 更新验证码
-        if (validateCode != null && validateCode.getValidateTime() == null) {
-            ValidateCode update = new ValidateCode();
-            update.setId(validateCode.getId());
-            update.setValidateTime(now);
-            validateCodeMapper.updateById(update);
-        }
-        return tuple;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.clever.security.embed.register;
 
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.client.RegisterSupportClient;
 import org.clever.security.dto.request.VerifyEmailValidateCodeReq;
@@ -65,7 +66,7 @@ public class DefaultVerifyRegisterData implements VerifyRegisterData {
      */
     protected void verifyRegisterData(AbstractUserRegisterReq registerReq) {
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(registerReq);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), registerReq);
         } catch (Exception e) {
             throw new LoginDataValidateException("注册数据校验失败", e);
         }

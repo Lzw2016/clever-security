@@ -31,12 +31,10 @@ import org.clever.security.model.login.AbstractUserLoginReq;
 import org.clever.security.model.login.LoginRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -50,7 +48,7 @@ import java.util.List;
  * 创建时间：2020/11/29 16:09 <br/>
  */
 @Slf4j
-public class LoginFilter extends GenericFilterBean {
+public class LoginFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -116,23 +114,16 @@ public class LoginFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!PathFilterUtils.isLoginRequest(httpRequest, securityConfig)) {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!PathFilterUtils.isLoginRequest(request, securityConfig)) {
             // 不是登录请求
             chain.doFilter(request, response);
             return;
         }
         log.debug("### 开始执行登录逻辑 ---------------------------------------------------------------------->");
-        log.debug("当前请求 -> [{}]", httpRequest.getRequestURI());
+        log.debug("当前请求 -> [{}]", request.getRequestURI());
         // 执行登录逻辑
-        LoginContext context = new LoginContext(httpRequest, httpResponse);
+        LoginContext context = new LoginContext(request, response);
         try {
             login(context);
             // 登录成功处理
@@ -152,12 +143,12 @@ public class LoginFilter extends GenericFilterBean {
                 onLoginFailureResponse(context);
             } catch (Exception innerException) {
                 log.error("登录异常", innerException);
-                HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
+                HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, innerException);
             }
         } catch (Throwable e) {
             // 登录异常
             log.error("登录异常", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpStatus.INTERNAL_SERVER_ERROR, e);
+            HttpServletResponseUtils.sendJson(request, response, HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             log.debug("### 登录逻辑执行完成 <----------------------------------------------------------------------");
         }

@@ -12,12 +12,10 @@ import org.clever.security.embed.utils.HttpServletRequestUtils;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,7 +26,7 @@ import java.util.Map;
  * 创建时间：2020/12/13 11:04 <br/>
  */
 @Slf4j
-public class LoginEmailValidateCodeFilter extends GenericFilterBean {
+public class LoginEmailValidateCodeFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -43,24 +41,17 @@ public class LoginEmailValidateCodeFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        if (!PathFilterUtils.isLoginEmailValidateCodePath(httpRequest, securityConfig)) {
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (!PathFilterUtils.isLoginEmailValidateCodePath(request, securityConfig)) {
             // 不是发送邮箱验证码请求
             chain.doFilter(request, response);
             return;
         }
         try {
-            sendEmailValidateCode(httpRequest, httpResponse);
+            sendEmailValidateCode(request, response);
         } catch (Exception e) {
             log.error("发送邮箱登录验证码失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
         }
     }
 

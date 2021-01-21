@@ -409,7 +409,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是绑定邮箱请求路径---------------------------------------------------------------------更换邮箱绑定
+     * 当前请求是否是绑定邮箱请求路径
      */
     public static boolean isChangeBindEmailRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -458,7 +458,7 @@ public class PathFilterUtils {
 
 
     /**
-     * 当前请求是否是更换绑定手机号请求路径---------------------------------------------------------------------更换绑定手机号
+     * 当前请求是否是更换绑定手机号请求路径
      */
     public static boolean isChangeBindSmsRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -532,7 +532,13 @@ public class PathFilterUtils {
                 || isPasswordRecoverySmsCaptchaRequest(path, securityConfig)
                 || isPasswordRecoverySmsValidateCodeRequest(path, securityConfig)
                 || isPasswordRecoveryEmailCaptchaRequest(path, securityConfig)
-                || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)) {
+                || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)
+                || isChangeBindEmailRequest(path, securityConfig)
+                || isChangeBindEmailCaptchaPathRequest(path, securityConfig)
+                || isChangeBindEmailValidateCodeRequest(path, securityConfig)
+                || isChangeBindSmsRequest(path, securityConfig)
+                || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
+                || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignorePaths = securityConfig.getIgnorePaths();

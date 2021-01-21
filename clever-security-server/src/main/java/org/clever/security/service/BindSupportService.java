@@ -35,19 +35,19 @@ import java.util.Date;
 @Service
 public class BindSupportService implements BindSupportClient {
     @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
     private ValidateCodeMapper validateCodeMapper;
     @Autowired
     private UserMapper userMapper;
     @Autowired
     private UserDomainMapper userDomainMapper;
     @Autowired
-    private RegisterSupportService registerSupportService;
-    @Autowired
-    private SendValidateCodeService sendValidateCodeService;
-    @Autowired
     private UserSecurityContextMapper userSecurityContextMapper;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private VerifyValidateCodeService verifyValidateCodeService;
+    @Autowired
+    private SendValidateCodeService sendValidateCodeService;
 
     @Override
     public GetBindEmailCaptchaRes getBindEmailCaptcha(GetBindEmailCaptchaReq req) {
@@ -73,7 +73,7 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public VerifyBindEmailCaptchaRes verifyBindEmailCaptcha(VerifyBindEmailCaptchaReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = registerSupportService.verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_11,
                 EnumConstant.ValidateCode_SendChannel_0,
@@ -89,7 +89,7 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public VerifyBindSmsCaptchaRes verifyBindSmsCaptcha(VerifyBindSmsCaptchaReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = registerSupportService.verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_9,
                 EnumConstant.ValidateCode_SendChannel_0,
@@ -193,7 +193,7 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public VerifyBindEmailValidateCodeRes verifyBindEmailValidateCode(VerifyBindEmailValidateCodeReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = registerSupportService.verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_12,
                 EnumConstant.ValidateCode_SendChannel_2,
@@ -209,7 +209,7 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public VerifyBindSmsValidateCodeRes verifyBindSmsValidateCode(VerifyBindSmsValidateCodeReq req) {
-        TupleThree<Boolean, String, Boolean> tuple = registerSupportService.verifyValidateCode(
+        TupleThree<Boolean, String, Boolean> tuple = verifyValidateCodeService.verifyValidateCode(
                 req.getDomainId(),
                 EnumConstant.ValidateCode_Type_10,
                 EnumConstant.ValidateCode_SendChannel_1,
@@ -225,14 +225,14 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public ChangeBindEmailRes changeBindEmail(ChangeBindEmailReq req) {
-        User user = userMapper.getByEmail(req.getEmail());
+        User user = userMapper.getByEmail(req.getNewEmail());
         if (user != null) {
             throw new BusinessException("当前邮箱已经注册了");
         }
         user = verifyPassWord(req.getUid(), req.getPassWord());
         User update = new User();
         update.setUid(user.getUid());
-        update.setEmail(req.getEmail());
+        update.setEmail(req.getNewEmail());
         userMapper.updateById(update);
         // 清除 user_security_context
         userSecurityContextMapper.deleteByUid(user.getUid());
@@ -244,14 +244,14 @@ public class BindSupportService implements BindSupportClient {
 
     @Override
     public ChangeBindSmsRes changeBindSms(ChangeBindSmsReq req) {
-        User user = userMapper.getByTelephone(req.getTelephone());
+        User user = userMapper.getByTelephone(req.getNewTelephone());
         if (user != null) {
             throw new BusinessException("当前手机号已经注册了");
         }
         user = verifyPassWord(req.getUid(), req.getPassWord());
         User update = new User();
         update.setUid(req.getUid());
-        update.setTelephone(req.getTelephone());
+        update.setTelephone(req.getNewTelephone());
         userMapper.updateById(update);
         // 清除 user_security_context
         userSecurityContextMapper.deleteByUid(user.getUid());
@@ -286,7 +286,7 @@ public class BindSupportService implements BindSupportClient {
     protected User verifyPassWord(String uid, String passWord) {
         User user = userMapper.getByUid(uid);
         if (user == null) {
-            throw new BusinessException("用户不存在");
+            throw new BusinessException("密码错误");
         }
         if (!passwordEncoder.matches(passWord, user.getPassword())) {
             throw new BusinessException("密码错误");

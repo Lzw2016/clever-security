@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.codec.EncodeDecodeUtils;
+import org.clever.common.utils.validator.BaseValidatorUtils;
 import org.clever.common.utils.validator.ValidatorFactoryUtils;
 import org.clever.security.Constant;
 import org.clever.security.client.RegisterSupportClient;
@@ -22,12 +23,10 @@ import org.clever.security.embed.utils.PathFilterUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -37,7 +36,7 @@ import java.io.IOException;
  * 创建时间：2021/01/09 22:21 <br/>
  */
 @Slf4j
-public class RegisterCaptchaFilter extends GenericFilterBean {
+public class RegisterCaptchaFilter extends HttpFilter {
     /**
      * 全局配置
      */
@@ -55,49 +54,42 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
-            log.warn("[clever-security]仅支持HTTP服务器");
-            chain.doFilter(request, response);
-            return;
-        }
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         boolean isRegisterCaptchaRequest = false;
         try {
-            if (PathFilterUtils.isLoginNameRegisterCaptchaRequest(httpRequest, securityConfig)
+            if (PathFilterUtils.isLoginNameRegisterCaptchaRequest(request, securityConfig)
                     && securityConfig.getRegister().getLoginNameRegister().isEnable()
                     && securityConfig.getRegister().getLoginNameRegister().isNeedCaptcha()) {
                 // 登录名注册-验证码
                 isRegisterCaptchaRequest = true;
-                sendLoginNameRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isSmsRegisterCaptchaRequest(httpRequest, securityConfig)
+                sendLoginNameRegisterCaptcha(response);
+            } else if (PathFilterUtils.isSmsRegisterCaptchaRequest(request, securityConfig)
                     && securityConfig.getRegister().getSmsRegister().isEnable()
                     && securityConfig.getRegister().getSmsRegister().isNeedCaptcha()) {
                 // 短信注册-图片验证码
                 isRegisterCaptchaRequest = true;
-                sendSmsRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isSmsRegisterSmsValidateCodeRequest(httpRequest, securityConfig)
+                sendSmsRegisterCaptcha(response);
+            } else if (PathFilterUtils.isSmsRegisterSmsValidateCodeRequest(request, securityConfig)
                     && securityConfig.getRegister().getSmsRegister().isEnable()) {
                 // 短信注册-短信验证码
                 isRegisterCaptchaRequest = true;
-                sendSmsValidateCode(httpRequest, httpResponse);
-            } else if (PathFilterUtils.isEmailRegisterCaptchaRequest(httpRequest, securityConfig)
+                sendSmsValidateCode(request, response);
+            } else if (PathFilterUtils.isEmailRegisterCaptchaRequest(request, securityConfig)
                     && securityConfig.getRegister().getEmailRegister().isEnable()
                     && securityConfig.getRegister().getEmailRegister().isNeedCaptcha()) {
                 // 邮箱注册-图片验证码
                 isRegisterCaptchaRequest = true;
-                sendEmailRegisterCaptcha(httpResponse);
-            } else if (PathFilterUtils.isEmailRegisterEmailValidateCodeRequest(httpRequest, securityConfig)
+                sendEmailRegisterCaptcha(response);
+            } else if (PathFilterUtils.isEmailRegisterEmailValidateCodeRequest(request, securityConfig)
                     && securityConfig.getRegister().getEmailRegister().isEnable()) {
                 // 邮箱注册-邮箱验证码
                 isRegisterCaptchaRequest = true;
-                sendEmailValidateCode(httpRequest, httpResponse);
+                sendEmailValidateCode(request, response);
             }
         } catch (Exception e) {
             isRegisterCaptchaRequest = true;
             log.error("获取注册验证码失败", e);
-            HttpServletResponseUtils.sendJson(httpRequest, httpResponse, HttpServletResponseUtils.getHttpStatus(e), e);
+            HttpServletResponseUtils.sendJson(request, response, HttpServletResponseUtils.getHttpStatus(e), e);
         }
         if (isRegisterCaptchaRequest) {
             return;
@@ -160,7 +152,7 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) smsRegister.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(smsRegister.getMaxSendNumInDay());
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(用户注册发送短信验证码)", e);
         }
@@ -223,7 +215,7 @@ public class RegisterCaptchaFilter extends GenericFilterBean {
         req.setEffectiveTimeMilli((int) emailRegister.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(emailRegister.getMaxSendNumInDay());
         try {
-            ValidatorFactoryUtils.getValidatorInstance().validate(req);
+            BaseValidatorUtils.validateThrowException(ValidatorFactoryUtils.getValidatorInstance(), req);
         } catch (Exception e) {
             throw new BusinessException("请求数据校验失败(发送邮箱验证码)", e);
         }
