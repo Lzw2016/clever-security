@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.clever.security.model.UserInfo;
 
+import java.util.Set;
+
 /**
  * 作者：lizw <br/>
  * 创建时间：2020/12/19 13:47 <br/>
@@ -16,6 +18,9 @@ import org.clever.security.model.UserInfo;
 class SecurityContextMixin {
 
     @JsonCreator
-    public SecurityContextMixin(@JsonProperty("userInfo") UserInfo userInfo) {
+    public SecurityContextMixin(
+            @JsonProperty("userInfo") UserInfo userInfo,
+            @JsonProperty("roles") Set<String> roles,
+            @JsonProperty("permissions") Set<String> permissions) {
     }
 }

@@ -132,9 +132,11 @@ public class AuthSupportService implements AuthSupportClient {
             return null;
         }
         // SecurityContext
-        SecurityContext securityContext = new SecurityContext(ConvertUtils.convertToUserInfo(user));
-        securityContext.setRoles(roleMapper.findRolesByUid(domainId, uid));
-        securityContext.setPermissions(permissionMapper.findPermissionByUid(domainId, uid));
+        SecurityContext securityContext = new SecurityContext(
+                ConvertUtils.convertToUserInfo(user),
+                roleMapper.findRolesByUid(domainId, uid),
+                permissionMapper.findPermissionByUid(domainId, uid)
+        );
         // UserSecurityContext
         UserSecurityContext userSecurityContext = new UserSecurityContext();
         userSecurityContext.setId(SnowFlake.SNOW_FLAKE.nextId());

@@ -31,6 +31,12 @@ public class SecurityContext implements Serializable {
         this.userInfo = userInfo;
     }
 
+    public SecurityContext(UserInfo userInfo, Set<String> roles, Set<String> permissions) {
+        this(userInfo);
+        this.setRoles(roles);
+        this.setPermissions(permissions);
+    }
+
     /**
      * 是否拥有指定角色
      */
@@ -67,7 +73,7 @@ public class SecurityContext implements Serializable {
         return true;
     }
 
-    public void setPermissions(Set<String> permissions) {
+    protected void setPermissions(Set<String> permissions) {
         if (permissions == null) {
             this.permissions = Collections.emptySet();
             return;
@@ -75,7 +81,7 @@ public class SecurityContext implements Serializable {
         this.permissions = Collections.unmodifiableSet(permissions);
     }
 
-    public void setRoles(Set<String> roles) {
+    protected void setRoles(Set<String> roles) {
         if (roles == null) {
             this.roles = Collections.emptySet();
             return;
