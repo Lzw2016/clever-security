@@ -13,7 +13,6 @@ import org.clever.security.dto.response.*;
 import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.User;
 import org.clever.security.entity.ValidateCode;
-import org.clever.security.mapper.UserDomainMapper;
 import org.clever.security.mapper.UserMapper;
 import org.clever.security.mapper.UserSecurityContextMapper;
 import org.clever.security.mapper.ValidateCodeMapper;
@@ -40,8 +39,6 @@ public class BindSupportService implements BindSupportClient {
     private ValidateCodeMapper validateCodeMapper;
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private UserDomainMapper userDomainMapper;
     @Autowired
     private UserSecurityContextMapper userSecurityContextMapper;
     @Autowired
@@ -110,10 +107,7 @@ public class BindSupportService implements BindSupportClient {
         final Date dayEnd = DateTimeUtils.getDayEndTime(now);
         User user = userMapper.getByEmail(req.getEmail());
         if (user != null) {
-            int exists = userDomainMapper.exists(req.getDomainId(), user.getUid());
-            if (exists > 0) {
-                throw new BusinessException("邮箱已经注册");
-            }
+            throw new BusinessException("邮箱已经注册");
         }
         // 上一次邮箱验证码有效就直接返回
         ValidateCode lastEffective = validateCodeMapper.getLastEffectiveNoUid(
@@ -154,10 +148,7 @@ public class BindSupportService implements BindSupportClient {
         final Date dayEnd = DateTimeUtils.getDayEndTime(now);
         User user = userMapper.getByTelephone(req.getTelephone());
         if (user != null) {
-            int exists = userDomainMapper.exists(req.getDomainId(), user.getUid());
-            if (exists > 0) {
-                throw new BusinessException("当前手机号已注册");
-            }
+            throw new BusinessException("当前手机号已注册");
         }
         // 上一次短信验证码有效就直接返回
         ValidateCode lastEffective = validateCodeMapper.getLastEffectiveNoUid(
