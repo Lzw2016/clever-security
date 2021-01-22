@@ -532,11 +532,7 @@ public class PathFilterUtils {
                 || isPasswordRecoverySmsCaptchaRequest(path, securityConfig)
                 || isPasswordRecoverySmsValidateCodeRequest(path, securityConfig)
                 || isPasswordRecoveryEmailCaptchaRequest(path, securityConfig)
-                || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)
-                || isChangeBindEmailCaptchaPathRequest(path, securityConfig)
-                || isChangeBindEmailValidateCodeRequest(path, securityConfig)
-                || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
-                || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
+                || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignorePaths = securityConfig.getIgnorePaths();
@@ -561,12 +557,18 @@ public class PathFilterUtils {
         return isAuthorizationRequest(path, request.getMethod(), securityConfig);
     }
 
-    /**
-     * 当前请求是否需要授权
-     */
     public static boolean isAuthorizationRequest(String path, String method, SecurityConfig securityConfig) {
         // 当前请求不需要身份认证 - 那就更不需要授权了
         if (!isAuthenticationRequest(path, method, securityConfig)) {
+            return false;
+        }
+        // 换绑邮箱和手机号
+        if (isChangeBindEmailRequest(path, securityConfig)
+                || isChangeBindEmailCaptchaPathRequest(path, securityConfig)
+                || isChangeBindEmailValidateCodeRequest(path, securityConfig)
+                || isChangeBindSmsRequest(path, securityConfig)
+                || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
+                || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();
