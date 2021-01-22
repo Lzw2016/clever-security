@@ -21,11 +21,6 @@ public class SendBindSmsValidateCodeReq extends BaseResponse {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
-     * 用户uid
-     */
-    @NotBlank(message = "用户uid不能为空")
-    private String uid;
-    /**
      * 图片验证码
      */
     private String captcha;

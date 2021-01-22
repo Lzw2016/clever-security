@@ -533,10 +533,8 @@ public class PathFilterUtils {
                 || isPasswordRecoverySmsValidateCodeRequest(path, securityConfig)
                 || isPasswordRecoveryEmailCaptchaRequest(path, securityConfig)
                 || isPasswordRecoveryEmailValidateCodeRequest(path, securityConfig)
-                || isChangeBindEmailRequest(path, securityConfig)
                 || isChangeBindEmailCaptchaPathRequest(path, securityConfig)
                 || isChangeBindEmailValidateCodeRequest(path, securityConfig)
-                || isChangeBindSmsRequest(path, securityConfig)
                 || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
                 || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
             return false;

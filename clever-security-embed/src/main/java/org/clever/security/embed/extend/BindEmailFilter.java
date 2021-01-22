@@ -105,10 +105,6 @@ public class BindEmailFilter extends HttpFilter {
 
     //发送邮箱验证码
     protected void sendEmailValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SecurityContext securityContext = SecurityContextHolder.getContext(request);
-        if (securityContext == null) {
-            throw new AuthorizationInnerException("获取SecurityContext失败");
-        }
         BindEmailConfig bindEmail = securityConfig.getBindEmail();
         if (bindEmail == null || !bindEmail.isEnable()) {
             throw new UnsupportedOperationException("未启用邮箱换绑");
@@ -117,7 +113,6 @@ public class BindEmailFilter extends HttpFilter {
         if (req == null) {
             throw new BusinessException("请求数据解析异常(邮箱换绑发送手机验证码)");
         }
-        req.setUid(securityContext.getUserInfo().getUid());
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) bindEmail.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindEmail.getMaxSendNumInDay());

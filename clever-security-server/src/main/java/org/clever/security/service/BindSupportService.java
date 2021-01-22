@@ -137,7 +137,7 @@ public class BindSupportService implements BindSupportClient {
             throw new BusinessException("邮箱验证码发送次数超限");
         }
         // 发送邮箱验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), req.getUid(), req.getEmail(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), null, req.getEmail(), req.getEffectiveTimeMilli());
         sendValidateCodeService.sendEmail(EnumConstant.ValidateCode_Type_12, validateCode.getSendTarget(), validateCode.getCode());
         // 验证码数据写入数据库
         validateCode.setType(EnumConstant.ValidateCode_Type_12);
@@ -181,7 +181,7 @@ public class BindSupportService implements BindSupportClient {
             throw new BusinessException("短信验证码发送次数超限");
         }
         // 发送邮箱验证码 - 可多线程异步发送
-        ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), req.getUid(), req.getTelephone(), req.getEffectiveTimeMilli());
+        ValidateCode validateCode = ValidateCodeUtils.newSmsValidateCode(now, req.getDomainId(), null, req.getTelephone(), req.getEffectiveTimeMilli());
         sendValidateCodeService.sendEmail(EnumConstant.ValidateCode_Type_10, validateCode.getSendTarget(), validateCode.getCode());
         // 验证码数据写入数据库
         validateCode.setType(EnumConstant.ValidateCode_Type_10);

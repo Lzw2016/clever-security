@@ -104,10 +104,6 @@ public class BindTelephoneFilter extends HttpFilter {
 
     //发送手机号验证码
     protected void sendSmsValidateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        SecurityContext securityContext = SecurityContextHolder.getContext(request);
-        if (securityContext == null) {
-            throw new AuthorizationInnerException("获取SecurityContext失败");
-        }
         BindTelephoneConfig bindTelephone = securityConfig.getBindTelephone();
         if (bindTelephone == null || !bindTelephone.isEnable()) {
             throw new UnsupportedOperationException("未启用手机号换绑");
@@ -116,7 +112,6 @@ public class BindTelephoneFilter extends HttpFilter {
         if (req == null) {
             throw new BusinessException("请求数据解析异常(手机换绑发送手机验证码)");
         }
-        req.setUid(securityContext.getUserInfo().getUid());
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) bindTelephone.getEffectiveTime().toMillis());
         req.setMaxSendNumInDay(bindTelephone.getMaxSendNumInDay());
