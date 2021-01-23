@@ -16,7 +16,7 @@ public class ReloadServerAccessTokenTask {
     @Autowired
     private ServerAccessSupportService serverAccessSupportService;
 
-    @Scheduled(fixedDelay = 1000 * 8)
+    @Scheduled(initialDelay = 0, fixedDelay = 1000 * 8)
     public void reloadServerAccessToken() {
         long startTime = System.currentTimeMillis();
         log.debug("[刷新ServerAccessToken] - 开始...");

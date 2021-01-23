@@ -14,7 +14,7 @@ public class ServerAccessConfig implements Serializable {
     /**
      * 是否启用
      */
-    private boolean enable = true;
+    private boolean enable = false;
     /**
      * 是否启用动态配置
      */

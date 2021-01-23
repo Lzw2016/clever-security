@@ -2,6 +2,8 @@ package org.clever.security.controller;
 
 import org.clever.security.client.ServerAccessSupportClient;
 import org.clever.security.entity.ServerAccessToken;
+import org.clever.security.service.ServerAccessSupportService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,12 +18,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/security/api")
 public class ServerAccessSupportController implements ServerAccessSupportClient {
+    @Autowired
+    private ServerAccessSupportService serverAccessSupportService;
+
     /**
      * 获取所有有效的ServerAccessToken
      */
     @GetMapping("/server_access_token/all_effective")
     @Override
     public List<ServerAccessToken> findAllEffectiveServerAccessToken(@RequestParam("domainId") Long domainId) {
-        return null;
+        return serverAccessSupportService.findAllEffectiveServerAccessToken(domainId);
     }
 }

@@ -1,5 +1,7 @@
 用户
 🡓
+ServerAccessFilter(服务之间访问认证)
+🡓
 LoginCaptchaFilter(获取登录图片验证码)
 LoginSmsValidateCodeFilter(登录短信验证码)
 LoginEmailValidateCodeFilter(登录邮箱验证码)

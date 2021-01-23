@@ -1,5 +1,6 @@
 package org.clever.security.embed.context;
 
+import org.clever.security.entity.ServerAccessToken;
 import org.clever.security.model.SecurityContext;
 import org.springframework.util.Assert;
 
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SecurityContextHolder {
     public static final String Security_Context_Attribute = SecurityContextHolder.class.getName() + "_Security_Context_Attribute";
     private static final ThreadLocal<SecurityContext> Security_Context = new ThreadLocal<>();
+    private static final ThreadLocal<ServerAccessToken> ServerAccessToken_Context = new ThreadLocal<>();
 
     /**
      * 设置当前安全上下文(用户信息)
@@ -65,5 +67,41 @@ public class SecurityContextHolder {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 当前是用户访问
+     */
+    public static boolean isUserAccess() {
+        return Security_Context.get() != null;
+    }
+
+    /**
+     * 当前是服务直接的访问
+     */
+    public static boolean isServerAccess() {
+        return ServerAccessToken_Context.get() != null;
+    }
+
+    /**
+     * 设置ServerAccessToken
+     */
+    public static void setServerAccessToken(ServerAccessToken token) {
+        Assert.notNull(token, "参数token不能为null");
+        ServerAccessToken_Context.set(token);
+    }
+
+    /**
+     * 获取ServerAccessToken
+     */
+    public static ServerAccessToken getServerAccessToken() {
+        return ServerAccessToken_Context.get();
+    }
+
+    /**
+     * 清除ServerAccessToken
+     */
+    public static void clearServerAccessToken() {
+        ServerAccessToken_Context.remove();
     }
 }

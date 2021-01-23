@@ -1,21 +1,26 @@
 package org.clever.security.embed.autoconfigure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.Constant;
 import org.clever.security.client.AuthSupportClient;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.client.RegisterSupportClient;
+import org.clever.security.client.ServerAccessSupportClient;
 import org.clever.security.embed.authentication.login.DefaultLoadUser;
 import org.clever.security.embed.authentication.login.DefaultVerifyLoginData;
 import org.clever.security.embed.authentication.login.DefaultVerifyUserInfo;
 import org.clever.security.embed.authentication.token.DefaultVerifyJwtToken;
 import org.clever.security.embed.authorization.voter.ControllerAuthorizationVoter;
 import org.clever.security.embed.collect.*;
+import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.context.DefaultSecurityContextRepository;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.DefaultVerifyRegisterData;
+import org.clever.security.embed.task.CacheServerAccessTokenTask;
 import org.clever.security.third.client.WeChatClient;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -170,5 +175,14 @@ public class AutoConfigureBaseBeans {
     @Conditional(ConditionalOnEnableUserRegister.class)
     public DefaultRegisterSuccessHandler defaultRegisterSuccessHandler(RegisterSupportClient registerSupportClient) {
         return new DefaultRegisterSuccessHandler(registerSupportClient);
+    }
+
+    // ------------------------------------------------------------------------------------------------------------------------------------------------- 定时任务调度
+
+    @Bean("cacheServerAccessTokenTask")
+    @ConditionalOnMissingBean(name = "cacheServerAccessTokenTask")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "server-access.enable", havingValue = "true")
+    public CacheServerAccessTokenTask cacheServerAccessTokenTask(SecurityConfig securityConfig, ServerAccessSupportClient serverAccessSupportClient) {
+        return new CacheServerAccessTokenTask(securityConfig, serverAccessSupportClient);
     }
 }

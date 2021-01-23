@@ -17,14 +17,12 @@ import org.clever.security.embed.collect.RegisterDataCollect;
 import org.clever.security.embed.config.SecurityConfig;
 import org.clever.security.embed.config.internal.*;
 import org.clever.security.embed.context.SecurityContextRepository;
-import org.clever.security.embed.extend.BindEmailFilter;
-import org.clever.security.embed.extend.BindTelephoneFilter;
-import org.clever.security.embed.extend.PasswordRecoveryFilter;
-import org.clever.security.embed.extend.UpdatePasswordFilter;
+import org.clever.security.embed.extend.*;
 import org.clever.security.embed.handler.*;
 import org.clever.security.embed.register.RegisterCaptchaFilter;
 import org.clever.security.embed.register.UserRegisterFilter;
 import org.clever.security.embed.register.VerifyRegisterData;
+import org.clever.security.embed.task.CacheServerAccessTokenTask;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -44,6 +42,8 @@ import java.util.List;
 /**
  * <pre>
  *   用户
+ *   🡓
+ *   ServerAccessFilter(服务之间访问认证)
  *   🡓
  *   LoginCaptchaFilter(获取登录图片验证码)
  *   LoginSmsValidateCodeFilter(登录短信验证码)
@@ -86,6 +86,21 @@ public class AutoConfigureSecurityFilter {
 
     public AutoConfigureSecurityFilter(SecurityConfig securityConfig) {
         this.securityConfig = securityConfig;
+    }
+
+    /**
+     * 登录图片验证码
+     */
+    @Bean("serverAccessFilter")
+    @ConditionalOnMissingBean(name = "serverAccessFilter")
+    @ConditionalOnProperty(prefix = Constant.ConfigPrefix, name = "server-access.enable", havingValue = "true")
+    public FilterRegistrationBean<ServerAccessFilter> serverAccessFilter(CacheServerAccessTokenTask cacheServerAccessTokenTask) {
+        ServerAccessFilter filter = new ServerAccessFilter(securityConfig, cacheServerAccessTokenTask);
+        FilterRegistrationBean<ServerAccessFilter> filterRegistration = new FilterRegistrationBean<>(filter);
+        filterRegistration.addUrlPatterns("/*");
+        filterRegistration.setName("serverAccessFilter");
+        filterRegistration.setOrder(Base_Order);
+        return filterRegistration;
     }
 
     /**
