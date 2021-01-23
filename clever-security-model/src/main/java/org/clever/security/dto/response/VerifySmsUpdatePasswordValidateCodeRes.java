@@ -12,7 +12,7 @@ import org.clever.common.model.response.BaseResponse;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifySmsInitPasswordValidateCodeRes extends BaseResponse {
+public class VerifySmsUpdatePasswordValidateCodeRes extends BaseResponse {
     /**
      * 是否成功
      */

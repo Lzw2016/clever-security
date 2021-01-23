@@ -61,8 +61,7 @@ public class BindEmailFilter extends HttpFilter {
                 // 邮箱换绑 - 图片验证码
                 changeBindEmail = true;
                 sendEmailCaptcha(response);
-            } else if (PathFilterUtils.isChangeBindEmailValidateCodeRequest(request, securityConfig)
-                    && securityConfig.getBindEmail().isEnable()) {
+            } else if (PathFilterUtils.isChangeBindEmailValidateCodeRequest(request, securityConfig)) {
                 // 邮箱换绑 - 邮箱验证码
                 changeBindEmail = true;
                 sendEmailValidateCode(request, response);
@@ -111,7 +110,7 @@ public class BindEmailFilter extends HttpFilter {
         }
         SendBindEmailValidateCodeReq req = HttpServletRequestUtils.parseBodyToEntity(request, SendBindEmailValidateCodeReq.class);
         if (req == null) {
-            throw new BusinessException("请求数据解析异常(邮箱换绑发送手机验证码)");
+            throw new BusinessException("请求数据解析异常(邮箱换绑发送邮箱验证码)");
         }
         req.setDomainId(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) bindEmail.getEffectiveTime().toMillis());

@@ -12,31 +12,30 @@ import javax.validation.constraints.Pattern;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 20:53 <br/>
+ * 创建时间：2021/01/18 20:56 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendSmsInitPasswordValidateCodeReq extends BaseRequest {
+public class VerifySmsUpdatePasswordValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
-     * 图片验证码
+     * 验证码
      */
-    private String captcha;
+    @NotBlank(message = "验证码不能为空")
+    private String code;
     /**
      * 验证码签名(校验验证码时需要)
      */
-    private String captchaDigest;
+    @NotBlank(message = "验证码签名不能为空")
+    private String codeDigest;
+
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = PatternConstant.Telephone_Pattern, message = "手机号格式错误")
     private String telephone;
-    /**
-     * 验证码过期时间
-     */
-    private int effectiveTimeMilli = 120 * 1000;
-    /**
-     * 一天发送短信验证码的最大数(小于等于0表示不限制)
-     */
-    private int maxSendNumInDay = 8;
+
+    public VerifySmsUpdatePasswordValidateCodeReq(Long domainId) {
+        this.domainId = domainId;
+    }
 }

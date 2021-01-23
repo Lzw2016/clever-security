@@ -5,26 +5,26 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.clever.common.model.response.BaseResponse;
 
-import java.util.Date;
-
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 20:59 <br/>
+ * 创建时间：2021/01/18 20:48 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendEmailInitPasswordValidateCodeRes extends BaseResponse {
+public class VerifyUpdatePasswordCaptchaRes extends BaseResponse {
     /**
-     * 验证码
+     * 是否成功
      */
-    private String code;
+    private boolean success;
+
     /**
-     * 验证码签名
+     * 消息
      */
-    private String digest;
+    private String message;
+
     /**
-     * 验证码过期时间
+     * 验证码是否已过期
      */
-    private Date expiredTime;
+    private boolean expired;
 }

@@ -23,40 +23,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface UpdatePasswordSupportClient {
     /**
-     * 获取设置密码-验证码
+     * 获取设置密码-获得验证码
      */
-    @GetMapping("/init_password/captcha")
-    GetInitPasswordCaptchaRes getInitPasswordCaptcha(@Validated @SpringQueryMap GetInitPasswordCaptchaReq req);
+    @GetMapping("/update_password/captcha")
+    GetUpdatePasswordCaptchaRes getUpdatePasswordCaptcha(@Validated @SpringQueryMap GetUpdatePasswordCaptchaReq req);
 
     /**
-     * 验证设置密码-验证码
+     * 验证设置密码-验证验证码
      */
-    @PostMapping("/init_password/captcha/verify")
-    VerifyInitPasswordCaptchaRes verifyInitPasswordCaptcha(@Validated @RequestBody VerifyInitPasswordCaptchaReq req);
+    @PostMapping("/update_password/captcha/verify")
+    VerifyUpdatePasswordCaptchaRes verifyUpdatePasswordCaptcha(@Validated @RequestBody VerifyUpdatePasswordCaptchaReq req);
 
     /**
-     * 发送设置密码-短信验证码
+     * 发送设置密码-发送短信验证码
      */
-    @PostMapping("/init_password/send_sms_validate_code")
-    SendSmsInitPasswordValidateCodeRes sendSmsInitPasswordValidateCode(@Validated @RequestBody SendSmsInitPasswordValidateCodeReq req);
+    @PostMapping("/update_password/send_sms_validate_code")
+    SendSmsUpdatePasswordValidateCodeRes sendSmsUpdatePasswordValidateCode(@Validated @RequestBody SendSmsUpdatePasswordValidateCodeReq req);
 
     /**
-     * 验证设置密码-短信验证码
+     * 验证设置密码-验证短信验证码
      */
-    @PostMapping("/init_password/verify_sms_validate_code")
-    VerifySmsInitPasswordValidateCodeRes verifySmsInitPasswordValidateCode(@Validated @RequestBody VerifySmsInitPasswordValidateCodeReq req);
+    @PostMapping("/update_password/verify_sms_validate_code")
+    VerifySmsUpdatePasswordValidateCodeRes verifySmsUpdatePasswordValidateCode(@Validated @RequestBody VerifySmsUpdatePasswordValidateCodeReq req);
 
     /**
-     * 发送设置密码-邮箱验证码
+     * 发送设置密码-发送邮箱验证码
      */
-    @PostMapping("/init_password/send_email_validate_code")
-    SendEmailInitPasswordValidateCodeRes sendEmailInitPasswordValidateCode(@Validated @RequestBody SendEmailInitPasswordValidateCodeReq req);
+    @PostMapping("/update_password/send_email_validate_code")
+    SendEmailUpdatePasswordValidateCodeRes sendEmailUpdatePasswordValidateCode(@Validated @RequestBody SendEmailUpdatePasswordValidateCodeReq req);
 
     /**
-     * 验证设置密码-邮箱验证码
+     * 验证设置密码-验证邮箱验证码
      */
-    @PostMapping("/init_password/verify_email_validate_code")
-    VerifyEmailInitPasswordValidateCodeRes verifyEmailInitPasswordValidateCode(@Validated @RequestBody VerifyEmailInitPasswordValidateCodeReq req);
+    @PostMapping("/update_password/verify_email_validate_code")
+    VerifyEmailUpdatePasswordValidateCodeRes verifyEmailUpdatePasswordValidateCode(@Validated @RequestBody VerifyEmailUpdatePasswordValidateCodeReq req);
 
     /**
      * 设置密码

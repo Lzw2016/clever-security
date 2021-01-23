@@ -505,6 +505,85 @@ public class PathFilterUtils {
         return Objects.equals(bindTelephone.getSmsValidateCodePath(), path);
     }
 
+    /**
+     * 当前请求是否是手机验证码(设置密码-图片验证码)
+     */
+    public static boolean isUpdatePasswordCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isUpdatePasswordCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isUpdatePasswordCaptchaRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是手机验证码(更换密码-手机验证码)
+     */
+    public static boolean isUpdatePasswordSmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isUpdatePasswordSmsValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isUpdatePasswordSmsValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(更换密码-邮箱验证码)
+     */
+    public static boolean isUpdatePasswordEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isUpdatePasswordEmailValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isUpdatePasswordEmailValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getEmailValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(更换密码-设置密码)
+     */
+    public static boolean isInitPassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isInitPassWordRequest(path, securityConfig);
+    }
+
+    public static boolean isInitPassWordRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getInitPasswordPath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(更换密码-修改密码)
+     */
+    public static boolean isUpdatePassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isUpdatePassWordRequest(path, securityConfig);
+    }
+
+    public static boolean isUpdatePassWordRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getUpdatePasswordPath(), path);
+    }
 
     /**
      * 当前请求是否需要身份认证
@@ -568,7 +647,13 @@ public class PathFilterUtils {
                 || isChangeBindEmailValidateCodeRequest(path, securityConfig)
                 || isChangeBindSmsRequest(path, securityConfig)
                 || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
-                || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
+                || isChangeBindSmsValidateCodeRequest(path, securityConfig)
+                || isUpdatePasswordCaptchaRequest(path, securityConfig)
+                || isUpdatePasswordEmailValidateCodeRequest(path, securityConfig)
+                || isUpdatePasswordSmsValidateCodeRequest(path, securityConfig)
+                || isInitPassWordRequest(path, securityConfig)
+                || isUpdatePassWordRequest(path, securityConfig)
+        ) {
             return false;
         }
         List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();
