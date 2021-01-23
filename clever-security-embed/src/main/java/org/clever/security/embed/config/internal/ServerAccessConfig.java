@@ -10,11 +10,15 @@ import java.io.Serializable;
  * 创建时间：2019-05-16 11:07 <br/>
  */
 @Data
-public class ServerApiAccessToken implements Serializable {
+public class ServerAccessConfig implements Serializable {
+    /**
+     * 是否启用动态配置
+     */
+    private boolean dynamic = true;
     /**
      * 请求头Token名称
      */
-    private String tokenName = "server-api-token";
+    private String tokenName = "server-access-token";
     /**
      * 请求头Token值
      */

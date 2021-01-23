@@ -108,5 +108,5 @@ public class SecurityConfig implements Serializable {
      * 服务间免登陆Token访问配置
      */
     @NestedConfigurationProperty
-    private final ServerApiAccessToken serverApiAccessToken = new ServerApiAccessToken();
+    private final ServerAccessConfig serverAccess = new ServerAccessConfig();
 }
