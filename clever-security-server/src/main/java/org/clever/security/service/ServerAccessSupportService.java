@@ -45,6 +45,9 @@ public class ServerAccessSupportService implements ServerAccessSupportClient {
     @Override
     public List<ServerAccessToken> findAllEffectiveServerAccessToken(Long domainId) {
         List<ServerAccessToken> list = cache.get(domainId);
-        return list == null ? new ArrayList<>() : list;
+        if (list == null) {
+            list = Collections.emptyList();
+        }
+        return list;
     }
 }

@@ -47,9 +47,8 @@ public class ServerAccessFilter extends HttpFilter {
             innerDoFilter(request, response, chain);
             return;
         }
-        if (doAuthentication(request)) {
-            innerDoFilter(request, response, chain);
-        }
+        doAuthentication(request);
+        innerDoFilter(request, response, chain);
     }
 
     protected void innerDoFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -70,9 +69,8 @@ public class ServerAccessFilter extends HttpFilter {
      * 执行用户身份认证
      *
      * @param request 请求对象
-     * @return true:认证成功, false:认证失败
      */
-    protected boolean doAuthentication(HttpServletRequest request) {
+    protected void doAuthentication(HttpServletRequest request) {
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String name = headerNames.nextElement();
@@ -87,10 +85,10 @@ public class ServerAccessFilter extends HttpFilter {
             for (ServerAccessToken token : list) {
                 if (Objects.equals(token.getTokenValue(), value)) {
                     SecurityContextHolder.setServerAccessToken(token);
-                    return true;
+                    log.info("当前请求是服务间调用 | TokenName={} | TokenValue={}", token.getTokenName(), token.getTokenValue());
+                    return;
                 }
             }
         }
-        return false;
     }
 }

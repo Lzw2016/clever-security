@@ -292,10 +292,10 @@ create index user_register_log_register_uid on user_register_log (register_uid);
 ==================================================================================================================== */
 create table server_access_token
 (
-    id                  bigint          not null        auto_increment                          comment 'Token id(系统自动生成且不会变化)',
+    id                  bigint          not null                                                comment 'Token id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     tag                 varchar(127)    not null                                                comment 'Token标签',
-    token_name          varchar(255)    not null                                                comment 'Token名称',
+    token_name          varchar(255)    not null        default 'server-access-token'           comment 'Token名称',
     token_value         varchar(255)    not null                                                comment 'Token值',
     expired_time        datetime(3)                                                             comment 'Token过期时间(空表示永不过期)',
     disable             int             not null        default 0                               comment 'Token是否禁用，0:未禁用；1:已禁用',

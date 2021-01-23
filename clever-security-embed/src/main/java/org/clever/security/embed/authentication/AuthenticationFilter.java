@@ -98,7 +98,7 @@ public class AuthenticationFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!PathFilterUtils.isAuthenticationRequest(request, securityConfig)) {
+        if (!PathFilterUtils.isAuthenticationRequest(request, securityConfig) || SecurityContextHolder.isServerAccess()) {
             // 不需要身份认证
             if (!securityConfig.getLogin().isAllowRepeatLogin() && PathFilterUtils.isLoginRequest(request, securityConfig)) {
                 // 当前请求是登录请求且不允许重复登录时，需要判断当前用户是否已经登录

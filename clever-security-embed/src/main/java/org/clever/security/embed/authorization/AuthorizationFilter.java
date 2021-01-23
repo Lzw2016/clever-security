@@ -69,7 +69,7 @@ public class AuthorizationFilter extends HttpFilter {
 
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (!PathFilterUtils.isAuthorizationRequest(request, securityConfig)) {
+        if (!PathFilterUtils.isAuthorizationRequest(request, securityConfig) || SecurityContextHolder.isServerAccess()) {
             // 不需要授权
             chain.doFilter(request, response);
             return;
