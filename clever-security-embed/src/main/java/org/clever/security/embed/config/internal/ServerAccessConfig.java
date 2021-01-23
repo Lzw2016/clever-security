@@ -12,6 +12,10 @@ import java.io.Serializable;
 @Data
 public class ServerAccessConfig implements Serializable {
     /**
+     * 是否启用
+     */
+    private boolean enable = true;
+    /**
      * 是否启用动态配置
      */
     private boolean dynamic = true;

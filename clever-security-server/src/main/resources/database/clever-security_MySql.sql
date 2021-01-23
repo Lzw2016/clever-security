@@ -293,7 +293,8 @@ create index user_register_log_register_uid on user_register_log (register_uid);
 create table server_access_token
 (
     id                  bigint          not null        auto_increment                          comment 'Token id(系统自动生成且不会变化)',
-    server_name         varchar(127)    not null        default 'server-access-token'           comment '服务名称',
+    domain_id           bigint          not null                                                comment '域id',
+    tag                 varchar(127)    not null                                                comment 'Token标签',
     token_name          varchar(255)    not null                                                comment 'Token名称',
     token_value         varchar(255)    not null                                                comment 'Token值',
     expired_time        datetime(3)                                                             comment 'Token过期时间(空表示永不过期)',
@@ -303,7 +304,7 @@ create table server_access_token
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
     primary key (id)
 ) comment = '服务之间访问Token表';
-create index server_access_token_server_name on server_access_token (server_name);
+create index server_access_token_tag on server_access_token (tag);
 create index server_access_token_token_name on server_access_token (token_name);
 /*------------------------------------------------------------------------------------------------------------------------
 

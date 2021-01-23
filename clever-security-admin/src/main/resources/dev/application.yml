@@ -311,7 +311,9 @@ clever:
       email-max-send-num-in-day: 16
       init-password-path: '/init_password'
       update-password-path: '/update_password'
-    server-api-access-token:
+    server-access:
+      enable: true
+      dynamic: true
       token-name: 'server-api-token'
       token-value: '512f6b74f8ee69fd9049bb512f635b9bf9e6d7fe2cf4f8ee69fd949bb512f6b7768d9d7f3cad4756'
 

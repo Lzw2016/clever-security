@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.TimeZone;
@@ -17,6 +18,7 @@ import java.util.TimeZone;
 @Slf4j
 @EnableDiscoveryClient
 //@EnableFeignClients(basePackages = {"org.clever.security.third.client"})
+@EnableScheduling
 @EnableTransactionManagement
 @MapperScan("org.clever.security.mapper")
 @SpringBootApplication(scanBasePackages = {"org.clever"})
