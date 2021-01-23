@@ -51,7 +51,7 @@ public class UpdatePasswordSupportService implements UpdatePasswordSupportClient
     public InitPasswordRes initPassword(InitPasswordReq req) {
         User user = userMapper.getByUid(req.getUid());
         if (user == null || StringUtils.isNotBlank(user.getPassword())) {
-            throw new BusinessException("已设置密码,无法再次设置");
+            throw new BusinessException("已设置密码,无需再次设置");
         }
         User update = new User();
         update.setUid(user.getUid());

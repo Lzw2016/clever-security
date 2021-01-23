@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 public class InitPasswordReq extends BaseRequest {
     @NotBlank(message = "新密码不能为空")
     @Size(min = 6, max = 63, message = "密码长度在6~63个字符之间")
-    private String InitPassword;
+    private String initPassword;
 
     @NotBlank(message = "用户id不能为空")
     private String uid;
