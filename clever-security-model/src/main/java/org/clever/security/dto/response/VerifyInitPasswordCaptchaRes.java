@@ -7,12 +7,12 @@ import org.clever.common.model.response.BaseResponse;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 21:04 <br/>
+ * 创建时间：2021/01/18 20:48 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifyEmailUpdatePasswordValidateCodeRes extends BaseResponse {
+public class VerifyInitPasswordCaptchaRes extends BaseResponse {
     /**
      * 是否成功
      */

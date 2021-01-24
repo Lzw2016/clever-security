@@ -18,8 +18,7 @@ public class InitPasswordRes extends BaseResponse {
      */
     private boolean success;
 
-    /**
-     * 消息
-     */
-    private String message;
+    public InitPasswordRes(boolean success) {
+        this.success = success;
+    }
 }

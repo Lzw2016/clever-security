@@ -193,7 +193,7 @@ public interface EnumConstant {
      */
     int ValidateCode_Type_2 = 2;
     /**
-     * 验证码类型，3:修改密码验证码
+     * 验证码类型，3:更新密码验证码
      */
     int ValidateCode_Type_3 = 3;
     /**
@@ -232,18 +232,6 @@ public interface EnumConstant {
      * 验证码类型，12:邮箱换绑邮箱验证码
      */
     int ValidateCode_Type_12 = 12;
-    /**
-     * 验证码类型，13:修改密码图片验证码
-     */
-    int ValidateCode_Type_13 = 13;
-    /**
-     * 验证码类型，14:修改密码短信验证码
-     */
-    int ValidateCode_Type_14 = 14;
-    /**
-     * 验证码类型，15:修改密码邮箱验证码
-     */
-    int ValidateCode_Type_15 = 15;
     /**
      * 验证码发送渠道，0:不需要发送
      */

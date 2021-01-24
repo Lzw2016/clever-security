@@ -506,7 +506,55 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是邮箱验证码(更换密码-设置密码)
+     * 当前请求是否是手机验证码(设置密码-图片验证码)
+     */
+    public static boolean isInitPasswordCaptchaRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isInitPasswordCaptchaRequest(path, securityConfig);
+    }
+
+    public static boolean isInitPasswordCaptchaRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getCaptchaPath(), path);
+    }
+
+    /**
+     * 当前请求是否是手机验证码(设置密码-手机验证码)
+     */
+    public static boolean isInitPasswordSmsValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isInitPasswordSmsValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isInitPasswordSmsValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getSmsValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(设置密码-邮箱验证码)
+     */
+    public static boolean isInitPasswordEmailValidateCodeRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isInitPasswordEmailValidateCodeRequest(path, securityConfig);
+    }
+
+    public static boolean isInitPasswordEmailValidateCodeRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getEmailValidateCodePath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(设置密码)
      */
     public static boolean isInitPassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -522,7 +570,7 @@ public class PathFilterUtils {
     }
 
     /**
-     * 当前请求是否是邮箱验证码(更换密码-修改密码)
+     * 当前请求是否是邮箱验证码(修改密码)
      */
     public static boolean isUpdatePassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
@@ -600,6 +648,9 @@ public class PathFilterUtils {
                 || isChangeBindSmsRequest(path, securityConfig)
                 || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
                 || isChangeBindSmsValidateCodeRequest(path, securityConfig)
+                || isInitPasswordCaptchaRequest(path, securityConfig)
+                || isInitPasswordSmsValidateCodeRequest(path, securityConfig)
+                || isInitPasswordEmailValidateCodeRequest(path, securityConfig)
                 || isInitPassWordRequest(path, securityConfig)
                 || isUpdatePassWordRequest(path, securityConfig)) {
             return false;

@@ -112,16 +112,16 @@ public class ConvertUtils {
         return res;
     }
 
-    public static SendSmsUpdatePasswordValidateCodeRes convertToSendSmsUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
-        SendSmsUpdatePasswordValidateCodeRes res = new SendSmsUpdatePasswordValidateCodeRes();
+    public static SendSmsInitPasswordValidateCodeRes convertToSendSmsUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
+        SendSmsInitPasswordValidateCodeRes res = new SendSmsInitPasswordValidateCodeRes();
         res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
         return res;
     }
 
-    public static SendEmailUpdatePasswordValidateCodeRes convertToSendEmailUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
-        SendEmailUpdatePasswordValidateCodeRes res = new SendEmailUpdatePasswordValidateCodeRes();
+    public static SendEmailInitPasswordValidateCodeRes convertToSendEmailUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
+        SendEmailInitPasswordValidateCodeRes res = new SendEmailInitPasswordValidateCodeRes();
         res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());

@@ -4,20 +4,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.clever.common.model.request.BaseRequest;
-import org.clever.security.PatternConstant;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/01/18 20:53 <br/>
+ * 创建时间：2021/01/18 20:58 <br/>
  */
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendSmsUpdatePasswordValidateCodeReq extends BaseRequest {
+public class SendEmailInitPasswordValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -28,15 +27,15 @@ public class SendSmsUpdatePasswordValidateCodeReq extends BaseRequest {
      * 验证码签名(校验验证码时需要)
      */
     private String captchaDigest;
-    @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = PatternConstant.Telephone_Pattern, message = "手机号格式错误")
-    private String telephone;
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
+    private String email;
     /**
      * 验证码过期时间
      */
-    private int effectiveTimeMilli = 120 * 1000;
+    private int effectiveTimeMilli = 300 * 1000;
     /**
-     * 一天发送短信验证码的最大数(小于等于0表示不限制)
+     * 一天发送邮箱验证码的最大数(小于等于0表示不限制)
      */
-    private int maxSendNumInDay = 8;
+    private int maxSendNumInDay = 16;
 }
