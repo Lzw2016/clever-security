@@ -68,6 +68,7 @@ public class HttpServletResponseUtils {
                 || e instanceof RegisterException
                 || e instanceof PasswordRecoveryException
                 || e instanceof ChangeBindException
+                || e instanceof UpdatePasswordException
                 || e instanceof BusinessException) {
             errorResponse.setMessage(e.getMessage());
         } else {
@@ -104,6 +105,7 @@ public class HttpServletResponseUtils {
                 || e instanceof RegisterInnerException
                 || e instanceof ChangeBindEmailInnerException
                 || e instanceof ChangeBindSmsInnerException
+                || e instanceof UpdatePasswordInnerException
                 || e instanceof PasswordRecoveryInnerException) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -114,6 +116,7 @@ public class HttpServletResponseUtils {
                 || e instanceof RegisterException
                 || e instanceof PasswordRecoveryException
                 || e instanceof ChangeBindException
+                || e instanceof UpdatePasswordException
                 || e instanceof BusinessException) {
             return HttpStatus.BAD_REQUEST;
         }

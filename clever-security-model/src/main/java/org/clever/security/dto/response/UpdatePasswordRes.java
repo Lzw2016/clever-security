@@ -13,4 +13,13 @@ import org.clever.common.model.response.BaseResponse;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UpdatePasswordRes extends BaseResponse {
+    /**
+     * 是否成功
+     */
+    private boolean success;
+
+    /**
+     * 消息
+     */
+    private String message;
 }

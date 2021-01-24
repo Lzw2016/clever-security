@@ -505,6 +505,37 @@ public class PathFilterUtils {
         return Objects.equals(bindTelephone.getSmsValidateCodePath(), path);
     }
 
+    /**
+     * 当前请求是否是邮箱验证码(更换密码-设置密码)
+     */
+    public static boolean isInitPassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isInitPassWordRequest(path, securityConfig);
+    }
+
+    public static boolean isInitPassWordRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getInitPasswordPath(), path);
+    }
+
+    /**
+     * 当前请求是否是邮箱验证码(更换密码-修改密码)
+     */
+    public static boolean isUpdatePassWordRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isUpdatePassWordRequest(path, securityConfig);
+    }
+
+    public static boolean isUpdatePassWordRequest(String path, SecurityConfig securityConfig) {
+        UpdatePasswordConfig updatePassword = securityConfig.getUpdatePassword();
+        if (updatePassword == null) {
+            return false;
+        }
+        return Objects.equals(updatePassword.getUpdatePasswordPath(), path);
+    }
 
     /**
      * 当前请求是否需要身份认证
@@ -568,7 +599,9 @@ public class PathFilterUtils {
                 || isChangeBindEmailValidateCodeRequest(path, securityConfig)
                 || isChangeBindSmsRequest(path, securityConfig)
                 || isChangeBindSmsCaptchaPathRequest(path, securityConfig)
-                || isChangeBindSmsValidateCodeRequest(path, securityConfig)) {
+                || isChangeBindSmsValidateCodeRequest(path, securityConfig)
+                || isInitPassWordRequest(path, securityConfig)
+                || isUpdatePassWordRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();

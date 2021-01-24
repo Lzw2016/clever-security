@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class SendSmsInitPasswordValidateCodeRes extends BaseResponse {
+public class SendSmsUpdatePasswordValidateCodeRes extends BaseResponse {
     /**
      * 验证码
      */

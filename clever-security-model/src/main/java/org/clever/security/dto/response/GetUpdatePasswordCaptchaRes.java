@@ -14,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class GetInitPasswordCaptchaRes extends BaseResponse {
+public class GetUpdatePasswordCaptchaRes extends BaseResponse {
     /**
      * 验证码
      */

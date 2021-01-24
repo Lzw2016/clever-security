@@ -103,8 +103,25 @@ public class ConvertUtils {
         res.setExpiredTime(validateCode.getExpiredTime());
         return res;
     }
+
     public static SendBindSmsValidateCodeRes convertToSendBindSmsValidateCodeRes(ValidateCode validateCode) {
         SendBindSmsValidateCodeRes res = new SendBindSmsValidateCodeRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendSmsUpdatePasswordValidateCodeRes convertToSendSmsUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
+        SendSmsUpdatePasswordValidateCodeRes res = new SendSmsUpdatePasswordValidateCodeRes();
+        res.setCode(validateCode.getCode());
+        res.setDigest(validateCode.getDigest());
+        res.setExpiredTime(validateCode.getExpiredTime());
+        return res;
+    }
+
+    public static SendEmailUpdatePasswordValidateCodeRes convertToSendEmailUpdatePasswordValidateCodeRes(ValidateCode validateCode) {
+        SendEmailUpdatePasswordValidateCodeRes res = new SendEmailUpdatePasswordValidateCodeRes();
         res.setCode(validateCode.getCode());
         res.setDigest(validateCode.getDigest());
         res.setExpiredTime(validateCode.getExpiredTime());
