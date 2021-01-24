@@ -116,8 +116,11 @@ public class AuthorizationFilter extends HttpFilter {
         }
         context.setSecurityContext(securityContext);
         // 开始授权
-        double passWeight = 0;
+        long passWeight = 0;
         for (AuthorizationVoter authorizationVoter : authorizationVoterList) {
+            if (!authorizationVoter.isSupported(securityConfig, context.getRequest(), securityContext)) {
+                continue;
+            }
             VoterResult voterResult = authorizationVoter.vote(securityConfig, context.getRequest(), securityContext);
             if (voterResult == null) {
                 context.setAuthorizationException(new AuthorizationInnerException("授权投票结果为null"));
