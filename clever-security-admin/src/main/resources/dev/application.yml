@@ -56,8 +56,8 @@ spring:
   datasource: #----------------------------------------------------------- 数据库配置
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    #url: jdbc:mysql://mysql.msvc.top:3306/hinny-security
-    url: jdbc:mysql://192.168.31.40:3306/hinny-security
+    url: jdbc:mysql://mysql.msvc.top:3306/hinny-security
+    #url: jdbc:mysql://192.168.31.40:3306/hinny-security
     username: hinny-security
     password: a123456
     hikari:
