@@ -16,17 +16,17 @@ import org.clever.security.embed.context.SecurityContextHolder;
 import org.clever.security.embed.context.SecurityContextRepository;
 import org.clever.security.embed.event.AuthenticationFailureEvent;
 import org.clever.security.embed.event.AuthenticationSuccessEvent;
-import org.clever.security.embed.exception.AuthenticationException;
-import org.clever.security.embed.exception.InvalidJwtRefreshTokenException;
-import org.clever.security.embed.exception.ParserJwtTokenException;
+import org.clever.security.embed.exception.*;
 import org.clever.security.embed.handler.AuthenticationFailureHandler;
 import org.clever.security.embed.handler.AuthenticationSuccessHandler;
 import org.clever.security.embed.utils.HttpServletResponseUtils;
 import org.clever.security.embed.utils.JwtTokenUtils;
 import org.clever.security.embed.utils.ListSortUtils;
 import org.clever.security.embed.utils.PathFilterUtils;
+import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.JwtToken;
 import org.clever.security.model.SecurityContext;
+import org.clever.security.model.UserInfo;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;
 
@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 用户身份认证拦截器
@@ -178,6 +179,7 @@ public class AuthenticationFilter extends HttpFilter {
      * 认证流程
      */
     protected void authentication(AuthenticationContext context) throws Exception {
+        final Date now = new Date();
         // 用户登录身份认证
         TokenConfig tokenConfig = securityConfig.getTokenConfig();
         // 获取JWT-Token
@@ -212,7 +214,6 @@ public class AuthenticationFilter extends HttpFilter {
             req.setUseJwtId(Long.parseLong(claims.getId()));
             req.setUseRefreshToken(refreshToken);
             // 创建新的JWT-Token
-            final Date now = new Date();
             jwtToken = JwtTokenUtils.createJwtToken(tokenConfig, claims);
             refreshToken = JwtTokenUtils.createRefreshToken(claims.getSubject());
             req.setJwtId(Long.parseLong(claims.getId()));
@@ -248,6 +249,14 @@ public class AuthenticationFilter extends HttpFilter {
         }
         // 根据JWT-Token获取SecurityContext
         SecurityContext securityContext = securityContextRepository.loadContext(securityConfig.getDomainId(), context.getUid(), claims, context.getRequest(), context.getResponse());
+        // 判断账号是否可用
+        UserInfo userInfo = securityContext.getUserInfo();
+        if (userInfo.getExpiredTime() != null && now.compareTo(userInfo.getExpiredTime()) >= 0) {
+            throw new UserExpiredException("账号已过期");
+        }
+        if (!Objects.equals(EnumConstant.User_Enabled_1, userInfo.getEnabled())) {
+            throw new UserDisabledException("账号已禁用");
+        }
         // 把SecurityContext绑定到当前线程和当前请求对象
         SecurityContextHolder.setContext(securityContext, context.getRequest());
         context.setSecurityContext(securityContext);
