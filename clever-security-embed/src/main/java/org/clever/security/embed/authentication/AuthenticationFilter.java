@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.clever.common.utils.CookieUtils;
 import org.clever.common.utils.DateTimeUtils;
+import org.clever.common.utils.mapper.CgLibBeanMapper;
 import org.clever.security.client.LoginSupportClient;
 import org.clever.security.dto.request.UseJwtRefreshTokenReq;
 import org.clever.security.embed.authentication.token.AuthenticationContext;
@@ -32,8 +33,6 @@ import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -113,10 +112,20 @@ public class AuthenticationFilter extends HttpFilter {
         }
     }
 
-    protected void innerDoFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void innerDoFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
-            // 处理业务逻辑
-            chain.doFilter(request, response);
+            if (PathFilterUtils.isGetCurrentUserRequest(request, securityConfig)) {
+                // 获取当前登录用户信息
+                SecurityContext securityContext = SecurityContextHolder.getContext();
+                UserInfo userInfo = CgLibBeanMapper.mapper(securityContext.getUserInfo(), UserInfo.class);
+                userInfo.setPassword("******");
+                userInfo.getExtInfo().putAll(securityContext.getUserInfo().getExtInfo());
+                SecurityContext data = new SecurityContext(userInfo, securityContext.getRoles(), securityContext.getPermissions());
+                HttpServletResponseUtils.sendJson(response, data);
+            } else {
+                // 处理业务逻辑
+                chain.doFilter(request, response);
+            }
         } finally {
             try {
                 // 清理数据防止内存泄漏

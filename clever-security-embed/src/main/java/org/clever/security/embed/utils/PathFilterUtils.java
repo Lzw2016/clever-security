@@ -586,8 +586,21 @@ public class PathFilterUtils {
     }
 
     /**
+     * 当前请求是否是获取当前登录用户信息
+     */
+    public static boolean isGetCurrentUserRequest(HttpServletRequest request, SecurityConfig securityConfig) {
+        final String path = getPath(request);
+        return isGetCurrentUserRequest(path, securityConfig);
+    }
+
+    public static boolean isGetCurrentUserRequest(String path, SecurityConfig securityConfig) {
+        return Objects.equals(securityConfig.getCurrentUserPath(), path);
+    }
+
+    /**
      * 当前请求是否需要身份认证
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAuthenticationRequest(HttpServletRequest request, SecurityConfig securityConfig) {
         final String path = getPath(request);
         return isAuthenticationRequest(path, request.getMethod(), securityConfig);
@@ -653,6 +666,10 @@ public class PathFilterUtils {
                 || isInitPasswordEmailValidateCodeRequest(path, securityConfig)
                 || isInitPassWordRequest(path, securityConfig)
                 || isUpdatePassWordRequest(path, securityConfig)) {
+            return false;
+        }
+        // 获取当前登录用户信息
+        if(isGetCurrentUserRequest(path, securityConfig)) {
             return false;
         }
         List<String> ignoreAuthPaths = securityConfig.getIgnoreAuthPaths();

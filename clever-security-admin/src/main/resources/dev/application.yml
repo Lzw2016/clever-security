@@ -183,6 +183,7 @@ clever:
     not-login-redirect-page: '/index.html'
     forbidden-need-redirect: false
     forbidden-redirect-page: '/403.html'
+    current-user-path: '/current_user'
     req-aes-key:
       enable: true
       req-password-aes-key: 'b9049bb512f6b776835b9bf9e6c44c45'

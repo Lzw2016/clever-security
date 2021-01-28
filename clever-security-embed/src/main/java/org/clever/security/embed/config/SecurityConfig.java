@@ -57,6 +57,10 @@ public class SecurityConfig implements Serializable {
      * 403页面地址(无权访问时的重定向地址)
      */
     private String forbiddenRedirectPage = "/403.html";
+    /**
+     * 获取当前用户信息请求地址
+     */
+    private String currentUserPath = "/current_user";
 
     // ----------------------------------------------------------------------------------------
     /**
