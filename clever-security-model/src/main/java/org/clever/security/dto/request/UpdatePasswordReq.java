@@ -24,6 +24,6 @@ public class UpdatePasswordReq extends BaseRequest {
     @Size(min = 6, max = 63, message = "密码长度在6~63个字符之间")
     private String newPassword;
 
-    @NotBlank(message = "用户id不能为空")
+    @NotBlank(message = "用户ID不能为空")
     private String uid;
 }

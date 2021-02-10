@@ -43,7 +43,8 @@ public class ValidateCode implements Serializable {
     private String digest;
 
     /**
-     * 验证码类型，
+     * 验证码类型
+     * <pre>
      * 1:登录验证码，
      * 2:找回密码验证码，
      * 3:重置密码(修改密码)验证码，
@@ -56,6 +57,7 @@ public class ValidateCode implements Serializable {
      * 10:短信换绑短信验证码，
      * 11:邮箱换绑图片验证码，
      * 12:邮箱换绑邮箱验证码
+     * </pre>
      */
     private Integer type;
 

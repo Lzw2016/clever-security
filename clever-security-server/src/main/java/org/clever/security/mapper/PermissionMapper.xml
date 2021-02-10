@@ -8,6 +8,6 @@
         from user_role a
             left join role_permission b on (b.role_id=a.role_id and b.domain_id=a.domain_id)
             left join permission c on (c.id=b.permission_id and c.domain_id=b.domain_id)
-        where a.domain_id=#{domainId} and a.uid=#{uid}
+        where c.str_flag is not null and a.domain_id=#{domainId} and a.uid=#{uid}
     </select>
 </mapper>

@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class VerifyEmailUpdatePasswordValidateCodeReq extends BaseRequest {
+public class VerifyEmailInitPasswordValidateCodeReq extends BaseRequest {
     @NotNull(message = "域id不能为空")
     private Long domainId;
     /**
@@ -34,7 +34,7 @@ public class VerifyEmailUpdatePasswordValidateCodeReq extends BaseRequest {
     @Email(message = "邮箱格式不正确")
     private String email;
 
-    public VerifyEmailUpdatePasswordValidateCodeReq(Long domainId) {
+    public VerifyEmailInitPasswordValidateCodeReq(Long domainId) {
         this.domainId = domainId;
     }
 }

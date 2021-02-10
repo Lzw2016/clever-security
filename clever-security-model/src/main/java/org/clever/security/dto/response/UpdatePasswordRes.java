@@ -18,8 +18,7 @@ public class UpdatePasswordRes extends BaseResponse {
      */
     private boolean success;
 
-    /**
-     * 消息
-     */
-    private String message;
+    public UpdatePasswordRes(boolean success) {
+        this.success = success;
+    }
 }

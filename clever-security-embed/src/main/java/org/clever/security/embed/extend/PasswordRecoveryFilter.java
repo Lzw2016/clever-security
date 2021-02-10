@@ -124,7 +124,7 @@ public class PasswordRecoveryFilter extends HttpFilter {
             throw new UnsupportedOperationException("未启用短信找回密码");
         }
         if (!smsRecovery.isNeedCaptcha()) {
-            throw new UnsupportedOperationException("短信找回密码不需要验证码");
+            throw new UnsupportedOperationException("短信找回密码不需要图片验证码");
         }
         GetSmsRecoveryCaptchaReq req = new GetSmsRecoveryCaptchaReq(securityConfig.getDomainId());
         req.setEffectiveTimeMilli((int) smsRecovery.getCaptchaEffectiveTime().toMillis());
