@@ -239,7 +239,26 @@ create index menu_permission_path on menu_permission (path);
 create index menu_permission_page_path on menu_permission (page_path);
 create index menu_permission_sort on menu_permission (sort);
 /*------------------------------------------------------------------------------------------------------------------------
-menu_permission_bind 菜单权限绑定表
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    menu_permission_bind -- 菜单权限绑定表
+==================================================================================================================== */
+create table menu_permission_bind
+(
+    menu_id             bigint          not null                                                comment '菜单id',
+    permission_id       bigint          not null                                                comment '权限id(API权限、UI权限)',
+    domain_id           bigint          not null                                                comment '域id',
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (menu_id, permission_id)
+) comment = '菜单权限绑定表';
+create index menu_permission_bind_menu_id on menu_permission_bind (menu_id);
+create index menu_permission_bind_permission_id on menu_permission_bind (permission_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
