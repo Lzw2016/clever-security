@@ -112,7 +112,7 @@ public class ApiPermissionUtils {
         ApiPermissionModel apiPermissionModel = new ApiPermissionModel();
         apiPermissionModel.setStrFlag(strFlag);
         apiPermissionModel.setTitle(title);
-        apiPermissionModel.setEnableAuth(securityConfig.isDefaultEnableApiAuth() ? EnumConstant.Permission_EnableAuth_1 : EnumConstant.Permission_EnableAuth_0);
+        apiPermissionModel.setEnable(securityConfig.isDefaultEnableApiAuth() ? EnumConstant.Permission_Enable_1 : EnumConstant.Permission_Enable_0);
         apiPermissionModel.setDescription(description);
         apiPermissionModel.setClassName(className);
         apiPermissionModel.setMethodName(methodName);

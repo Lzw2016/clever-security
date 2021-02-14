@@ -71,7 +71,7 @@ public class ConvertUtils {
         ApiPermissionModel apiPermissionModel = new ApiPermissionModel();
         apiPermissionModel.setStrFlag(apiPermissionEntity.getStrFlag());
         apiPermissionModel.setTitle(apiPermissionEntity.getTitle());
-        apiPermissionModel.setEnableAuth(apiPermissionEntity.getEnableAuth());
+        apiPermissionModel.setEnable(apiPermissionEntity.getEnable());
         apiPermissionModel.setDescription(apiPermissionEntity.getDescription());
         apiPermissionModel.setClassName(apiPermissionEntity.getClassName());
         apiPermissionModel.setMethodName(apiPermissionEntity.getMethodName());

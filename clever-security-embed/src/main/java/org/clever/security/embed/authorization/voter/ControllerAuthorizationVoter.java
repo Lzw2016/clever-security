@@ -84,7 +84,7 @@ public class ControllerAuthorizationVoter implements AuthorizationVoter {
             log.debug("### 授权通过(当前资源未配置权限) [{}#{}] -> [{}]", targetClass, targetMethod, request.getRequestURI());
             return VoterResult.PASS;
         }
-        if (Objects.equals(res.getEnableAuth(), EnumConstant.Permission_EnableAuth_0)) {
+        if (Objects.equals(res.getEnable(), EnumConstant.Permission_Enable_0)) {
             log.debug("### 授权通过(当前资源不需要访问权限) [{}#{}] [{}] -> [{}]", targetClass, targetMethod, res.getApiPath(), request.getRequestURI());
             return VoterResult.PASS;
         }

@@ -36,7 +36,7 @@ public class GetApiPermissionRes extends BaseResponse {
     /**
      * 是否启用授权，0:不启用，1:启用
      */
-    private Integer enableAuth;
+    private Integer enable;
     /**
      * controller类名称
      */

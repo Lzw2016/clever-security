@@ -1,7 +1,5 @@
 package org.clever.security.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,15 +9,14 @@ import java.util.Date;
  * 菜单权限表(permission子表)(MenuPermission)实体类
  *
  * @author lizw
- * @since 2020-11-28 19:47:39
+ * @since 2021-02-14 21:17:06
  */
 @Data
 public class MenuPermission implements Serializable {
-    private static final long serialVersionUID = -79005531404264847L;
+    private static final long serialVersionUID = -81883307472903045L;
     /**
      * 菜单权限id(系统自动生成且不会变化)
      */
-    @TableId(type = IdType.INPUT)
     private Long id;
 
     /**
@@ -28,9 +25,9 @@ public class MenuPermission implements Serializable {
     private Long permissionId;
 
     /**
-     * 菜单路径
+     * 上级菜单id
      */
-    private String path;
+    private Long parentId;
 
     /**
      * 菜单名称
@@ -43,14 +40,34 @@ public class MenuPermission implements Serializable {
     private String icon;
 
     /**
-     * 菜单隐藏模式，0：不隐藏；1：隐藏当前菜单和子菜单，2:隐藏子菜单
+     * 菜单路径
      */
-    private Integer hideMode;
+    private String path;
+
+    /**
+     * 页面路径
+     */
+    private String pagePath;
+
+    /**
+     * 隐藏当前菜单和子菜单，0:不隐藏(显示)，1:隐藏
+     */
+    private Integer hideMenu;
+
+    /**
+     * 隐藏子菜单，0:不隐藏(显示)，1:隐藏
+     */
+    private Integer hideChildrenMenu;
 
     /**
      * 菜单扩展配置
      */
     private String extConfig;
+
+    /**
+     * 菜单排序
+     */
+    private Integer sort;
 
     /**
      * 创建时间
@@ -61,4 +78,5 @@ public class MenuPermission implements Serializable {
      * 更新时间
      */
     private Date updateAt;
+
 }

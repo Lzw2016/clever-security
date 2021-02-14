@@ -32,17 +32,13 @@ public interface EnumConstant {
     int JwtToken_RefreshTokenState_1 = 1;
 
     /**
-     * 菜单隐藏模式，0：不隐藏
+     * 菜单隐藏模式，0：不隐藏(显示)
      */
-    int MenuPermission_HideMode_0 = 0;
+    int MenuPermission_Hide_0 = 0;
     /**
-     * 菜单隐藏模式，1：隐藏当前菜单和子菜单
+     * 菜单隐藏模式，1：隐藏
      */
-    int MenuPermission_HideMode_1 = 1;
-    /**
-     * 菜单隐藏模式，2:隐藏子菜单
-     */
-    int MenuPermission_HideMode_2 = 2;
+    int MenuPermission_Hide_1 = 1;
 
     /**
      * 权限类型，1:API权限
@@ -59,11 +55,11 @@ public interface EnumConstant {
     /**
      * 是否启用授权，0:不启用
      */
-    int Permission_EnableAuth_0 = 0;
+    int Permission_Enable_0 = 0;
     /**
      * 是否启用授权，1:启用
      */
-    int Permission_EnableAuth_1 = 1;
+    int Permission_Enable_1 = 1;
 
     /**
      * 扫描二维码状态，0:已创建(待扫描)

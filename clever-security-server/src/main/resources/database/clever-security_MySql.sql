@@ -76,6 +76,7 @@ create table role
     id                  bigint          not null                                                comment '角色id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     name                varchar(63)     not null                                                comment '角色名称',
+    -- enabled             int             not null        default 1                               comment '是否启用，0:不启用，1:启用',
     description         varchar(1023)                                                           comment '角色说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
@@ -99,7 +100,7 @@ create table permission
     str_flag            varchar(255)    not null                                                comment '权限唯一字符串标识',
     title               varchar(255)    not null                                                comment '权限标题',
     resources_type      int             not null        default 1                               comment '权限类型，1:API权限，2:菜单权限，3:UI组件权限',
-    enable_auth         int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
+    enable              int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
     description         varchar(1203)                                                           comment '权限说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
@@ -194,29 +195,6 @@ create index api_permission_api_path on api_permission (api_path);
 
 
 /* ====================================================================================================================
-    menu_permission -- 菜单权限表
-==================================================================================================================== */
-create table menu_permission
-(
-    id                  bigint          not null                                                comment '菜单权限id(系统自动生成且不会变化)',
-    permission_id       bigint          not null                                                comment '权限id',
-    path                varchar(255)    not null        collate utf8_bin                        comment '菜单路径',
-    name                varchar(63)     not null                                                comment '菜单名称',
-    icon                varchar(63)                                                             comment '菜单图标',
-    hide_mode           int             not null        default 0                               comment '菜单隐藏模式，0：不隐藏；1：隐藏当前菜单和子菜单，2:隐藏子菜单',
-    ext_config          text                                                                    comment '菜单扩展配置',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = '菜单权限表(permission子表)';
-create index menu_permission_permission_id on menu_permission (permission_id);
-create index menu_permission_path on menu_permission (path);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
     ui_permission -- UI组件权限表
 ==================================================================================================================== */
 create table ui_permission
@@ -231,6 +209,37 @@ create table ui_permission
 create index ui_permission_permission_id on ui_permission (permission_id);
 /*------------------------------------------------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    menu_permission -- 菜单权限表
+==================================================================================================================== */
+create table menu_permission
+(
+    id                  bigint          not null                                                comment '菜单权限id(系统自动生成且不会变化)',
+    permission_id       bigint          not null                                                comment '权限id',
+    parent_id           bigint          not null        default -1                              comment '上级菜单id',
+    name                varchar(63)     not null                                                comment '菜单名称',
+    icon                varchar(127)                    collate utf8_bin                        comment '菜单图标',
+    path                varchar(255)    not null        collate utf8_bin                        comment '菜单路径',
+    page_path           varchar(255)                                                            comment '页面路径',
+    hide_menu           int             not null        default 0                               comment '隐藏当前菜单和子菜单，0:不隐藏(显示)，1:隐藏',
+    hide_children_menu  int             not null        default 0                               comment '隐藏子菜单，0:不隐藏(显示)，1:隐藏',
+    ext_config          varchar(20479)                                                          comment '菜单扩展配置',
+    sort                int             not null        default 0                               comment '菜单排序',
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (id)
+) comment = '菜单权限表(permission子表)';
+create index menu_permission_permission_id on menu_permission (permission_id);
+create index menu_permission_parent_id on menu_permission (parent_id);
+create index menu_permission_name on menu_permission (name);
+create index menu_permission_path on menu_permission (path);
+create index menu_permission_page_path on menu_permission (page_path);
+create index menu_permission_sort on menu_permission (sort);
+/*------------------------------------------------------------------------------------------------------------------------
+menu_permission_bind 菜单权限绑定表
 --------------------------------------------------------------------------------------------------------------------------*/
 
 
