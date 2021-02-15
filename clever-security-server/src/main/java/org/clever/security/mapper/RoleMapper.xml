@@ -6,6 +6,6 @@
         select
             b.name
         from user_role a left join role b on (a.role_id=b.id and a.domain_id=b.domain_id)
-        where b.name is not null and a.domain_id=#{domainId} and a.uid=#{uid}
+        where b.enabled=1 and b.name is not null and a.domain_id=#{domainId} and a.uid=#{uid}
     </select>
 </mapper>

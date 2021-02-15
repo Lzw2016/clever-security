@@ -4,10 +4,11 @@
 <mapper namespace="org.clever.security.mapper.PermissionMapper">
     <select id="findPermissionByUid" resultType="java.lang.String">
         select
-            distinct c.str_flag
+            distinct d.str_flag
         from user_role a
-            left join role_permission b on (b.role_id=a.role_id and b.domain_id=a.domain_id)
-            left join permission c on (c.id=b.permission_id and c.domain_id=b.domain_id)
-        where c.str_flag is not null and a.domain_id=#{domainId} and a.uid=#{uid}
+            left join role b on (a.role_id=b.id and a.domain_id=b.domain_id)
+            left join role_permission c on (b.id=c.role_id and b.domain_id=c.domain_id)
+            left join permission d on (c.permission_id=b.id and c.domain_id=d.domain_id)
+        where b.enabled=1 and d.str_flag is not null and a.domain_id=#{domainId} and a.uid=#{uid}
     </select>
 </mapper>

@@ -76,7 +76,7 @@ create table role
     id                  bigint          not null                                                comment '角色id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     name                varchar(63)     not null                                                comment '角色名称',
-    -- enabled             int             not null        default 1                               comment '是否启用，0:不启用，1:启用',
+    enabled             int             not null        default 1                               comment '是否启用，0:不启用，1:启用',
     description         varchar(1023)                                                           comment '角色说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
