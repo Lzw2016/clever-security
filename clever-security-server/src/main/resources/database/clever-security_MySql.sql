@@ -100,7 +100,7 @@ create table permission
     str_flag            varchar(255)    not null                                                comment '权限唯一字符串标识',
     title               varchar(255)    not null                                                comment '权限标题',
     resources_type      int             not null        default 1                               comment '权限类型，1:API权限，2:菜单权限，3:UI组件权限',
-    enable              int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
+    enabled             int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
     description         varchar(1203)                                                           comment '权限说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',

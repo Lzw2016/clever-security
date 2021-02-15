@@ -50,7 +50,7 @@ public class Permission implements Serializable {
     /**
      * 是否启用授权，0:不启用，1:启用
      */
-    private Integer enable;
+    private Integer enabled;
 
     /**
      * 权限说明

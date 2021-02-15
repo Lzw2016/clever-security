@@ -55,11 +55,11 @@ public interface EnumConstant {
     /**
      * 是否启用授权，0:不启用
      */
-    int Permission_Enable_0 = 0;
+    int Permission_Enabled_0 = 0;
     /**
      * 是否启用授权，1:启用
      */
-    int Permission_Enable_1 = 1;
+    int Permission_Enabled_1 = 1;
 
     /**
      * 扫描二维码状态，0:已创建(待扫描)

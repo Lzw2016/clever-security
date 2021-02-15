@@ -30,8 +30,8 @@ public class ApiPermissionModel implements Serializable, Comparable<ApiPermissio
      * 是否启用授权，0:不启用，1:启用
      */
     @NotNull(message = "是否启用授权不能为null")
-    @ValidIntegerStatus(value = {EnumConstant.Permission_Enable_0, EnumConstant.Permission_Enable_1})
-    private Integer enable;
+    @ValidIntegerStatus(value = {EnumConstant.Permission_Enabled_0, EnumConstant.Permission_Enabled_1})
+    private Integer enabled;
 
     /**
      * 权限说明

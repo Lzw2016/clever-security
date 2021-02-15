@@ -8,14 +8,13 @@
                b.domain_id,
                b.str_flag,
                b.resources_type,
-               b.enable,
+               b.enabled,
                a.class_name,
                a.method_name,
                a.method_params,
                a.api_path,
                a.api_exist
-        from api_permission a
-                     left join permission b on (a.permission_id = b.id)
+        from api_permission a left join permission b on (a.permission_id = b.id)
         where a.class_name = #{className}
           and a.method_name = #{methodName}
           and a.method_params = #{methodParams}
@@ -30,7 +29,7 @@
             a.str_flag,
             a.title,
             a.resources_type,
-            a.enable,
+            a.enabled,
             a.description,
             b.id as api_permission_id,
             b.class_name,
