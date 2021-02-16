@@ -6,10 +6,10 @@
         select * from domain
         <where>
             <if test="query.name!=null and query.name!=''">
-                and name=concat('%', #{query.name}, '%')
+                and name like concat('%', #{query.name}, '%')
             </if>
             <if test="query.redisNameSpace!=null and query.redisNameSpace!=''">
-                and redis_name_space=concat('%', #{query.redisNameSpace}, '%')
+                and redis_name_space like concat('%', #{query.redisNameSpace}, '%')
             </if>
             <if test="query.createAtStart!=null">
                 and create_at>=#{query.createAtStart}
