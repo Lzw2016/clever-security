@@ -175,6 +175,7 @@ clever:
     ignore-auth-paths:
       - '/login/user_info.json'
       - '/api/protected/**'
+      - '/security/**'
       # - '/api/**'
     ignore-auth-class:
       - 'springfox.documentation.swagger.web.ApiResourceController'

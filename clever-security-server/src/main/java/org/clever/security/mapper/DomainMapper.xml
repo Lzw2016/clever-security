@@ -2,5 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
 <mapper namespace="org.clever.security.mapper.DomainMapper">
-
+    <select id="pageQuery" resultType="org.clever.security.entity.Domain">
+        select * from domain
+        <where>
+            <if test="query.name!=null and query.name!=''">
+                and name=concat('%', #{query.name}, '%')
+            </if>
+            <if test="query.redisNameSpace!=null and query.redisNameSpace!=''">
+                and redis_name_space=concat('%', #{query.redisNameSpace}, '%')
+            </if>
+            <if test="query.createAtStart!=null">
+                and create_at>=#{query.createAtStart}
+            </if>
+            <if test="query.createAtEnd!=null">
+                <![CDATA[ and create_at<=#{query.createAtEnd} ]]>
+            </if>
+        </where>
+    </select>
 </mapper>
