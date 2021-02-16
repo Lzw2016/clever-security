@@ -38,39 +38,65 @@ public class SecurityContext implements Serializable {
     }
 
     /**
-     * 是否拥有指定角色
+     * 是否拥有指定全部角色
      */
     public boolean hasRoles(String... roles) {
-        if (roles == null || roles.length <= 0) {
-            return true;
-        }
-        if (this.roles == null) {
-            return false;
-        }
-        for (String role : roles) {
-            if (!this.roles.contains(role)) {
-                return false;
-            }
-        }
-        return true;
+        return hasAll(this.roles, roles);
     }
 
     /**
-     * 是否拥有指定权限
+     * 是否拥有指定全部权限
      */
     public boolean hasPermissions(String... permissions) {
-        if (permissions == null || permissions.length <= 0) {
+        return hasAll(this.permissions, permissions);
+    }
+
+    /**
+     * 是否拥有指定任意角色
+     */
+    public boolean hasAnyRoles(String... roles) {
+        return hasAny(this.roles, roles);
+    }
+
+    /**
+     * 是否拥有指定任意权限
+     */
+    public boolean hasAnyPermissions(String... permissions) {
+        return hasAny(this.permissions, permissions);
+    }
+
+    protected boolean hasAll(Set<String> source, String... target) {
+        if (target == null || target.length <= 0) {
             return true;
         }
-        if (this.permissions == null) {
+        if (source == null || source.isEmpty()) {
             return false;
         }
-        for (String permission : permissions) {
-            if (!this.permissions.contains(permission)) {
-                return false;
+        boolean flag = true;
+        for (String str : target) {
+            if (!source.contains(str)) {
+                flag = false;
+                break;
             }
         }
-        return true;
+        return flag;
+    }
+
+    protected boolean hasAny(Set<String> source, String... target) {
+        if (target == null || target.length <= 0) {
+            return true;
+        }
+        if (source == null || source.isEmpty()) {
+            return false;
+        }
+        boolean flag = false;
+        for (String str : target) {
+            if (source.contains(str)) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 
     protected void setPermissions(Set<String> permissions) {
