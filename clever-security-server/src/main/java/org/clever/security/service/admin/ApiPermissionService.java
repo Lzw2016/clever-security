@@ -1,6 +1,7 @@
 package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.mapper.BeanMapper;
 import org.clever.security.dto.request.admin.ApiPermissionAddReq;
@@ -21,13 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApiPermissionService {
     @Autowired
     private ApiPermissionMapper apiPermissionMapper;
-    
+
     public IPage<ApiPermission> pageQuery(ApiPermissionQueryReq req) {
         return req.result(apiPermissionMapper.pageQuery(req));
     }
 
     @Transactional
-    public ApiPermission addUser(ApiPermissionAddReq req) {
+    public ApiPermission addApiPermission(ApiPermissionAddReq req) {
         ApiPermission apiPermission = BeanMapper.mapper(req, ApiPermission.class);
         apiPermission.setId(SnowFlake.SNOW_FLAKE.nextId());
         apiPermissionMapper.insert(apiPermission);
@@ -35,9 +36,19 @@ public class ApiPermissionService {
     }
 
     @Transactional
-    public ApiPermission updateUser(ApiPermissionUpdateReq req) {
+    public ApiPermission updateApiPermission(ApiPermissionUpdateReq req) {
         ApiPermission apiPermission = BeanMapper.mapper(req, ApiPermission.class);
         apiPermissionMapper.updateById(apiPermission);
         return apiPermissionMapper.selectById(apiPermission.getId());
+    }
+
+    @Transactional
+    public ApiPermission delApiPermission(Long id) {
+        ApiPermission apiPermission = apiPermissionMapper.selectById(id);
+        int exists = apiPermissionMapper.deleteById(apiPermission.getId());
+        if (exists <= 0) {
+            throw new BusinessException("apiPermission不存在");
+        }
+        return apiPermission;
     }
 }

@@ -14,25 +14,29 @@ import java.util.Date;
 @Data
 public class ApiPermissionQueryReq extends QueryByPage {
     /**
-     * 域id
+     * controller类名称
      */
-    private Long domainId;
+   private String className;
 
     /**
-     * 用户登录名
+     * controller类的方法名称
      */
-    private String loginName;
+   private String methodName;
 
     /**
-     * 用户手机号
+     * controller类的方法参数签名
      */
-    private String telephone;
+   private String methodParams;
 
     /**
-     * 用户邮箱
+     * API接口地址(只用作显示使用)
      */
-    private String email;
+   private String apiPath;
 
+    /**
+     * API接口是否存在，0：不存在；1：存在
+     */
+   private String apiExist;
     /**
      * 创建时间 - 开始
      */

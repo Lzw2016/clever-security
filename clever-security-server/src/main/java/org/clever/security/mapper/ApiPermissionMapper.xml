@@ -43,15 +43,21 @@
 
     <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
         select * from api_permission
-        <!--<where>
-            <if test="query.loginName!=null and query.loginName!=''">
-                and login_name like concat('%', #{query.loginName}, '%')
+        <where>
+            <if test="query.className!=null and query.className!=''">
+                and class_name like concat('%', #{query.className}, '%')
             </if>
-            <if test="query.telephone!=null and query.telephone!=''">
-                and telephone = #{query.telephone}
+            <if test="query.methodName!=null and query.methodName!=''">
+                and method_name like concat('%', #{query.methodName}, '%')
             </if>
-            <if test="query.email!=null and query.email!=''">
-                and email = #{query.email}
+            <if test="query.methodParams!=null and query.methodParams!=''">
+                and method_params like concat('%', #{query.methodParams}, '%')
+            </if>
+            <if test="query.apiPath!=null and query.apiPath!=''">
+                and api_path like concat('%', #{query.apiPath}, '%')
+            </if>
+            <if test="query.apiExist!=null">
+                and api_exist = #{query.apiExist}
             </if>
             <if test="query.createAtStart!=null">
                 and create_at>=#{query.createAtStart}
@@ -59,6 +65,6 @@
             <if test="query.createAtEnd!=null">
                 <![CDATA[ and create_at<=#{query.createAtEnd} ]]>
             </if>
-        </where>-->
+        </where>
     </select>
 </mapper>
