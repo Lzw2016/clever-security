@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.clever.security.dto.request.admin.UserQueryReq;
 import org.clever.security.entity.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
- * 作者：lizw <br/>
+ * 作者：ymx <br/>
  * 创建时间：2020/11/28 20:06 <br/>
  */
 @Repository
@@ -28,4 +31,6 @@ public interface UserMapper extends BaseMapper<User> {
 
     @Select("select count(1) from user where uid=#{uid} limit 1")
     int existsUid(@Param("uid") String uid);
+
+    List<User> pageQuery(@Param("query") UserQueryReq query);
 }
