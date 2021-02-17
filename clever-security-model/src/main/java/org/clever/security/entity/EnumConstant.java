@@ -287,4 +287,13 @@ public interface EnumConstant {
      * 注册结果，2:注册成功仅关联到域
      */
     int UserRegisterLog_RequestResult_3 = 3;
+
+    /**
+     * Token是否禁用，0:未禁用
+     */
+    int ServerAccessToken_Disable_0 = 0;
+    /**
+     * Token是否禁用，1:已禁用
+     */
+    int ServerAccessToken_Disable_1 = 1;
 }

@@ -1,6 +1,7 @@
 package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.mapper.BeanMapper;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,6 +26,10 @@ import java.util.Objects;
 public class DomainService {
     @Autowired
     private DomainMapper domainMapper;
+
+    public List<Domain> all() {
+        return domainMapper.selectList(Wrappers.emptyWrapper());
+    }
 
     public IPage<Domain> pageQuery(DomainQueryReq req) {
         req.addOrderFieldMapping("id", "id");
@@ -50,7 +56,10 @@ public class DomainService {
     public Domain updateDomain(DomainUpdateReq req) {
         Domain domain = BeanMapper.mapper(req, Domain.class);
         validatedDomain(domain);
-        domainMapper.updateById(domain);
+        int exists = domainMapper.updateById(domain);
+        if (exists <= 0) {
+            throw new BusinessException("数据域不存在");
+        }
         return domainMapper.selectById(domain.getId());
     }
 
