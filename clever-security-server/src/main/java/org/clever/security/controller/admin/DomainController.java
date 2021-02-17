@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 作者：lizw <br/>
  * 创建时间：2021/02/15 22:58 <br/>
@@ -19,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class DomainController {
     @Autowired
     private DomainService domainService;
+
+    @GetMapping("/domain/all")
+    public List<Domain> all() {
+        return domainService.all();
+    }
 
     @GetMapping("/domain/page_query")
     public IPage<Domain> pageQuery(DomainQueryReq req) {

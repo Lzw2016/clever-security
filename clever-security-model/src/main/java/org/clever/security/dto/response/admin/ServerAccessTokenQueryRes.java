@@ -1,25 +1,21 @@
-package org.clever.security.entity;
+package org.clever.security.dto.response.admin;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.clever.common.model.response.BaseResponse;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 服务之间访问Token表(ServerAccessToken)实体类
- *
- * @author lizw
- * @since 2021-01-23 17:09:57
+ * 作者：lizw <br/>
+ * 创建时间：2021/02/17 12:53 <br/>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class ServerAccessToken implements Serializable {
-    private static final long serialVersionUID = -67736960555985068L;
+public class ServerAccessTokenQueryRes extends BaseResponse {
     /**
      * Token id(系统自动生成且不会变化)
      */
-    @TableId(type = IdType.INPUT)
     private Long id;
 
     /**
@@ -67,4 +63,10 @@ public class ServerAccessToken implements Serializable {
      */
     private Date updateAt;
 
+    // ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * 域名称
+     */
+    private String domainName;
 }
