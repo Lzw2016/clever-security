@@ -2,7 +2,6 @@ package org.clever.security.controller.admin;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.clever.security.dto.request.admin.ApiPermissionAddReq;
 import org.clever.security.dto.request.admin.ApiPermissionQueryReq;
 import org.clever.security.dto.request.admin.ApiPermissionUpdateReq;
 import org.clever.security.entity.ApiPermission;
@@ -24,11 +23,6 @@ public class ApiPermissionController {
     @GetMapping("/api_permission/page_query")
     public IPage<ApiPermission> pageQuery(ApiPermissionQueryReq req) {
         return apiPermissionService.pageQuery(req);
-    }
-
-    @PostMapping("/api_permission/add")
-    public ApiPermission addApiPermission(@RequestBody @Validated ApiPermissionAddReq req) {
-        return apiPermissionService.addApiPermission(req);
     }
 
     @PutMapping("/api_permission/update")

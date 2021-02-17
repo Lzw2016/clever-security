@@ -3,11 +3,8 @@ package org.clever.security.dto.request.admin;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
-import org.clever.security.PatternConstant;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 
 /**
  * 作者：lizw <br/>
@@ -17,15 +14,28 @@ import javax.validation.constraints.Size;
 @Data
 public class ApiPermissionUpdateReq extends BaseRequest {
     /**
-     * 用户登录名(允许修改)
+     * API权限id(系统自动生成且不会变化)
      */
-    @NotBlank(message = "用户登录名不能为空")
-    @Pattern(regexp = PatternConstant.LoginName_Pattern, message = "用户名只能由“字母、数字、下划线、中划线”组成，且长度在4~32个字符范围内")
-    private String loginName;
+    @NotNull(message = "API权限id不能为空")
+    private Long id;
+
     /**
-     * 密码
+     * controller类名称
      */
-    @NotBlank(message = "登录密码不能为空")
-    @Size(min = 6, max = 63, message = "密码长度在6~63个字符之间")
-    private String password;
+    private String className;
+
+    /**
+     * controller类的方法名称
+     */
+    private String methodName;
+
+    /**
+     * controller类的方法参数签名
+     */
+    private String methodParams;
+
+    /**
+     * API接口地址(只用作显示使用)
+     */
+    private String apiPath;
 }

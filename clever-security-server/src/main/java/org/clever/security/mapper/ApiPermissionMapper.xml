@@ -44,17 +44,11 @@
     <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
         select * from api_permission
         <where>
-            <if test="query.className!=null and query.className!=''">
-                and class_name like concat('%', #{query.className}, '%')
-            </if>
-            <if test="query.methodName!=null and query.methodName!=''">
-                and method_name like concat('%', #{query.methodName}, '%')
-            </if>
-            <if test="query.methodParams!=null and query.methodParams!=''">
-                and method_params like concat('%', #{query.methodParams}, '%')
-            </if>
-            <if test="query.apiPath!=null and query.apiPath!=''">
-                and api_path like concat('%', #{query.apiPath}, '%')
+            <if test="query.keyword!=null and query.keyword!=''">
+                and (class_name like concat('%', #{query.keyword}, '%')
+                or method_name like concat('%', #{query.keyword}, '%')
+                or method_params like concat('%', #{query.keyword}, '%')
+                or api_path like concat('%', #{query.keyword}, '%'))
             </if>
             <if test="query.apiExist!=null">
                 and api_exist = #{query.apiExist}
