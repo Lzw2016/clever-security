@@ -30,16 +30,16 @@ public class ServerAccessTokenService {
     private DomainMapper domainMapper;
 
     public IPage<ServerAccessTokenQueryRes> pageQuery(ServerAccessTokenQueryReq req) {
-        req.addOrderFieldMapping("id", "id");
-        req.addOrderFieldMapping("domainId", "domain_id");
-        req.addOrderFieldMapping("tag", "tag");
-        req.addOrderFieldMapping("tokenName", "token_name");
-        req.addOrderFieldMapping("tokenValue", "token_value");
-        req.addOrderFieldMapping("expiredTime", "expired_time");
-        req.addOrderFieldMapping("disable", "disable");
-        req.addOrderFieldMapping("description", "description");
-        req.addOrderFieldMapping("createAt", "create_at");
-        req.addOrderFieldMapping("updateAt", "update_at");
+        req.addOrderFieldMapping("id", "a.id");
+        req.addOrderFieldMapping("domainId", "a.domain_id");
+        req.addOrderFieldMapping("tag", "a.tag");
+        req.addOrderFieldMapping("tokenName", "a.token_name");
+        req.addOrderFieldMapping("tokenValue", "a.token_value");
+        req.addOrderFieldMapping("expiredTime", "a.expired_time");
+        req.addOrderFieldMapping("disable", "a.disable");
+        req.addOrderFieldMapping("description", "a.description");
+        req.addOrderFieldMapping("createAt", "a.create_at");
+        req.addOrderFieldMapping("updateAt", "a.update_at");
         if (req.getOrderFields().isEmpty()) {
             req.addOrderField("createAt", DomainQueryReq.DESC);
         }

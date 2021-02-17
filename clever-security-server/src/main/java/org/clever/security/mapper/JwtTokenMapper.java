@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.clever.security.dto.request.admin.JwtTokenQueryReq;
+import org.clever.security.dto.response.admin.JwtTokenQueryRes;
 import org.clever.security.entity.JwtToken;
 import org.springframework.stereotype.Repository;
 
@@ -34,4 +36,6 @@ public interface JwtTokenMapper extends BaseMapper<JwtToken> {
 
     @Select("select * from jwt_token where (expired_time is not null and expired_time>now()) and disable=0 and uid=#{uid}")
     List<JwtToken> getEffectiveTokenByUid(@Param("uid") String uid);
+
+    List<JwtTokenQueryRes> pageQuery(@Param("query")JwtTokenQueryReq query);
 }
