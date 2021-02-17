@@ -2,5 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
 <mapper namespace="org.clever.security.mapper.LoginFailedCountMapper">
-
+    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.LoginFailedCountQueryRes">
+        select
+        a.*,
+        b.name as domainName,
+        c.nickname,
+        c.login_name as loginName,
+        c.telephone,
+        c.email
+        from login_failed_count a
+        left join domain b on (a.domain_id = b.id)
+        left join user c on (a.uid = c.uid)
+        <where>
+            <if test="query.id!=null">
+                and a.id = #{query.id}
+            </if>
+            <if test="query.domainId!=null">
+                and a.domain_id = #{query.domainId}
+            </if>
+            <if test="query.loginType!=null">
+                and a.login_type = #{query.loginType}
+            </if>
+            <if test="query.userKeyword!=null and query.userKeyword!=''">
+                and (c.login_name like concat('%', #{query.userKeyword}, '%')
+                or c.telephone like concat('%', #{query.userKeyword}, '%')
+                or c.email like concat('%', #{query.userKeyword}, '%')
+                or c.nickname like concat('%', #{query.userKeyword}, '%'))
+            </if>
+            <if test="query.lastLoginTimeStart!=null">
+                and a.create_at>=#{query.lastLoginTimeStart}
+            </if>
+            <if test="query.lastLoginTimeEnd!=null">
+                <![CDATA[ and a.create_at<=#{query.lastLoginTimeEnd} ]]>
+            </if>
+        </where>
+    </select>
 </mapper>

@@ -4,32 +4,36 @@
 <mapper namespace="org.clever.security.mapper.UserMapper">
     <select id="pageQuery" resultType="org.clever.security.entity.User">
         select
-        uid,
-        login_name,
-        telephone,
-        email,
-        expired_time,
-        enabled,
-        nickname,
-        avatar,
-        register_channel,
-        from_source,
-        description,
-        create_at,
-        update_at
-        from user
+        a.uid,
+        a.login_name,
+        a.telephone,
+        a.email,
+        a.expired_time,
+        a.enabled,
+        a.nickname,
+        a.avatar,
+        a.register_channel,
+        a.from_source,
+        a.description,
+        a.create_at,
+        a.update_at
+        from user a
+        left join user_domain b on (a.uid = b.uid)
         <where>
+            <if test="query.domainId!=null">
+                and b.domain_id=#{query.domainId}
+            </if>
             <if test="query.keyword!=null and query.keyword!=''">
-                and (login_name like concat('%', #{query.keyword}, '%')
-                or telephone like concat('%', #{query.keyword}, '%')
-                or email like concat('%', #{query.keyword}, '%')
-                or nickname like concat('%', #{query.keyword}, '%'))
+                and (a.login_name like concat('%', #{query.keyword}, '%')
+                or a.telephone like concat('%', #{query.keyword}, '%')
+                or a.email like concat('%', #{query.keyword}, '%')
+                or a.nickname like concat('%', #{query.keyword}, '%'))
             </if>
             <if test="query.createAtStart!=null">
-                and create_at>=#{query.createAtStart}
+                and a.create_at>=#{query.createAtStart}
             </if>
             <if test="query.createAtEnd!=null">
-                <![CDATA[ and create_at<=#{query.createAtEnd} ]]>
+                <![CDATA[ and a.create_at<=#{query.createAtEnd} ]]>
             </if>
         </where>
     </select>

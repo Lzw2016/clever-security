@@ -12,27 +12,30 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ApiPermissionQueryReq extends QueryByPage {
+public class LoginFailedCountQueryReq extends QueryByPage {
+    /**
+     * 主键
+     */
+    private Long id;
     /**
      * 域id
      */
     private Long domainId;
     /**
-     * 关键字搜索
+     * 登录方式
      */
-   private String keyword;
-
+    private Integer loginType;
     /**
-     * API接口是否存在，0：不存在；1：存在
+     * 用户搜索关键字
      */
-   private String apiExist;
+    private String userKeyword;
     /**
      * 创建时间 - 开始
      */
-    private Date createAtStart;
+    private Date lastLoginTimeStart;
 
     /**
      * 创建时间 - 结束
      */
-    private Date createAtEnd;
+    private Date lastLoginTimeEnd;
 }
