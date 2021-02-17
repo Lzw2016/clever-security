@@ -2,9 +2,7 @@ package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.clever.common.exception.BusinessException;
-import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.mapper.BeanMapper;
-import org.clever.security.dto.request.admin.ApiPermissionAddReq;
 import org.clever.security.dto.request.admin.ApiPermissionQueryReq;
 import org.clever.security.dto.request.admin.ApiPermissionUpdateReq;
 import org.clever.security.entity.ApiPermission;
@@ -28,17 +26,12 @@ public class ApiPermissionService {
     }
 
     @Transactional
-    public ApiPermission addApiPermission(ApiPermissionAddReq req) {
-        ApiPermission apiPermission = BeanMapper.mapper(req, ApiPermission.class);
-        apiPermission.setId(SnowFlake.SNOW_FLAKE.nextId());
-        apiPermissionMapper.insert(apiPermission);
-        return apiPermissionMapper.selectById(apiPermission.getId());
-    }
-
-    @Transactional
     public ApiPermission updateApiPermission(ApiPermissionUpdateReq req) {
         ApiPermission apiPermission = BeanMapper.mapper(req, ApiPermission.class);
-        apiPermissionMapper.updateById(apiPermission);
+        int exists = apiPermissionMapper.updateById(apiPermission);
+        if (exists <= 0) {
+            throw new BusinessException("apiPermission不存在");
+        }
         return apiPermissionMapper.selectById(apiPermission.getId());
     }
 

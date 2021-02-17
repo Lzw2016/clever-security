@@ -14,24 +14,9 @@ import java.util.Date;
 @Data
 public class ApiPermissionQueryReq extends QueryByPage {
     /**
-     * controller类名称
+     * 关键字搜索
      */
-   private String className;
-
-    /**
-     * controller类的方法名称
-     */
-   private String methodName;
-
-    /**
-     * controller类的方法参数签名
-     */
-   private String methodParams;
-
-    /**
-     * API接口地址(只用作显示使用)
-     */
-   private String apiPath;
+   private String keyword;
 
     /**
      * API接口是否存在，0：不存在；1：存在
