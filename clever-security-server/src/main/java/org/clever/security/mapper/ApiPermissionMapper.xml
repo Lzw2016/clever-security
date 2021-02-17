@@ -42,22 +42,27 @@
     </select>
 
     <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
-        select * from api_permission
+        select * from api_permission a
+        left join permission b on (a.permission_id=b.id)
+        left join domain c on (b.domain_id=c.id)
         <where>
+            <if test="query.domainId!=null">
+                and b.domain_id = #{query.domainId}
+            </if>
             <if test="query.keyword!=null and query.keyword!=''">
-                and (class_name like concat('%', #{query.keyword}, '%')
-                or method_name like concat('%', #{query.keyword}, '%')
-                or method_params like concat('%', #{query.keyword}, '%')
-                or api_path like concat('%', #{query.keyword}, '%'))
+                and (a.class_name like concat('%', #{query.keyword}, '%')
+                or a.method_name like concat('%', #{query.keyword}, '%')
+                or a.method_params like concat('%', #{query.keyword}, '%')
+                or a.api_path like concat('%', #{query.keyword}, '%'))
             </if>
             <if test="query.apiExist!=null">
-                and api_exist = #{query.apiExist}
+                and a.api_exist = #{query.apiExist}
             </if>
             <if test="query.createAtStart!=null">
-                and create_at>=#{query.createAtStart}
+                and a.create_at>=#{query.createAtStart}
             </if>
             <if test="query.createAtEnd!=null">
-                <![CDATA[ and create_at<=#{query.createAtEnd} ]]>
+                <![CDATA[ and a.create_at<=#{query.createAtEnd} ]]>
             </if>
         </where>
     </select>

@@ -5,8 +5,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.clever.security.dto.request.admin.LoginFailedCountQueryReq;
+import org.clever.security.dto.response.admin.LoginFailedCountQueryRes;
 import org.clever.security.entity.LoginFailedCount;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 作者：lizw <br/>
@@ -24,4 +28,6 @@ public interface LoginFailedCountMapper extends BaseMapper<LoginFailedCount> {
 
     @Update("update login_failed_count set delete_flag=1 where delete_flag=0 and domain_id=#{domainId} and uid=#{uid} and login_type=#{loginType} ")
     int clearLoginFailedCount(@Param("domainId") Long domainId, @Param("uid") String uid, @Param("loginType") Integer loginType);
+
+    List<LoginFailedCountQueryRes> pageQuery(@Param("query") LoginFailedCountQueryReq req);
 }
