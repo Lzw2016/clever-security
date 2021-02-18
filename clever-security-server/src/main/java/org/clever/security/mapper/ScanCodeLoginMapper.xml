@@ -17,6 +17,9 @@
             <if test="query.scanCodeState!=null">
                 and a.scan_code_state=#{query.scanCodeState}
             </if>
+            <if test="query.bindTokenId!=null">
+                and a.bind_token_id=#{query.bindTokenId}
+            </if>
             <if test="query.bindTokenTimeStart!=null">
                 and a.bind_token_time>=#{query.bindTokenTimeStart}
             </if>
@@ -34,6 +37,9 @@
             </if>
             <if test="query.loginTimeEnd!=null">
                 <![CDATA[ and a.login_time<=#{query.loginTimeEnd} ]]>
+            </if>
+            <if test="query.tokenId!=null">
+                and a.token_id=#{query.tokenId}
             </if>
             <if test="query.createAtStart!=null">
                 and a.create_at>=#{query.createAtStart}

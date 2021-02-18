@@ -29,6 +29,11 @@ public class ScanCodeLoginQueryReq extends QueryByPage {
     private Integer scanCodeState;
 
     /**
+     * 绑定的JWT-Token id
+     */
+    private Long bindTokenId;
+
+    /**
      * (扫描时间)绑定JWT-Token时间 - 开始
      */
     private Date bindTokenTimeStart;
@@ -57,6 +62,11 @@ public class ScanCodeLoginQueryReq extends QueryByPage {
      * 登录时间 - 结束
      */
     private Date loginTimeEnd;
+
+    /**
+     * 登录生成的JWT-Token id
+     */
+    private Long tokenId;
 
     /**
      * 创建时间 - 开始
