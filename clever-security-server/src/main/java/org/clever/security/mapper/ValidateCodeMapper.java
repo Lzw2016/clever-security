@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.clever.security.dto.request.admin.ValidateCodeQueryReq;
+import org.clever.security.dto.response.admin.ValidateCodeQueryRes;
 import org.clever.security.entity.ValidateCode;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 作者：lizw <br/>
@@ -62,4 +65,6 @@ public interface ValidateCodeMapper extends BaseMapper<ValidateCode> {
             @Param("sendChannel") Integer sendChannel,
             @Param("sendTarget") String sendTarget
     );
+
+    List<ValidateCodeQueryRes> pageQuery(@Param("query") ValidateCodeQueryReq query);
 }
