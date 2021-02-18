@@ -33,7 +33,7 @@
             <if test="query.sendChannel!=null">
                 and a.send_channel=#{query.sendChannel}
             </if>
-            <if test="query.sendTarget!=null">
+            <if test="query.sendTarget!=null and query.sendTarget!=''">
                 and a.send_target=#{query.sendTarget}
             </if>
             <if test="query.createAtStart!=null">
