@@ -1,10 +1,19 @@
 package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.commons.lang3.StringUtils;
+import org.clever.common.exception.BusinessException;
 import org.clever.security.dto.request.admin.DomainQueryReq;
 import org.clever.security.dto.request.admin.ScanCodeLoginQueryReq;
+import org.clever.security.dto.response.admin.ScanCodeLoginDetailRes;
 import org.clever.security.dto.response.admin.ScanCodeLoginQueryRes;
+import org.clever.security.entity.JwtToken;
+import org.clever.security.entity.ScanCodeLogin;
+import org.clever.security.entity.User;
+import org.clever.security.mapper.DomainMapper;
+import org.clever.security.mapper.JwtTokenMapper;
 import org.clever.security.mapper.ScanCodeLoginMapper;
+import org.clever.security.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +27,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScanCodeLoginService {
     @Autowired
     private ScanCodeLoginMapper scanCodeLoginMapper;
+    @Autowired
+    private JwtTokenMapper jwtTokenMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private DomainMapper domainMapper;
 
     public IPage<ScanCodeLoginQueryRes> pageQuery(ScanCodeLoginQueryReq req) {
         req.addOrderFieldMapping("id", "a.id");
@@ -38,5 +53,40 @@ public class ScanCodeLoginService {
             req.addOrderField("createAt", DomainQueryReq.DESC);
         }
         return req.result(scanCodeLoginMapper.pageQuery(req));
+    }
+
+    public ScanCodeLoginDetailRes detailScanCodeLogin(Long id) {
+        ScanCodeLoginDetailRes res = new ScanCodeLoginDetailRes();
+        ScanCodeLogin scanCodeLogin = scanCodeLoginMapper.selectById(id);
+        if (scanCodeLogin == null) {
+            throw new BusinessException("数据不存在");
+        }
+        res.setScanCodeLogin(scanCodeLogin);
+        if (scanCodeLogin.getDomainId() != null) {
+            res.setDomain(domainMapper.selectById(scanCodeLogin.getDomainId()));
+        }
+        if (scanCodeLogin.getBindTokenId() != null) {
+            JwtToken bindToken = jwtTokenMapper.selectById(scanCodeLogin.getBindTokenId());
+            res.setBindToken(bindToken);
+            if (bindToken != null && StringUtils.isNotBlank(bindToken.getUid())) {
+                User bindTokenUser = userMapper.getByUid(bindToken.getUid());
+                if(bindTokenUser!=null) {
+                    bindTokenUser.setPassword("******");
+                }
+                res.setBindTokenUser(bindTokenUser);
+            }
+        }
+        if (scanCodeLogin.getTokenId() != null) {
+            JwtToken token = jwtTokenMapper.selectById(scanCodeLogin.getTokenId());
+            res.setToken(token);
+            if (token != null && StringUtils.isNotBlank(token.getUid())) {
+                User tokenUser = userMapper.getByUid(token.getUid());
+                if(tokenUser!=null) {
+                    tokenUser.setPassword("******");
+                }
+                res.setTokenUser(tokenUser);
+            }
+        }
+        return res;
     }
 }
