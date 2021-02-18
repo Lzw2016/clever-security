@@ -2,8 +2,12 @@ package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.*;
+import org.clever.security.dto.request.admin.UserSecurityContextQueryReq;
+import org.clever.security.dto.response.admin.UserSecurityContextQueryRes;
 import org.clever.security.entity.UserSecurityContext;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * 作者：lizw <br/>
@@ -24,4 +28,6 @@ public interface UserSecurityContextMapper extends BaseMapper<UserSecurityContex
 
     @Delete("delete from user_security_context where uid=#{uid}")
     int deleteByUid(@Param("uid") String uid);
+
+    List<UserSecurityContextQueryRes> pageQuery(@Param("query") UserSecurityContextQueryReq query);
 }
