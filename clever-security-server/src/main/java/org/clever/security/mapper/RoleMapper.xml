@@ -8,4 +8,23 @@
         from user_role a left join role b on (a.role_id=b.id and a.domain_id=b.domain_id)
         where b.enabled=1 and b.name is not null and a.domain_id=#{domainId} and a.uid=#{uid}
     </select>
+
+    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.RoleQueryRes">
+        select a.*,b.name from role a
+        left join domain b on a.domain_id = b.id
+        <where>
+            <if test="query.id!=null">
+                and a.id=#{query.id}
+            </if>
+            <if test="query.domainId!=null">
+                and a.domain_id=#{query.domainId}
+            </if>
+            <if test="query.name!=null and query.name!=''">
+                and a.name like concat('%',#{query.name},'%')
+            </if>
+            <if test="query.enabled!=null">
+                and a.enabled = #{query.enabled}
+            </if>
+        </where>
+    </select>
 </mapper>
