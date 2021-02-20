@@ -14,7 +14,7 @@ logging:
   level:
     org.springframework: warn
     org.clever: debug
-    org.clever.security.task: warn
+    org.clever.security.task: info
     org.clever.security.embed.task: warn
     org.clever.security.mapper.ServerAccessTokenMapper.findAllEffective: warn
 

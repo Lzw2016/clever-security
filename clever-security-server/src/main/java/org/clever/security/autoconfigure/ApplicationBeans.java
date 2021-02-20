@@ -1,6 +1,7 @@
 package org.clever.security.autoconfigure;
 
 import lombok.extern.slf4j.Slf4j;
+import org.clever.security.config.SecurityServerConfig;
 import org.clever.security.crypto.BCryptPasswordEncoder;
 import org.clever.security.crypto.PasswordEncoder;
 import org.clever.security.third.validate.SendEmailValidateCode;
@@ -8,6 +9,7 @@ import org.clever.security.third.validate.SendSmsValidateCode;
 import org.clever.security.validate.DefaultSendEmailValidateCode;
 import org.clever.security.validate.DefaultSendSmsValidateCode;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -20,6 +22,7 @@ import java.security.SecureRandom;
  */
 @Order
 @Configuration
+@EnableConfigurationProperties({SecurityServerConfig.class})
 @Slf4j
 public class ApplicationBeans {
     @Bean("passwordEncoder")

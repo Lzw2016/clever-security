@@ -23,7 +23,7 @@ public class ReloadServerAccessTokenTask {
         try {
             serverAccessSupportService.reloadServerAccessToken();
         } catch (Exception e) {
-            log.debug("[刷新ServerAccessToken] - 失败", e);
+            log.warn("[刷新ServerAccessToken] - 失败", e);
         } finally {
             long useTime = System.currentTimeMillis() - startTime;
             log.debug("[刷新ServerAccessToken] - 完成，耗时: {}ms", useTime);
