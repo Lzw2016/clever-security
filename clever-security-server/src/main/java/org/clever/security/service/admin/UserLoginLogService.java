@@ -3,9 +3,7 @@ package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.clever.security.dto.request.admin.UserLoginLogQueryReq;
-import org.clever.security.dto.request.admin.UserQueryReq;
 import org.clever.security.dto.response.admin.UserLoginLogQueryRes;
-import org.clever.security.entity.UserLoginLog;
 import org.clever.security.mapper.UserLoginLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,5 +21,13 @@ public class UserLoginLogService {
 
     public IPage<UserLoginLogQueryRes> pageQuery(UserLoginLogQueryReq req) {
         return req.result(userLoginLogMapper.pageQuery(req));
+    }
+
+    @Transactional
+    public int clearLogData(int retainOfDays) {
+        if (retainOfDays <= 0) {
+            return 0;
+        }
+        return userLoginLogMapper.clearLogData(retainOfDays);
     }
 }
