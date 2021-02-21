@@ -23,6 +23,6 @@ public interface RoleMapper extends BaseMapper<Role> {
 
     List<RoleQueryRes> pageQuery(@Param("query") RoleQueryReq req);
 
-    @Select("select * from role where domain_id=#{domainId} and id=#{id}")
+    @Select("select * from role where domain_id=#{domainId} and id=#{id} limit 1")
     Role getByDomainId(@Param("domainId") Long domainId, @Param("id") Long id);
 }

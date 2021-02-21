@@ -23,6 +23,7 @@ public class RoleUpdateReq extends BaseRequest {
     /**
      * id
      */
+    @NotNull(message = "id不能为空")
     private Long id;
 
     /**

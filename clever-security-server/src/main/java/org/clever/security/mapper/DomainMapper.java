@@ -26,6 +26,6 @@ public interface DomainMapper extends BaseMapper<Domain> {
     @Select("select * from domain where redis_name_space=#{redisNameSpace} limit 1")
     Domain getByRedisNameSpace(@Param("redisNameSpace") String redisNameSpace);
 
-    @Select("select count(1) from domain where id = #{domainId}")
+    @Select("select count(1) from domain where id = #{domainId} limit 1")
     int exists(@Param("domainId") Long domainId);
 }
