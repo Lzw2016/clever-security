@@ -35,6 +35,7 @@
             <if test="query.lastLoginTimeEnd!=null">
                 <![CDATA[ and a.create_at<=#{query.lastLoginTimeEnd} ]]>
             </if>
+            and a.delete_flag=0
         </where>
     </select>
 </mapper>

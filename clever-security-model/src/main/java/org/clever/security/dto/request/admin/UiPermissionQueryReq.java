@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ApiPermissionQueryReq extends QueryByPage {
+public class UiPermissionQueryReq extends QueryByPage {
     /**
      * id
      */
@@ -24,19 +24,5 @@ public class ApiPermissionQueryReq extends QueryByPage {
     /**
      * 关键字搜索
      */
-   private String keyword;
-
-    /**
-     * API接口是否存在，0：不存在；1：存在
-     */
-   private String apiExist;
-    /**
-     * 创建时间 - 开始
-     */
-    private Date createAtStart;
-
-    /**
-     * 创建时间 - 结束
-     */
-    private Date createAtEnd;
+    private String uiName;
 }

@@ -42,10 +42,13 @@
     </select>
 
     <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
-        select * from api_permission a
+        select a.* from api_permission a
         left join permission b on (a.permission_id=b.id)
         left join domain c on (b.domain_id=c.id)
         <where>
+            <if test="query.id!=null">
+                and a.id = #{query.id}
+            </if>
             <if test="query.domainId!=null">
                 and b.domain_id = #{query.domainId}
             </if>
@@ -64,6 +67,7 @@
             <if test="query.createAtEnd!=null">
                 <![CDATA[ and a.create_at<=#{query.createAtEnd} ]]>
             </if>
+            and b.resources_type = 1
         </where>
     </select>
 </mapper>

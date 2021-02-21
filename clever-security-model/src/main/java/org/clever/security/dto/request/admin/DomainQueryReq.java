@@ -14,6 +14,10 @@ import java.util.Date;
 @Data
 public class DomainQueryReq extends QueryByPage {
     /**
+     * 主键
+     */
+    private Long id;
+    /**
      * 域名称
      */
     private String name;

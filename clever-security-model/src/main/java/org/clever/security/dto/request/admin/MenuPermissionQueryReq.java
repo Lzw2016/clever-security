@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ApiPermissionQueryReq extends QueryByPage {
+public class MenuPermissionQueryReq extends QueryByPage {
     /**
      * id
      */
@@ -22,14 +22,9 @@ public class ApiPermissionQueryReq extends QueryByPage {
      */
     private Long domainId;
     /**
-     * 关键字搜索
+     * 菜单名称
      */
-   private String keyword;
-
-    /**
-     * API接口是否存在，0：不存在；1：存在
-     */
-   private String apiExist;
+    private String name;
     /**
      * 创建时间 - 开始
      */

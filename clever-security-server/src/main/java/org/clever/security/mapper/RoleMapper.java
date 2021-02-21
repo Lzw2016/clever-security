@@ -3,6 +3,7 @@ package org.clever.security.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.request.admin.RoleQueryReq;
 import org.clever.security.dto.response.admin.RoleQueryRes;
 import org.clever.security.entity.Role;
@@ -21,4 +22,7 @@ public interface RoleMapper extends BaseMapper<Role> {
     Set<String> findRolesByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 
     List<RoleQueryRes> pageQuery(@Param("query") RoleQueryReq req);
+
+    @Select("select * from role where domain_id=#{domainId} and id=#{id}")
+    Role getByDomainId(@Param("domainId") Long domainId, @Param("id") Long id);
 }

@@ -5,6 +5,9 @@
     <select id="pageQuery" resultType="org.clever.security.entity.Domain">
         select * from domain
         <where>
+            <if test="query.id!=null">
+                and id = #{query.id}
+            </if>
             <if test="query.name!=null and query.name!=''">
                 and name like concat('%', #{query.name}, '%')
             </if>
