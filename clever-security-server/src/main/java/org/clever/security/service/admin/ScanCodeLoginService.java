@@ -89,4 +89,17 @@ public class ScanCodeLoginService {
         }
         return res;
     }
+
+    @Transactional
+    public int clearLogData(int retainOfDays) {
+        if (retainOfDays <= 0) {
+            return 0;
+        }
+        return scanCodeLoginMapper.clearLogData(retainOfDays);
+    }
+
+    @Transactional
+    public int refreshState() {
+        return scanCodeLoginMapper.refreshState();
+    }
 }

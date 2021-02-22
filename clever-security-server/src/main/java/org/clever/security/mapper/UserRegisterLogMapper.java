@@ -1,6 +1,7 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.admin.UserRegisterLogQueryReq;
@@ -19,4 +20,7 @@ import java.util.List;
 public interface UserRegisterLogMapper extends BaseMapper<UserRegisterLog> {
 
     List<UserRegisterLogQueryRes> pageQuery(@Param("query") UserRegisterLogQueryReq req);
+
+    @Delete("delete from user_register_log where create_at<date_sub(now(), interval #{retainOfDays}  day)")
+    int clearLogData(@Param("retainOfDays") int retainOfDays);
 }

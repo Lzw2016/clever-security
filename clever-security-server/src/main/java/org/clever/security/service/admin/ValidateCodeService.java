@@ -40,4 +40,12 @@ public class ValidateCodeService {
         }
         return req.result(validateCodeMapper.pageQuery(req));
     }
+
+    @Transactional
+    public int clearLogData(int retainOfDays) {
+        if (retainOfDays <= 0) {
+            return 0;
+        }
+        return validateCodeMapper.clearLogData(retainOfDays);
+    }
 }
