@@ -1,10 +1,7 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.clever.security.dto.request.admin.JwtTokenQueryReq;
 import org.clever.security.dto.response.admin.JwtTokenQueryRes;
 import org.clever.security.entity.JwtToken;
@@ -38,4 +35,14 @@ public interface JwtTokenMapper extends BaseMapper<JwtToken> {
     List<JwtToken> getEffectiveTokenByUid(@Param("uid") String uid);
 
     List<JwtTokenQueryRes> pageQuery(@Param("query")JwtTokenQueryReq query);
+
+    @Delete({
+            "delete from jwt_token ",
+            "where (expired_time<now() or disable!=0 or refresh_create_token_id is not null) ",
+            "and create_at<date_sub(now(), interval #{retainOfDays} day)",
+    })
+    int clearLogData(@Param("retainOfDays") int retainOfDays);
+
+    @Update("update jwt_token set disable=1, disable_reason='jwt-token已过期' where disable!=1 and expired_time<now()")
+    int refreshState();
 }

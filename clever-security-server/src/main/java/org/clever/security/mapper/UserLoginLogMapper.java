@@ -21,6 +21,6 @@ public interface UserLoginLogMapper extends BaseMapper<UserLoginLog> {
 
     List<UserLoginLogQueryRes> pageQuery(@Param("query") UserLoginLogQueryReq req);
 
-    @Delete("delete from user_login_log where create_at<date_sub(now(), interval #{retainOfDays}  day)")
+    @Delete("delete from user_login_log where create_at<date_sub(now(), interval #{retainOfDays} day)")
     int clearLogData(@Param("retainOfDays") int retainOfDays);
 }

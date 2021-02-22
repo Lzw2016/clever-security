@@ -1,10 +1,7 @@
 package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.clever.security.dto.request.admin.LoginFailedCountQueryReq;
 import org.clever.security.dto.response.admin.LoginFailedCountQueryRes;
 import org.clever.security.entity.LoginFailedCount;
@@ -30,4 +27,7 @@ public interface LoginFailedCountMapper extends BaseMapper<LoginFailedCount> {
     int clearLoginFailedCount(@Param("domainId") Long domainId, @Param("uid") String uid, @Param("loginType") Integer loginType);
 
     List<LoginFailedCountQueryRes> pageQuery(@Param("query") LoginFailedCountQueryReq req);
+
+    @Delete("delete from login_failed_count where delete_flag=1 and create_at<date_sub(now(), interval #{retainOfDays} day)")
+    int clearLogData(@Param("retainOfDays") int retainOfDays);
 }
