@@ -56,4 +56,17 @@ public class JwtTokenService {
         }
         return jwtTokenMapper.selectById(id);
     }
+
+    @Transactional
+    public int clearLogData(int retainOfDays) {
+        if (retainOfDays <= 0) {
+            return 0;
+        }
+        return jwtTokenMapper.clearLogData(retainOfDays);
+    }
+
+    @Transactional
+    public int refreshState() {
+        return jwtTokenMapper.refreshState();
+    }
 }
