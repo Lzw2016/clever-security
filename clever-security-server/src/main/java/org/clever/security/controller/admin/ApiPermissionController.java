@@ -29,9 +29,4 @@ public class ApiPermissionController {
     public ApiPermission updateApiPermission(@RequestBody @Validated ApiPermissionUpdateReq req) {
         return apiPermissionService.updateApiPermission(req);
     }
-
-    @DeleteMapping("/api_permission/del")
-    public ApiPermission delApiPermission(@RequestParam("id") Long id) {
-        return apiPermissionService.delApiPermission(id);
-    }
 }
