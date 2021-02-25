@@ -6,7 +6,7 @@ import org.clever.security.dto.request.admin.UiPermissionAddReq;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
 import org.clever.security.dto.request.admin.UiPermissionUpdateReq;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
-import org.clever.security.entity.Domain;
+import org.clever.security.entity.UiPermission;
 import org.clever.security.service.admin.UiPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -28,19 +28,17 @@ public class UiPermissionController {
     }
 
     @PostMapping("/ui_permission/add")
-    public Domain addUiPermission(@RequestBody @Validated UiPermissionAddReq req) {
+    public UiPermission addUiPermission(@RequestBody @Validated UiPermissionAddReq req) {
         return uiPermissionService.addUiPermission(req);
     }
 
-
     @PutMapping("/ui_permission/update")
-    public Domain updateUiPermission(@RequestBody @Validated UiPermissionUpdateReq req) {
+    public UiPermission updateUiPermission(@RequestBody @Validated UiPermissionUpdateReq req) {
         return uiPermissionService.updateUiPermission(req);
     }
 
-
     @DeleteMapping("/ui_permission/del")
-    public Domain delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
+    public UiPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
         return uiPermissionService.delUiPermission(domainId, id);
     }
 }

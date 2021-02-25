@@ -15,4 +15,11 @@ public class PermissionStrFlagUtils {
     public static String createStrFlag() {
         return String.format("%s-%s", AUTO_STR_FLAG, UUID.randomUUID().toString());
     }
+
+    /**
+     * 创建权限唯一字符串
+     */
+    public static String createStrFlag(String flag) {
+        return String.format("%s-%s", flag, UUID.randomUUID().toString());
+    }
 }

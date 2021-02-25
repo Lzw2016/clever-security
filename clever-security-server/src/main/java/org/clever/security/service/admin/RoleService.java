@@ -39,20 +39,6 @@ public class RoleService {
     }
 
     @Transactional
-    public Role delRole(Long domainId, Long id) {
-        Role role = roleMapper.getByDomainId(domainId, id);
-        int exists = roleMapper.deleteById(role.getId());
-        if (exists <= 0) {
-            throw new BusinessException("apiPermission不存在");
-        }
-        //删除role权限数据
-        userRoleMapper.deleteByRoleId(role.getId());
-        //删除用户-role
-        rolePermissionMapper.deleteByRoleId(role.getId());
-        return role;
-    }
-
-    @Transactional
     public Role addRole(RoleAddReq req) {
         Role role = BeanMapper.mapper(req, Role.class);
         role.setId(SnowFlake.SNOW_FLAKE.nextId());
@@ -73,5 +59,19 @@ public class RoleService {
         Role update = BeanMapper.mapper(req, Role.class);
         roleMapper.updateById(update);
         return roleMapper.selectById(update.getId());
+    }
+
+    @Transactional
+    public Role delRole(Long domainId, Long id) {
+        Role role = roleMapper.getByDomainId(domainId, id);
+        int exists = roleMapper.deleteById(role.getId());
+        if (exists <= 0) {
+            throw new BusinessException("apiPermission不存在");
+        }
+        //删除role权限数据
+        userRoleMapper.deleteByRoleId(role.getId());
+        //删除用户-role
+        rolePermissionMapper.deleteByRoleId(role.getId());
+        return role;
     }
 }
