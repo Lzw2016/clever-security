@@ -14,10 +14,6 @@ import org.clever.common.model.response.BaseResponse;
 @Data
 public class GetApiPermissionRes extends BaseResponse {
     /**
-     * 上级权限id
-     */
-    private Long parentId;
-    /**
      * 域id
      */
     private Long domainId;
@@ -30,9 +26,9 @@ public class GetApiPermissionRes extends BaseResponse {
      */
     private String title;
     /**
-     * 权限类型，1:API权限, 2:菜单权限，3:UI组件权限
+     * 权限类型，1:API权限，2:菜单权限，3:页面UI权限
      */
-    private Integer resourcesType;
+    private Integer permissionType;
     /**
      * 是否启用授权，0:不启用，1:启用
      */

@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class ApiPermissionUpdateReq extends BaseRequest {
     /**
-     * API权限id(系统自动生成且不会变化)
+     * api id(系统自动生成且不会变化)
      */
     @NotNull(message = "API权限id不能为空")
     private Long id;

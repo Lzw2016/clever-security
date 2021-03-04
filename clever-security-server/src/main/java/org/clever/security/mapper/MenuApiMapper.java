@@ -2,14 +2,15 @@ package org.clever.security.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import org.clever.security.entity.MenuPermissionBind;
+import org.clever.security.entity.MenuApi;
 import org.springframework.stereotype.Repository;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/02/14 23:12 <br/>
+ * 创建时间：2021/03/04 15:53 <br/>
  */
 @Repository
 @Mapper
-public interface MenuPermissionBindMapper extends BaseMapper<MenuPermissionBind> {
+public interface MenuApiMapper extends BaseMapper<MenuApi> {
+
 }

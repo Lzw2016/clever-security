@@ -1,32 +1,31 @@
 package org.clever.security.entity;
 
+import java.util.Date;
+import java.io.Serializable;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.util.Date;
-
 /**
- * 菜单权限绑定表(MenuPermissionBind)实体类
+ * 页面UI-API权限表(UiApi)实体类
  *
  * @author lizw
- * @since 2021-02-14 23:10:36
+ * @since 2021-03-04 15:59:26
  */
 @Data
-public class MenuPermissionBind implements Serializable {
-    private static final long serialVersionUID = 517218571407649098L;
+public class UiApi implements Serializable {
+    private static final long serialVersionUID = -15667015649415928L;
     /**
-     * 菜单id
+     * 页面ui id(ui_permission.id)
      */
     @TableId(type = IdType.INPUT)
-    private Long menuId;
+    private Long uiId;
 
     /**
-     * 权限id(API权限、UI权限)
+     * api id(api_permission.id)
      */
-    // @TableId(type = IdType.INPUT)
-    private Long permissionId;
+    private Long apiId;
 
     /**
      * 域id
@@ -42,5 +41,4 @@ public class MenuPermissionBind implements Serializable {
      * 更新时间
      */
     private Date updateAt;
-
 }

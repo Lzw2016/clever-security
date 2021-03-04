@@ -155,8 +155,8 @@ create table role_permission
 (
     role_id             bigint          not null                                                comment '角色id',
     permission_id       bigint          not null                                                comment '权限id',
-    permission_type     int             not null                                                comment '权限类型，1:API权限，2:菜单权限，3:页面UI权限',
     domain_id           bigint          not null                                                comment '域id',
+    permission_type     int             not null                                                comment '权限类型，1:API权限，2:菜单权限，3:页面UI权限',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
     primary key (role_id, permission_id)
@@ -176,7 +176,7 @@ create table api_permission
     id                  bigint          not null                                                comment 'api id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     permission_id       bigint          not null                                                comment '权限id',
-    title               varchar(255)    not null                                                comment '权限标题',
+    title               varchar(255)    not null                                                comment 'API标题',
     class_name          varchar(255)    not null        collate utf8_bin                        comment 'controller类名称',
     method_name         varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法名称',
     method_params       varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法参数签名',
@@ -236,14 +236,14 @@ create table ui_permission
     id                  bigint          not null                                                comment '页面ui id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     permission_id       bigint          not null                                                comment '权限id',
-    menu_permission_id  bigint          not null                                                comment '所属菜单id',
+    menu_id  bigint          not null                                                comment '所属菜单id(menu_permission.id)',
     ui_name             varchar(255)    not null                                                comment '页面UI组件名称',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
     primary key (id)
 ) comment = 'UI组件权限表(permission子表)';
 create index ui_permission_permission_id on ui_permission (permission_id);
-create index ui_permission_menu_permission_id on ui_permission (menu_permission_id);
+create index ui_permission_menu_id on ui_permission (menu_id);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/

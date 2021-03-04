@@ -78,10 +78,6 @@ public class MenuPermissionQueryRes extends QueryByPage {
      */
     private Date updateAt;
     /**
-     * 标题
-     */
-    private String title;
-    /**
      * 是否启用授权
      */
     private Integer enabled;
