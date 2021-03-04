@@ -95,11 +95,9 @@ create unique index role_domain_id_name on role (domain_id, name);
 create table permission
 (
     id                  bigint          not null                                                comment '权限id(系统自动生成且不会变化)',
-    parent_id           bigint          not null        default -1                              comment '上级权限id',
     domain_id           bigint          not null                                                comment '域id',
     str_flag            varchar(255)    not null                                                comment '权限唯一字符串标识',
-    title               varchar(255)    not null                                                comment '权限标题',
-    resources_type      int             not null        default 1                               comment '权限类型，1:API权限，2:菜单权限，3:UI组件权限',
+    permission_type     int             not null        default 1                               comment '权限类型，1:API权限，2:菜单权限，3:页面UI权限',
     enabled             int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
     description         varchar(1203)                                                           comment '权限说明',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
@@ -124,6 +122,7 @@ create table user_domain
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
     primary key (domain_id, uid)
 ) comment = '用户-域';
+create index user_domain_domain_id on user_domain (domain_id);
 create index user_domain_uid on user_domain (uid);
 /*------------------------------------------------------------------------------------------------------------------------
 
@@ -156,6 +155,7 @@ create table role_permission
 (
     role_id             bigint          not null                                                comment '角色id',
     permission_id       bigint          not null                                                comment '权限id',
+    permission_type     int             not null                                                comment '权限类型，1:API权限，2:菜单权限，3:页面UI权限',
     domain_id           bigint          not null                                                comment '域id',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
@@ -173,8 +173,10 @@ create index role_permission_permission_id on role_permission (permission_id);
 ==================================================================================================================== */
 create table api_permission
 (
-    id                  bigint          not null                                                comment 'API权限id(系统自动生成且不会变化)',
+    id                  bigint          not null                                                comment 'api id(系统自动生成且不会变化)',
+    domain_id           bigint          not null                                                comment '域id',
     permission_id       bigint          not null                                                comment '权限id',
+    title               varchar(255)    not null                                                comment '权限标题',
     class_name          varchar(255)    not null        collate utf8_bin                        comment 'controller类名称',
     method_name         varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法名称',
     method_params       varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法参数签名',
@@ -195,29 +197,12 @@ create index api_permission_api_path on api_permission (api_path);
 
 
 /* ====================================================================================================================
-    ui_permission -- UI组件权限表
-==================================================================================================================== */
-create table ui_permission
-(
-    id                  bigint          not null                                                comment 'ui组件权限id(系统自动生成且不会变化)',
-    permission_id       bigint          not null                                                comment '权限id',
-    ui_name             varchar(255)    not null                                                comment '页面UI组件名称',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = 'UI组件权限表(permission子表)';
-create index ui_permission_permission_id on ui_permission (permission_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
     menu_permission -- 菜单权限表
 ==================================================================================================================== */
 create table menu_permission
 (
-    id                  bigint          not null                                                comment '菜单权限id(系统自动生成且不会变化)',
+    id                  bigint          not null                                                comment '菜单id(系统自动生成且不会变化)',
+    domain_id           bigint          not null                                                comment '域id',
     permission_id       bigint          not null                                                comment '权限id',
     parent_id           bigint          not null        default -1                              comment '上级菜单id',
     name                varchar(63)     not null                                                comment '菜单名称',
@@ -244,19 +229,59 @@ create index menu_permission_sort on menu_permission (sort);
 
 
 /* ====================================================================================================================
-    menu_permission_bind -- 菜单权限绑定表
+    ui_permission -- 页面UI权限表
 ==================================================================================================================== */
-create table menu_permission_bind
+create table ui_permission
 (
-    menu_id             bigint          not null                                                comment '菜单id',
-    permission_id       bigint          not null                                                comment '权限id(API权限、UI权限)',
+    id                  bigint          not null                                                comment '页面ui id(系统自动生成且不会变化)',
+    domain_id           bigint          not null                                                comment '域id',
+    permission_id       bigint          not null                                                comment '权限id',
+    menu_permission_id  bigint          not null                                                comment '所属菜单id',
+    ui_name             varchar(255)    not null                                                comment '页面UI组件名称',
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (id)
+) comment = 'UI组件权限表(permission子表)';
+create index ui_permission_permission_id on ui_permission (permission_id);
+create index ui_permission_menu_permission_id on ui_permission (menu_permission_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    menu_api -- 菜单-API权限
+==================================================================================================================== */
+create table menu_api
+(
+    menu_id             bigint          not null                                                comment '菜单id(menu_permission.id)',
+    api_id              bigint          not null                                                comment 'api id(api_permission.id)',
     domain_id           bigint          not null                                                comment '域id',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (menu_id, permission_id)
-) comment = '菜单权限绑定表';
-create index menu_permission_bind_menu_id on menu_permission_bind (menu_id);
-create index menu_permission_bind_permission_id on menu_permission_bind (permission_id);
+    primary key (menu_id, api_id)
+) comment = '菜单-API权限表';
+create index menu_api_menu_id on menu_api (menu_id);
+create index menu_api_api_id on menu_api (api_id);
+/*------------------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------*/
+
+
+/* ====================================================================================================================
+    ui_api -- 页面UI-API权限
+==================================================================================================================== */
+create table ui_api
+(
+    ui_id               bigint          not null                                                comment '页面ui id(ui_permission.id)',
+    api_id              bigint          not null                                                comment 'api id(api_permission.id)',
+    domain_id           bigint          not null                                                comment '域id',
+    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
+    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
+    primary key (ui_id, api_id)
+) comment = '页面UI-API权限表';
+create index ui_api_ui_id on ui_api (ui_id);
+create index ui_api_api_id on ui_api (api_id);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/
@@ -462,173 +487,4 @@ create index user_security_context_uid on user_security_context (uid);
 /*------------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------------*/
-
-# ===========================================================================================================================
-# ===========================================================================================================================
-# ===========================================================================================================================
-
-/* ====================================================================================================================
-    api_permission -- API权限表
-==================================================================================================================== */
-create table api_permission
-(
-    id                  bigint          not null                                                comment 'api id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    str_flag            varchar(255)    not null                                                comment '权限唯一字符串标识',
-    enabled             int             not null        default 1                               comment '是否启用授权，0:不启用，1:启用',
-    title               varchar(255)    not null                                                comment '权限标题',
-    class_name          varchar(255)    not null        collate utf8_bin                        comment 'controller类名称',
-    method_name         varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法名称',
-    method_params       varchar(255)    not null        collate utf8_bin                        comment 'controller类的方法参数签名',
-    api_path            varchar(255)    not null                                                comment 'API接口地址(只用作显示使用)',
-    api_exist           int             not null        default 1                               comment 'API接口是否存在，0：不存在；1：存在',
-    description         varchar(1203)                                                           comment '权限说明',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = 'API权限表';
-create unique index api_permission_domain_id_str_flag on api_permission (domain_id, str_flag);
-create index api_permission_str_flagon on api_permission (str_flag);
-create index api_permission_permission_id on api_permission (permission_id);
-create index api_permission_class_name on api_permission (class_name);
-create index api_permission_method_name on api_permission (method_name);
-create index api_permission_method_params on api_permission (method_params);
-create index api_permission_api_path on api_permission (api_path);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    menu -- 菜单
-==================================================================================================================== */
-create table menu
-(
-    id                  bigint          not null                                                comment '菜单id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    parent_id           bigint          not null        default -1                              comment '上级菜单id',
-    str_flag            varchar(255)    not null                                                comment '菜单唯一字符串标识',
-    name                varchar(63)     not null                                                comment '菜单名称',
-    icon                varchar(127)                    collate utf8_bin                        comment '菜单图标',
-    path                varchar(255)    not null        collate utf8_bin                        comment '菜单路径',
-    page_path           varchar(255)                                                            comment '页面路径',
-    hide_menu           int             not null        default 0                               comment '隐藏当前菜单和子菜单，0:不隐藏(显示)，1:隐藏',
-    hide_children_menu  int             not null        default 0                               comment '隐藏子菜单，0:不隐藏(显示)，1:隐藏',
-    ext_config          varchar(20479)                                                          comment '菜单扩展配置',
-    sort                int             not null        default 0                               comment '菜单排序',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = '菜单表';
-create unique index menu_domain_id_str_flag on menu (domain_id, str_flag);
-create index menu_parent_id on menu (parent_id);
-create index menu_str_flag on menu (str_flag);
-create index menu_name on menu (name);
-create index menu_path on menu (path);
-create index menu_page_path on menu (page_path);
-create index menu_sort on menu (sort);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    page_ui -- 页面UI
-==================================================================================================================== */
-create table page_ui
-(
-    id                  bigint          not null                                                comment '页面ui id(系统自动生成且不会变化)',
-    domain_id           bigint          not null                                                comment '域id',
-    menu_id             bigint          not null                                                comment '所属菜单id',
-    str_flag            varchar(255)    not null                                                comment '页面ui唯一字符串标识',
-    page_ui_name        varchar(255)    not null                                                comment '页面ui组件名称',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (id)
-) comment = '页面UI';
-create index page_ui_menu_id on page_ui (menu_id);
-create index page_ui_str_flag on page_ui (str_flag);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    role_menu -- 角色-菜单
-==================================================================================================================== */
-create table role_menu
-(
-    role_id             bigint          not null                                                comment '角色id',
-    menu_id             bigint          not null                                                comment '菜单id',
-    domain_id           bigint          not null                                                comment '域id',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (role_id, menu_id)
-) comment = '角色-菜单';
-create index role_menu_role_id on role_menu (role_id);
-create index role_menu_menu_id on role_menu (menu_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    menu_api -- 菜单-API权限
-==================================================================================================================== */
-create table menu_api
-(
-    menu_id             bigint          not null                                                comment '菜单id',
-    api_id              bigint          not null                                                comment 'api id',
-    domain_id           bigint          not null                                                comment '域id',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (menu_id, api_id)
-) comment = '菜单-API权限表';
-create index menu_api_menu_id on menu_api (menu_id);
-create index menu_api_api_id on menu_api (api_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    ui_api -- 页面UI-API权限
-==================================================================================================================== */
-create table ui_api
-(
-    ui_id               bigint          not null                                                comment '页面ui id',
-    api_id              bigint          not null                                                comment 'api id',
-    domain_id           bigint          not null                                                comment '域id',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (ui_id, api_id)
-) comment = '页面UI-API权限表';
-create index ui_api_ui_id on ui_api (ui_id);
-create index ui_api_api_id on ui_api (api_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-/* ====================================================================================================================
-    role_api -- 角色-API权限
-==================================================================================================================== */
-create table role_api
-(
-    role_id             bigint          not null                                                comment '角色id',
-    api_id              bigint          not null                                                comment 'api id',
-    domain_id           bigint          not null                                                comment '域id',
-    create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
-    update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
-    primary key (role_id, api_id)
-) comment = '角色-API权限表';
-create index role_api_role_id on role_api (role_id);
-create index role_api_api_id on role_api (api_id);
-/*------------------------------------------------------------------------------------------------------------------------
-
---------------------------------------------------------------------------------------------------------------------------*/
-
-
-
-
 
