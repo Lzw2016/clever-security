@@ -3,7 +3,6 @@ package org.clever.security.task;
 import lombok.extern.slf4j.Slf4j;
 import org.clever.security.service.admin.JwtTokenService;
 import org.clever.security.service.admin.ScanCodeLoginService;
-import org.clever.security.service.admin.ValidateCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,6 @@ import org.springframework.stereotype.Component;
 public class RefreshStateTask {
     @Autowired
     private JwtTokenService jwtTokenService;
-    @Autowired
-    private ValidateCodeService validateCodeService;
     @Autowired
     private ScanCodeLoginService scanCodeLoginService;
 

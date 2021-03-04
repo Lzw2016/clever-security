@@ -34,14 +34,4 @@ public class ApiPermissionService {
         }
         return apiPermissionMapper.selectById(apiPermission.getId());
     }
-
-    @Transactional
-    public ApiPermission delApiPermission(Long id) {
-        ApiPermission apiPermission = apiPermissionMapper.selectById(id);
-        int exists = apiPermissionMapper.deleteById(apiPermission.getId());
-        if (exists <= 0) {
-            throw new BusinessException("apiPermission不存在");
-        }
-        return apiPermission;
-    }
 }

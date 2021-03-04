@@ -10,7 +10,7 @@
     </select>
 
     <select id="pageQuery" resultType="org.clever.security.dto.response.admin.RoleQueryRes">
-        select a.*,b.name from role a
+        select a.*,b.name as domainName from role a
         left join domain b on a.domain_id = b.id
         <where>
             <if test="query.id!=null">
