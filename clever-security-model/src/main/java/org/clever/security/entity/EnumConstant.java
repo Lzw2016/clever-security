@@ -43,15 +43,15 @@ public interface EnumConstant {
     /**
      * 权限类型，1:API权限
      */
-    int Permission_ResourcesType_1 = 1;
+    int Permission_PermissionType_1 = 1;
     /**
      * 权限类型，2:菜单权限
      */
-    int Permission_ResourcesType_2 = 2;
+    int Permission_PermissionType_2 = 2;
     /**
-     * 权限类型，3:UI组件权限
+     * 权限类型，3:页面UI权限
      */
-    int Permission_ResourcesType_3 = 3;
+    int Permission_PermissionType_3 = 3;
     /**
      * 是否启用授权，0:不启用
      */

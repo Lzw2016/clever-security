@@ -17,7 +17,6 @@
         a.sort as menuSort,
         a.create_at,
         a.update_at,
-        b.title,
         b.enabled,
         b.description,
         c.name as domainName
@@ -34,7 +33,7 @@
             <if test="query.name!=null">
                 and a.name like concat('%',#{query.name},'%')
             </if>
-            and b.resources_type = 2
+            and b.permission_type = 2
         </where>
         order by a.sort desc
     </select>

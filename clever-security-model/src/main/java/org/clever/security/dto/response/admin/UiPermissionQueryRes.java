@@ -18,27 +18,29 @@ public class UiPermissionQueryRes extends QueryByPage {
      */
     private Long id;
     /**
+     * 域id
+     */
+    private Long domainId;
+    /**
      * 权限id
      */
     private Long permissionId;
     /**
+     * 所属菜单id
+     */
+    private Long menuPermissionId;
+    /**
      * 页面UI组件名称
      */
     private String uiName;
-
     /**
      * 创建时间
      */
     private Date createAt;
-
     /**
      * 更新时间
      */
     private Date updateAt;
-    /**
-     * 标题
-     */
-    private String title;
     /**
      * 是否启用授权
      */

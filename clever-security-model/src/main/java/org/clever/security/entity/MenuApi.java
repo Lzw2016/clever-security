@@ -8,35 +8,29 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 角色-权限(RolePermission)实体类
+ * 菜单-API权限表(MenuApi)实体类
  *
  * @author lizw
- * @since 2020-11-28 19:47:41
+ * @since 2021-03-04 15:52:53
  */
 @Data
-public class RolePermission implements Serializable {
-    private static final long serialVersionUID = -52342937828874056L;
+public class MenuApi implements Serializable {
+    private static final long serialVersionUID = 409939559058448311L;
     /**
-     * 角色id
+     * 菜单id(menu_permission.id)
      */
     @TableId(type = IdType.INPUT)
-    private Long roleId;
+    private Long menuId;
 
     /**
-     * 权限id
+     * api id(api_permission.id)
      */
-    // @TableId(type = IdType.INPUT)
-    private Long permissionId;
+    private Long apiId;
 
     /**
      * 域id
      */
     private Long domainId;
-
-    /**
-     * 权限类型，1:API权限，2:菜单权限，3:页面UI权限
-     */
-    private Integer permissionType;
 
     /**
      * 创建时间

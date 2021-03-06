@@ -4,10 +4,9 @@
 <mapper namespace="org.clever.security.mapper.ApiPermissionMapper">
     <select id="getByTargetMethod" resultType="org.clever.security.dto.response.GetApiPermissionRes">
         select b.id,
-               b.parent_id,
                b.domain_id,
                b.str_flag,
-               b.resources_type,
+               b.permission_type,
                b.enabled,
                a.class_name,
                a.method_name,
@@ -24,21 +23,20 @@
     <select id="findApiPermissionBydDomainId" resultType="org.clever.security.model.auth.ApiPermissionEntity">
         select
             a.id as permission_id,
-            a.parent_id as parent_permission_id,
             a.domain_id,
             a.str_flag,
-            a.title,
-            a.resources_type,
+            a.permission_type,
             a.enabled,
             a.description,
             b.id as api_permission_id,
+            b.title,
             b.class_name,
             b.method_name,
             b.method_params,
             b.api_path,
             b.api_exist
         from permission a left join api_permission b on (a.id = b.permission_id)
-        where a.resources_type=1 and domain_id=#{domainId}
+        where a.permission_type=1 and a.domain_id=#{domainId} and b.domain_id=#{domainId}
     </select>
 
     <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
@@ -67,7 +65,7 @@
             <if test="query.createAtEnd!=null">
                 <![CDATA[ and a.create_at<=#{query.createAtEnd} ]]>
             </if>
-            and b.resources_type = 1
+            and b.permission_type = 1
         </where>
     </select>
 </mapper>

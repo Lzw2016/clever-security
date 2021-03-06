@@ -16,11 +16,6 @@ public class ApiPermissionEntity implements Serializable {
     private Long permissionId;
 
     /**
-     * 上级权限id
-     */
-    private Long parentPermissionId;
-
-    /**
      * 域id
      */
     private Long domainId;
@@ -31,14 +26,9 @@ public class ApiPermissionEntity implements Serializable {
     private String strFlag;
 
     /**
-     * 权限标题
+     * 权限类型，1:API权限，2:菜单权限，3:页面UI权限
      */
-    private String title;
-
-    /**
-     * 权限类型，1:API权限, 2:菜单权限，3:UI组件权限
-     */
-    private Integer resourcesType;
+    private Integer permissionType;
 
     /**
      * 是否启用授权，0:不启用，1:启用
@@ -51,9 +41,14 @@ public class ApiPermissionEntity implements Serializable {
     private String description;
 
     /**
-     * API权限id(系统自动生成且不会变化)
+     * api id(系统自动生成且不会变化)
      */
     private Long apiPermissionId;
+
+    /**
+     * API标题
+     */
+    private String title;
 
     /**
      * controller类名称

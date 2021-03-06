@@ -5,7 +5,6 @@
     <select id="pageQuery" resultType="org.clever.security.dto.response.admin.UiPermissionQueryRes">
         select
         a.*,
-        b.title,
         b.enabled,
         b.description,
         c.name as domainName
@@ -22,7 +21,7 @@
             <if test="query.uiName!=null">
                 and a.ui_name like concat('%',#{query.uiName},'%')
             </if>
-            and b.resources_type = 3
+            and b.permission_type = 3
         </where>
     </select>
 </mapper>

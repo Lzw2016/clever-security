@@ -147,16 +147,16 @@ public class AuthSupportService implements AuthSupportClient {
     }
 
     /**
-     * 保存Web权限
+     * 保存API权限
      */
     public void saveApiPermission(Long domainId, ApiPermissionModel apiPermissionModel) {
         Permission permission = BeanMapper.mapper(apiPermissionModel, Permission.class);
         permission.setId(SnowFlake.SNOW_FLAKE.nextId());
-        permission.setParentId(-1L);
         permission.setDomainId(domainId);
-        permission.setResourcesType(EnumConstant.Permission_ResourcesType_1);
+        permission.setPermissionType(EnumConstant.Permission_PermissionType_1);
         ApiPermission apiPermission = BeanMapper.mapper(apiPermissionModel, ApiPermission.class);
         apiPermission.setId(SnowFlake.SNOW_FLAKE.nextId());
+        apiPermission.setDomainId(domainId);
         apiPermission.setPermissionId(permission.getId());
         apiPermission.setApiExist(EnumConstant.ApiPermission_ApiExist_1);
         permissionMapper.insert(permission);
@@ -234,13 +234,13 @@ public class AuthSupportService implements AuthSupportClient {
                 updatePermissionFlag = true;
                 updatePermission.setStrFlag(permission.getStrFlag());
             }
-            if (!Objects.equals(permission.getApiPath(), dbPermission.getApiPath())) {
+            if (!Objects.equals(permission.getApiPath(), dbPermission.getApiPath()) || !Objects.equals(permission.getTitle(), dbPermission.getTitle())) {
                 updateApiPermissionFlag = true;
                 updateApiPermission.setApiPath(permission.getApiPath());
+                updateApiPermission.setTitle(permission.getTitle());
             }
-            if (!Objects.equals(permission.getTitle(), dbPermission.getTitle()) || !Objects.equals(permission.getDescription(), dbPermission.getDescription())) {
+            if (!Objects.equals(permission.getDescription(), dbPermission.getDescription())) {
                 updatePermissionFlag = true;
-                updatePermission.setTitle(permission.getTitle());
                 updatePermission.setDescription(permission.getDescription());
             }
             if (updatePermissionFlag) {

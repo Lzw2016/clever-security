@@ -1,5 +1,7 @@
 package org.clever.security.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,9 +17,15 @@ import java.util.Date;
 public class MenuPermission implements Serializable {
     private static final long serialVersionUID = -81883307472903045L;
     /**
-     * 菜单权限id(系统自动生成且不会变化)
+     * 菜单id(系统自动生成且不会变化)
      */
+    @TableId(type = IdType.INPUT)
     private Long id;
+
+    /**
+     * 域id
+     */
+    private Long domainId;
 
     /**
      * 权限id
@@ -78,5 +86,4 @@ public class MenuPermission implements Serializable {
      * 更新时间
      */
     private Date updateAt;
-
 }

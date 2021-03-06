@@ -17,15 +17,25 @@ import java.util.Date;
 public class ApiPermission implements Serializable {
     private static final long serialVersionUID = 246991777557100991L;
     /**
-     * API权限id(系统自动生成且不会变化)
+     * api id(系统自动生成且不会变化)
      */
     @TableId(type = IdType.INPUT)
     private Long id;
 
     /**
+     * 域id
+     */
+    private Long domainId;
+
+    /**
      * 权限id
      */
     private Long permissionId;
+
+    /**
+     * API标题
+     */
+    private String title;
 
     /**
      * controller类名称
