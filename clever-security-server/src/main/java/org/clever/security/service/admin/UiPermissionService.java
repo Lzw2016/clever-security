@@ -34,24 +34,24 @@ public class UiPermissionService {
         return req.result(uiPermissionMapper.pageQuery(req));
     }
 
-    @Transactional
-    public UiPermission addUiPermission(UiPermissionAddReq req) {
-        String strFlag = PermissionStrFlagUtils.createStrFlag("[ui]");
-        while (permissionMapper.strFlagExist(strFlag) > 0) {
-            strFlag = PermissionStrFlagUtils.createStrFlag("[ui]");
-        }
-        Permission permission = BeanMapper.mapper(req, Permission.class);
-        permission.setId(SnowFlake.SNOW_FLAKE.nextId());
-        permission.setStrFlag(strFlag);
-        permission.setParentId(-1L);
-        permission.setDomainId(req.getDomainId());
-        permission.setResourcesType(EnumConstant.Permission_ResourcesType_3);
-        permissionMapper.insert(permission);
-        UiPermission uiPermission = BeanMapper.mapper(req, UiPermission.class);
-        uiPermission.setPermissionId(permission.getId());
-        uiPermissionMapper.insert(uiPermission);
-        return uiPermissionMapper.selectById(uiPermission.getId());
-    }
+//    @Transactional
+//    public UiPermission addUiPermission(UiPermissionAddReq req) {
+//        String strFlag = PermissionStrFlagUtils.createStrFlag("[ui]");
+//        while (permissionMapper.strFlagExist(strFlag) > 0) {
+//            strFlag = PermissionStrFlagUtils.createStrFlag("[ui]");
+//        }
+//        Permission permission = BeanMapper.mapper(req, Permission.class);
+//        permission.setId(SnowFlake.SNOW_FLAKE.nextId());
+//        permission.setStrFlag(strFlag);
+//        permission.setParentId(-1L);
+//        permission.setDomainId(req.getDomainId());
+//        permission.setResourcesType(EnumConstant.Permission_ResourcesType_3);
+//        permissionMapper.insert(permission);
+//        UiPermission uiPermission = BeanMapper.mapper(req, UiPermission.class);
+//        uiPermission.setPermissionId(permission.getId());
+//        uiPermissionMapper.insert(uiPermission);
+//        return uiPermissionMapper.selectById(uiPermission.getId());
+//    }
 
     @Transactional
     public UiPermission updateUiPermission(UiPermissionUpdateReq req) {

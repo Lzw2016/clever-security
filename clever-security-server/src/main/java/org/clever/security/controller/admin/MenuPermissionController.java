@@ -28,18 +28,18 @@ public class MenuPermissionController {
         return menuPermissionService.pageQuery(req);
     }
 
-    @PostMapping("/ui_permission/add")
-    public MenuPermission addUiPermission(@RequestBody @Validated MenuPermissionAddReq req) {
-        return menuPermissionService.addUiPermission(req);
-    }
+//    @PostMapping("/ui_permission/add")
+//    public MenuPermission addUiPermission(@RequestBody @Validated MenuPermissionAddReq req) {
+//        return menuPermissionService.addUiPermission(req);
+//    }
 
     @PutMapping("/ui_permission/update")
     public MenuPermission updateUiPermission(@RequestBody @Validated MenuPermissionUpdateReq req) {
         return menuPermissionService.updateUiPermission(req);
     }
 
-    @DeleteMapping("/ui_permission/del")
-    public MenuPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
-        return menuPermissionService.delUiPermission(domainId, id);
-    }
+//    @DeleteMapping("/ui_permission/del")
+//    public MenuPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
+//        return menuPermissionService.delUiPermission(domainId, id);
+//    }
 }

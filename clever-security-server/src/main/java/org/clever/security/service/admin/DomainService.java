@@ -43,6 +43,10 @@ public class DomainService {
         return req.result(domainMapper.pageQuery(req));
     }
 
+    public Domain domainDetail(Long id) {
+        return domainMapper.selectById(id);
+    }
+
     @Transactional
     public Domain addDomain(DomainAddReq req) {
         Domain domain = BeanMapper.mapper(req, Domain.class);

@@ -32,6 +32,11 @@ public class DomainController {
         return domainService.pageQuery(req);
     }
 
+    @GetMapping("/domain/detail")
+    public Domain domainDetail(@RequestParam("id") Long id) {
+        return domainService.domainDetail(id);
+    }
+
     @PostMapping("/domain/add")
     public Domain addDomain(@RequestBody @Validated DomainAddReq req) {
         return domainService.addDomain(req);

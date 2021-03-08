@@ -2,7 +2,7 @@ package org.clever.security.dto.request.admin;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.clever.common.model.request.QueryByPage;
+import org.clever.common.model.request.BaseRequest;
 import org.clever.common.validation.ValidIntegerStatus;
 
 import javax.validation.constraints.NotBlank;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuPermissionAddReq extends QueryByPage {
+public class MenuPermissionAddReq extends BaseRequest {
     /**
      * 域id
      */

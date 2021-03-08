@@ -27,15 +27,15 @@ public class UiPermissionController {
         return uiPermissionService.pageQuery(req);
     }
 
-    @PostMapping("/ui_permission/add")
-    public UiPermission addUiPermission(@RequestBody @Validated UiPermissionAddReq req) {
-        return uiPermissionService.addUiPermission(req);
-    }
+//    @PostMapping("/ui_permission/add")
+//    public UiPermission addUiPermission(@RequestBody @Validated UiPermissionAddReq req) {
+//        return uiPermissionService.addUiPermission(req);
+//    }
 
-    @PutMapping("/ui_permission/update")
-    public UiPermission updateUiPermission(@RequestBody @Validated UiPermissionUpdateReq req) {
-        return uiPermissionService.updateUiPermission(req);
-    }
+//    @PutMapping("/ui_permission/update")
+//    public UiPermission updateUiPermission(@RequestBody @Validated UiPermissionUpdateReq req) {
+//        return uiPermissionService.updateUiPermission(req);
+//    }
 
     @DeleteMapping("/ui_permission/del")
     public UiPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {

@@ -2,12 +2,11 @@ package org.clever.security.dto.request.admin;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.clever.common.model.request.QueryByPage;
+import org.clever.common.model.request.BaseRequest;
 import org.clever.common.validation.ValidIntegerStatus;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * 作者：ymx <br/>
@@ -15,7 +14,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuPermissionUpdateReq extends QueryByPage {
+public class MenuPermissionUpdateReq extends BaseRequest {
     /**
      * 菜单权限id(系统自动生成且不会变化)
      */
