@@ -25,6 +25,7 @@ public class UserService {
     private UserMapper userMapper;
 
     public IPage<User> pageQuery(UserQueryReq req) {
+
         return req.result(userMapper.pageQuery(req));
     }
 

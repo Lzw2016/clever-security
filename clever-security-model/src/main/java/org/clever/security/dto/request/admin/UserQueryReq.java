@@ -19,9 +19,10 @@ public class UserQueryReq extends QueryByPage {
     private Long domainId;
 
     /**
-     * 关键字搜索
+     * uid、login_name、telephone、email、nickname
      */
-    private String keyword;
+    private String userSearchKey;
+
 
     /**
      * 创建时间 - 开始
