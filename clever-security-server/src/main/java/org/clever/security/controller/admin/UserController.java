@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.clever.security.dto.request.admin.UserAddReq;
 import org.clever.security.dto.request.admin.UserQueryReq;
 import org.clever.security.dto.request.admin.UserUpdateReq;
+import org.clever.security.dto.response.admin.UserQueryRes;
 import org.clever.security.entity.User;
 import org.clever.security.service.admin.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/user/page_query")
-    public IPage<User> pageQuery(UserQueryReq req) {
+    public IPage<UserQueryRes> pageQuery(UserQueryReq req) {
         return userService.pageQuery(req);
     }
 

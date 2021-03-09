@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
 <mapper namespace="org.clever.security.mapper.UserMapper">
-    <select id="pageQuery" resultType="org.clever.security.entity.User">
+    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.UserQueryRes">
         select
         a.uid,
         a.login_name,
@@ -16,18 +16,37 @@
         a.from_source,
         a.description,
         a.create_at,
-        a.update_at
+        a.update_at,
+        c.name as domain_name
         from user a
         left join user_domain b on (a.uid = b.uid)
+        left join domain c on (b.domain_id = c.id)
         <where>
             <if test="query.domainId!=null">
                 and b.domain_id=#{query.domainId}
             </if>
-            <if test="query.keyword!=null and query.keyword!=''">
-                and (a.login_name like concat('%', #{query.keyword}, '%')
-                or a.telephone like concat('%', #{query.keyword}, '%')
-                or a.email like concat('%', #{query.keyword}, '%')
-                or a.nickname like concat('%', #{query.keyword}, '%'))
+            <if test="query.userSearchKey!=null and query.userSearchKey!=''">
+                and (
+                a.login_name like concat('%', #{query.userSearchKey}, '%')
+                or a.telephone like concat('%', #{query.userSearchKey}, '%')
+                or a.email like concat('%', #{query.userSearchKey}, '%')
+                or a.nickname like concat('%', #{query.userSearchKey}, '%')
+                )
+            </if>
+            <if test="query.enabled!=null">
+                and a.enabled=#{query.enabled}
+            </if>
+            <if test="query.registerChannel!=null">
+                and a.register_channel=#{query.registerChannel}
+            </if>
+            <if test="query.fromSource!=null">
+                and a.from_source=#{query.fromSource}
+            </if>
+            <if test="query.expiredTimeStart!=null">
+                and a.expired_time>=#{query.expiredTimeStart}
+            </if>
+            <if test="query.expiredTimeEnd!=null">
+                <![CDATA[ and a.expired_time<=#{query.expiredTimeEnd} ]]>
             </if>
             <if test="query.createAtStart!=null">
                 and a.create_at>=#{query.createAtStart}

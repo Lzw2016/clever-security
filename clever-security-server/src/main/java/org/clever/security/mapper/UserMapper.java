@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.request.admin.UserQueryReq;
+import org.clever.security.dto.response.admin.UserQueryRes;
 import org.clever.security.entity.User;
 import org.springframework.stereotype.Repository;
 
@@ -32,5 +33,5 @@ public interface UserMapper extends BaseMapper<User> {
     @Select("select count(1) from user where uid=#{uid} limit 1")
     int existsUid(@Param("uid") String uid);
 
-    List<User> pageQuery(@Param("query") UserQueryReq query);
+    List<UserQueryRes> pageQuery(@Param("query") UserQueryReq query);
 }

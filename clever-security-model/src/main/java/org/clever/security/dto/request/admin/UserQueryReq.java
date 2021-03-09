@@ -23,6 +23,30 @@ public class UserQueryReq extends QueryByPage {
      */
     private String userSearchKey;
 
+    /**
+     * 是否启用
+     */
+    private Integer enabled;
+
+    /**
+     * 用户注册渠道
+     */
+    private Integer registerChannel;
+
+    /**
+     * 用户来源
+     */
+    private Integer fromSource;
+
+    /**
+     * 帐号过期时间 - 开始
+     */
+    private Date expiredTimeStart;
+
+    /**
+     * 帐号过期时间 - 结束
+     */
+    private Date expiredTimeEnd;
 
     /**
      * 创建时间 - 开始
