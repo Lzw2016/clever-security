@@ -57,7 +57,7 @@ public class UserNameUtils {
     public static String generateLoginName() {
         final int minLength = 6;
         final int maxLength = 12;
-        int length = minLength + new Double(Math.random() * (maxLength - minLength + 1)).intValue();
+        int length = minLength + (int) (Math.random() * (maxLength - minLength + 1));
         String uid = getRandString(length);
         while (true) {
             boolean exists = USER_MAPPER.existsUid(uid) > 0;
