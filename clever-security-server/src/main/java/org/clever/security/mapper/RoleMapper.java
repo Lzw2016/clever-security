@@ -21,7 +21,7 @@ import java.util.Set;
 public interface RoleMapper extends BaseMapper<Role> {
     Set<String> findRolesByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 
-    List<RoleQueryRes> pageQuery(@Param("query") RoleQueryReq req);
+    List<RoleQueryRes> pageQuery(@Param("query") RoleQueryReq query);
 
     @Select("select * from role where domain_id=#{domainId} and id=#{id} limit 1")
     Role getByDomainId(@Param("domainId") Long domainId, @Param("id") Long id);

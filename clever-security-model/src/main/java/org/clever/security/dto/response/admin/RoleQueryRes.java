@@ -47,6 +47,9 @@ public class RoleQueryRes extends QueryByPage {
      * 更新时间
      */
     private Date updateAt;
+
+    // --------------------------------------------------------------------------------------------------------- domain
+
     /**
      * 域名称
      */

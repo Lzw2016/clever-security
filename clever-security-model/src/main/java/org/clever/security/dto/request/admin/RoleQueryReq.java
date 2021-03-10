@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.QueryByPage;
 
+import java.util.Date;
+
 /**
  * 作者：ymx <br/>
  * 创建时间：2021/02/16 14:55 <br/>
@@ -15,6 +17,7 @@ public class RoleQueryReq extends QueryByPage {
      * id
      */
     private Long id;
+
     /**
      * 域id
      */
@@ -24,8 +27,19 @@ public class RoleQueryReq extends QueryByPage {
      * 用户账号关键字
      */
     private String name;
+
     /**
      * 是否启用
      */
     private Integer enabled;
+
+    /**
+     * 创建时间 - 开始
+     */
+    private Date createAtStart;
+
+    /**
+     * 创建时间 - 结束
+     */
+    private Date createAtEnd;
 }

@@ -3,6 +3,8 @@ package org.clever.security.dto.request.admin;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.BaseRequest;
+import org.clever.common.validation.ValidIntegerStatus;
+import org.clever.security.entity.EnumConstant;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -33,8 +35,12 @@ public class RoleUpdateReq extends BaseRequest {
     private String name;
 
     /**
-     * 是否启用
+     * 是否启用，0:不启用，1:启用
      */
+    @ValidIntegerStatus(
+            value = {EnumConstant.Role_Enabled_0, EnumConstant.Role_Enabled_1},
+            message = "是否启用值无效"
+    )
     private Integer enabled;
 
     /**

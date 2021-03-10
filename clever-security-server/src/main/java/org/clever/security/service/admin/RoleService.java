@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.clever.common.exception.BusinessException;
 import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.mapper.BeanMapper;
+import org.clever.security.dto.request.admin.DomainQueryReq;
 import org.clever.security.dto.request.admin.RoleAddReq;
 import org.clever.security.dto.request.admin.RoleQueryReq;
 import org.clever.security.dto.request.admin.RoleUpdateReq;
 import org.clever.security.dto.response.admin.RoleQueryRes;
-import org.clever.security.entity.Domain;
 import org.clever.security.entity.Role;
 import org.clever.security.mapper.DomainMapper;
 import org.clever.security.mapper.RoleMapper;
@@ -35,6 +35,17 @@ public class RoleService {
     private DomainMapper domainMapper;
 
     public IPage<RoleQueryRes> pageQuery(RoleQueryReq req) {
+        req.addOrderFieldMapping("id", "a.id");
+        req.addOrderFieldMapping("domainId", "a.domain_id");
+        req.addOrderFieldMapping("name", "a.name");
+        req.addOrderFieldMapping("enabled", "a.enabled");
+        req.addOrderFieldMapping("description", "a.description");
+        req.addOrderFieldMapping("createAt", "a.create_at");
+        req.addOrderFieldMapping("updateAt", "a.update_at");
+        req.addOrderFieldMapping("domainName", "b.name");
+        if (req.getOrderFields().isEmpty()) {
+            req.addOrderField("createAt", DomainQueryReq.DESC);
+        }
         return req.result(roleMapper.pageQuery(req));
     }
 
@@ -72,6 +83,7 @@ public class RoleService {
         userRoleMapper.deleteByRoleId(role.getId());
         //删除用户-role
         rolePermissionMapper.deleteByRoleId(role.getId());
+        // TODO 删除角色关联数据
         return role;
     }
 }
