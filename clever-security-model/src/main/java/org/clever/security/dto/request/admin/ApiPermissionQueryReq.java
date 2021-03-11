@@ -22,14 +22,29 @@ public class ApiPermissionQueryReq extends QueryByPage {
      */
     private Long domainId;
     /**
-     * 关键字搜索
+     * API标题
      */
-   private String keyword;
-
+    private String title;
     /**
-     * API接口是否存在，0：不存在；1：存在
+     * controller类名称
+     */
+    private String className;
+    /**
+     * controller类的方法名称
+     */
+   private String methodName;
+    /**
+     * API接口地址(只用作显示使用)
+     */
+    private String apiPath;
+    /**
+     * API接口是否存在
      */
    private String apiExist;
+    /**
+     * 是否启用授权，0:不启用，1:启用
+     */
+    private Integer enabled;
     /**
      * 创建时间 - 开始
      */

@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.clever.security.dto.request.admin.ApiPermissionQueryReq;
 import org.clever.security.dto.response.GetApiPermissionRes;
+import org.clever.security.dto.response.admin.ApiPermissionQueryRes;
 import org.clever.security.entity.ApiPermission;
 import org.clever.security.model.auth.ApiPermissionEntity;
 import org.springframework.stereotype.Repository;
@@ -26,5 +27,5 @@ public interface ApiPermissionMapper extends BaseMapper<ApiPermission> {
 
     List<ApiPermissionEntity> findApiPermissionBydDomainId(@Param("domainId") Long domainId);
 
-    List<ApiPermission> pageQuery(@Param("query") ApiPermissionQueryReq req);
+    List<ApiPermissionQueryRes> pageQuery(@Param("query") ApiPermissionQueryReq req);
 }

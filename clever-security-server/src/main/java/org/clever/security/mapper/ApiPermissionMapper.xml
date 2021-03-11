@@ -39,25 +39,42 @@
         where a.permission_type=1 and a.domain_id=#{domainId} and b.domain_id=#{domainId}
     </select>
 
-    <select id="pageQuery" resultType="org.clever.security.entity.ApiPermission">
-        select a.* from api_permission a
+    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.ApiPermissionQueryRes">
+        select
+        a.*,
+        b.str_flag,
+        b.permission_type,
+        b.enabled,
+        b.description,
+        c.name as domain_name
+        from api_permission a
         left join permission b on (a.permission_id=b.id)
         left join domain c on (b.domain_id=c.id)
         <where>
+            and b.permission_type = 1
             <if test="query.id!=null">
                 and a.id = #{query.id}
             </if>
             <if test="query.domainId!=null">
                 and b.domain_id = #{query.domainId}
             </if>
-            <if test="query.keyword!=null and query.keyword!=''">
-                and (a.class_name like concat('%', #{query.keyword}, '%')
-                or a.method_name like concat('%', #{query.keyword}, '%')
-                or a.method_params like concat('%', #{query.keyword}, '%')
-                or a.api_path like concat('%', #{query.keyword}, '%'))
+            <if test="query.title!=null and query.title!=''">
+                and a.title like concat('%', #{query.title}, '%')
+            </if>
+            <if test="query.className!=null and query.className!=''">
+                and a.class_name like concat('%', #{query.className}, '%')
+            </if>
+            <if test="query.methodName!=null and query.methodName!=''">
+                and a.method_name like concat('%', #{query.methodName}, '%')
+            </if>
+            <if test="query.apiPath!=null and query.apiPath!=''">
+                and a.api_path like concat('%', #{query.apiPath}, '%')
             </if>
             <if test="query.apiExist!=null">
                 and a.api_exist = #{query.apiExist}
+            </if>
+            <if test="query.enabled!=null">
+                and b.enabled = #{query.enabled}
             </if>
             <if test="query.createAtStart!=null">
                 and a.create_at>=#{query.createAtStart}
@@ -65,7 +82,6 @@
             <if test="query.createAtEnd!=null">
                 <![CDATA[ and a.create_at<=#{query.createAtEnd} ]]>
             </if>
-            and b.permission_type = 1
         </where>
     </select>
 </mapper>
