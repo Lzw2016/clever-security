@@ -236,7 +236,7 @@ create table ui_permission
     id                  bigint          not null                                                comment '页面ui id(系统自动生成且不会变化)',
     domain_id           bigint          not null                                                comment '域id',
     permission_id       bigint          not null                                                comment '权限id',
-    menu_id  bigint          not null                                                comment '所属菜单id(menu_permission.id)',
+    menu_id             bigint          not null                                                comment '所属菜单id(menu_permission.id)',
     ui_name             varchar(255)    not null                                                comment '页面UI组件名称',
     create_at           datetime(3)     not null        default current_timestamp(3)            comment '创建时间',
     update_at           datetime(3)                     on update current_timestamp(3)          comment '更新时间',
