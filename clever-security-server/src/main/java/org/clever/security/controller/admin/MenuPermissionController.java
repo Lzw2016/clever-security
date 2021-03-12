@@ -6,12 +6,14 @@ import org.clever.security.dto.request.admin.MenuPermissionAddReq;
 import org.clever.security.dto.request.admin.MenuPermissionQueryReq;
 import org.clever.security.dto.request.admin.MenuPermissionUpdateReq;
 import org.clever.security.dto.response.admin.MenuPermissionQueryRes;
-import org.clever.security.entity.Domain;
+import org.clever.security.dto.response.admin.MenuPermissionTreeRes;
 import org.clever.security.entity.MenuPermission;
 import org.clever.security.service.admin.MenuPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 作者：ymx <br/>
@@ -23,15 +25,20 @@ public class MenuPermissionController {
     @Autowired
     private MenuPermissionService menuPermissionService;
 
+    @GetMapping("/menu_permission/tree")
+    public List<MenuPermissionTreeRes> menuTree(@RequestParam("domainId") Long domainId) {
+        return menuPermissionService.menuTree(domainId);
+    }
+
     @GetMapping("/menu_permission/page_query")
     public IPage<MenuPermissionQueryRes> pageQuery(MenuPermissionQueryReq req) {
         return menuPermissionService.pageQuery(req);
     }
 
-//    @PostMapping("/ui_permission/add")
-//    public MenuPermission addUiPermission(@RequestBody @Validated MenuPermissionAddReq req) {
-//        return menuPermissionService.addUiPermission(req);
-//    }
+    @PostMapping("/menu_permission/add")
+    public MenuPermission addMenuPermission(@RequestBody @Validated MenuPermissionAddReq req) {
+        return menuPermissionService.addMenuPermission(req);
+    }
 
     @PutMapping("/ui_permission/update")
     public MenuPermission updateUiPermission(@RequestBody @Validated MenuPermissionUpdateReq req) {

@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.request.admin.MenuPermissionQueryReq;
 import org.clever.security.dto.response.admin.MenuPermissionQueryRes;
+import org.clever.security.dto.response.admin.MenuPermissionTreeRes;
 import org.clever.security.entity.MenuPermission;
 import org.springframework.stereotype.Repository;
 
@@ -18,6 +19,8 @@ import java.util.List;
 @Repository
 @Mapper
 public interface MenuPermissionMapper extends BaseMapper<MenuPermission> {
+
+    List<MenuPermissionTreeRes> menuTree(@Param("domainId") Long domainId);
 
     List<MenuPermissionQueryRes> pageQuery(@Param("query") MenuPermissionQueryReq req);
 

@@ -26,6 +26,30 @@ public class MenuPermissionQueryReq extends QueryByPage {
      */
     private String name;
     /**
+     * 菜单路径
+     */
+    private String path;
+    /**
+     * 页面路径
+     */
+    private String pagePath;
+    /**
+     * 隐藏当前菜单和子菜单，0:不隐藏(显示)，1:隐藏
+     */
+    private Integer hideMenu;
+    /**
+     * 隐藏子菜单，0:不隐藏(显示)，1:隐藏
+     */
+    private Integer hideChildrenMenu;
+    /**
+     * 权限唯一字符串标识
+     */
+    private String strFlag;
+    /**
+     * 是否启用授权，0:不启用，1:启用
+     */
+    private Integer enabled;
+    /**
      * 创建时间 - 开始
      */
     private Date createAtStart;

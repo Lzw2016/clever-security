@@ -19,6 +19,10 @@
             <artifactId>clever-common-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.clever</groupId>
+            <artifactId>clever-common-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>

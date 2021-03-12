@@ -73,6 +73,9 @@
             <if test="query.apiExist!=null">
                 and a.api_exist = #{query.apiExist}
             </if>
+            <if test="query.strFlag!=null and query.strFlag!=''">
+                and b.str_flag = #{query.strFlag}
+            </if>
             <if test="query.enabled!=null">
                 and b.enabled = #{query.enabled}
             </if>

@@ -18,6 +18,6 @@ import java.util.Set;
 public interface PermissionMapper extends BaseMapper<Permission> {
     Set<String> findPermissionByUid(@Param("domainId") Long domainId, @Param("uid") String uid);
 
-    @Select("select count(1) from permission where str_flag=#{strFlag}")
+    @Select("select count(1) from permission where str_flag=#{strFlag} limit 1")
     int strFlagExist(@Param("strFlag") String strFlag);
 }

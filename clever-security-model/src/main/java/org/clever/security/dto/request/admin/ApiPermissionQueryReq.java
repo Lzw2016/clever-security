@@ -42,6 +42,10 @@ public class ApiPermissionQueryReq extends QueryByPage {
      */
    private Integer apiExist;
     /**
+     * 权限唯一字符串标识
+     */
+    private String strFlag;
+    /**
      * 是否启用授权，0:不启用，1:启用
      */
     private Integer enabled;
