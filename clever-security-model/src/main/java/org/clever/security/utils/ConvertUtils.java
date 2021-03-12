@@ -77,6 +77,7 @@ public class ConvertUtils {
         apiPermissionModel.setMethodName(apiPermissionEntity.getMethodName());
         apiPermissionModel.setMethodParams(apiPermissionEntity.getMethodParams());
         apiPermissionModel.setApiPath(apiPermissionEntity.getApiPath());
+        apiPermissionModel.setApiExist(apiPermissionEntity.getApiExist());
         return apiPermissionModel;
     }
 

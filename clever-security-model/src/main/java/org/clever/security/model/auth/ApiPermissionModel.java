@@ -63,6 +63,13 @@ public class ApiPermissionModel implements Serializable, Comparable<ApiPermissio
     private String apiPath;
 
     /**
+     * API接口是否存在，0：不存在；1：存在
+     */
+    @NotNull(message = "API接口是否存在不能为null")
+    @ValidIntegerStatus(value = {EnumConstant.ApiPermission_ApiExist_0, EnumConstant.ApiPermission_ApiExist_1})
+    private Integer apiExist;
+
+    /**
      * 定义排序规则
      */
     @Override

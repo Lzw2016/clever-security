@@ -38,7 +38,7 @@ public class SecurityConfig implements Serializable {
      */
     private final List<String> ignoreAuthPaths = new ArrayList<>();
     /**
-     * 不需要授权的Class
+     * 不需要授权的ControllerClass
      */
     private final List<String> ignoreAuthClass = new ArrayList<>();
     /**

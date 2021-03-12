@@ -89,9 +89,6 @@ public class ApiPermissionUtils {
             }
             apiPath.append(url);
         }
-        if (!needAuth) {
-            return null;
-        }
         final String className = beanType.getName();
         final String methodName = method.getName();
         final String methodParams = methodParamSb.toString();
@@ -112,12 +109,13 @@ public class ApiPermissionUtils {
         ApiPermissionModel apiPermissionModel = new ApiPermissionModel();
         apiPermissionModel.setStrFlag(strFlag);
         apiPermissionModel.setTitle(title);
-        apiPermissionModel.setEnabled(securityConfig.isDefaultEnableApiAuth() ? EnumConstant.Permission_Enabled_1 : EnumConstant.Permission_Enabled_0);
+        apiPermissionModel.setEnabled(securityConfig.isDefaultEnableApiAuth() && needAuth ? EnumConstant.Permission_Enabled_1 : EnumConstant.Permission_Enabled_0);
         apiPermissionModel.setDescription(description);
         apiPermissionModel.setClassName(className);
         apiPermissionModel.setMethodName(methodName);
         apiPermissionModel.setMethodParams(methodParams);
         apiPermissionModel.setApiPath(apiPath.toString());
+        apiPermissionModel.setApiExist(EnumConstant.ApiPermission_ApiExist_1);
         return apiPermissionModel;
     }
 }

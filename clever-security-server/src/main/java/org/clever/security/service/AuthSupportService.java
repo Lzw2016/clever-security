@@ -234,14 +234,22 @@ public class AuthSupportService implements AuthSupportClient {
                 updatePermissionFlag = true;
                 updatePermission.setStrFlag(permission.getStrFlag());
             }
+            if (!Objects.equals(dbPermission.getEnabled(), permission.getEnabled())) {
+                updatePermissionFlag = true;
+                updatePermission.setEnabled(permission.getEnabled());
+            }
+            if (!Objects.equals(permission.getDescription(), dbPermission.getDescription())) {
+                updatePermissionFlag = true;
+                updatePermission.setDescription(permission.getDescription());
+            }
             if (!Objects.equals(permission.getApiPath(), dbPermission.getApiPath()) || !Objects.equals(permission.getTitle(), dbPermission.getTitle())) {
                 updateApiPermissionFlag = true;
                 updateApiPermission.setApiPath(permission.getApiPath());
                 updateApiPermission.setTitle(permission.getTitle());
             }
-            if (!Objects.equals(permission.getDescription(), dbPermission.getDescription())) {
-                updatePermissionFlag = true;
-                updatePermission.setDescription(permission.getDescription());
+            if (!Objects.equals(dbPermission.getApiExist(), permission.getApiExist())) {
+                updateApiPermissionFlag = true;
+                updateApiPermission.setApiExist(permission.getApiExist());
             }
             if (updatePermissionFlag) {
                 permissionMapper.updateById(updatePermission);
