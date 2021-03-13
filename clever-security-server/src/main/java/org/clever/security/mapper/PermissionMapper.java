@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.clever.security.entity.Permission;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,4 +21,6 @@ public interface PermissionMapper extends BaseMapper<Permission> {
 
     @Select("select count(1) from permission where str_flag=#{strFlag} limit 1")
     int strFlagExist(@Param("strFlag") String strFlag);
+
+    int delByIds(@Param("ids") List<Long> ids);
 }

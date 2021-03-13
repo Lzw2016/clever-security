@@ -128,9 +128,8 @@ public class MenuPermissionTreeRes implements ITreeNode {
      */
     private boolean isBuild = false;
 
-
     @Override
-    public List<ITreeNode> getChildren() {
+    public List<? extends ITreeNode> getChildren() {
         return children;
     }
 

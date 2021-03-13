@@ -11,4 +11,11 @@
             left join permission d on (c.permission_id=b.id and c.domain_id=d.domain_id)
         where b.enabled=1 and d.str_flag is not null and a.domain_id=#{domainId} and a.uid=#{uid}
     </select>
+
+    <delete id="delByIds">
+        delete from permission where id in
+        <foreach collection="ids" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

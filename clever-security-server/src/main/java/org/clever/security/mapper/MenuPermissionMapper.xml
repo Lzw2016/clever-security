@@ -64,4 +64,11 @@
             </if>
         </where>
     </select>
+
+    <delete id="delByIds">
+        delete from menu_permission where id in
+        <foreach collection="ids" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

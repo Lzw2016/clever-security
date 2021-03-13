@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 作者：ymx <br/>
@@ -115,15 +116,26 @@ public class MenuPermissionService {
         return menuPermissionMapper.selectById(req.getId());
     }
 
-//    @Transactional
-//    public MenuPermission delUiPermission(Long domainId, Long id) {
-//        MenuPermission menuPermission = menuPermissionMapper.getByDomainId(domainId, id);
-//        int exists = menuPermissionMapper.deleteById(menuPermission.getId());
-//        if (exists <= 0) {
-//            throw new BusinessException("uiPermission不存在");
-//        }
-//        menuPermissionBindMapper.deleteById(menuPermission.getId());
-//        permissionMapper.deleteById(menuPermission.getPermissionId());
-//        return menuPermission;
-//    }
+    @Transactional
+    public MenuPermission delMenuPermission(Long id) {
+        MenuPermission menuPermission = menuPermissionMapper.selectById(id);
+        if (menuPermission == null) {
+            throw new BusinessException("菜单数据不存在");
+        }
+        List<MenuPermissionTreeRes> menuTreeList = menuPermissionMapper.menuTree(menuPermission.getDomainId());
+        menuTreeList = BuildTreeUtils.buildTree(menuTreeList);
+        MenuPermissionTreeRes node = BuildTreeUtils.findNode(menuTreeList, id);
+        if (node == null) {
+            throw new BusinessException("菜单数据不存在");
+        }
+        List<MenuPermissionTreeRes> delList = BuildTreeUtils.flattenNode(node);
+        if (delList.isEmpty()) {
+            throw new BusinessException("菜单数据不存在");
+        }
+        // 删除菜单数据
+        menuPermissionMapper.delByIds(delList.stream().map(MenuPermissionTreeRes::getId).collect(Collectors.toList()));
+        permissionMapper.delByIds(delList.stream().map(MenuPermissionTreeRes::getPermissionId).collect(Collectors.toList()));
+        // TODO 删除菜单关联其它数据
+        return menuPermission;
+    }
 }

@@ -45,8 +45,8 @@ public class MenuPermissionController {
         return menuPermissionService.updateMenuPermission(req);
     }
 
-//    @DeleteMapping("/ui_permission/del")
-//    public MenuPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
-//        return menuPermissionService.delUiPermission(domainId, id);
-//    }
+    @DeleteMapping("/menu_permission/del")
+    public MenuPermission delMenuPermission(@RequestParam("id") Long id) {
+        return menuPermissionService.delMenuPermission(id);
+    }
 }
