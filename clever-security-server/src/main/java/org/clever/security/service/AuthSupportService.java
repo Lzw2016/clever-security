@@ -175,7 +175,7 @@ public class AuthSupportService implements AuthSupportClient {
         List<ApiPermissionModel> addPermission = new ArrayList<>();
         Set<String> setPermission = new HashSet<>();
         // targetClass targetMethod targetMethodParams
-        String format = "%1$-255s|%2$-255s|%3$-255s";
+        String format = "%1$s.%2$s(%3$s)";
         for (ApiPermissionEntity permission : moduleAllPermission) {
             setPermission.add(String.format(format, permission.getClassName(), permission.getMethodName(), permission.getMethodParams()));
         }
@@ -202,7 +202,7 @@ public class AuthSupportService implements AuthSupportClient {
         List<ApiPermissionModel> notExistPermission = new ArrayList<>();
         Map<String, ApiPermissionModel> permissionMap = new HashMap<>();
         // targetClass targetMethod targetMethodParams
-        String format = "%1$-255s|%2$-255s|%3$-255s";
+        String format = "%1$s.%2$s(%3$s)";
         for (ApiPermissionModel permission : apiApiPermissionList) {
             permissionMap.put(String.format(format, permission.getClassName(), permission.getMethodName(), permission.getMethodParams()), permission);
         }

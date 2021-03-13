@@ -13,7 +13,7 @@
         from menu_permission a
         left join permission b on (a.permission_id = b.id)
         left join domain c on (b.domain_id = c.id)
-        where a.domain_id=#{domainId} order by a.sort
+        where a.domain_id=#{domainId} order by a.sort, a.create_at
     </select>
 
     <select id="pageQuery" resultType="org.clever.security.dto.response.admin.MenuPermissionQueryRes">

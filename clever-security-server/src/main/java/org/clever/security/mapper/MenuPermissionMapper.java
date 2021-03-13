@@ -24,6 +24,9 @@ public interface MenuPermissionMapper extends BaseMapper<MenuPermission> {
 
     List<MenuPermissionQueryRes> pageQuery(@Param("query") MenuPermissionQueryReq req);
 
-    @Select("select a.* from menu_permission a inner join permission b on a.permission_id=b.id where b.resources_type=2 and b.domain_id=#{domainId} and a.id=#{id}")
+    @Select("select count(1) from menu_permission where id = #{id} limit 1")
+    int exists(@Param("id") Long id);
+
+    @Select("select a.* from menu_permission a inner join permission b on a.permission_id=b.id where b.permission_type=2 and b.domain_id=#{domainId} and a.id=#{id}")
     MenuPermission getByDomainId(@Param("domainId") Long domainId, @Param("id") Long id);
 }

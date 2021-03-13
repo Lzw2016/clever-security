@@ -11,8 +11,10 @@ import org.clever.security.dto.request.admin.MenuPermissionQueryReq;
 import org.clever.security.dto.request.admin.MenuPermissionUpdateReq;
 import org.clever.security.dto.response.admin.MenuPermissionQueryRes;
 import org.clever.security.dto.response.admin.MenuPermissionTreeRes;
+import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.MenuPermission;
 import org.clever.security.entity.Permission;
+import org.clever.security.mapper.DomainMapper;
 import org.clever.security.mapper.MenuPermissionMapper;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.utils.PermissionStrFlagUtils;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 作者：ymx <br/>
@@ -29,6 +32,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 @Service
 public class MenuPermissionService {
+    @Autowired
+    private DomainMapper domainMapper;
     @Autowired
     private MenuPermissionMapper menuPermissionMapper;
     @Autowired
@@ -66,23 +71,27 @@ public class MenuPermissionService {
 
     @Transactional
     public MenuPermission addMenuPermission(MenuPermissionAddReq req) {
-        MenuPermission exist = menuPermissionMapper.getByDomainId(req.getDomainId(), req.getParentId());
-        if (exist == null && req.getParentId() != -1) {
-            throw new BusinessException("上级菜单id不存在");
+        if (domainMapper.exists(req.getDomainId()) <= 0) {
+            throw new BusinessException("数据源不存在");
+        }
+        if (!Objects.equals(req.getParentId(), -1L) && menuPermissionMapper.exists(req.getParentId()) <= 0) {
+            throw new BusinessException("上级菜单不存在");
         }
         String strFlag = PermissionStrFlagUtils.createStrFlag();
-        while (permissionMapper.strFlagExist(strFlag) > 0) {
-            strFlag = PermissionStrFlagUtils.createStrFlag();
+        if (permissionMapper.strFlagExist(strFlag) > 0) {
+            throw new BusinessException("意外的错误，请再试一次");
         }
         Permission permission = BeanMapper.mapper(req, Permission.class);
         permission.setId(SnowFlake.SNOW_FLAKE.nextId());
-        permission.setStrFlag(strFlag);
-//        permission.setParentId(-1L);
         permission.setDomainId(req.getDomainId());
-//        permission.setResourcesType(EnumConstant.Permission_ResourcesType_2);
+        permission.setStrFlag(strFlag);
+        permission.setPermissionType(EnumConstant.Permission_PermissionType_2);
         permissionMapper.insert(permission);
         MenuPermission menuPermission = BeanMapper.mapper(req, MenuPermission.class);
+        menuPermission.setId(SnowFlake.SNOW_FLAKE.nextId());
+        menuPermission.setDomainId(req.getDomainId());
         menuPermission.setPermissionId(permission.getId());
+        menuPermission.setParentId(req.getParentId());
         menuPermissionMapper.insert(menuPermission);
         return menuPermissionMapper.selectById(menuPermission.getId());
     }

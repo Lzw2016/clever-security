@@ -40,7 +40,7 @@ public class MenuPermissionController {
         return menuPermissionService.addMenuPermission(req);
     }
 
-    @PutMapping("/ui_permission/update")
+    @PutMapping("/menu_permission/update")
     public MenuPermission updateUiPermission(@RequestBody @Validated MenuPermissionUpdateReq req) {
         return menuPermissionService.updateUiPermission(req);
     }
