@@ -52,12 +52,14 @@ public class MenuPermissionAddReq extends BaseRequest {
     /**
      * 隐藏当前菜单和子菜单，0:不隐藏(显示)，1:隐藏
      */
+    @NotNull(message = "隐藏当前菜单不能为空")
     @ValidIntegerStatus(value = {EnumConstant.MenuPermission_Hide_0, EnumConstant.MenuPermission_Hide_1}, message = "隐藏当前菜单值无效")
     private Integer hideMenu;
 
     /**
      * 隐藏子菜单，0:不隐藏(显示)，1:隐藏
      */
+    @NotNull(message = "隐藏子菜单不能为空")
     @ValidIntegerStatus(value = {EnumConstant.MenuPermission_Hide_0, EnumConstant.MenuPermission_Hide_1}, message = "隐藏子菜单值无效")
     private Integer hideChildrenMenu;
 
@@ -70,6 +72,7 @@ public class MenuPermissionAddReq extends BaseRequest {
     /**
      * 是否启用授权，0:不启用，1:启用
      */
+    @NotNull(message = "是否启用不能为空")
     @ValidIntegerStatus(value = {EnumConstant.Permission_Enabled_0, EnumConstant.Permission_Enabled_1}, message = "是否启用授权值无效")
     private Integer enabled;
 

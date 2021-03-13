@@ -41,8 +41,8 @@ public class MenuPermissionController {
     }
 
     @PutMapping("/menu_permission/update")
-    public MenuPermission updateUiPermission(@RequestBody @Validated MenuPermissionUpdateReq req) {
-        return menuPermissionService.updateUiPermission(req);
+    public MenuPermission updateMenuPermission(@RequestBody @Validated MenuPermissionUpdateReq req) {
+        return menuPermissionService.updateMenuPermission(req);
     }
 
 //    @DeleteMapping("/ui_permission/del")

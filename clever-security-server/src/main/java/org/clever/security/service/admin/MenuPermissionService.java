@@ -97,22 +97,22 @@ public class MenuPermissionService {
     }
 
     @Transactional
-    public MenuPermission updateUiPermission(MenuPermissionUpdateReq req) {
-        MenuPermission menuPermission = menuPermissionMapper.getByDomainId(req.getDomainId(), req.getId());
+    public MenuPermission updateMenuPermission(MenuPermissionUpdateReq req) {
+        MenuPermission menuPermission = menuPermissionMapper.selectById(req.getId());
         if (menuPermission == null) {
-            throw new BusinessException("该ui组件权限不存在");
+            throw new BusinessException("菜单数据不存在");
         }
-        MenuPermission exist = menuPermissionMapper.getByDomainId(req.getDomainId(), req.getParentId());
-        if (exist == null && req.getParentId() != -1) {
-            throw new BusinessException("上级菜单id不存在");
+        Permission permission = permissionMapper.selectById(menuPermission.getPermissionId());
+        if (permission == null) {
+            throw new BusinessException("权限数据不存在");
         }
         MenuPermission updateMenuPermission = BeanMapper.mapper(req, MenuPermission.class);
+        updateMenuPermission.setId(menuPermission.getId());
         menuPermissionMapper.updateById(updateMenuPermission);
-        updateMenuPermission = menuPermissionMapper.selectById(updateMenuPermission.getId());
         Permission updatePermission = BeanMapper.mapper(req, Permission.class);
-        updatePermission.setId(updateMenuPermission.getPermissionId());
+        updatePermission.setId(permission.getId());
         permissionMapper.updateById(updatePermission);
-        return updateMenuPermission;
+        return menuPermissionMapper.selectById(req.getId());
     }
 
 //    @Transactional
