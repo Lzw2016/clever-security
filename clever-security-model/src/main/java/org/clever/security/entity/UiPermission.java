@@ -35,7 +35,7 @@ public class UiPermission implements Serializable {
     /**
      * 所属菜单id
      */
-    private Long menuPermissionId;
+    private Long menuId;
 
     /**
      * 页面UI组件名称

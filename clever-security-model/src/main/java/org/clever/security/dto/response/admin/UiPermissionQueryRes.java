@@ -28,7 +28,7 @@ public class UiPermissionQueryRes extends QueryByPage {
     /**
      * 所属菜单id
      */
-    private Long menuPermissionId;
+    private Long menuId;
     /**
      * 页面UI组件名称
      */

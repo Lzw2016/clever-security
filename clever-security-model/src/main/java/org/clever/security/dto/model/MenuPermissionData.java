@@ -1,23 +1,16 @@
-package org.clever.security.dto.response.admin;
-
+package org.clever.security.dto.model;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.clever.common.model.response.BaseResponse;
-import org.clever.common.utils.tree.ITreeNode;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
- * 创建时间：2021/03/12 21:32 <br/>
+ * 创建时间：2021/03/15 22:05 <br/>
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class MenuPermissionTreeRes extends BaseResponse implements ITreeNode {
+public class MenuPermissionData implements Serializable {
     // --------------------------------------------------------------------------------------------------------- ApiPermission
 
     /**
@@ -118,34 +111,4 @@ public class MenuPermissionTreeRes extends BaseResponse implements ITreeNode {
      * 域名称
      */
     private String domainName;
-
-    // --------------------------------------------------------------------------------------------------------- ITreeNode
-
-    /**
-     * 子节点
-     */
-    private List<ITreeNode> children;
-
-    /**
-     * 是否被添加到父节点下
-     */
-    private boolean isBuild = false;
-
-    @Override
-    public List<? extends ITreeNode> getChildren() {
-        return children;
-    }
-
-    @Override
-    public void addChildren(ITreeNode node) {
-        if (this.children == null) {
-            this.children = new ArrayList<>();
-        }
-        this.children.add(node);
-    }
-
-    @Override
-    public Boolean isRoot() {
-        return parentId == null || Objects.equals(parentId, -1L);
-    }
 }

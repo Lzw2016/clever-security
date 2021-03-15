@@ -2,15 +2,15 @@ package org.clever.security.controller.admin;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.clever.security.dto.request.admin.UiPermissionAddReq;
+import org.clever.security.dto.model.MenuAndUIPermissionData;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
-import org.clever.security.dto.request.admin.UiPermissionUpdateReq;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
 import org.clever.security.entity.UiPermission;
 import org.clever.security.service.admin.UiPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 作者：ymx <br/>
@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class UiPermissionController {
     @Autowired
     private UiPermissionService uiPermissionService;
+
+    @GetMapping("/ui_permission/menu_and_ui_tree")
+    public List<MenuAndUIPermissionData> menuAndUITree(@RequestParam("domainId") Long domainId) {
+        return uiPermissionService.menuAndUITree(domainId);
+    }
 
     @GetMapping("/ui_permission/page_query")
     public IPage<UiPermissionQueryRes> pageQuery(UiPermissionQueryReq req) {

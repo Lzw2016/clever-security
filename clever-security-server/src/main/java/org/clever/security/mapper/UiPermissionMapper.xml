@@ -24,4 +24,87 @@
             and b.permission_type = 3
         </where>
     </select>
+
+    <resultMap id="MenuAndUIPermissionData" type="org.clever.security.dto.model.MenuAndUIPermissionData">
+        <id property="menuId" column="menu_id"/>
+        <association property="menuPermission" javaType="org.clever.security.dto.model.MenuPermissionData">
+            <id property="id" column="menu_id"/>
+            <result property="domainId" column="menu_domain_id"/>
+            <result property="permissionId" column="menu_permission_id"/>
+            <result property="parentId" column="menu_parent_id"/>
+            <result property="name" column="menu_name"/>
+            <result property="icon" column="menu_icon"/>
+            <result property="path" column="menu_path"/>
+            <result property="pagePath" column="menu_page_path"/>
+            <result property="hideMenu" column="menu_hide_menu"/>
+            <result property="hideChildrenMenu" column="menu_hide_children_menu"/>
+            <result property="extConfig" column="menu_ext_config"/>
+            <result property="sort" column="menu_sort"/>
+            <result property="createAt" column="menu_create_at"/>
+            <result property="updateAt" column="menu_update_at"/>
+            <result property="strFlag" column="menu_str_flag"/>
+            <result property="permissionType" column="menu_permission_type"/>
+            <result property="enabled" column="menu_enabled"/>
+            <result property="description" column="menu_description"/>
+            <result property="domainName" column="menu_domain_name"/>
+        </association>
+        <collection property="uiPermissionList" ofType="org.clever.security.dto.model.UiPermissionData">
+            <id property="id" column="ui_id"/>
+            <result property="domainId" column="ui_domain_id"/>
+            <result property="permissionId" column="ui_permission_id"/>
+            <result property="menuId" column="ui_menu_id"/>
+            <result property="uiName" column="ui_ui_name"/>
+            <result property="createAt" column="ui_create_at"/>
+            <result property="updateAt" column="ui_update_at"/>
+            <result property="strFlag" column="ui_str_flag"/>
+            <result property="permissionType" column="ui_permission_type"/>
+            <result property="enabled" column="ui_enabled"/>
+            <result property="description" column="ui_description"/>
+            <result property="domainName" column="ui_domain_name"/>
+        </collection>
+    </resultMap>
+    <select id="menuAndUIByDomainId" resultMap="MenuAndUIPermissionData">
+        select
+            <!-- 菜单数据 -->
+            a.id                    as menu_id,
+            a.domain_id             as menu_domain_id,
+            a.permission_id         as menu_permission_id,
+            a.parent_id             as menu_parent_id,
+            a.name                  as menu_name,
+            a.icon                  as menu_icon,
+            a.path                  as menu_path,
+            a.page_path             as menu_page_path,
+            a.hide_menu             as menu_hide_menu,
+            a.hide_children_menu    as menu_hide_children_menu,
+            a.ext_config            as menu_ext_config,
+            a.sort                  as menu_sort,
+            a.create_at             as menu_create_at,
+            a.update_at             as menu_update_at,
+            b.str_flag              as menu_str_flag,
+            b.permission_type       as menu_permission_type,
+            b.enabled               as menu_enabled,
+            b.description           as menu_description,
+            c.name                  as menu_domain_name,
+            <!-- UI数据 -->
+            d.id                    as ui_id,
+            d.domain_id             as ui_domain_id,
+            d.permission_id         as ui_permission_id,
+            d.menu_id               as ui_menu_id,
+            d.ui_name               as ui_ui_name,
+            d.create_at             as ui_create_at,
+            d.update_at             as ui_update_at,
+            e.str_flag              as ui_str_flag,
+            e.permission_type       as ui_permission_type,
+            e.enabled               as ui_enabled,
+            e.description           as ui_description,
+            f.name                  as ui_domain_name
+        from menu_permission a
+            left join permission b on (a.permission_id = b.id)
+            left join domain c on (b.domain_id = c.id)
+            left join ui_permission d on (a.id = d.menu_id)
+            left join permission e on (d.permission_id = e.id)
+            left join domain f on (d.domain_id = f.id)
+        where a.domain_id=#{domainId}
+        order by a.sort, a.create_at, d.create_at
+    </select>
 </mapper>

@@ -2,21 +2,21 @@ package org.clever.security.service.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.clever.common.exception.BusinessException;
-import org.clever.common.utils.SnowFlake;
 import org.clever.common.utils.mapper.BeanMapper;
-import org.clever.security.dto.request.admin.UiPermissionAddReq;
+import org.clever.security.dto.model.MenuAndUIPermissionData;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
 import org.clever.security.dto.request.admin.UiPermissionUpdateReq;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
-import org.clever.security.entity.EnumConstant;
 import org.clever.security.entity.Permission;
 import org.clever.security.entity.UiPermission;
+import org.clever.security.mapper.MenuPermissionMapper;
 import org.clever.security.mapper.PermissionMapper;
 import org.clever.security.mapper.UiPermissionMapper;
-import org.clever.security.utils.PermissionStrFlagUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 作者：ymx <br/>
@@ -29,6 +29,16 @@ public class UiPermissionService {
     private UiPermissionMapper uiPermissionMapper;
     @Autowired
     private PermissionMapper permissionMapper;
+    @Autowired
+    private MenuPermissionMapper menuPermissionMapper;
+
+    public List<MenuAndUIPermissionData> menuAndUITree(Long domainId) {
+        return uiPermissionMapper.menuAndUIByDomainId(domainId);
+//        List<MenuPermissionTreeRes> menuTreeList = menuPermissionMapper.menuTree(domainId);
+//        List<MenuAndUIPermissionTreeRes> menuAndUITreeList = BeanMapper.mapperCollection(menuTreeList, MenuAndUIPermissionTreeRes.class);
+//        BuildTreeUtils.buildTree(menuTreeList);
+//        return null;
+    }
 
     public IPage<UiPermissionQueryRes> pageQuery(UiPermissionQueryReq req) {
         return req.result(uiPermissionMapper.pageQuery(req));
