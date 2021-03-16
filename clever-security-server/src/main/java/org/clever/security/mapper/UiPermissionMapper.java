@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.clever.security.dto.model.MenuAndUIPermissionData;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
+import org.clever.security.dto.response.admin.MenuAndUiPermissionTreeRes;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
 import org.clever.security.entity.UiPermission;
 import org.springframework.stereotype.Repository;
@@ -20,7 +20,7 @@ import java.util.List;
 @Mapper
 public interface UiPermissionMapper extends BaseMapper<UiPermission> {
 
-    List<MenuAndUIPermissionData> menuAndUIByDomainId(@Param("domainId") Long domainId);
+    List<MenuAndUiPermissionTreeRes> menuAndUIByDomainId(@Param("domainId") Long domainId);
 
     List<UiPermissionQueryRes> pageQuery(@Param("query") UiPermissionQueryReq req);
 

@@ -25,7 +25,7 @@
         </where>
     </select>
 
-    <resultMap id="MenuAndUIPermissionData" type="org.clever.security.dto.model.MenuAndUIPermissionData">
+    <resultMap id="MenuAndUiPermissionTreeRes" type="org.clever.security.dto.response.admin.MenuAndUiPermissionTreeRes">
         <id property="menuId" column="menu_id"/>
         <association property="menuPermission" javaType="org.clever.security.dto.model.MenuPermissionData">
             <id property="id" column="menu_id"/>
@@ -48,7 +48,7 @@
             <result property="description" column="menu_description"/>
             <result property="domainName" column="menu_domain_name"/>
         </association>
-        <collection property="uiPermissionList" ofType="org.clever.security.dto.model.UiPermissionData">
+        <collection property="children" ofType="org.clever.security.dto.model.UiPermissionData">
             <id property="id" column="ui_id"/>
             <result property="domainId" column="ui_domain_id"/>
             <result property="permissionId" column="ui_permission_id"/>
@@ -63,7 +63,7 @@
             <result property="domainName" column="ui_domain_name"/>
         </collection>
     </resultMap>
-    <select id="menuAndUIByDomainId" resultMap="MenuAndUIPermissionData">
+    <select id="menuAndUIByDomainId" resultMap="MenuAndUiPermissionTreeRes">
         select
             <!-- 菜单数据 -->
             a.id                    as menu_id,

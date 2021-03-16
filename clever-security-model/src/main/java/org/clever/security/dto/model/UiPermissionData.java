@@ -1,16 +1,20 @@
 package org.clever.security.dto.model;
 
 import lombok.Data;
+import org.clever.common.utils.tree.ITreeNode;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 作者：lizw <br/>
  * 创建时间：2021/03/15 22:05 <br/>
  */
 @Data
-public class UiPermissionData implements Serializable {
+public class UiPermissionData implements ITreeNode, Serializable {
     /**
      * 页面ui id(系统自动生成且不会变化)
      */
@@ -74,4 +78,35 @@ public class UiPermissionData implements Serializable {
      * 域名称
      */
     private String domainName;
+
+    // --------------------------------------------------------------------------------------------------------- ITreeNode
+
+    @Override
+    public Object getParentId() {
+        return menuId;
+    }
+
+    @Override
+    public boolean isBuild() {
+        return true;
+    }
+
+    @Override
+    public void setBuild(boolean isBuild) {
+    }
+
+    @Override
+    public List<? extends ITreeNode> getChildren() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addChildren(ITreeNode node) {
+        throw new UnsupportedOperationException("页面UI不支持层级结构");
+    }
+
+    @Override
+    public Boolean isRoot() {
+        return menuId == null || Objects.equals(menuId, -1L);
+    }
 }

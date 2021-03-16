@@ -2,8 +2,8 @@ package org.clever.security.controller.admin;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.clever.security.dto.model.MenuAndUIPermissionData;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
+import org.clever.security.dto.response.admin.MenuAndUiPermissionTreeRes;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
 import org.clever.security.entity.UiPermission;
 import org.clever.security.service.admin.UiPermissionService;
@@ -23,8 +23,8 @@ public class UiPermissionController {
     private UiPermissionService uiPermissionService;
 
     @GetMapping("/ui_permission/menu_and_ui_tree")
-    public List<MenuAndUIPermissionData> menuAndUITree(@RequestParam("domainId") Long domainId) {
-        return uiPermissionService.menuAndUITree(domainId);
+    public List<MenuAndUiPermissionTreeRes> menuAndUiTree(@RequestParam("domainId") Long domainId) {
+        return uiPermissionService.menuAndUiTree(domainId);
     }
 
     @GetMapping("/ui_permission/page_query")
