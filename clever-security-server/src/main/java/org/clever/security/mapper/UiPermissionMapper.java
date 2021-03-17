@@ -3,7 +3,6 @@ package org.clever.security.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 import org.clever.security.dto.request.admin.UiPermissionQueryReq;
 import org.clever.security.dto.response.admin.MenuAndUiPermissionTreeRes;
 import org.clever.security.dto.response.admin.UiPermissionQueryRes;
@@ -25,7 +24,4 @@ public interface UiPermissionMapper extends BaseMapper<UiPermission> {
     List<UiPermissionQueryRes> findUiByMenu(@Param("menuId") Long menuId);
 
     List<UiPermissionQueryRes> pageQuery(@Param("query") UiPermissionQueryReq req);
-
-    @Select("select a.* from ui_permission a inner join permission b on a.permission_id=b.id where b.permission_type=3 and b.domain_id=#{domainId} and a.id=#{id}")
-    UiPermission getByDomainId(@Param("domainId") Long domainId, @Param("id") Long id);
 }

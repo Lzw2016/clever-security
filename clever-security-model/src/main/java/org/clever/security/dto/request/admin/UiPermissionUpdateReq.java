@@ -3,10 +3,11 @@ package org.clever.security.dto.request.admin;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.clever.common.model.request.QueryByPage;
+import org.clever.common.validation.StringNotBlank;
+import org.clever.common.validation.ValidIntegerStatus;
+import org.clever.security.entity.EnumConstant;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 
 /**
  * 作者：ymx <br/>
@@ -16,27 +17,22 @@ import java.util.Date;
 @Data
 public class UiPermissionUpdateReq extends QueryByPage {
     /**
-     * id
+     * 页面ui id(系统自动生成且不会变化)
      */
     @NotNull(message = "id不能为空")
     private Long id;
     /**
-     * 域id
-     */
-    @NotNull(message = "域id不能为空")
-    private Long domainId;
-    /**
      * ui组件名
      */
-    @NotBlank(message = "ui组件名不能为空")
+    @StringNotBlank(message = "ui组件名不能为空")
     private String uiName;
-    /**
-     * 权限标题
-     */
-    private String title;
     /**
      * 是否启用授权，0:不启用，1:启用
      */
+    @ValidIntegerStatus(
+            value = {EnumConstant.Permission_Enabled_0, EnumConstant.Permission_Enabled_1},
+            message = "是否启用值无效"
+    )
     private Integer enabled;
     /**
      * 权限说明

@@ -80,7 +80,7 @@ public class MenuPermissionService {
         }
         String strFlag = PermissionStrFlagUtils.createStrFlag();
         if (permissionMapper.strFlagExist(strFlag) > 0) {
-            throw new BusinessException("意外的错误，请再试一次");
+            throw new BusinessException("意外的错误，Menu权限字符串重复，请再试一次");
         }
         Permission permission = BeanMapper.mapper(req, Permission.class);
         permission.setId(SnowFlake.SNOW_FLAKE.nextId());
