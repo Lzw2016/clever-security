@@ -15,6 +15,7 @@ import java.util.Objects;
  */
 @Data
 public class UiPermissionData implements ITreeNode, Serializable {
+    // --------------------------------------------------------------------------------------------------------- UiPermission
     /**
      * 页面ui id(系统自动生成且不会变化)
      */

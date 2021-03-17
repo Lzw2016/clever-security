@@ -34,8 +34,12 @@ public class UiPermissionService {
     private MenuPermissionMapper menuPermissionMapper;
 
     public List<MenuAndUiPermissionTreeRes> menuAndUiTree(Long domainId) {
-        List<MenuAndUiPermissionTreeRes> res = uiPermissionMapper.menuAndUIByDomainId(domainId);
+        List<MenuAndUiPermissionTreeRes> res = uiPermissionMapper.menuAndUiTree(domainId);
         return BuildTreeUtils.buildTree(res);
+    }
+
+    public List<UiPermissionQueryRes> findUiByMenu(Long menuId) {
+        return uiPermissionMapper.findUiByMenu(menuId);
     }
 
     public IPage<UiPermissionQueryRes> pageQuery(UiPermissionQueryReq req) {

@@ -27,6 +27,11 @@ public class UiPermissionController {
         return uiPermissionService.menuAndUiTree(domainId);
     }
 
+    @GetMapping("/ui_permission/find_ui_by_menu")
+    public List<UiPermissionQueryRes> findUiByMenu(@RequestParam("menuId") Long menuId) {
+        return uiPermissionService.findUiByMenu(menuId);
+    }
+
     @GetMapping("/ui_permission/page_query")
     public IPage<UiPermissionQueryRes> pageQuery(UiPermissionQueryReq req) {
         return uiPermissionService.pageQuery(req);

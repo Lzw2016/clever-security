@@ -2,29 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <!--suppress SqlNoDataSourceInspection, SqlDialectInspection -->
 <mapper namespace="org.clever.security.mapper.UiPermissionMapper">
-    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.UiPermissionQueryRes">
-        select
-        a.*,
-        b.enabled,
-        b.description,
-        c.name as domainName
-        from ui_permission a
-        left join permission b on (a.permission_id = b.id)
-        left join domain c on (b.domain_id = c.id)
-        <where>
-            <if test="query.id!=null">
-                and a.id = #{query.id}
-            </if>
-            <if test="query.domainId!=null">
-                and b.domain_id = #{query.domainId}
-            </if>
-            <if test="query.uiName!=null">
-                and a.ui_name like concat('%',#{query.uiName},'%')
-            </if>
-            and b.permission_type = 3
-        </where>
-    </select>
-
     <resultMap id="MenuAndUiPermissionTreeRes" type="org.clever.security.dto.response.admin.MenuAndUiPermissionTreeRes">
         <id property="menuId" column="menu_id"/>
         <association property="menuPermission" javaType="org.clever.security.dto.model.MenuPermissionData">
@@ -63,7 +40,7 @@
             <result property="domainName" column="ui_domain_name"/>
         </collection>
     </resultMap>
-    <select id="menuAndUIByDomainId" resultMap="MenuAndUiPermissionTreeRes">
+    <select id="menuAndUiTree" resultMap="MenuAndUiPermissionTreeRes">
         select
             <!-- 菜单数据 -->
             a.id                    as menu_id,
@@ -106,5 +83,42 @@
             left join domain f on (d.domain_id = f.id)
         where a.domain_id=#{domainId}
         order by a.sort, a.create_at, d.create_at
+    </select>
+
+    <select id="findUiByMenu" resultType="org.clever.security.dto.response.admin.UiPermissionQueryRes">
+        select
+            a.*,
+            b.str_flag,
+            b.permission_type,
+            b.enabled,
+            b.description,
+            c.name as domain_name
+        from ui_permission a
+            left join permission b on (a.permission_id=b.id)
+            left join domain c on (a.domain_id=c.id)
+        where a.menu_id=#{menuId} order by a.create_at
+    </select>
+
+    <select id="pageQuery" resultType="org.clever.security.dto.response.admin.UiPermissionQueryRes">
+        select
+        a.*,
+        b.enabled,
+        b.description,
+        c.name as domainName
+        from ui_permission a
+        left join permission b on (a.permission_id = b.id)
+        left join domain c on (b.domain_id = c.id)
+        <where>
+            <if test="query.id!=null">
+                and a.id = #{query.id}
+            </if>
+            <if test="query.domainId!=null">
+                and b.domain_id = #{query.domainId}
+            </if>
+            <if test="query.uiName!=null">
+                and a.ui_name like concat('%',#{query.uiName},'%')
+            </if>
+            and b.permission_type = 3
+        </where>
     </select>
 </mapper>

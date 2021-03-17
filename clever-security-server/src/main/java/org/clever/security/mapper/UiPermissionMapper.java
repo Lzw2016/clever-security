@@ -20,7 +20,9 @@ import java.util.List;
 @Mapper
 public interface UiPermissionMapper extends BaseMapper<UiPermission> {
 
-    List<MenuAndUiPermissionTreeRes> menuAndUIByDomainId(@Param("domainId") Long domainId);
+    List<MenuAndUiPermissionTreeRes> menuAndUiTree(@Param("domainId") Long domainId);
+
+    List<UiPermissionQueryRes> findUiByMenu(@Param("menuId") Long menuId);
 
     List<UiPermissionQueryRes> pageQuery(@Param("query") UiPermissionQueryReq req);
 
