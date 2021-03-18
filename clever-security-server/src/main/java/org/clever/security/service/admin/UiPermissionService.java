@@ -93,14 +93,19 @@ public class UiPermissionService {
         return uiPermission;
     }
 
-//    @Transactional
-//    public UiPermission delUiPermission(Long domainId, Long id) {
-//        UiPermission uiPermission = uiPermissionMapper.getByDomainId(domainId, id);
-//        int exists = uiPermissionMapper.deleteById(uiPermission.getId());
-//        if (exists <= 0) {
-//            throw new BusinessException("uiPermission不存在");
-//        }
-//        permissionMapper.deleteById(uiPermission.getPermissionId());
-//        return uiPermission;
-//    }
+    @Transactional
+    public UiPermission delUiPermission(Long id) {
+        UiPermission uiPermission = uiPermissionMapper.selectById(id);
+        if (uiPermission == null) {
+            throw new BusinessException("UI权限数据不存在");
+        }
+        Permission permission = permissionMapper.selectById(uiPermission.getPermissionId());
+        if (permission == null) {
+            throw new BusinessException("权限数据不存在");
+        }
+        uiPermissionMapper.deleteById(uiPermission.getId());
+        permissionMapper.deleteById(permission.getId());
+        // TODO 删除关联数据
+        return uiPermission;
+    }
 }

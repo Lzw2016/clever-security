@@ -45,10 +45,10 @@ public class UiPermissionController {
         return uiPermissionService.updateUiPermission(req);
     }
 
-//    @DeleteMapping("/ui_permission/del")
-//    public UiPermission delUiPermission(@RequestParam("domainId") Long domainId, @RequestParam("id") Long id) {
-//        return uiPermissionService.delUiPermission(domainId, id);
-//    }
+    @DeleteMapping("/ui_permission/del")
+    public UiPermission delUiPermission(@RequestParam("id") Long id) {
+        return uiPermissionService.delUiPermission(id);
+    }
 
     @GetMapping("/ui_permission/page_query")
     public IPage<UiPermissionQueryRes> pageQuery(UiPermissionQueryReq req) {
