@@ -8,10 +8,15 @@ import org.clever.security.dto.request.admin.ApiPermissionUpdateReq;
 import org.clever.security.dto.request.admin.DomainQueryReq;
 import org.clever.security.dto.response.admin.ApiPermissionQueryRes;
 import org.clever.security.entity.ApiPermission;
+import org.clever.security.entity.EnumConstant;
 import org.clever.security.mapper.ApiPermissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 作者：ymx <br/>
@@ -22,6 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApiPermissionService {
     @Autowired
     private ApiPermissionMapper apiPermissionMapper;
+
+    public List<ApiPermissionQueryRes> findApiByPermission(Integer permissionType, Long id) {
+        if (Objects.equals(permissionType, EnumConstant.Permission_PermissionType_2)) {
+            return apiPermissionMapper.findApiByMenu(id);
+        } else if (Objects.equals(permissionType, EnumConstant.Permission_PermissionType_3)) {
+            return apiPermissionMapper.findApiByUi(id);
+        }
+        return Collections.emptyList();
+    }
 
     public IPage<ApiPermissionQueryRes> pageQuery(ApiPermissionQueryReq req) {
         req.addOrderFieldMapping("id", "a.id");

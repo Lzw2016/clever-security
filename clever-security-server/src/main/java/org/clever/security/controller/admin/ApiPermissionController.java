@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 作者：ymx <br/>
  * 创建时间：2021/02/17 12:58 <br/>
@@ -20,6 +22,13 @@ import org.springframework.web.bind.annotation.*;
 public class ApiPermissionController {
     @Autowired
     private ApiPermissionService apiPermissionService;
+
+    @GetMapping("/api_permission/find_api_by_permission")
+    public List<ApiPermissionQueryRes> findApiByPermission(
+            @RequestParam("permissionType") Integer permissionType,
+            @RequestParam("id") Long id) {
+        return apiPermissionService.findApiByPermission(permissionType, id);
+    }
 
     @GetMapping("/api_permission/page_query")
     public IPage<ApiPermissionQueryRes> pageQuery(ApiPermissionQueryReq req) {

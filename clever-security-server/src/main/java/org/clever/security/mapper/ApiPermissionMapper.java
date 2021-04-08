@@ -27,5 +27,9 @@ public interface ApiPermissionMapper extends BaseMapper<ApiPermission> {
 
     List<ApiPermissionEntity> findApiPermissionBydDomainId(@Param("domainId") Long domainId);
 
+    List<ApiPermissionQueryRes> findApiByMenu(@Param("menuId") Long menuId);
+
+    List<ApiPermissionQueryRes> findApiByUi(@Param("uiId") Long uiId);
+
     List<ApiPermissionQueryRes> pageQuery(@Param("query") ApiPermissionQueryReq req);
 }
